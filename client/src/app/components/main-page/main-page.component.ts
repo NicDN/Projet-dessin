@@ -13,6 +13,8 @@ export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
+    containsDrawing: boolean = false; // temporary boolean
+
     constructor(private basicService: IndexService) {}
 
     sendTimeToServer(): void {

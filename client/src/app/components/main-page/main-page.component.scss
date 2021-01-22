@@ -3,8 +3,9 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    min-height: 100vh;
+    min-height: 20vh;
     height: auto;
+    margin: 20px;
 }
 
 .button {
@@ -20,6 +21,7 @@
 .header-item {
     justify-content: center;
     text-align: center;
+    font-size: 50px;
 }
 
 .footer-item {
