@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { EllipseService } from '@app/services/tools/ellipse-service';
 import { PencilService } from '@app/services/tools/pencil-service';
-import { RectangleService } from '@app/services/tools/rectangle-service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_WIDTH = 1000;
@@ -26,8 +26,8 @@ export class DrawingComponent implements AfterViewInit {
     // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
     private tools: Tool[];
     currentTool: Tool;
-    constructor(private drawingService: DrawingService, pencilService: PencilService, rectangleService: RectangleService) {
-        this.tools = [pencilService, rectangleService];
+    constructor(private drawingService: DrawingService, pencilService: PencilService, ellipseService: EllipseService) {
+        this.tools = [pencilService, ellipseService];
         this.currentTool = this.tools[1];
     }
 

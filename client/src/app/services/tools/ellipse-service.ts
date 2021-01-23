@@ -15,7 +15,7 @@ export enum MouseButton {
 @Injectable({
     providedIn: 'root',
 })
-export class RectangleService extends Tool {
+export class EllipseService extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
 
@@ -33,7 +33,7 @@ export class RectangleService extends Tool {
     onMouseUp(event: MouseEvent): void {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
-            this.drawRect(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.drawEllipse(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -44,14 +44,13 @@ export class RectangleService extends Tool {
 
             // On dessine sur le canvas de prévisualisation et on l'efface à chaque déplacement de la souris
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.drawRect(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+            this.drawEllipse(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
         }
     }
 
-    private drawRect(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+    private drawEllipse(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.beginPath();
-        ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
-        // ctx.ellipse((end.x + begin.x) / 2, (end.y + begin.y) / 2, (end.x - begin.x) / 2, (end.y - begin.y) / 2, 0, 0, 2 * Math.PI);
+        ctx.ellipse((end.x + begin.x) / 2, (end.y + begin.y) / 2, (end.x - begin.x) / 2, (end.y - begin.y) / 2, 0, 0, 2 * Math.PI);
         ctx.stroke();
     }
 }
