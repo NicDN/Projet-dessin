@@ -19,10 +19,11 @@ canvas {
 }
 
 #resizable-box{
-    width : 100px;
-    height : 100px;
+    width : 500px;
+    height : 500px;
     border-style: dotted;
     resize: both;
+    overflow: auto;
 }
 
 #bottom-right-controller{
