@@ -15,5 +15,20 @@ canvas {
 }
 
 #canvas-container{
+    position: absolute;   
+}
+
+#resizable-box{
+    width : 100px;
+    height : 100px;
+    border-style: dotted;
+    resize: both;
+}
+
+#bottom-right-controller{
+    bottom:-245px; 
+    right:-245px;
+    width : 10%;
     position: relative;
+
 }
