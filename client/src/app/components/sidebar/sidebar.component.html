@@ -1,8 +1,6 @@
 <div class="container">
-
-
-    <mat-sidenav-container class="sidenav-container" autosize>
-        <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
+    <mat-drawer-container class="sidenav-container" autosize>
+        <mat-drawer #sidenav class="sidenav" mode="side" opened="true">
             <mat-nav-list class="dashboard">
                 <a mat-list-item (click)="toggleActive($event)">
                     <fa-icon icon="mouse-pointer"></fa-icon>
@@ -40,18 +38,13 @@
                 <a mat-list-item (click)="toggleActive($event)">
                     <fa-icon icon="eye-dropper"></fa-icon>
                 </a>
-                
+
                 <a mat-list-item (click)="toggleActive($event)">
                     <fa-icon icon="border-all"></fa-icon>
                 </a>
-               
 
-               
-
-                
-            
                 <div class="drawing-manager-section">
-                   
+
                     <a mat-list-item (click)="toggleActive($event)">
                         <fa-icon icon="plus"></fa-icon>
                     </a>
@@ -68,10 +61,7 @@
                         <fa-icon icon="home"></fa-icon>
                     </a>
                 </div>
-
-
             </mat-nav-list>
-        </mat-sidenav>
-
-    </mat-sidenav-container>
+        </mat-drawer>
+    </mat-drawer-container>
 </div>
