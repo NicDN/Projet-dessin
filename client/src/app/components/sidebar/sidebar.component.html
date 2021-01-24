@@ -1,9 +1,77 @@
 <div class="container">
-    <p>Barre latérale pour vos outils!</p>
-    <p>
-        Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet <br />
-        L'implémentation ici ne couvre pas tous les critères d'acceptation du projet<br />
-        Vous êtes encouragés de modifier et compléter le code.<br />
-        N'oubliez pas de regarder les tests dans les fichiers spec.ts aussi!
-    </p>
+
+
+    <mat-sidenav-container class="sidenav-container" autosize>
+        <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
+            <mat-nav-list class="dashboard">
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="mouse-pointer"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="spray-can"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="square"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="circle"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="draw-polygon"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="project-diagram"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="font"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="fill-drip"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="eraser"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="stamp"></fa-icon>
+                </a>
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="eye-dropper"></fa-icon>
+                </a>
+                
+                <a mat-list-item (click)="toggleActive($event)">
+                    <fa-icon icon="border-all"></fa-icon>
+                </a>
+               
+
+               
+
+                
+            
+                <div class="drawing-manager-section">
+                   
+                    <a mat-list-item (click)="toggleActive($event)">
+                        <fa-icon icon="plus"></fa-icon>
+                    </a>
+                    <a mat-list-item (click)="toggleActive($event)">
+                        <fa-icon icon="folder-open"></fa-icon>
+                    </a>
+                    <a mat-list-item (click)="toggleActive($event)">
+                        <fa-icon icon="save"></fa-icon>
+                    </a>
+                    <a mat-list-item (click)="toggleActive($event)">
+                        <fa-icon icon="download"></fa-icon>
+                    </a>
+                    <a mat-list-item (click)="toggleActive($event)">
+                        <fa-icon icon="home"></fa-icon>
+                    </a>
+                </div>
+
+
+            </mat-nav-list>
+        </mat-sidenav>
+
+    </mat-sidenav-container>
 </div>
