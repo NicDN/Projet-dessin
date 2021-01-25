@@ -1,9 +1,10 @@
 
    .sidenav-container {
     flex: 1;
-    display: flex;
+    display: block;
     flex-direction: column;
     position: absolute;
+    width : 25%;
     top: 0;
     bottom: 0;
     left: 0;
