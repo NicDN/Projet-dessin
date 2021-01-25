@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
 })
 export class SidebarComponent {
     element: HTMLElement;
+    // tslint:disable-next-line: no-any
     toggleActive(event: any): void {
         event.preventDefault();
         if (this.element !== undefined) {

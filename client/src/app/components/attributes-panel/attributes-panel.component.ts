@@ -6,7 +6,11 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./attributes-panel.component.scss'],
 })
 export class AttributesPanelComponent implements OnInit {
-    constructor() {}
+    constructor() {
+        //
+    }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        //
+    }
 }
