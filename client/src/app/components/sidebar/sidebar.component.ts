@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
 @Component({
     selector: 'app-sidebar',
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
+    readonly SHOW_DELAY_MS: number = 750;
+    showDelay:FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
     // tslint:disable-next-line: no-any
     toggleActive(event: any): void {
