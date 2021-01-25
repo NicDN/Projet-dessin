@@ -7,9 +7,33 @@ import { FormControl } from '@angular/forms';
 })
 export class SidebarComponent {
     readonly SHOW_DELAY_MS: number = 750;
-    showDelay:FormControl = new FormControl(this.SHOW_DELAY_MS);
+    showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
-    // tslint:disable-next-line: no-any
+
+    // let sideBarOptionsArray: {icon:string,toolTipContent:string}[]=[
+    //     {icon:'mouse-pointer',toolTipContent:'Outils de sélection'},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''},
+    //     {icon:'',toolTipContent:''}
+    // ];
+
+    // attributes toolTipPosition =right
+    // array of objects containing (icon,tooltip)
+
+    // tslint:disable-next-line: no-any (TEMPORARY)
     toggleActive(event: any): void {
         event.preventDefault();
         if (this.element !== undefined) {
