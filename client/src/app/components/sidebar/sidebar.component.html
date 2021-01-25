@@ -1,6 +1,6 @@
-<div class="container">
-    <mat-drawer-container class="sidenav-container" autosize>
-        <mat-drawer #sidenav class="sidenav" mode="side" opened="true">
+
+    <mat-sidenav-container class="sidenav-container" autosize>
+        <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
             <mat-nav-list class="dashboard">
                 <a mat-list-item (click)="toggleActive($event)">
                     <fa-icon icon="mouse-pointer"></fa-icon>
@@ -62,6 +62,8 @@
                     </a>
                 </div>
             </mat-nav-list>
-        </mat-drawer>
-    </mat-drawer-container>
-</div>
+        </mat-sidenav>
+
+    </mat-sidenav-container>
+          
+
