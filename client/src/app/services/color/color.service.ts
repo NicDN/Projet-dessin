@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Color } from '../../classes/color';
+// import { Color } from '../../classes/color';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ColorService {
-    private mainColor:Color;
-    private secondaryColor:Color;
-    constructor() {}
+    // private mainColor: Color;
+    // private secondaryColor: Color;
+    constructor() {
+        //
+    }
 }

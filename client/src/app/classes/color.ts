@@ -1,4 +1,4 @@
 export class Color {
-    private rgbValue:string; // string ?
-    private opacity:number;
+    private rgbValue: string; // string ?
+    private opacity: number;
 }

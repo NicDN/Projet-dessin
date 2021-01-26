@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Color } from '../../classes/color';
+// import { Color } from '../../classes/color';
 
 @Component({
     selector: 'app-color-panel',
@@ -7,7 +7,11 @@ import { Color } from '../../classes/color';
     styleUrls: ['./color-panel.component.scss'],
 })
 export class ColorPanelComponent implements OnInit {
-    constructor() {}
+    constructor() {
+        //
+    }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        //
+    }
 }
