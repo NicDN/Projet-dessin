@@ -1,113 +1,25 @@
+
 <mat-sidenav-container class="sidenav-container" autosize>
     <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
-        <mat-nav-list class="dashboard">
-            <a mat-list-item (click)="toggleActive($event)" 
-                matTooltip="Outils de sélection"
-                matTooltipPosition="right"
+        <mat-nav-list *ngFor="let sidenavElement of sideBarOptionsArray | slice:0:12">
+            <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+                matTooltip={{sidenavElement.toolTipContent}}
+                matTooltipPosition="right" 
                 [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="mouse-pointer"></fa-icon>
-
-            </a>
-            <a mat-list-item (click)="toggleActive($event)" 
-                matTooltip="Crayon (C)" 
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="pencil-alt"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)" 
-                matTooltip="Aérosol (A)" 
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="spray-can"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)" 
-                matTooltip="Rectangle (1)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="square"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Ellipse (2)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="circle"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Polygone (3)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="draw-polygon"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Ligne (L)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="project-diagram"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Texte (T)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="font"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Sceau de peinture (B)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="fill-drip"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Efface (E)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="eraser"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Étampe (D)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="stamp"></fa-icon>
-            </a>
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Pipette (I)"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="eye-dropper"></fa-icon>
+                <fa-icon icon={{sidenavElement.icon}}></fa-icon>
             </a>
 
-            <a mat-list-item (click)="toggleActive($event)"
-                matTooltip="Options de zone de travail"
-                matTooltipPosition="right"
-                [matTooltipShowDelay]="showDelay.value">
-                <fa-icon icon="border-all"></fa-icon>
-            </a>
+            <div class="drawing-manager-bottom-section">
 
-            <div class="drawing-manager-section">
-
-                <a mat-list-item (click)="toggleActive($event)"
-                    matTooltip="Créer un nouveau dessin (Ctrl-O)"
-                    matTooltipPosition="right"
+                <mat-nav-list *ngFor="let sidenavElement of sideBarOptionsArray | slice:13:16">
+                    <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+                    matTooltip={{sidenavElement.toolTipContent}}
+                    matTooltipPosition="right" 
                     [matTooltipShowDelay]="showDelay.value">
-                    <fa-icon icon="plus"></fa-icon>
+                    <fa-icon icon={{sidenavElement.icon}}></fa-icon>
                 </a>
-                <a mat-list-item (click)="toggleActive($event)"
-                    matTooltip="Voir le carrousel de dessins (Ctrl-G)"
-                    matTooltipPosition="right"
-                    [matTooltipShowDelay]="showDelay.value">
-                    <fa-icon icon="folder-open"></fa-icon>
-                </a>
-                <a mat-list-item (click)="toggleActive($event)"
-                    matTooltip="Sauvegarder le dessin (Ctrl-S)" 
-                    matTooltipPosition="right"
-                    [matTooltipShowDelay]="showDelay.value">
-                    <fa-icon icon="save"></fa-icon>
-                </a>
-                <a mat-list-item (click)="toggleActive($event)"
-                    matTooltip="Exporter le dessin (Ctrl-E)"
-                    matTooltipPosition="right"
-                    [matTooltipShowDelay]="showDelay.value">
-                    <fa-icon icon="download"></fa-icon>
-                </a>
+                </mat-nav-list>
+                
             </div>
         </mat-nav-list>
     </mat-sidenav>
