@@ -1,9 +1,27 @@
-<div class="container">
-    <p>Barre latérale pour vos outils!</p>
-    <p>
-        Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet <br />
-        L'implémentation ici ne couvre pas tous les critères d'acceptation du projet<br />
-        Vous êtes encouragés de modifier et compléter le code.<br />
-        N'oubliez pas de regarder les tests dans les fichiers spec.ts aussi!
-    </p>
-</div>
+
+<mat-sidenav-container class="sidenav-container" autosize>
+    <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
+        <mat-nav-list *ngFor="let sidenavElement of sideBarOptionsArray | slice:0:12">
+            <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+                matTooltip={{sidenavElement.toolTipContent}}
+                matTooltipPosition="right" 
+                [matTooltipShowDelay]="showDelay.value">
+                <fa-icon icon={{sidenavElement.icon}}></fa-icon>
+            </a>
+
+            <div class="drawing-manager-bottom-section">
+
+                <mat-nav-list *ngFor="let sidenavElement of sideBarOptionsArray | slice:13:16">
+                    <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+                    matTooltip={{sidenavElement.toolTipContent}}
+                    matTooltipPosition="right" 
+                    [matTooltipShowDelay]="showDelay.value">
+                    <fa-icon icon={{sidenavElement.icon}}></fa-icon>
+                </a>
+                </mat-nav-list>
+                
+            </div>
+        </mat-nav-list>
+    </mat-sidenav>
+
+</mat-sidenav-container>
