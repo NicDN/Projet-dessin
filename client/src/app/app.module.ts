@@ -10,6 +10,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { fas } from '@fortawesome/free-solid-svg-icons';
+import { AngularResizeElementModule } from 'angular-resize-element';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
@@ -21,6 +22,7 @@ import { EditorComponent } from './components/editor/editor.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -36,6 +38,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
     ],
     imports: [
         BrowserModule,
+        AngularResizeElementModule,
         HttpClientModule,
         AppRoutingModule,
         BrowserAnimationsModule,

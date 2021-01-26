@@ -1,1 +1,27 @@
-<p>resize-container works!</p>
+<!---<div class="container" #container [style.width.px]="data.width" [style.height.px]="data.height">
+    <div class="resize resize__right"
+         (resize)="onResize($event)"
+         [direction]="AngularResizeElementDirection.RIGHT"
+    >Bonjour there</div>
+
+    <div class="resize resize__bottom--right"
+         (resize)="onResize($event)"
+         [direction]="AngularResizeElementDirection.BOTTOM_RIGHT"
+    >Bonjour there</div>
+    Hello there
+</div>-->
+
+<div #box class="resizable-draggable" 
+    [style.width.px]="width" 
+    [style.height.px]="height" 
+    [style.transform]="'translate3d('+ left + 'px,' + top + 'px,' + '0px)'"
+    [class.active]="status === 1 || status === 2"
+    (mousedown)="setStatus($event, 2)"
+    (window:mouseup)="setStatus($event, 0)"
+>
+
+<div class="resize-action" (mousedown)="setStatus($event, 1)"></div>
+    <span>{{width | number:'1.0-0'}}px</span>
+    <span>{{height | number:'1.0-0'}}px</span>
+    <span>({{left}}, {{top}})</span>
+</div>
