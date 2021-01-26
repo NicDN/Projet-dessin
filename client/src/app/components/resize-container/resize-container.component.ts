@@ -1,8 +1,4 @@
-import { AfterViewInit, Component,
-     ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
-    
- // import { AngularResizeElementDirection, AngularResizeElementEvent } from 'angular-resize-element';
-
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 
 const enum Status {
     OFF = 0,
@@ -13,24 +9,14 @@ const enum Status {
 @Component({
     selector: 'app-resize-container',
     templateUrl: './resize-container.component.html',
-    styleUrls: ['./resize-container.component.scss', '../../../../node_modules/angular-resize-element/bundles/style.scss'],
+    styleUrls: ['./resize-container.component.scss'],
 })
 export class ResizeContainerComponent implements OnInit, AfterViewInit {
-    /*readonly AngularResizeElementDirection = AngularResizeElementDirection;
-
-    data = {
-        width: DEFAULT_HEIGHT_DEMO,
-        height: DEFAULT_HEIGHT_DEMO,
-    };
-
-    onResize(evt: AngularResizeElementEvent): void {
-        // wtf
-    }*/
     @Input('width') public width: number;
     @Input('height') public height: number;
     @Input('left') public left: number;
     @Input('top') public top: number;
-    
+
     @ViewChild('box') public box: ElementRef;
     private boxPosition: { left: number; top: number };
     private containerPos: { left: number; top: number; right: number; bottom: number };
