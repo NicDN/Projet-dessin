@@ -49,9 +49,9 @@ export class PencilService extends Tool {
 
     onMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
+            console.log('mouseMovement');
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
-
             // On dessine sur le canvas de prévisualisation et on l'efface à chaque déplacement de la souris
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawLine(this.drawingService.previewCtx, this.pathData);
@@ -68,5 +68,14 @@ export class PencilService extends Tool {
 
     private clearPath(): void {
         this.pathData = [];
+    }
+
+    onMouseOut(event: MouseEvent): void {
+        this.onMouseUp(event);
+        this.mouseDown = true;
+    }
+
+    onMouseEnter(event: MouseEvent): void {
+        // if (event.button) this.onMouseDown(event);
     }
 }
