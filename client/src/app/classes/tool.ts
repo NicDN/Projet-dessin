@@ -3,6 +3,14 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Option } from './option';
 import { Vec2 } from './vec2';
 
+export enum MouseButton {
+    Left = 0,
+    Middle = 1,
+    Right = 2,
+    Back = 3,
+    Forward = 4,
+}
+
 // Ceci est justifié vu qu'on a des fonctions qui seront gérés par les classes enfant
 // tslint:disable:no-empty
 export abstract class Tool extends Option {

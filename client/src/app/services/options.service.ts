@@ -11,7 +11,6 @@ export class OptionsService {
 
     setActiveOption(option: Option): void {
         if (option instanceof Tool) {
-            console.log('YESS');
             this.toolService.setCurrentTool(option as Tool);
         }
     }
