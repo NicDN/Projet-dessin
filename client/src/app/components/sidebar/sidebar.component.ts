@@ -10,7 +10,7 @@ export class SidebarComponent {
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
 
-    sideBarOptionsArray: { id: number; icon: string; toolTipContent: string }[] = [
+    sideBarOptions: { id: number; icon: string; toolTipContent: string }[] = [
         { id: 0, icon: 'mouse-pointer', toolTipContent: 'Outils de sélection' },
         { id: 1, icon: 'pencil-alt', toolTipContent: 'Crayon (C)' },
         { id: 2, icon: 'spray-can', toolTipContent: 'Aérosol (A)' },

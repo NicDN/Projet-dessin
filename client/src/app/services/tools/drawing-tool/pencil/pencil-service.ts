@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Tool } from '@app/classes/tool';
+import { DrawingTool } from '@app/classes/drawing-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+// import { ColorService } from '@app/services/color/color.service';
 
 // TODO : Déplacer ça dans un fichier séparé accessible par tous
 export enum MouseButton {
@@ -19,12 +20,14 @@ export enum MouseButton {
 @Injectable({
     providedIn: 'root',
 })
-export class PencilService extends Tool {
-    private pathData: Vec2[];
-
+export class PencilService extends DrawingTool {
     constructor(drawingService: DrawingService) {
         super(drawingService);
         this.clearPath();
+    }
+    private pathData: Vec2[];
+    draw(event: MouseEvent): void {
+        throw new Error('Method not implemented.');
     }
 
     onMouseDown(event: MouseEvent): void {
