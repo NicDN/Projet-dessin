@@ -10,22 +10,22 @@ import { EraserService } from './eraser/eraser.service';
     providedIn: 'root',
 })
 export class ToolsService {
-    private tools: Tool[];
+    // private tools: Tool[];
     currentTool: Tool;
 
     constructor(
-        ellipseDrawingService: EllipseDrawingService,
-        rectangleDrawingService: RectangleDrawingService,
-        lineService: LineService,
-        pencilService: PencilService,
-        eraserService: EraserService,
+        public ellipseDrawingService: EllipseDrawingService,
+        public rectangleDrawingService: RectangleDrawingService,
+        public lineService: LineService,
+        public pencilService: PencilService,
+        public eraserService: EraserService,
     ) {
-        this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
-        this.currentTool = this.tools[0];
+        // this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
+        // this.currentTool = this.tools[0];
     }
 
     // a voir si on fait correspondre avec le id
-    setCurrentTool(id: number): void {
-        this.currentTool = this.tools[id];
+    setCurrentTool(tool: Tool): void {
+        this.currentTool = tool;
     }
 }
