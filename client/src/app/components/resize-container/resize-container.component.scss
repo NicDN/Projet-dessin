@@ -10,10 +10,10 @@
 
 
 .resizable-draggable {
-    outline: 1px dashed black;
+    outline: 1px dashed #e51282;
     &.active {
         outline-style: solid;
-        background-color: #80ff800d;
+        background-color: #e51282;
     }
     span:first-of-type {
         position: absolute;
@@ -40,7 +40,7 @@
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
-    border-color: black;
+    border-color: #e51282;
     &:hover, &:active {
         cursor: nwse-resize;
     }
@@ -53,7 +53,7 @@
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
-    border-color: black;
+    border-color: #e51282;
     &:hover, &:active {
         cursor: w-resize;
     }
@@ -67,7 +67,7 @@
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
-    border-color: black;
+    border-color: #e51282;
     &:hover, &:active {
         cursor: n-resize;
     }

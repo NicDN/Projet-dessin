@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from './../drawing/drawing.component';
+
 
 const enum Status {
     OFF = 0,
@@ -45,8 +47,8 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     private loadContainer(): void {
         const left = this.boxPosition.left - this.left;
         const top = this.boxPosition.top - this.top;
-        const right = left + 1500;
-        const bottom = top + 1500;
+        const right = left + window.innerWidth;
+        const bottom = top + window.innerHeight;
         this.containerPos = { left, top, right, bottom };
     }
 
@@ -62,13 +64,16 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
         this.resize();
     }
 
-    @HostListener('window:mouseUp', ['$event'])
+    @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        this.onMouseDownContainer(event);
+        this.onMouseUpContainer(event);
+        // Ici que l'on sauvegarde le canvas et qu'on resize
     }
 
-    onMouseDownContainer(event: MouseEvent): void {
+    onMouseUpContainer(event: MouseEvent): void {
         this.setStatus(event, Status.OFF);
+        if (this.width < DEFAULT_WIDTH) this.width = DEFAULT_WIDTH;
+        if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
     }
 
     private resize(): void {
