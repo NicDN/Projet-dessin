@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH } from './../drawing/drawing.component';
-
+import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from './../drawing/drawing.component';
 
 const enum Status {
     OFF = 0,
@@ -74,20 +73,19 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
         this.setStatus(event, Status.OFF);
         if (this.width < DEFAULT_WIDTH) this.width = DEFAULT_WIDTH;
         if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
+        if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
     }
 
-    private resize(): void {
-        if (this.resizeCondMeet()) {
-            if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) {
-                this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
-            }
-            if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
-                this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
-            }
+    resize(): void {
+        if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) {
+            this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+        }
+        if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
+            this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
         }
     }
 
-    private resizeCondMeet(): boolean {
+    resizeCondMeet(): boolean {
         return this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom;
     }
 }
