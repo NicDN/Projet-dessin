@@ -2,28 +2,19 @@
     width : 500px;
     height : 500px;
     border-style: dotted;
+    display : none;
     text-align : center;
+    position:relative;
+    z-index : -1;
 }
 
-#bottom-right-controller{
-    bottom:-245px; 
-    right:-245px;
-    width : 10%;
-    position: relative;
-
-}
 
 .resizable-draggable {
-    outline: 1px dashed green;
+    outline: 1px dashed black;
     &.active {
         outline-style: solid;
         background-color: #80ff800d;
     }
-
-    &:hover {
-        cursor: all-scroll;
-    }
-
     span:first-of-type {
         position: absolute;
         left: 50%;
@@ -44,13 +35,40 @@
 
 .resize-action {
     position: absolute;
-    left: 100%;
-    top: 100%;
-    transform: translate3d(-50%, -50%, 0) rotateZ(45deg);
+    left: 101%;
+    top: 101%;
+    transform: translate3d(-50%, -50%, 0);
     border-style: solid;
-    border-width: 8px;
-    border-color: transparent transparent transparent #008000;
+    border-width: 6px;
+    border-color: black;
     &:hover, &:active {
         cursor: nwse-resize;
+    }
+}
+
+.resize-action-2 {
+    position: absolute;
+    left: 101%;
+    top: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    border-style: solid;
+    border-width: 6px;
+    border-color: black;
+    &:hover, &:active {
+        cursor: w-resize;
+    }
+
+}
+
+.resize-action-3 {
+    position: absolute;
+    left: 50%;
+    top: 101%;
+    transform: translate3d(-50%, -50%, 0);
+    border-style: solid;
+    border-width: 6px;
+    border-color: black;
+    &:hover, &:active {
+        cursor: n-resize;
     }
 }

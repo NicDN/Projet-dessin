@@ -4,6 +4,7 @@ canvas {
     position: absolute;
     left: 0;
     top: 0;
+    z-index : 1;
 }
 
 #canvas{
@@ -18,18 +19,3 @@ canvas {
     position: absolute;   
 }
 
-#resizable-box{
-    width : 500px;
-    height : 500px;
-    border-style: dotted;
-    resize: both;
-    overflow: auto;
-}
-
-#bottom-right-controller{
-    bottom:-245px; 
-    right:-245px;
-    width : 10%;
-    position: relative;
-
-}
