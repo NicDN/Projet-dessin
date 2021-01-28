@@ -2,7 +2,7 @@
 <mat-sidenav-container class="sidenav-container" autosize>
     <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
         <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice:0:12">
-            <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+            <a mat-list-item (click)="toggleActive($event,sidenavElement.id)" 
                 matTooltip={{sidenavElement.toolTipContent}}
                 matTooltipPosition="right" 
                 [matTooltipShowDelay]="showDelay.value">
@@ -12,7 +12,7 @@
             <div class="drawing-manager-bottom-section">
 
                 <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice:13:16">
-                    <a mat-list-item (click)="toggleActive($event,sidenavElement.icon)" 
+                    <a mat-list-item (click)="toggleActive($event,sidenavElement.id)" 
                     matTooltip={{sidenavElement.toolTipContent}}
                     matTooltipPosition="right" 
                     [matTooltipShowDelay]="showDelay.value">

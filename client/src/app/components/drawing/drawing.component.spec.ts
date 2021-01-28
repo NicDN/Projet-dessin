@@ -2,8 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/pencil/pencil-service';
+import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
 import { DrawingComponent } from './drawing.component';
+import { ToolsService } from '@app/services/tools/tools.service';
 
 class ToolStub extends Tool {}
 
@@ -16,6 +17,7 @@ describe('DrawingComponent', () => {
     let fixture: ComponentFixture<DrawingComponent>;
     let toolStub: ToolStub;
     let drawingStub: DrawingService;
+    let toolsService: ToolsService;
 
     beforeEach(async(() => {
         toolStub = new ToolStub({} as DrawingService);
@@ -48,7 +50,8 @@ describe('DrawingComponent', () => {
     });
 
     it('should get stubTool', () => {
-        const currentTool = component.currentTool;
+        // const currentTool = component.currentTool;
+        const currentTool = toolsService.currentTool;
         expect(currentTool).toEqual(toolStub);
     });
 
