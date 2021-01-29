@@ -14,7 +14,7 @@ export class EllipseDrawingService extends Shape {
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.beginPath();
-        ctx.ellipse((end.x + begin.x) / 2, (end.y + begin.y) / 2, (end.x - begin.x) / 2, (end.y - begin.y) / 2, 0, 0, 2 * Math.PI);
+        ctx.ellipse((end.x + begin.x) / 2, (end.y + begin.y) / 2, Math.abs(end.x - begin.x) / 2, Math.abs(end.y - begin.y) / 2, 0, 0, 2 * Math.PI);
         ctx.stroke();
     }
 }
