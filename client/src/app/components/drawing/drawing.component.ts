@@ -57,14 +57,18 @@ export class DrawingComponent implements AfterViewInit {
     onSizeChange(boxsize: BoxSize): void {
         console.log(boxsize.widthBox);
 
-        this.baseCtx.save();
+        this.previewCanvas.nativeElement.width = boxsize.widthBox;
+        this.previewCanvas.nativeElement.height = boxsize.heightBox;
+        this.previewCtx.drawImage(this.baseCanvas.nativeElement, 0, 0);
 
         this.baseCanvas.nativeElement.width = boxsize.widthBox;
         this.baseCanvas.nativeElement.height = boxsize.heightBox;
+
+
+        this.baseCtx.drawImage(this.previewCanvas.nativeElement, 0, 0);
+
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
-
-        this.baseCtx.restore();
     }
 
     get width(): number {
