@@ -24,6 +24,8 @@ import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
+import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -35,6 +37,7 @@ import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
         ControlPanelComponent,
         ColorPanelComponent,
         ColorPickerComponent,
+        ResizeContainerComponent,
         PencilAttributeComponent,
         ShapeAttributeComponent,
         ToolBarComponent,
