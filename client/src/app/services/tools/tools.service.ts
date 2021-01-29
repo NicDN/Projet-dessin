@@ -28,4 +28,8 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.currentTool = tool;
     }
+
+    onKeyDown(event: KeyboardEvent): void {
+        // TODO:
+    }
 }
