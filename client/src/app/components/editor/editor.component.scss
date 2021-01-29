@@ -3,14 +3,10 @@
     display: flex;
 }
 
-.drawing-container {
-    overflow: auto;
-    flex: 1 1 auto;
+.drawing-container{
+    margin-left: 10px;
 }
 
-.drawing {
-    display: grid;
-    width: min-content;
-    outline: none;
-}
+
+
   
