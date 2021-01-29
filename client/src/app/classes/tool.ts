@@ -16,8 +16,7 @@ export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
 
-    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {
-    }
+    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {}
 
     onMouseDown(event: MouseEvent): void {}
 
