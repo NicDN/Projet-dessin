@@ -22,16 +22,17 @@ export class ToolBarComponent implements OnInit {
     ];
     constructor(private toolService: ToolsService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        //
+    }
 
-    // tslint:disable-next-line: no-any (TEMPORARY)
+    // tslint:disable-next-line: no-any
     toggleActive(event: any, tool: Tool): void {
         this.applyBtnStyle(event);
         this.toolService.setCurrentTool(tool);
     }
 
-    //tslint:disable-next-line: no-any
-    // faire avec ngStyle
+    // tslint:disable-next-line: no-any
     applyBtnStyle(event: any): void {
         if (this.element !== undefined) {
             this.element.style.backgroundColor = 'rgb(33, 38, 43)';

@@ -14,13 +14,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
 import { PencilAttributeComponent } from './components/attributes/pencil-attribute/pencil-attribute.component';
+import { ShapeAttributeComponent } from './components/attributes/shape-attribute/shape-attribute/shape-attribute.component';
 import { ColorPanelComponent } from './components/color-panel/color-panel.component';
 import { ColorPickerComponent } from './components/color-picker/color-picker.component';
 import { ControlPanelComponent } from './components/control-panel/control-panel.component';
 import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
+import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -33,6 +36,9 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
         ColorPanelComponent,
         ColorPickerComponent,
         PencilAttributeComponent,
+        ShapeAttributeComponent,
+        ToolBarComponent,
+        OptionBarComponent,
     ],
     imports: [
         BrowserModule,

@@ -10,14 +10,13 @@ export class OptionBarComponent implements OnInit {
     readonly SHOW_DELAY_MS: number = 750;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
 
-    optionBarElements: { icon: string; toolTipContent: string }[] = [
-        { icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)'},
-    ];
-    constructor() {}
+    optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        //
+    }
 
-    toggleActive(){
-      
+    toggleActive(): void {
+        //
     }
 }

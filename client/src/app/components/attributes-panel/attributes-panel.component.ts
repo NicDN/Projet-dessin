@@ -9,5 +9,4 @@ export class AttributesPanelComponent implements OnInit {
     ngOnInit(): void {
         //
     }
-    checkCurrentOptionType() {}
 }

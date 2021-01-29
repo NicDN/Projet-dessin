@@ -21,11 +21,11 @@ describe('DrawingComponent', () => {
     let drawingStub: DrawingService;
     // tslint:disable-next-line: prefer-const
     let toolsService: ToolsService;
-    //let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
+    // let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
     beforeEach(async(() => {
         // toolStub = new ToolStub({} as DrawingService);
-        // drawingStub = new DrawingService();
-       //  drawingServiceSpy = jasmine.createSpyObj('drawingService', ['test']);
+        drawingStub = new DrawingService();
+        //  drawingServiceSpy = jasmine.createSpyObj('drawingService', ['test']);
         toolsService = new ToolsService(
             {} as PencilService,
             {} as EllipseDrawingService,
