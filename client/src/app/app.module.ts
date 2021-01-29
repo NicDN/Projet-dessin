@@ -20,6 +20,7 @@ import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { PencilAttributeComponent } from './components/attributes/pencil-attribute/pencil-attribute.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -31,6 +32,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
         ControlPanelComponent,
         ColorPanelComponent,
         ColorPickerComponent,
+        PencilAttributeComponent,
     ],
     imports: [
         BrowserModule,

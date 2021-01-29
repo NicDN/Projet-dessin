@@ -21,6 +21,8 @@ export enum MouseButton {
     providedIn: 'root',
 })
 export class PencilService extends DrawingTool {
+    // thicknesss: number;
+
     constructor(drawingService: DrawingService) {
         super(drawingService);
         this.clearPath();

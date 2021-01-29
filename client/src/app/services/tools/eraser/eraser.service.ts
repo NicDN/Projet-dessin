@@ -7,6 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class EraserService extends Tool {
+     // thicknesss: number;
     constructor(drawingService: DrawingService) {
         super(drawingService);
     }

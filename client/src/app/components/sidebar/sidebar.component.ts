@@ -10,11 +10,10 @@ import { ToolsService } from '@app/services/tools/tools.service';
     styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
-    private readonly SHOW_DELAY_MS: number = 750;
+    readonly SHOW_DELAY_MS: number = 750;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
 
-    // tslint:disable-next-line: no-empty
     constructor(private toolService: ToolsService, private optionService: OptionsService) {}
 
     sideBarOptions: { icon: string; toolTipContent: string; option?: Option }[] = [
@@ -39,19 +38,17 @@ export class SidebarComponent {
 
     // tslint:disable-next-line: no-any (TEMPORARY)
     toggleActive(event: any, option: Option): void {
-        event.preventDefault();
+        this.applyBtnStyle(event);
+        this.optionService.setActiveOption(option);
+    }
+
+    // tslint:disable-next-line: no-any
+    applyBtnStyle(event: any): void {
         if (this.element !== undefined) {
             this.element.style.backgroundColor = 'rgb(33, 38, 43)';
         }
         const target = event.currentTarget;
         target.style.backgroundColor = '#e51282';
         this.element = target;
-
-        // call function to assign current tool
-        this.optionService.setActiveOption(option);
-    }
-
-    get showDelays(): FormControl {
-        return this.showDelay;
     }
 }

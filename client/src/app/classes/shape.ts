@@ -2,6 +2,11 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MouseButton, Tool } from './tool';
 import { Vec2 } from './vec2';
 
+// enum drawingType {
+//     Bordered,
+//     FilledNoBordered,
+//     FilledAndBordered,
+// }
 export abstract class Shape extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
