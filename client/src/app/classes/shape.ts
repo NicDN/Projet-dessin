@@ -1,18 +1,19 @@
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MouseButton, Tool } from './tool';
 import { Vec2 } from './vec2';
 
-// enum drawingType {
-//     Bordered,
-//     FilledNoBordered,
-//     FilledAndBordered,
-// }
+export enum drawingType {
+    Bordered,
+    FilledNoBordered,
+    FilledAndBordered,
+}
 export abstract class Shape extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
-
-    constructor(drawingService: DrawingService) {
-        super(drawingService);
+    protected thickness: number;
+    constructor(drawingService: DrawingService, colorService: ColorService) {
+        super(drawingService, colorService);
     }
 
     onMouseDown(event: MouseEvent): void {
