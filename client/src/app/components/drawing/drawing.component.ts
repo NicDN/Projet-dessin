@@ -1,13 +1,13 @@
-import { BoxSize } from '@app/classes/BoxSize';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { BoxSize } from '@app/classes/box-size';
 import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/pencil-service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
-export const DEFAULT_WIDTH = 250;
-export const DEFAULT_HEIGHT = 250;
+export const DEFAULT_WIDTH = 1000;
+export const DEFAULT_HEIGHT = 800;
 
 @Component({
     selector: 'app-drawing',
@@ -63,7 +63,6 @@ export class DrawingComponent implements AfterViewInit {
 
         this.baseCanvas.nativeElement.width = boxsize.widthBox;
         this.baseCanvas.nativeElement.height = boxsize.heightBox;
-
 
         this.baseCtx.drawImage(this.previewCanvas.nativeElement, 0, 0);
 

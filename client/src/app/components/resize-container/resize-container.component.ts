@@ -1,7 +1,5 @@
-import { ThrowStmt } from '@angular/compiler';
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
-import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from './../drawing/drawing.component';
-import { BoxSize } from '@app/classes/BoxSize';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { BoxSize } from '@app/classes/box-size';
 
 const enum Status {
     OFF = 0,
@@ -21,15 +19,18 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     @Input() left: number;
     @Input() top: number;
 
+    // tslint:disable-next-line: typedef
     @Output() notifyResize = new EventEmitter();
-
     @ViewChild('box') box: ElementRef;
+
     private boxPosition: { left: number; top: number };
     private containerPos: { left: number; top: number; right: number; bottom: number };
 
+    private DEFAULT_HEIGHT: number = 250;
+    private DEFAULT_WIDTH: number = 250;
+
     mouse: { x: number; y: number };
     status: Status = Status.OFF;
-    // private mouseClick: { x: number; y: number; left: number; top: number };
 
     boxSize: BoxSize;
 
@@ -77,9 +78,9 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     }
 
     onMouseUpContainer(event: MouseEvent): void {
-        if (this.width < DEFAULT_WIDTH) this.width = DEFAULT_WIDTH;
-        if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
-        if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
+        if (this.width < this.DEFAULT_WIDTH) this.width = this.DEFAULT_WIDTH;
+        if (this.height < this.DEFAULT_HEIGHT) this.height = this.DEFAULT_HEIGHT;
+        if (this.height < this.DEFAULT_HEIGHT) this.height = this.DEFAULT_HEIGHT;
 
         if (this.status !== Status.OFF) {
             this.boxSize = { widthBox: this.width, heightBox: this.height };
