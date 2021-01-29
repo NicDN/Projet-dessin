@@ -1,9 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/pencil-service';
+import { ToolsService } from '@app/services/tools/tools.service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_WIDTH = 1000;
@@ -24,11 +23,11 @@ export class DrawingComponent implements AfterViewInit {
     private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
     // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
-    private tools: Tool[];
-    currentTool: Tool;
-    constructor(private drawingService: DrawingService, pencilService: PencilService) {
-        this.tools = [pencilService];
-        this.currentTool = this.tools[0];
+    // private tools: Tool[];
+    // currentTool: Tool;
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService) {
+        // this.tools = [pencilService];
+        // this.currentTool = this.tools[0];
     }
 
     ngAfterViewInit(): void {
@@ -41,17 +40,20 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        this.currentTool.onMouseMove(event);
+        // this.currentTool.onMouseMove(event);
+        this.toolsService.currentTool.onMouseMove(event);
     }
 
     @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        this.currentTool.onMouseDown(event);
+        // this.currentTool.onMouseDown(event);
+        this.toolsService.currentTool.onMouseDown(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        this.currentTool.onMouseUp(event);
+        // this.currentTool.onMouseUp(event);
+        this.toolsService.currentTool.onMouseUp(event);
     }
 
     onSizeChange(boxsize: BoxSize): void {

@@ -13,6 +13,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
+import { PencilAttributeComponent } from './components/attributes/pencil-attribute/pencil-attribute.component';
 import { ColorPanelComponent } from './components/color-panel/color-panel.component';
 import { ColorPickerComponent } from './components/color-picker/color-picker.component';
 import { ControlPanelComponent } from './components/control-panel/control-panel.component';
@@ -34,6 +35,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
         ColorPanelComponent,
         ColorPickerComponent,
         ResizeContainerComponent,
+        PencilAttributeComponent,
     ],
     imports: [
         BrowserModule,
