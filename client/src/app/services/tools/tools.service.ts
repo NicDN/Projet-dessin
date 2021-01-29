@@ -21,7 +21,7 @@ export class ToolsService {
         public eraserService: EraserService,
     ) {
         // this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
-        // this.currentTool = this.tools[0];
+        this.currentTool = pencilService;
     }
 
     // a voir si on fait correspondre avec le id
