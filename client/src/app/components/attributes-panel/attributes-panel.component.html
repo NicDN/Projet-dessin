@@ -1,5 +1,10 @@
-
 <mat-drawer-content class="attributes-panel-container">
     <!--  ngSwitch to display right components -->
-    <app-color-panel></app-color-panel>  
+    <app-color-panel></app-color-panel>
+
+    <div [ngSwitch]="currentOption">
+        <!-- <app-pencil-attribute *ngSwitchCase="pencilService"></app-pencil-attribute> -->
+
+    </div>
+
 </mat-drawer-content>

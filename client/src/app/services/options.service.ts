@@ -7,8 +7,10 @@ import { ToolsService } from '@app/services/tools/tools.service';
     providedIn: 'root',
 })
 export class OptionsService {
-    currentOption: Option;
-    constructor(private toolService: ToolsService) {}
+    public currentOption: Option;
+    constructor(private toolService: ToolsService) {
+        this.currentOption=this.toolService.currentTool;
+    }
 
     setActiveOption(option: Option): void {
         if (option instanceof Tool) {
