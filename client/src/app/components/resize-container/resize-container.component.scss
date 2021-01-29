@@ -13,7 +13,7 @@
     outline: 1px dashed #e51282;
     &.active {
         outline-style: solid;
-        background-color: #e51282;
+        background-color: none;
     }
     span:first-of-type {
         position: absolute;
@@ -45,7 +45,6 @@
         cursor: nwse-resize;
     }
 }
-
 .resize-action-2 {
     position: absolute;
     left: 101%;

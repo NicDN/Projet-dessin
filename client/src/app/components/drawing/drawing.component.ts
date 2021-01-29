@@ -1,3 +1,4 @@
+import { BoxSize } from '@app/classes/BoxSize';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -38,19 +39,32 @@ export class DrawingComponent implements AfterViewInit {
         this.drawingService.canvas = this.baseCanvas.nativeElement;
     }
 
-    @HostListener('mousemove', ['$event'])
+    @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
         this.currentTool.onMouseMove(event);
     }
 
-    @HostListener('mousedown', ['$event'])
+    @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         this.currentTool.onMouseDown(event);
     }
 
-    @HostListener('mouseup', ['$event'])
+    @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         this.currentTool.onMouseUp(event);
+    }
+
+    onSizeChange(boxsize: BoxSize): void {
+        console.log(boxsize.widthBox);
+
+        this.baseCtx.save();
+
+        this.baseCanvas.nativeElement.width = boxsize.widthBox;
+        this.baseCanvas.nativeElement.height = boxsize.heightBox;
+        this.previewCanvas.nativeElement.width = boxsize.widthBox;
+        this.previewCanvas.nativeElement.height = boxsize.heightBox;
+
+        this.baseCtx.restore();
     }
 
     get width(): number {

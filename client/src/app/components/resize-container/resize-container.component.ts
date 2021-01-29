@@ -1,5 +1,7 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { ThrowStmt } from '@angular/compiler';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
 import { DEFAULT_WIDTH, DEFAULT_HEIGHT } from './../drawing/drawing.component';
+import { BoxSize } from '@app/classes/BoxSize';
 
 const enum Status {
     OFF = 0,
@@ -19,12 +21,16 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     @Input() left: number;
     @Input() top: number;
 
+    @Output() notifyResize = new EventEmitter();
+
     @ViewChild('box') box: ElementRef;
     private boxPosition: { left: number; top: number };
     private containerPos: { left: number; top: number; right: number; bottom: number };
     mouse: { x: number; y: number };
     status: Status = Status.OFF;
     // private mouseClick: { x: number; y: number; left: number; top: number };
+
+    boxSize: BoxSize;
 
     constructor() {
         // Avoid linting error
@@ -52,7 +58,7 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     }
 
     setStatus(event: MouseEvent, status: number): void {
-        if (status === 1) event.stopPropagation();
+        if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
         else this.loadBox();
         this.status = status;
     }
@@ -70,10 +76,16 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     }
 
     onMouseUpContainer(event: MouseEvent): void {
-        this.setStatus(event, Status.OFF);
         if (this.width < DEFAULT_WIDTH) this.width = DEFAULT_WIDTH;
         if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
         if (this.height < DEFAULT_HEIGHT) this.height = DEFAULT_HEIGHT;
+
+        if (this.status !== Status.OFF) {
+            this.boxSize = { widthBox: this.width, heightBox: this.height };
+            this.notifyResize.emit(this.boxSize);
+        }
+
+        this.setStatus(event, Status.OFF);
     }
 
     resize(): void {

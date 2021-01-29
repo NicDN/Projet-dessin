@@ -20,7 +20,7 @@ import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';import { DrawingControlPanelComponent } from './components/drawing-control-panel/drawing-control-panel.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 @NgModule({
     declarations: [
@@ -34,7 +34,6 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';import
         ColorPanelComponent,
         ColorPickerComponent,
         ResizeContainerComponent,
-        DrawingControlPanelComponent,
     ],
     imports: [
         BrowserModule,
