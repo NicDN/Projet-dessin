@@ -1,6 +1,5 @@
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { Option } from './option';
 import { Vec2 } from './vec2';
 
 export enum MouseButton {
@@ -13,13 +12,11 @@ export enum MouseButton {
 
 // Ceci est justifié vu qu'on a des fonctions qui seront gérés par les classes enfant
 // tslint:disable:no-empty
-export abstract class Tool extends Option {
+export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
 
-    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {
-        super();
-    }
+    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {}
 
     onMouseDown(event: MouseEvent): void {}
 
