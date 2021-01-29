@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 // import { ColorService } from '@app/services/color/color.service';
 
@@ -15,8 +16,8 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class PencilService extends DrawingTool {
     thickness: number;
 
-    constructor(drawingService: DrawingService) {
-        super(drawingService);
+    constructor(drawingService: DrawingService, colorService: ColorService) {
+        super(drawingService, colorService);
         this.clearPath();
     }
 
@@ -30,7 +31,6 @@ export class PencilService extends DrawingTool {
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
             this.clearPath();
-
             this.mouseDownCoord = this.getPositionFromMouse(event);
             this.pathData.push(this.mouseDownCoord);
         }
@@ -57,11 +57,15 @@ export class PencilService extends DrawingTool {
     }
 
     private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        this.thickness = 15;
+        ctx.beginPath();
+        ctx.arc(path[path.length - 1].x, path[path.length - 1].y, this.thickness, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.beginPath();
         for (const point of path) {
+            ctx.lineWidth = this.thickness;
             ctx.lineTo(point.x, point.y);
         }
-        ctx.lineWidth = this.thickness;
         ctx.stroke();
     }
 

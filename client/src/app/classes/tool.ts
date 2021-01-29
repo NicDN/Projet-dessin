@@ -1,4 +1,4 @@
-// import { ColorService } from '@app/services/color/color.service';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Option } from './option';
 import { Vec2 } from './vec2';
@@ -17,7 +17,7 @@ export abstract class Tool extends Option {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
 
-    constructor(protected drawingService: DrawingService) {
+    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {
         super();
     }
 
