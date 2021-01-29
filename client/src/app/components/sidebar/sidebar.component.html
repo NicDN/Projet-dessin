@@ -1,6 +1,6 @@
 <mat-sidenav-container class="sidenav-container" autosize>
     <mat-sidenav #sidenav class="sidenav" mode="side" opened="true">
-        <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice: 0:4">
+        <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice: 0:5">
             <a
                 mat-list-item
                 (click)="toggleActive($event, sidenavElement.option)"
@@ -12,7 +12,7 @@
             </a>
 
             <div class="drawing-manager-bottom-section">
-                <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice: 5:6" > 
+                <mat-nav-list *ngFor="let sidenavElement of sideBarOptions | slice: 5:6">
                     <a
                         mat-list-item
                         (click)="toggleActive($event, sidenavElement.option)"

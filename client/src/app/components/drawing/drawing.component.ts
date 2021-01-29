@@ -57,12 +57,12 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('mouseout', ['$event'])
     onMouseOut(event: MouseEvent): void {
-        this.currentTool.onMouseOut(event);
+        this.toolsService.currentTool.onMouseOut(event);
     }
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        this.currentTool.onMouseEnter(event);
+        this.toolsService.currentTool.onMouseEnter(event);
     }
 
     get width(): number {

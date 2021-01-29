@@ -1,17 +1,9 @@
 import { Injectable } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
+import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 // import { ColorService } from '@app/services/color/color.service';
-
-// TODO : Déplacer ça dans un fichier séparé accessible par tous
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
 
 // Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet
 // L'implémentation ici ne couvre pas tous les critères d'accepetation du projet
@@ -21,13 +13,15 @@ export enum MouseButton {
     providedIn: 'root',
 })
 export class PencilService extends DrawingTool {
-    // thicknesss: number;
+    thickness: number;
 
     constructor(drawingService: DrawingService) {
         super(drawingService);
         this.clearPath();
     }
+
     private pathData: Vec2[];
+
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');
     }
@@ -54,7 +48,6 @@ export class PencilService extends DrawingTool {
 
     onMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
-            console.log('mouseMovement');
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
             // On dessine sur le canvas de prévisualisation et on l'efface à chaque déplacement de la souris
@@ -68,6 +61,7 @@ export class PencilService extends DrawingTool {
         for (const point of path) {
             ctx.lineTo(point.x, point.y);
         }
+        ctx.lineWidth = this.thickness;
         ctx.stroke();
     }
 
@@ -77,10 +71,12 @@ export class PencilService extends DrawingTool {
 
     onMouseOut(event: MouseEvent): void {
         this.onMouseUp(event);
-        this.mouseDown = true;
     }
 
     onMouseEnter(event: MouseEvent): void {
-        // if (event.button) this.onMouseDown(event);
+        // event.buttons is 1 when left click is pressed.
+        if (event.buttons === 1) {
+            this.mouseDown = true;
+        }
     }
 }
