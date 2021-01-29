@@ -1,10 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
 import { DrawingComponent } from './drawing.component';
-import { ToolsService } from '@app/services/tools/tools.service';
 
 class ToolStub extends Tool {}
 
@@ -17,7 +15,7 @@ describe('DrawingComponent', () => {
     let fixture: ComponentFixture<DrawingComponent>;
     let toolStub: ToolStub;
     let drawingStub: DrawingService;
-    let toolsService: ToolsService;
+    // let toolsService: ToolsService;
 
     beforeEach(async(() => {
         toolStub = new ToolStub({} as DrawingService);

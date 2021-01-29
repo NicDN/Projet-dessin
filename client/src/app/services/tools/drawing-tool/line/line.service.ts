@@ -7,7 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class LineService extends DrawingTool {
-     // thicknesss: number;
+    // thicknesss: number;
     constructor(drawingService: DrawingService) {
         super(drawingService);
     }
