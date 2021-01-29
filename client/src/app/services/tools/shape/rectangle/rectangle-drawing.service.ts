@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 @Injectable({
     providedIn: 'root',
 })
 export class RectangleDrawingService extends Shape {
-    thicknesss: number;
-
-    constructor(drawingService: DrawingService) {
-        super(drawingService);
+    constructor(drawingService: DrawingService, colorService: ColorService) {
+        super(drawingService, colorService);
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.beginPath();
