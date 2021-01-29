@@ -14,10 +14,10 @@ export class ToolsService {
     currentTool: Tool;
 
     constructor(
+        public pencilService: PencilService,
         public ellipseDrawingService: EllipseDrawingService,
         public rectangleDrawingService: RectangleDrawingService,
         public lineService: LineService,
-        public pencilService: PencilService,
         public eraserService: EraserService,
     ) {
         // this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
