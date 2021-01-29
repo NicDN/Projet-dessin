@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 // import { ColorService } from '@app/services/color/color.service';
 
@@ -23,8 +24,8 @@ export enum MouseButton {
 export class PencilService extends DrawingTool {
     // thicknesss: number;
 
-    constructor(drawingService: DrawingService) {
-        super(drawingService);
+    constructor(drawingService: DrawingService, colorService: ColorService) {
+        super(drawingService, colorService);
         this.clearPath();
     }
     private pathData: Vec2[];
