@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+// import { OptionsService } from '@app/services/options.service';
 
 @Component({
     selector: 'app-control-panel',
