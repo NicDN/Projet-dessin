@@ -57,7 +57,6 @@ export class PencilService extends DrawingTool {
     }
 
     private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 15;
         ctx.beginPath();
         ctx.arc(path[path.length - 1].x, path[path.length - 1].y, this.thickness, 0, 2 * Math.PI);
         ctx.fill();
