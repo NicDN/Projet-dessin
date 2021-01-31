@@ -57,15 +57,27 @@ export class PencilService extends DrawingTool {
     }
 
     private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.beginPath();
-        ctx.arc(path[path.length - 1].x, path[path.length - 1].y, this.thickness, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.beginPath();
+        this.thickness = 40;
+        ctx.lineJoin = ctx.lineCap = 'round';
+        let oldPointX: number = path[0].x;
+        let oldPointY: number = path[0].y;
+
         for (const point of path) {
+            ctx.beginPath();
+            ctx.moveTo(point.x, point.y);
             ctx.lineWidth = this.thickness;
             ctx.lineTo(point.x, point.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(oldPointX, oldPointY);
+            ctx.lineWidth = this.thickness;
+            ctx.lineTo(point.x, point.y);
+            ctx.stroke();
+
+            oldPointX = point.x;
+            oldPointY = point.y;
         }
-        ctx.stroke();
     }
 
     private clearPath(): void {
