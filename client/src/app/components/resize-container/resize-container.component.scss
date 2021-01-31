@@ -1,13 +1,12 @@
-#resizable-box{
-    width : 500px;
-    height : 500px;
+#resizable-box {
+    width: 500px;
+    height: 500px;
     border-style: dotted;
-    display : none;
-    text-align : center;
-    position:relative;
-    z-index : -1;
+    display: none;
+    text-align: center;
+    position: relative;
+    z-index: -1;
 }
-
 
 .resizable-draggable {
     outline: 1px dashed #e51282;
@@ -26,7 +25,7 @@
         top: 50%;
         transform: translate3d(-100%, -50%, 0);
     }
-    
+
     span:nth-of-type(3) {
         position: absolute;
         transform: translate3d(-100%, -100%, 0);
@@ -35,39 +34,41 @@
 
 .resize-action {
     position: absolute;
-    left: 101%;
-    top: 101%;
+    left: 102%;
+    top: 102%;
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: nwse-resize;
     }
 }
 .resize-action-2 {
     position: absolute;
-    left: 101%;
+    left: 102%;
     top: 50%;
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: w-resize;
     }
-
 }
 
 .resize-action-3 {
     position: absolute;
     left: 50%;
-    top: 101%;
+    top: 102%;
     transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: n-resize;
     }
 }

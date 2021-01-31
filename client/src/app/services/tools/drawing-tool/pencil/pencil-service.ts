@@ -56,19 +56,13 @@ export class PencilService extends DrawingTool {
         }
     }
 
-    private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 40;
+    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        this.thickness = 40; // Moyen Legit
         ctx.lineJoin = ctx.lineCap = 'round';
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
 
         for (const point of path) {
-            ctx.beginPath();
-            ctx.moveTo(point.x, point.y);
-            ctx.lineWidth = this.thickness;
-            ctx.lineTo(point.x, point.y);
-            ctx.stroke();
-
             ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
             ctx.lineWidth = this.thickness;
