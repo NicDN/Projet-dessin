@@ -7,6 +7,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_WIDTH = 1000;
 export const DEFAULT_HEIGHT = 800;
+const HALF_RATIO = 0.5;
 
 @Component({
     selector: 'app-drawing',
@@ -20,7 +21,7 @@ export class DrawingComponent implements AfterViewInit {
 
     private baseCtx: CanvasRenderingContext2D;
     private previewCtx: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize: Vec2 = { x: window.innerWidth * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
     private canDraw: boolean = true;
     // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
