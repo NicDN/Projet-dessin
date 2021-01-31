@@ -41,21 +41,17 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        // this.currentTool.onMouseMove(event);
         if (this.canDraw) {
             this.toolsService.currentTool.onMouseMove(event);
         }
     }
 
-    @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        // this.currentTool.onMouseDown(event);
         this.toolsService.currentTool.onMouseDown(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        // this.currentTool.onMouseUp(event);
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
         this.canDraw = true;
     }

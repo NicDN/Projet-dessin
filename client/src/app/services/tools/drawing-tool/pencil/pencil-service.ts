@@ -28,6 +28,7 @@ export class PencilService extends DrawingTool {
     }
 
     onMouseDown(event: MouseEvent): void {
+        console.log('hello there');
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
             this.clearPath();
@@ -57,7 +58,7 @@ export class PencilService extends DrawingTool {
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 40; // Moyen Legit
+        this.thickness = 20; // Moyen Legit
         ctx.lineJoin = ctx.lineCap = 'round';
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;

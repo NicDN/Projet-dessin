@@ -13,7 +13,7 @@ export class EraserService extends PencilService {
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 40; // Moyen legit
+        this.thickness = 20; // Moyen legit
         ctx = this.drawingService.baseCtx; // moyen legit
         path = path; // moyen legit
         let oldPointX: number = path[0].x;
