@@ -21,6 +21,9 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
 
     // tslint:disable-next-line: typedef
     @Output() notifyResize = new EventEmitter();
+    // tslint:disable-next-line: typedef
+    @Output() usingButton = new EventEmitter();
+
     @ViewChild('box') box: ElementRef;
 
     private boxPosition: { left: number; top: number };
@@ -63,6 +66,9 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
         if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
         else this.loadBox();
         this.status = status;
+        if (this.status !== Status.OFF) {
+            this.usingButton.emit(true);
+        }
     }
 
     @HostListener('window:mousemove', ['$event'])
