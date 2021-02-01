@@ -32,6 +32,8 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     private DEFAULT_HEIGHT: number = 250;
     private DEFAULT_WIDTH: number = 250;
 
+    private MOUSE_OFFSET: number = 20;
+
     mouse: { x: number; y: number };
     status: Status = Status.OFF;
 
@@ -63,6 +65,7 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     }
 
     setStatus(event: MouseEvent, status: number): void {
+        console.log(this.mouse.y);
         if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
         else this.loadBox();
         this.status = status;
@@ -86,7 +89,6 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     onMouseUpContainer(event: MouseEvent): void {
         if (this.width < this.DEFAULT_WIDTH) this.width = this.DEFAULT_WIDTH;
         if (this.height < this.DEFAULT_HEIGHT) this.height = this.DEFAULT_HEIGHT;
-        if (this.height < this.DEFAULT_HEIGHT) this.height = this.DEFAULT_HEIGHT;
 
         if (this.status !== Status.OFF) {
             this.boxSize = { widthBox: this.width, heightBox: this.height };
@@ -98,10 +100,10 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
 
     resize(): void {
         if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) {
-            this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left : 0;
+            this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left - this.MOUSE_OFFSET : 0;
         }
         if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
-            this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top : 0;
+            this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top - this.MOUSE_OFFSET : 0;
         }
     }
 
