@@ -30,6 +30,9 @@ export class ToolsService {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        // TODO:
+        // TODO
+        if (event.code === 'KeyL') {
+            this.currentTool = this.lineService;
+        }
     }
 }
