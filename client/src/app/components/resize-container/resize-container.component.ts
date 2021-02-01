@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 
 const enum Status {
@@ -13,7 +13,7 @@ const enum Status {
     templateUrl: './resize-container.component.html',
     styleUrls: ['./resize-container.component.scss'],
 })
-export class ResizeContainerComponent implements OnInit, AfterViewInit {
+export class ResizeContainerComponent implements AfterViewInit {
     @Input() width: number;
     @Input() height: number;
     @Input() left: number;
@@ -30,20 +30,13 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     private DEFAULT_HEIGHT: number = 250;
     private DEFAULT_WIDTH: number = 250;
 
-    private MOUSE_OFFSET: number = 20;
+    private MOUSE_OFFSET: number = 15;
 
     mouse: { x: number; y: number };
     status: Status = Status.OFF;
 
     boxSize: BoxSize;
 
-    constructor() {
-        // Avoid linting error
-    }
-
-    ngOnInit(): void {
-        // Avoid linting error
-    }
     ngAfterViewInit(): void {
         this.loadBox();
         this.loadContainer();
