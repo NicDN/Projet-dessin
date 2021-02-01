@@ -28,6 +28,7 @@ export class PencilService extends DrawingTool {
     }
 
     onMouseDown(event: MouseEvent): void {
+        console.log('hello there');
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
             this.clearPath();
@@ -56,17 +57,22 @@ export class PencilService extends DrawingTool {
         }
     }
 
-    private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 15;
-        ctx.beginPath();
-        ctx.arc(path[path.length - 1].x, path[path.length - 1].y, this.thickness, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.beginPath();
+    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        this.thickness = 20; // Moyen Legit
+        ctx.lineJoin = ctx.lineCap = 'round';
+        let oldPointX: number = path[0].x;
+        let oldPointY: number = path[0].y;
+
         for (const point of path) {
+            ctx.beginPath();
+            ctx.moveTo(oldPointX, oldPointY);
             ctx.lineWidth = this.thickness;
             ctx.lineTo(point.x, point.y);
+            ctx.stroke();
+
+            oldPointX = point.x;
+            oldPointY = point.y;
         }
-        ctx.stroke();
     }
 
     private clearPath(): void {

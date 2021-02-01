@@ -7,6 +7,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_WIDTH = 1000;
 export const DEFAULT_HEIGHT = 800;
+const HALF_RATIO = 0.5;
 
 @Component({
     selector: 'app-drawing',
@@ -20,8 +21,9 @@ export class DrawingComponent implements AfterViewInit {
 
     private baseCtx: CanvasRenderingContext2D;
     private previewCtx: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize: Vec2 = { x: window.innerWidth * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
+    private canDraw: boolean = true;
     // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
     // private tools: Tool[];
     // currentTool: Tool;
@@ -40,20 +42,19 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        // this.currentTool.onMouseMove(event);
-        this.toolsService.currentTool.onMouseMove(event);
+        if (this.canDraw) {
+            this.toolsService.currentTool.onMouseMove(event);
+        }
     }
 
-    @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        // this.currentTool.onMouseDown(event);
-        this.toolsService.currentTool.onMouseDown(event);
+        if (this.canDraw) this.toolsService.currentTool.onMouseDown(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        // this.currentTool.onMouseUp(event);
-        this.toolsService.currentTool.onMouseUp(event);
+        if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
+        this.canDraw = true;
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -63,17 +64,19 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('mouseout', ['$event'])
     onMouseOut(event: MouseEvent): void {
-        this.toolsService.currentTool.onMouseOut(event);
+        if (this.canDraw) this.toolsService.currentTool.onMouseOut(event);
     }
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        this.toolsService.currentTool.onMouseEnter(event);
+        if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
+    }
+
+    disableDrawing(isUsingButton: boolean): void {
+        this.canDraw = !isUsingButton;
     }
 
     onSizeChange(boxsize: BoxSize): void {
-        console.log(boxsize.widthBox);
-
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
         this.previewCtx.drawImage(this.baseCanvas.nativeElement, 0, 0);

@@ -1,8 +1,18 @@
+
 <div id="canvas-container">
     <canvas id="canvas" #baseCanvas [attr.width]="width" [attr.height]="height"></canvas>
-    <canvas id="previewLayer" #previewCanvas [attr.width]="width" [attr.height]="height"></canvas>
+    <canvas id="previewLayer" #previewCanvas [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)"></canvas>
+    <div>
+        <app-resize-container
+            [width]="width"
+            [height]="height"
+            [left]="2"
+            [top]="2"
+            (usingButton)="disableDrawing($event)"
+            (notifyResize)="onSizeChange($event)"
+        ></app-resize-container>
+    </div>
 </div>
-<div>
-    <app-resize-container [width]="width" [height]="height" [left]="2" [top]="2" (notifyResize)="onSizeChange($event)"></app-resize-container>  
-</div>
- 
+
+
+

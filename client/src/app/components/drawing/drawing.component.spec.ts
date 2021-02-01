@@ -11,8 +11,10 @@ import { DrawingComponent } from './drawing.component';
 // class ToolStub extends Tool {}
 
 // TODO : Déplacer dans un fichier accessible à tous
-const DEFAULT_WIDTH = 1000;
-const DEFAULT_HEIGHT = 800;
+// A changer !! Deux fois la constante halfratio
+const HALF_RATIO = 0.5;
+const DEFAULT_WIDTH = window.innerWidth * HALF_RATIO;
+const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
 
 describe('DrawingComponent', () => {
     let component: DrawingComponent;
@@ -21,10 +23,11 @@ describe('DrawingComponent', () => {
     let drawingStub: DrawingService;
     // tslint:disable-next-line: prefer-const
     let toolsService: ToolsService;
-
+    // let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
     beforeEach(async(() => {
         // toolStub = new ToolStub({} as DrawingService);
         drawingStub = new DrawingService();
+        //  drawingServiceSpy = jasmine.createSpyObj('drawingService', ['test']);
         toolsService = new ToolsService(
             {} as PencilService,
             {} as EllipseDrawingService,
@@ -49,6 +52,7 @@ describe('DrawingComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+        // drawingServiceSpy.test.and.returnValue.
     });
 
     it('should have a default WIDTH and HEIGHT', () => {
@@ -58,11 +62,11 @@ describe('DrawingComponent', () => {
         expect(width).toEqual(DEFAULT_WIDTH);
     });
 
-    /*it('should get stubTool', () => {
-        // const currentTool = component.currentTool;
-        const currentTool = toolsService.currentTool;
-        expect(currentTool).toEqual(toolStub);
-    });*/
+    // it('should get stubTool', () => {
+    //     // const currentTool = component.currentTool;
+    //     const currentTool = toolsService.currentTool;
+    //     expect(currentTool).toEqual(toolStub);
+    // });
 
     /*it(" should call the tool's mouse move when receiving a mouse move event", () => {
         const event = {} as MouseEvent;
