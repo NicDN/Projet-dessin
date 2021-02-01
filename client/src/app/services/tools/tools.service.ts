@@ -5,13 +5,14 @@ import { PencilService } from './drawing-tool/pencil/pencil-service';
 import { EraserService } from './eraser/eraser.service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ToolsService {
-    // private tools: Tool[];
     currentTool: Tool;
+    private subject = new Subject<any>();
 
     constructor(
         public pencilService: PencilService,
@@ -20,12 +21,15 @@ export class ToolsService {
         public lineService: LineService,
         public eraserService: EraserService,
     ) {
-        // this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
         this.currentTool = pencilService;
     }
 
-    // a voir si on fait correspondre avec le id
     setCurrentTool(tool: Tool): void {
         this.currentTool = tool;
+        this.subject.next(tool);
+    }
+
+    getCurrentTool(): Observable<any> {
+        return this.subject.asObservable();
     }
 }

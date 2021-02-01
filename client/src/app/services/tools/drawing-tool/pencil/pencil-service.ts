@@ -17,7 +17,7 @@ export class PencilService extends DrawingTool {
     thickness: number;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+        super(drawingService, colorService,"Crayon");
         this.clearPath();
     }
 

@@ -13,8 +13,6 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
-import { PencilAttributeComponent } from './components/attributes/pencil-attribute/pencil-attribute.component';
-import { ShapeAttributeComponent } from './components/attributes/shape-attribute/shape-attribute/shape-attribute.component';
 import { ColorPanelComponent } from './components/color-panel/color-panel.component';
 import { ColorPickerComponent } from './components/color-picker/color-picker.component';
 import { ControlPanelComponent } from './components/control-panel/control-panel.component';
@@ -25,6 +23,13 @@ import { OptionBarComponent } from './components/option-bar/option-bar.component
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
+import { ThicknessSelectorComponent } from './components/thickness-selector/thickness-selector.component';
+import { MatSliderModule } from '@angular/material/slider';
+import { FormsModule } from '@angular/forms';
+import { TraceTypeSelectorComponent } from './components/trace-type-selector/trace-type-selector.component';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { LineSettingsSelectorComponent } from './components/line-settings-selector/line-settings-selector.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     declarations: [
@@ -38,10 +43,11 @@ import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
         ColorPanelComponent,
         ColorPickerComponent,
         ResizeContainerComponent,
-        PencilAttributeComponent,
-        ShapeAttributeComponent,
         ToolBarComponent,
         OptionBarComponent,
+        ThicknessSelectorComponent,
+        TraceTypeSelectorComponent,
+        LineSettingsSelectorComponent,
     ],
     imports: [
         BrowserModule,
@@ -55,6 +61,9 @@ import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
         MatDividerModule,
         FontAwesomeModule,
         MatTooltipModule,
+        MatSliderModule,
+        FormsModule,
+        MatSlideToggleModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
@@ -62,6 +71,6 @@ import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 export class AppModule {
     // adding icons packs for font-awesome
     constructor(library: FaIconLibrary) {
-        library.addIconPacks(fas);
+        library.addIconPacks(fas, far);
     }
 }

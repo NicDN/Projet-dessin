@@ -12,8 +12,8 @@ export abstract class Shape extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
     protected thickness: number;
-    constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+    constructor(drawingService: DrawingService, colorService: ColorService,toolName:string) {
+        super(drawingService, colorService,toolName);
     }
 
     onMouseDown(event: MouseEvent): void {

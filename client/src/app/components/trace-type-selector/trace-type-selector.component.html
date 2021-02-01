@@ -1,8 +1,17 @@
-<div>
+
     <mat-divider></mat-divider>
     <p>Type de tracé</p>
-    <!-- <mat-icon class="stop">crop_3_2</mat-icon> -->
-    <!-- <i class="material-icons">donut_small</i> -->
-    <!-- <i class="material-icons-two-tone">stop</i> -->
+    <div>
+        <button mat-button matTooltip="Contour" (click)="setActiveTraceType()">
+            <fa-icon [icon]="['far','square']"></fa-icon>
+        </button>
+        <button mat-button matTooltip="Plein" (click)="setActiveTraceType()">
+            <fa-icon [icon]="['fas','square']"></fa-icon>
+        </button>
+        <button mat-button matTooltip="Plein avec contour" (click)="setActiveTraceType()">
+            <fa-icon [icon]="['fas','battery-full']"></fa-icon>
+        </button>
+    </div>
+
+
     <mat-divider></mat-divider>
-</div>

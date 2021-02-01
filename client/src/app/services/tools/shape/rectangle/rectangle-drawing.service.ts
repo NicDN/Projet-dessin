@@ -8,7 +8,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class RectangleDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+        super(drawingService, colorService,"Rectangle");
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.beginPath();

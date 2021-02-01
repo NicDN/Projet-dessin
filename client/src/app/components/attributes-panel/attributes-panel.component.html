@@ -1,7 +1,10 @@
 <mat-drawer-content class="attributes-panel-container">
-    <h2 class="tool-name-header">Outil</h2>
+    <h2 class="tool-name-header">{{currentTool.toolName}}</h2>
     <app-color-panel></app-color-panel>
     <!-- ngswitch selected tool -->
     <app-thickness-selector></app-thickness-selector>
     <app-trace-type-selector></app-trace-type-selector>
+    <app-line-settings-selector></app-line-settings-selector>
+    
+   
 </mat-drawer-content>

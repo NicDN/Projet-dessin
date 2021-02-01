@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-
 @Component({
   selector: 'app-trace-type-selector',
   templateUrl: './trace-type-selector.component.html',
@@ -10,6 +9,9 @@ export class TraceTypeSelectorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+  }
+  setActiveTraceType():void{
+
   }
 
 }

@@ -15,8 +15,11 @@ export enum MouseButton {
 export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
+    toolName:string;
 
-    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {}
+    constructor(protected drawingService: DrawingService, protected colorService: ColorService,toolName:string) {
+        this.toolName=toolName;
+    }
 
     onMouseDown(event: MouseEvent): void {}
 

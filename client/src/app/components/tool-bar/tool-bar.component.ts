@@ -20,11 +20,12 @@ export class ToolBarComponent implements OnInit {
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
         { icon: 'eraser', toolTipContent: 'Efface (E)', tool: this.toolService.eraserService },
     ];
-    constructor(private toolService: ToolsService) {}
-
-    ngOnInit(): void {
-        //
+    constructor(private toolService: ToolsService) {
+        this.toolService.setCurrentTool(this.toolService.pencilService);
     }
+
+    ngOnInit(): void {}
+    
 
     // tslint:disable-next-line: no-any
     toggleActive(event: any, tool: Tool): void {

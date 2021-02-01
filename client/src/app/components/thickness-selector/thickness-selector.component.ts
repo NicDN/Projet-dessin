@@ -8,6 +8,6 @@ import { Component, OnInit } from '@angular/core';
 export class ThicknessSelectorComponent implements OnInit {
     thicknessModel = 1;
     constructor() {}
-    
+
     ngOnInit(): void {}
 }

@@ -10,7 +10,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class LineService extends DrawingTool {
     // thicknesss: number;
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+        super(drawingService, colorService,"Ligne");
     }
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');
