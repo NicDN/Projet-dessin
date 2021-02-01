@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
+import { Tool } from '@app/classes/tool';
 
 @Component({
     selector: 'app-thickness-selector',
@@ -6,8 +8,13 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./thickness-selector.component.scss'],
 })
 export class ThicknessSelectorComponent implements OnInit {
-    thicknessModel = 1;
+    @Output() updateThicknessEmitter = new EventEmitter<number>();
+    @Input() tool: Tool; 
     constructor() {}
 
     ngOnInit(): void {}
+
+    updateThickness(event: MatSliderChange) {
+        this.updateThicknessEmitter.emit(event.value as number);
+    }
 }

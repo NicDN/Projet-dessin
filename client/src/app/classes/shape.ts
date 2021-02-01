@@ -3,7 +3,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MouseButton, Tool } from './tool';
 import { Vec2 } from './vec2';
 
-export enum drawingType {
+export enum TraceType {
     Bordered,
     FilledNoBordered,
     FilledAndBordered,
@@ -11,9 +11,10 @@ export enum drawingType {
 export abstract class Shape extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
-    protected thickness: number;
-    constructor(drawingService: DrawingService, colorService: ColorService,toolName:string) {
-        super(drawingService, colorService,toolName);
+    traceType:TraceType=TraceType.Bordered;
+    //protected thickness: number;
+    constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
+        super(drawingService, colorService, toolName);
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -37,6 +38,19 @@ export abstract class Shape extends Tool {
 
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+        }
+    }
+    setTraceType(type:number):void{
+        switch(type){
+            case 0:
+                this.traceType=TraceType.Bordered;
+                break;
+            case 1:
+                 this.traceType=TraceType.FilledNoBordered;
+                break;
+            case 2:
+                this.traceType=TraceType.FilledAndBordered;
+                break;
         }
     }
 

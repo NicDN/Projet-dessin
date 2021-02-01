@@ -2,16 +2,14 @@
     <mat-divider></mat-divider>
     <p>Type de tracé</p>
     <div>
-        <button mat-button matTooltip="Contour" (click)="setActiveTraceType()">
+        <button mat-button matTooltip="Contour" (click)="setActiveTraceType(0)">
             <fa-icon [icon]="['far','square']"></fa-icon>
         </button>
-        <button mat-button matTooltip="Plein" (click)="setActiveTraceType()">
+        <button mat-button matTooltip="Plein" (click)="setActiveTraceType(1)">
             <fa-icon [icon]="['fas','square']"></fa-icon>
         </button>
-        <button mat-button matTooltip="Plein avec contour" (click)="setActiveTraceType()">
+        <button mat-button matTooltip="Plein avec contour" (click)="setActiveTraceType(2)">
             <fa-icon [icon]="['fas','battery-full']"></fa-icon>
         </button>
     </div>
-
-
     <mat-divider></mat-divider>
