@@ -19,10 +19,8 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     @Input() left: number;
     @Input() top: number;
 
-    // tslint:disable-next-line: typedef
-    @Output() notifyResize = new EventEmitter();
-    // tslint:disable-next-line: typedef
-    @Output() usingButton = new EventEmitter();
+    @Output() notifyResize: EventEmitter<BoxSize> = new EventEmitter();
+    @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
 
     @ViewChild('box') box: ElementRef;
 
@@ -83,7 +81,6 @@ export class ResizeContainerComponent implements OnInit, AfterViewInit {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         this.onMouseUpContainer(event);
-        // Ici que l'on sauvegarde le canvas et qu'on resize
     }
 
     onMouseUpContainer(event: MouseEvent): void {
