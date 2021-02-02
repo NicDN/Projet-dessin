@@ -56,7 +56,6 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     setStatus(event: MouseEvent, status: number): void {
-        console.log(this.mouse.y);
         if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
         else this.loadBox();
         this.status = status;

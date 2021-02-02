@@ -13,7 +13,8 @@ import { DrawingComponent } from './drawing.component';
 // TODO : Déplacer dans un fichier accessible à tous
 // A changer !! Deux fois la constante halfratio
 const HALF_RATIO = 0.5;
-const DEFAULT_WIDTH = window.innerWidth * HALF_RATIO;
+const SIDE_BAR_SIZE = 300;
+const DEFAULT_WIDTH = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
 const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
 
 describe('DrawingComponent', () => {

@@ -1,3 +1,4 @@
+import { CanvasCommunicationService } from './../../services/canvas_coms/canvas-communication.service';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
@@ -5,8 +6,9 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
-export const DEFAULT_WIDTH = 1000;
-export const DEFAULT_HEIGHT = 800;
+export const DEFAULT_SIZE = 250;
+const MINIMUM_WORKSPACE_SIZE = 500;
+const SIDE_BAR_SIZE = 300;
 const HALF_RATIO = 0.5;
 
 @Component({
@@ -21,13 +23,13 @@ export class DrawingComponent implements AfterViewInit {
 
     private baseCtx: CanvasRenderingContext2D;
     private previewCtx: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = { x: window.innerWidth * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
+    private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
     private canDraw: boolean = true;
     // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
     // private tools: Tool[];
     // currentTool: Tool;
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService) {
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {
         // this.tools = [pencilService];
         // this.currentTool = this.tools[0];
     }
@@ -48,7 +50,11 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw) this.toolsService.currentTool.onMouseDown(event);
+        if (this.canDraw) {
+            this.comsCanvasService.canvasModified();
+            console.log(this.comsCanvasService.canvasIsEmpty);
+            this.toolsService.currentTool.onMouseDown(event);
+        }
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -71,7 +77,7 @@ export class DrawingComponent implements AfterViewInit {
         this.canDraw = !isUsingButton;
     }
 
-    onSizeChange(boxsize: BoxSize): void {
+    onSizeChange(boxsize: BoxSize): number {
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
         this.previewCtx.drawImage(this.baseCanvas.nativeElement, 0, 0);
@@ -83,13 +89,20 @@ export class DrawingComponent implements AfterViewInit {
 
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
+
+        return DEFAULT_SIZE;
+    }
+
+    isEmpty(): boolean {
+        console.log('Is perhaps empty');
+        return false;
     }
 
     get width(): number {
-        return this.canvasSize.x;
+        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_SIZE;
     }
 
     get height(): number {
-        return this.canvasSize.y;
+        return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_SIZE;
     }
 }

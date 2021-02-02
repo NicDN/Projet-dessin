@@ -28,7 +28,6 @@ export class PencilService extends DrawingTool {
     }
 
     onMouseDown(event: MouseEvent): void {
-        console.log('hello there');
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
             this.clearPath();
