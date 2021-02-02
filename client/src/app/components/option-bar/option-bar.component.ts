@@ -1,7 +1,7 @@
-import { CanvasCommunicationService } from './../../services/canvas_coms/canvas-communication.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CanvasCommunicationService } from './../../services/canvas_coms/canvas-communication.service';
 
 @Component({
     selector: 'app-option-bar',
