@@ -47,7 +47,6 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     setStatus(event: MouseEvent, status: number): void {
         if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
-        else this.loadBox();
         this.status = status;
         if (this.status !== Status.OFF) {
             this.usingButton.emit(true);
@@ -79,10 +78,10 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     resize(): void {
         if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) {
-            this.width = Number(this.mouse.x > this.boxPosition.left) ? this.mouse.x - this.boxPosition.left - this.MOUSE_OFFSET : 0;
+            this.width = this.mouse.x - this.boxPosition.left - this.MOUSE_OFFSET;
         }
         if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
-            this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top - this.MOUSE_OFFSET : 0;
+            this.height = this.mouse.y - this.boxPosition.top - this.MOUSE_OFFSET;
         }
     }
 }
