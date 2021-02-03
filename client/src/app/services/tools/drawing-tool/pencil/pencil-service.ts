@@ -69,9 +69,7 @@ export class PencilService extends DrawingTool {
         for (const point of path) {
             ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
-            // this.colorService.mainColor.rgbValue = 'black';
-            // console.log(this.colorService.mainColor.rgbValue);
-            // ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
             ctx.stroke();
 
