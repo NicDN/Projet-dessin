@@ -25,7 +25,6 @@ export class ResizeContainerComponent implements AfterViewInit {
     @ViewChild('box') box: ElementRef;
 
     private boxPosition: { left: number; top: number };
-    private containerPos: { left: number; top: number; right: number; bottom: number };
 
     private DEFAULT_HEIGHT: number = 250;
     private DEFAULT_WIDTH: number = 250;
@@ -39,20 +38,11 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.loadBox();
-        this.loadContainer();
     }
 
     private loadBox(): void {
         const { left, top } = this.box.nativeElement.getBoundingClientRect();
         this.boxPosition = { left, top };
-    }
-
-    private loadContainer(): void {
-        const left = this.boxPosition.left - this.left;
-        const top = this.boxPosition.top - this.top;
-        const right = left + window.innerWidth;
-        const bottom = top + window.innerHeight;
-        this.containerPos = { left, top, right, bottom };
     }
 
     setStatus(event: MouseEvent, status: number): void {
@@ -94,9 +84,5 @@ export class ResizeContainerComponent implements AfterViewInit {
         if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
             this.height = Number(this.mouse.y > this.boxPosition.top) ? this.mouse.y - this.boxPosition.top - this.MOUSE_OFFSET : 0;
         }
-    }
-
-    resizeCondMeet(): boolean {
-        return this.mouse.x < this.containerPos.right && this.mouse.y < this.containerPos.bottom;
     }
 }

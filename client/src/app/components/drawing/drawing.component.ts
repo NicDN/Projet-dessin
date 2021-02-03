@@ -77,7 +77,7 @@ export class DrawingComponent implements AfterViewInit {
         this.canDraw = !isUsingButton;
     }
 
-    onSizeChange(boxsize: BoxSize): number {
+    onSizeChange(boxsize: BoxSize): void {
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
         this.previewCtx.drawImage(this.baseCanvas.nativeElement, 0, 0);
@@ -89,8 +89,6 @@ export class DrawingComponent implements AfterViewInit {
 
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
-
-        return DEFAULT_SIZE;
     }
 
     isEmpty(): boolean {
