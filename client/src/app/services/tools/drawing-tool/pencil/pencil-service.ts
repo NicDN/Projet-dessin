@@ -17,7 +17,7 @@ const DEFAULTTHICKNESS = 1;
     providedIn: 'root',
 })
 export class PencilService extends DrawingTool {
-    thickness: number;
+    thickness: number = 5;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
@@ -65,11 +65,12 @@ export class PencilService extends DrawingTool {
         ctx.lineWidth = this.thickness;
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
+        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
 
         for (const point of path) {
             ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
-            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
             ctx.stroke();
 

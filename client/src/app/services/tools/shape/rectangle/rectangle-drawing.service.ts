@@ -10,7 +10,7 @@ export class RectangleDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
         this.drawingType = DrawingType.FilledAndBordered;
-        this.thickness = 5;
+        this.thickness = 1;
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.setLineDash([]);
