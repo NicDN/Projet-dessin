@@ -1,12 +1,25 @@
-.container {
-    height: auto;
-    min-height: 98vh;
+.sidenav-container {
+    flex: 1;
+    display: block;
+    flex-direction: column;
+    position: absolute;
+    width: 25%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.sidenav {
     border: 1px solid black;
-    padding: 0 5px 0 5px;
-    margin-right: 5px;
+    background-color: rgb(33, 38, 43);
+}
+.drawing-manager-bottom-section {
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
-.sidebar-container {
-    display: flex;
-    flex-direction: column;
+.mat-divider {
+    border-top-width: 4px;
+    border-top-color: black;
 }
