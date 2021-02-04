@@ -3,7 +3,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MouseButton, Tool } from './tool';
 import { Vec2 } from './vec2';
 
-export enum drawingType {
+export enum DrawingType {
     Bordered,
     FilledNoBordered,
     FilledAndBordered,
@@ -12,6 +12,10 @@ export abstract class Shape extends Tool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
     protected thickness: number;
+    protected drawingType: DrawingType;
+    protected alternateShape: boolean;
+    readonly dashSize: number = 5;
+
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
     }
@@ -26,6 +30,7 @@ export abstract class Shape extends Tool {
     onMouseUp(event: MouseEvent): void {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
@@ -34,15 +39,43 @@ export abstract class Shape extends Tool {
     onMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
+            this.drawPreview();
+        }
+    }
 
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+    onKeyDown(event: KeyboardEvent): void {
+        if (event.code === 'ShiftLeft' && this.mouseDown) {
+            this.alternateShape = true;
+            this.drawPreview();
+        }
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        if (event.code === 'ShiftLeft' && this.mouseDown) {
+            this.alternateShape = false;
+            this.drawPreview();
         }
     }
 
     // onMouseEnter(event: MouseEvent): void {}
 
     // onMouseOut(event: MouseEvent): void {}
+
+    drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+        ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    drawPreview(): void {
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+        this.drawPerimeter(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+    }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

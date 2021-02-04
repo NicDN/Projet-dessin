@@ -49,7 +49,6 @@ export class ToolsService {
                 this.currentTool = this.ellipseDrawingService;
                 break;
             default:
-                this.currentTool = this.pencilService;
         }
     }
 
