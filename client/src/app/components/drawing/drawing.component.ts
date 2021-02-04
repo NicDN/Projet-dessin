@@ -62,6 +62,11 @@ export class DrawingComponent implements AfterViewInit {
         this.toolsService.onKeyDown(event);
     }
 
+    @HostListener('window:keyup', ['$event'])
+    onKeyUp(event: KeyboardEvent): void {
+        this.toolsService.onKeyUp(event);
+    }
+
     @HostListener('mouseout', ['$event'])
     onMouseOut(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseOut(event);

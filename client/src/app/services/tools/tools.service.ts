@@ -30,9 +30,14 @@ export class ToolsService {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        // TODO
+        this.currentTool.onKeyDown(event);
+        // TODO: completing the shortcuts
         if (event.code === 'KeyL') {
             this.currentTool = this.lineService;
         }
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        this.currentTool.onKeyUp(event);
     }
 }
