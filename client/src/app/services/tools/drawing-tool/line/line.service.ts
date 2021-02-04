@@ -158,7 +158,6 @@ export class LineService extends DrawingTool {
     }
 
     private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 10; // default value, to be removed
         this.dotJonction = false; // default value, to be removed
         this.dotThickness = 20; // default value, to be removed
 
