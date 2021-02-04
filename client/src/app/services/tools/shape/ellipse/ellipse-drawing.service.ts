@@ -33,10 +33,12 @@ export class EllipseDrawingService extends Shape {
             0,
             2 * Math.PI,
         );
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
 
+        ctx.fillStyle = this.colorService.mainColor.rgbValue;
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
         if (this.drawingType === DrawingType.FilledNoBordered || this.drawingType === DrawingType.FilledAndBordered) ctx.fill();
+        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
+        ctx.globalAlpha = this.colorService.secondaryColor.opacity;
         if (this.drawingType === DrawingType.Bordered || this.drawingType === DrawingType.FilledAndBordered) ctx.stroke();
     }
 }

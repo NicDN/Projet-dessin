@@ -8,6 +8,6 @@ const DEFAULTOPACITY = 1;
     providedIn: 'root',
 })
 export class ColorService {
-    mainColor: Color = { rgbValue: DEFAULTCOLOR, opacity: DEFAULTOPACITY };
+    mainColor: Color = { rgbValue: DEFAULTCOLOR, opacity: 0.5 };
     secondaryColor: Color = { rgbValue: 'red', opacity: DEFAULTOPACITY };
 }

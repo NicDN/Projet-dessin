@@ -24,6 +24,7 @@ export abstract class Shape extends Tool {
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
             this.beginCoord = this.getPositionFromMouse(event);
+            this.endCoord = this.beginCoord;
         }
     }
 
@@ -44,17 +45,13 @@ export abstract class Shape extends Tool {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        if (event.code === 'ShiftLeft' && this.mouseDown) {
-            this.alternateShape = true;
-            this.drawPreview();
-        }
+        if (event.code === 'ShiftLeft') this.alternateShape = true;
+        if (this.mouseDown) this.drawPreview();
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        if (event.code === 'ShiftLeft' && this.mouseDown) {
-            this.alternateShape = false;
-            this.drawPreview();
-        }
+        if (event.code === 'ShiftLeft') this.alternateShape = false;
+        if (this.mouseDown) this.drawPreview();
     }
 
     // onMouseEnter(event: MouseEvent): void {}

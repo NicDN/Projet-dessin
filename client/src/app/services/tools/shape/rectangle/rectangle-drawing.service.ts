@@ -23,10 +23,12 @@ export class RectangleDrawingService extends Shape {
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
         }
         ctx.rect(begin.x, begin.y, endCoordX - begin.x, endCoordY - begin.y);
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
 
+        ctx.fillStyle = this.colorService.mainColor.rgbValue;
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
         if (this.drawingType === DrawingType.FilledNoBordered || this.drawingType === DrawingType.FilledAndBordered) ctx.fill();
+        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
+        ctx.globalAlpha = this.colorService.secondaryColor.opacity;
         if (this.drawingType === DrawingType.Bordered || this.drawingType === DrawingType.FilledAndBordered) ctx.stroke();
     }
 }
