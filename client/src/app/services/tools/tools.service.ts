@@ -32,8 +32,18 @@ export class ToolsService {
     onKeyDown(event: KeyboardEvent): void {
         this.currentTool.onKeyDown(event);
         // TODO: completing the shortcuts
-        if (event.code === 'KeyL') {
-            this.currentTool = this.lineService;
+        switch (event.code) {
+            case 'KeyL':
+                this.currentTool = this.lineService;
+                break;
+            case 'KeyC':
+                this.currentTool = this.pencilService;
+                break;
+            case 'KeyE':
+                this.currentTool = this.eraserService;
+                break;
+            default:
+                this.currentTool = this.pencilService;
         }
     }
 
