@@ -10,6 +10,9 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 // L'implémentation ici ne couvre pas tous les critères d'accepetation du projet
 // Vous êtes encouragés de modifier et compléter le code.
 // N'oubliez pas de regarder les tests dans le fichier spec.ts aussi!
+
+const DEFAULTTHICKNESS = 1;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -19,6 +22,7 @@ export class PencilService extends DrawingTool {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
         this.clearPath();
+        this.thickness = DEFAULTTHICKNESS;
     }
 
     private pathData: Vec2[];
@@ -56,16 +60,22 @@ export class PencilService extends DrawingTool {
         }
     }
 
-    private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.beginPath();
-        ctx.arc(path[path.length - 1].x, path[path.length - 1].y, this.thickness, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.beginPath();
+    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        ctx.lineJoin = ctx.lineCap = 'round';
+        ctx.lineWidth = this.thickness;
+        let oldPointX: number = path[0].x;
+        let oldPointY: number = path[0].y;
+
         for (const point of path) {
-            ctx.lineWidth = this.thickness;
+            ctx.beginPath();
+            ctx.moveTo(oldPointX, oldPointY);
+            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
+            ctx.stroke();
+
+            oldPointX = point.x;
+            oldPointY = point.y;
         }
-        ctx.stroke();
     }
 
     private clearPath(): void {

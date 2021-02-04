@@ -28,4 +28,32 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.currentTool = tool;
     }
+
+    onKeyDown(event: KeyboardEvent): void {
+        this.currentTool.onKeyDown(event);
+        // TODO: completing the shortcuts
+        switch (event.code) {
+            case 'KeyL':
+                this.currentTool = this.lineService;
+                break;
+            case 'KeyC':
+                this.currentTool = this.pencilService;
+                break;
+            case 'KeyE':
+                this.currentTool = this.eraserService;
+                break;
+            case 'Digit1':
+                this.currentTool = this.rectangleDrawingService;
+                break;
+            case 'Digit2':
+                this.currentTool = this.ellipseDrawingService;
+                break;
+            default:
+                this.currentTool = this.pencilService;
+        }
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        this.currentTool.onKeyUp(event);
+    }
 }

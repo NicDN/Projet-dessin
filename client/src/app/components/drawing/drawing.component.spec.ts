@@ -11,8 +11,10 @@ import { DrawingComponent } from './drawing.component';
 // class ToolStub extends Tool {}
 
 // TODO : Déplacer dans un fichier accessible à tous
-const DEFAULT_WIDTH = 1000;
-const DEFAULT_HEIGHT = 800;
+// A changer !! Deux fois la constante halfratio
+const HALF_RATIO = 0.5;
+const DEFAULT_WIDTH = window.innerWidth * HALF_RATIO;
+const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
 
 describe('DrawingComponent', () => {
     let component: DrawingComponent;
