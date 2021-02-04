@@ -42,8 +42,6 @@ export class ToolsService {
             case 'KeyE':
                 this.currentTool = this.eraserService;
                 break;
-            default:
-                this.currentTool = this.pencilService;
         }
     }
 
