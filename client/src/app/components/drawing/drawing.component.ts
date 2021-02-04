@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
+import { CanvasCommunicationService } from '@app/services/canvas_coms/canvas-communication.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { CanvasCommunicationService } from './../../services/canvas_coms/canvas-communication.service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_SIZE = 250;

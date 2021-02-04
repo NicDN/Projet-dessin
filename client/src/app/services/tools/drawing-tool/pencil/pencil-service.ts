@@ -14,7 +14,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class PencilService extends DrawingTool {
-    thickness: number;
+    thickness: number = 5;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
@@ -57,7 +57,7 @@ export class PencilService extends DrawingTool {
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = 20; // Moyen Legit
+        // this.thickness = 20; // Moyen Legit
         ctx.lineJoin = ctx.lineCap = 'round';
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
