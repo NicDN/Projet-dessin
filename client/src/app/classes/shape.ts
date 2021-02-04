@@ -73,8 +73,8 @@ export abstract class Shape extends Tool {
 
     drawPreview(): void {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
         this.drawPerimeter(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+        this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
     }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
