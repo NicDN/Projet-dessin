@@ -42,6 +42,14 @@ export class ToolsService {
             case 'KeyE':
                 this.currentTool = this.eraserService;
                 break;
+            case 'Digit1':
+                this.currentTool = this.rectangleDrawingService;
+                break;
+            case 'Digit2':
+                this.currentTool = this.ellipseDrawingService;
+                break;
+            default:
+                this.currentTool = this.pencilService;
         }
     }
 
