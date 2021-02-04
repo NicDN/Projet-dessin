@@ -11,5 +11,6 @@ import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-se
 export class EraserService extends PencilService {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
+        this.toolName="Efface"
     }
 }

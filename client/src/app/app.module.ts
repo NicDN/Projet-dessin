@@ -14,7 +14,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
 import { ColorPanelComponent } from './components/color-panel/color-panel.component';
-import { ColorPickerComponent } from './components/color-picker/color-picker.component';
 import { ControlPanelComponent } from './components/control-panel/control-panel.component';
 import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
@@ -30,6 +29,10 @@ import { TraceTypeSelectorComponent } from './components/trace-type-selector/tra
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { LineSettingsSelectorComponent } from './components/line-settings-selector/line-settings-selector.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { ColorSliderComponent } from './components/color-slider/color-slider.component';
+import { ColorPaletteComponent } from './components/color-palette/color-palette.component';
+import { ClickOutsideModule } from 'ng-click-outside';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
     declarations: [
@@ -41,13 +44,14 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         AttributesPanelComponent,
         ControlPanelComponent,
         ColorPanelComponent,
-        ColorPickerComponent,
         ResizeContainerComponent,
         ToolBarComponent,
         OptionBarComponent,
         ThicknessSelectorComponent,
         TraceTypeSelectorComponent,
         LineSettingsSelectorComponent,
+        ColorSliderComponent,
+        ColorPaletteComponent,
     ],
     imports: [
         BrowserModule,
@@ -64,6 +68,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
         MatSliderModule,
         FormsModule,
         MatSlideToggleModule,
+        ClickOutsideModule,
+        MatInputModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

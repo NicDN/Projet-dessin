@@ -5,6 +5,7 @@
         <p class="thicknessValue">{{slider.value}} px</p>
     </div>
 
-    <mat-slider #slider min="1" max="400" tickInterval="1" (change)="updateThickness($event)" [value]="tool.thickness"></mat-slider>
+    <!-- Faire simplement un ngmodel pour le slider -->
+    <mat-slider #slider min="1" max="400" tickInterval="1" (change)="updateThickness($event)" [value]="tool.thickness"></mat-slider> 
     <mat-divider></mat-divider>
 </div>

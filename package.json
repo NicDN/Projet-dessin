@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
-    "@fortawesome/free-regular-svg-icons": "^5.15.2"
+    "@fortawesome/free-regular-svg-icons": "^5.15.2",
+    "ng-click-outside": "^7.0.1"
   }
 }

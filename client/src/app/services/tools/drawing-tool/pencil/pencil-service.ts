@@ -13,7 +13,7 @@ export class PencilService extends DrawingTool {
         super(drawingService, colorService,"Crayon");
         this.clearPath();
     }
-
+    
     private pathData: Vec2[];
 
     draw(event: MouseEvent): void {
