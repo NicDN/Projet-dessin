@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -8,7 +8,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
     templateUrl: './tool-bar.component.html',
     styleUrls: ['./tool-bar.component.scss'],
 })
-export class ToolBarComponent implements OnInit {
+export class ToolBarComponent {
     readonly SHOW_DELAY_MS: number = 750;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
@@ -20,10 +20,8 @@ export class ToolBarComponent implements OnInit {
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
         { icon: 'eraser', toolTipContent: 'Efface (E)', tool: this.toolService.eraserService },
     ];
-    constructor(private toolService: ToolsService) {}
-
-    ngOnInit(): void {
-        //
+    constructor(private toolService: ToolsService) {
+        this.toolService.setCurrentTool(this.toolService.pencilService);
     }
 
     // tslint:disable-next-line: no-any

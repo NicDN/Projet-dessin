@@ -1,3 +1,46 @@
+<!--  Reference: https://malcoded.com/posts/angular-color-picker/ -->
 <div class="color-panel">
-    Color Panel
+    <div class="color-container">
+
+        <button mat-fab [ngStyle]="getButtonStyle(colorService.mainColor.rgbValue,colorService.mainColor.opacity)"
+            (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left" matTooltipShowDelay="1000"></button>
+
+        <button mat-button (click)="switchColors()">
+            <mat-icon>compare_arrows</mat-icon>
+        </button>
+        <button mat-mini-fab
+            [ngStyle]="getButtonStyle(colorService.secondaryColor.rgbValue,colorService.secondaryColor.opacity)"
+            (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire" matTooltipPosition="right" matTooltipShowDelay="1000"></button>
+    </div>
+    <div *ngFor="let previousColor of previousColors; let index=index;" class="list-previous-color">
+        <button mat-mini-fab class="previousColor" (click)="setPrimaryColor(index)"
+            (contextmenu)="setSecondaryColor(index)"
+            [ngStyle]="getButtonStyle(previousColor.rgbValue,previousColor.opacity)"></button>
+    </div>
+    <div *ngIf="openColorPicker">
+        <div class=color-wrapper>
+            <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
+            <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
+        </div>
+
+        <mat-slider #slider class="opacity-slider" min="15" [(ngModel)]="opacity"></mat-slider>
+
+        <div class="input-wrapper">
+
+            <mat-form-field>
+                <mat-label>{{color}}</mat-label>
+                <input type="text" matInput>
+            </mat-form-field>
+
+
+            <span class="preview-color" [ngStyle]="getButtonStyle(color,opacity)">
+
+            </span>
+            <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
+                <fa-icon icon="check" class="check" ></fa-icon>
+            </button>
+
+        </div>
+
+    </div>
 </div>

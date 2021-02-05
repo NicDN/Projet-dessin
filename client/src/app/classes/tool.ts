@@ -9,27 +9,29 @@ export enum MouseButton {
     Back = 3,
     Forward = 4,
 }
-
-// Ceci est justifié vu qu'on a des fonctions qui seront gérés par les classes enfant
-// tslint:disable:no-empty
 export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
+    toolName: string;
+    thickness: number = 1; // thickness ne devrait pas aller necessairement ici parce que des tools ne pourraient ne pas sen servir
 
-    constructor(protected drawingService: DrawingService, protected colorService: ColorService) {}
+    constructor(protected drawingService: DrawingService, protected colorService: ColorService, toolName: string) {
+        this.toolName = toolName;
+    }
 
+    // tslint:disable-next-line: no-empty
     onMouseDown(event: MouseEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onMouseUp(event: MouseEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onMouseMove(event: MouseEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onMouseOut(event: MouseEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onMouseEnter(event: MouseEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onKeyDown(event: KeyboardEvent): void {}
-
+    // tslint:disable-next-line: no-empty
     onKeyUp(event: KeyboardEvent): void {}
 
     getPositionFromMouse(event: MouseEvent): Vec2 {

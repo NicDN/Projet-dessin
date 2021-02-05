@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShapeAttributeComponent } from './shape-attribute.component';
+import { LineSettingsSelectorComponent } from './line-settings-selector.component';
 
-describe('ShapeAttributeComponent', () => {
-    let component: ShapeAttributeComponent;
-    let fixture: ComponentFixture<ShapeAttributeComponent>;
+describe('LineSettingsSelectorComponent', () => {
+    let component: LineSettingsSelectorComponent;
+    let fixture: ComponentFixture<LineSettingsSelectorComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ShapeAttributeComponent],
+            declarations: [LineSettingsSelectorComponent],
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ShapeAttributeComponent);
+        fixture = TestBed.createComponent(LineSettingsSelectorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

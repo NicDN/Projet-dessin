@@ -13,6 +13,7 @@ export class EraserService extends PencilService {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
         this.thickness = MINTHICKNESS;
+        this.toolName = 'Efface';
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {

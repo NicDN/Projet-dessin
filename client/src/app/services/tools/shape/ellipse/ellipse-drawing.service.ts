@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DrawingType, Shape } from '@app/classes/shape';
+import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -9,9 +9,9 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class EllipseDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
-        this.drawingType = DrawingType.FilledAndBordered;
-        this.thickness = 2;
+        super(drawingService, colorService, 'Ellipse');
+        this.traceType = TraceType.FilledAndBordered;
+        this.thickness = 1;
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -36,9 +36,9 @@ export class EllipseDrawingService extends Shape {
 
         ctx.fillStyle = this.colorService.mainColor.rgbValue;
         ctx.globalAlpha = this.colorService.mainColor.opacity;
-        if (this.drawingType === DrawingType.FilledNoBordered || this.drawingType === DrawingType.FilledAndBordered) ctx.fill();
+        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) ctx.fill();
         ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
         ctx.globalAlpha = this.colorService.secondaryColor.opacity;
-        if (this.drawingType === DrawingType.Bordered || this.drawingType === DrawingType.FilledAndBordered) ctx.stroke();
+        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) ctx.stroke();
     }
 }
