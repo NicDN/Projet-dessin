@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Shape } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
     templateUrl: './attributes-panel.component.html',
     styleUrls: ['./attributes-panel.component.scss'],
 })
-export class AttributesPanelComponent implements OnInit {
+export class AttributesPanelComponent {
     subscription: Subscription;
     currentTool: Tool;
     thickness: number;
@@ -18,9 +18,6 @@ export class AttributesPanelComponent implements OnInit {
 
     constructor(private toolsService: ToolsService) {
         this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => (this.currentTool = currentTool));
-    }
-    ngOnInit(): void {
-        throw new Error('Method not implemented.');
     }
 
     setThickness(thickness: number): void {

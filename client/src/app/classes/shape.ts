@@ -1,6 +1,7 @@
+import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MouseButton, Tool } from './tool';
+import { MouseButton } from './tool';
 import { Vec2 } from './vec2';
 
 export enum TraceType {
@@ -8,7 +9,7 @@ export enum TraceType {
     FilledNoBordered,
     FilledAndBordered,
 }
-export abstract class Shape extends Tool {
+export abstract class Shape extends DrawingTool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
 
