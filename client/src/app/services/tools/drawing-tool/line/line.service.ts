@@ -5,6 +5,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
+// import { ColorService } from '@app/services/color/color.service';
+
 @Injectable({
     providedIn: 'root',
 })
@@ -107,28 +109,33 @@ export class LineService extends DrawingTool {
     }
 
     private updatePreview(): void {
+        const HALF_ANGLE = 22.5;
+        const ANGLE_SHIFT = 45;
+        const MAX_ANGLE = 337.5;
+
         let tempMousePosition: Vec2;
         tempMousePosition = { x: this.mousePosition.x, y: this.mousePosition.y };
 
         // force align the line on the closest predefined axe
         if (this.isShiftDown) {
             const dx = this.mousePosition.x - this.lastSelectedPoint.x;
+            let i = 0;
 
-            if (this.shiftAngle >= 337.5 || this.shiftAngle < 22.5) {
+            if (this.shiftAngle >= MAX_ANGLE || this.shiftAngle < HALF_ANGLE + i * ANGLE_SHIFT) {
                 tempMousePosition.x = this.lastSelectedPoint.x;
-            } else if (this.shiftAngle < 67.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y + dx;
-            } else if (this.shiftAngle < 112.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y;
-            } else if (this.shiftAngle < 157.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y - dx;
-            } else if (this.shiftAngle < 202.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.x = this.lastSelectedPoint.x;
-            } else if (this.shiftAngle < 247.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y + dx;
-            } else if (this.shiftAngle < 292.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y;
-            } else if (this.shiftAngle < 337.5) {
+            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
                 tempMousePosition.y = this.lastSelectedPoint.y - dx;
             }
         }
@@ -142,12 +149,17 @@ export class LineService extends DrawingTool {
     }
 
     private updateFixAngle(): void {
+        const FULL_CIRCLE = 360;
+        const DEMI_CIRCLE = 180;
+
         const dx = this.mousePosition.x - this.lastSelectedPoint.x;
         const dy = this.mousePosition.y - this.lastSelectedPoint.y;
         const rads = Math.atan2(dx, dy);
-        let degrees = (rads * 180) / Math.PI;
-        while (degrees >= 360) degrees -= 360;
-        while (degrees < 0) degrees += 360;
+        let degrees = (rads * DEMI_CIRCLE) / Math.PI;
+
+        while (degrees >= FULL_CIRCLE) degrees -= FULL_CIRCLE;
+        while (degrees < 0) degrees += FULL_CIRCLE;
+
         this.shiftAngle = degrees;
     }
 

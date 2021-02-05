@@ -26,7 +26,7 @@ export class ColorPanelComponent {
     getButtonStyle(color: string, opacity: number) {
         return {
             'background-color': color,
-            "opacity": opacity / 100,
+            opacity: opacity / 100,
         };
     }
 
