@@ -4,6 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { CanvasCommunicationService } from '@app/services/canvas_coms/canvas-communication.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { Subscription } from 'rxjs';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_SIZE = 250;
@@ -28,7 +29,11 @@ export class DrawingComponent implements AfterViewInit {
 
     private canDraw: boolean = true;
 
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {}
+    subscription: Subscription;
+
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {
+        // this.subscription = this.toolsService.getCurrentTool().subscribe((current) => {});
+    }
 
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
