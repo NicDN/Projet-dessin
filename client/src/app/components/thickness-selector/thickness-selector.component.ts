@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Tool } from '@app/classes/tool';
+import { EraserService } from '@app/services/tools/eraser/eraser.service';
 
 @Component({
     selector: 'app-thickness-selector',
@@ -13,5 +14,13 @@ export class ThicknessSelectorComponent {
 
     updateThickness(event: MatSliderChange): void {
         this.updateThicknessEmitter.emit(event.value as number);
+    }
+
+    getValue(): number {
+        if (this.tool instanceof EraserService) {
+            return 5;
+        } else {
+            return 1;
+        }
     }
 }
