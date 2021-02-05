@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { Tool } from '@app/classes/tool';
+import { DrawingTool } from '@app/classes/drawing-tool';
 
 @Component({
     selector: 'app-thickness-selector',
@@ -9,7 +9,7 @@ import { Tool } from '@app/classes/tool';
 })
 export class ThicknessSelectorComponent {
     @Output() updateThicknessEmitter: EventEmitter<number> = new EventEmitter<number>();
-    @Input() tool: Tool;
+    @Input() tool: DrawingTool;
 
     updateThickness(event: MatSliderChange): void {
         this.updateThicknessEmitter.emit(event.value as number);
