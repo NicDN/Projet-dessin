@@ -15,6 +15,8 @@ export class RectangleDrawingService extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.setLineDash([]);
         ctx.lineWidth = this.thickness;
+        ctx.lineCap = 'butt';
+        ctx.lineJoin = 'miter';
         ctx.beginPath();
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
@@ -22,7 +24,12 @@ export class RectangleDrawingService extends Shape {
             endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
         }
-        ctx.rect(begin.x, begin.y, endCoordX - begin.x, endCoordY - begin.y);
+        ctx.rect(
+            begin.x + (Math.sign(end.x - begin.x) * this.thickness) / 2,
+            begin.y + (Math.sign(end.y - begin.y) * this.thickness) / 2,
+            endCoordX - begin.x - Math.sign(end.x - begin.x) * this.thickness,
+            endCoordY - begin.y - Math.sign(end.y - begin.y) * this.thickness,
+        );
 
         ctx.fillStyle = this.colorService.mainColor.rgbValue;
         ctx.globalAlpha = this.colorService.mainColor.opacity;
