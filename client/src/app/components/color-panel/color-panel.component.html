@@ -2,7 +2,8 @@
 <div class="color-panel">
     <div class="color-container">
 
-        <button mat-fab [ngStyle]="{'background-color':colorService.mainColor.rgbValue,'opacity':colorService.mainColor.opacity}"
+        <button mat-fab
+            [ngStyle]="{'background-color':colorService.mainColor.rgbValue,'opacity':colorService.mainColor.opacity}"
             (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left"
             matTooltipShowDelay="1000"></button>
 
@@ -25,9 +26,10 @@
             <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
         </div>
 
-        <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)">
-        </mat-slider>
-
+        <div class="slider-container">
+            <p class="opacity-value">{{opacity}}</p>
+            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)"></mat-slider>
+        </div>
         <div class="input-wrapper">
 
             <mat-form-field>
