@@ -54,6 +54,7 @@ export class ToolsService {
                 break;
             default:
         }
+        this.subject.next(this.currentTool);
     }
 
     onKeyUp(event: KeyboardEvent): void {

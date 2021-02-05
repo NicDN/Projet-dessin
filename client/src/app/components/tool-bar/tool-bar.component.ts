@@ -34,10 +34,10 @@ export class ToolBarComponent {
     //     this.applyBtnStyle(event);
     //     this.toolService.setCurrentTool(tool);
     // }
-    toggleActive(tool: Tool): void {
-        //this.applyBtnStyle(event);
-        this.toolService.setCurrentTool(tool);
-    }
+    // toggleActive(tool: Tool): void {
+    //     // this.applyBtnStyle(event);
+    //     this.toolService.setCurrentTool(tool);
+    // }
 
     // tslint:disable-next-line: no-any
     applyBtnStyle(event: any): void {
