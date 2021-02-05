@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { DrawingTool } from '@app/classes/drawing-tool';
 import { MouseButton } from '@app/classes/tool';
+import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -16,7 +16,7 @@ const DEFAULTTHICKNESS = 1;
 @Injectable({
     providedIn: 'root',
 })
-export class PencilService extends DrawingTool {
+export class PencilService extends TraceTool {
     thickness: number;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
