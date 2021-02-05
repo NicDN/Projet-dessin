@@ -12,15 +12,18 @@ export class ThicknessSelectorComponent {
     @Output() updateThicknessEmitter: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: Tool;
 
+    readonly ERASER_THICKNESS: number = 5;
+    readonly DEFAULT_THICKNESS: number = 1;
+
     updateThickness(event: MatSliderChange): void {
         this.updateThicknessEmitter.emit(event.value as number);
     }
 
     getValue(): number {
         if (this.tool instanceof EraserService) {
-            return 5;
+            return this.ERASER_THICKNESS;
         } else {
-            return 1;
+            return this.DEFAULT_THICKNESS;
         }
     }
 }

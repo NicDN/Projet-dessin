@@ -45,7 +45,13 @@ export class ColorPanelComponent {
     }
 
     updateColor(selectedColor: Color): void {
+        const previousOpacity = selectedColor.opacity;
+        const prevousRGBValue = selectedColor.rgbValue;
         this.colorService.updateColor(selectedColor, this.color, this.opacity);
+
+        if ((previousOpacity !== this.opacity || previousOpacity === this.opacity) && prevousRGBValue !== this.color) {
+            this.colorService.updatePreviousColors(this.color, this.opacity);
+        }
         this.openColorPicker = false;
     }
 
