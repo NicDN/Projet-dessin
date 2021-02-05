@@ -59,16 +59,6 @@ export class DrawingComponent implements AfterViewInit {
         this.canDraw = true;
     }
 
-    @HostListener('window:keydown', ['$event'])
-    onKeyDown(event: KeyboardEvent): void {
-        this.toolsService.onKeyDown(event);
-    }
-
-    @HostListener('window:keyup', ['$event'])
-    onKeyUp(event: KeyboardEvent): void {
-        this.toolsService.onKeyUp(event);
-    }
-
     @HostListener('mouseout', ['$event'])
     onMouseOut(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseOut(event);
@@ -77,6 +67,16 @@ export class DrawingComponent implements AfterViewInit {
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        this.toolsService.onKeyDown(event);
+    }
+
+    @HostListener('window:keyup', ['$event'])
+    onKeyUp(event: KeyboardEvent): void {
+        this.toolsService.onKeyUp(event);
     }
 
     disableDrawing(isUsingButton: boolean): void {
