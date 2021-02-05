@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
@@ -24,8 +25,9 @@ export class DrawingComponent implements AfterViewInit {
     private previewCtx: CanvasRenderingContext2D;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-
     private canDraw: boolean = true;
+
+    subscription: Subscription;
 
     constructor(private drawingService: DrawingService, private toolsService: ToolsService) {}
 

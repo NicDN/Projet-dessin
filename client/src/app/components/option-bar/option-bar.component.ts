@@ -1,7 +1,7 @@
-import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 
 @Component({
     selector: 'app-option-bar',

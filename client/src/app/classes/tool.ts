@@ -35,6 +35,6 @@ export abstract class Tool {
     onKeyUp(event: KeyboardEvent): void {}
 
     getPositionFromMouse(event: MouseEvent): Vec2 {
-        return { x: event.offsetX, y: event.offsetY };
+        return { x: event.pageX-404, y: event.pageY };
     }
 }
