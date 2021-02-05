@@ -27,8 +27,8 @@ export class EllipseDrawingService extends Shape {
         ctx.ellipse(
             (endCoordX + begin.x) / 2,
             (endCoordY + begin.y) / 2,
-            Math.abs(endCoordX - begin.x) / 2,
-            Math.abs(endCoordY - begin.y) / 2,
+            Math.abs(endCoordX - begin.x) / 2 - this.thickness / 2,
+            Math.abs(endCoordY - begin.y) / 2 - this.thickness / 2,
             0,
             0,
             2 * Math.PI,
