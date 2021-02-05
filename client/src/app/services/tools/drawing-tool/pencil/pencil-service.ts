@@ -59,16 +59,16 @@ export class PencilService extends DrawingTool {
         let oldPointY: number = path[0].y;
         ctx.globalAlpha = this.colorService.mainColor.opacity;
         ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+        ctx.beginPath();
 
         for (const point of path) {
-            ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
             ctx.lineTo(point.x, point.y);
-            ctx.stroke();
 
             oldPointX = point.x;
             oldPointY = point.y;
         }
+        ctx.stroke();
     }
 
     private clearPath(): void {

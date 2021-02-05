@@ -21,6 +21,7 @@ export class EraserService extends PencilService {
         ctx.lineJoin = ctx.lineCap = 'round';
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
+        ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'destination-out';
         if (this.thickness < MINTHICKNESS) this.thickness = MINTHICKNESS;
         ctx.lineWidth = this.thickness;
