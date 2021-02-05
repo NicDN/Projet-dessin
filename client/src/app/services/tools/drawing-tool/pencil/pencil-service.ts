@@ -50,7 +50,7 @@ export class PencilService extends DrawingTool {
         this.clearPath();
     }
 
-    onMouseMove(event: MouseEvent): void {
+    everyMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
@@ -58,6 +58,10 @@ export class PencilService extends DrawingTool {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawLine(this.drawingService.previewCtx, this.pathData);
         }
+    }
+
+    onMouseMove(event: MouseEvent): void {
+        this.everyMouseMove(event);
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
