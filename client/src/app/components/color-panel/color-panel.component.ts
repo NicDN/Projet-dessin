@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
 // import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
@@ -9,6 +10,8 @@ import { ColorService } from '@app/services/color/color.service';
     styleUrls: ['./color-panel.component.scss'],
 })
 export class ColorPanelComponent {
+    readonly OPACITY_AJUSTMENT: number = 100;
+
     colorService: ColorService;
     previousColors: Color[];
 
@@ -22,13 +25,6 @@ export class ColorPanelComponent {
     hue: string;
     color: string;
     opacity: number;
-
-    getButtonStyle(color: string, opacity: number) {
-        return {
-            'background-color': color,
-            opacity: opacity / 100,
-        };
-    }
 
     constructor(colorService: ColorService) {
         this.colorService = colorService;
@@ -54,16 +50,24 @@ export class ColorPanelComponent {
     }
 
     setPrimaryColor(index: number): void {
-        this.colorService.mainColor = this.colorService.previousColors[index];
+        this.colorService.updateMainColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
         if (this.openColorPicker) {
             this.openColorPicker = false;
         }
     }
 
     setSecondaryColor(index: number): void {
-        this.colorService.secondaryColor = this.colorService.previousColors[index];
+        this.colorService.updateSecondaryColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
         if (this.openColorPicker) {
             this.openColorPicker = false;
         }
+    }
+
+    updateOpacity(event: MatSliderChange): void {
+        this.opacity = (event.value as number) / this.OPACITY_AJUSTMENT;
+    }
+
+    getOpacity(): number {
+        return this.opacity * this.OPACITY_AJUSTMENT;
     }
 }

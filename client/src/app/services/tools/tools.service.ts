@@ -12,7 +12,7 @@ import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.ser
 })
 export class ToolsService {
     currentTool: Tool;
-    private subject: Subject<any> = new Subject<any>();
+    private subject: Subject<Tool> = new Subject<Tool>();
 
     constructor(
         public pencilService: PencilService,
@@ -29,7 +29,7 @@ export class ToolsService {
         this.subject.next(tool);
     }
 
-    getCurrentTool(): Observable<any> {
+    getCurrentTool(): Observable<Tool> {
         return this.subject.asObservable();
     }
 

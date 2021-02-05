@@ -45,7 +45,6 @@ export class AttributesPanelComponent implements OnInit {
         }
     }
 
-    // these methods should be refactored to be compact
     pencilOrEraserIsActive(): boolean {
         return this.currentTool === this.toolsService.pencilService || this.currentTool === this.toolsService.eraserService;
     }
