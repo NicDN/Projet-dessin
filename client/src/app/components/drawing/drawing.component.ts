@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
+import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { CanvasCommunicationService } from '@app/services/canvas_coms/canvas-communication.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { EraserService } from '@app/services/tools/eraser/eraser.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { Subscription } from 'rxjs';
 
@@ -31,8 +33,12 @@ export class DrawingComponent implements AfterViewInit {
 
     subscription: Subscription;
 
+    isEraser: boolean;
+
     constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {
-        // this.subscription = this.toolsService.getCurrentTool().subscribe((current) => {});
+        this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => {
+            this.isEraser = currentTool instanceof EraserService;
+        });
     }
 
     ngAfterViewInit(): void {

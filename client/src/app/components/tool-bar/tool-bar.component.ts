@@ -23,7 +23,7 @@ export class ToolBarComponent {
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
         { icon: 'eraser', toolTipContent: 'Efface (E)', tool: this.toolService.eraserService },
     ];
-    constructor(private toolService: ToolsService) {
+    constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);
         this.subscription = this.toolService.getCurrentTool().subscribe((currenTool: Tool) => {
             // changer boolean pour affecter a nouveau style
