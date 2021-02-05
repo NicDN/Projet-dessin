@@ -53,7 +53,10 @@ export class LineService extends DrawingTool {
                         if (this.mousePosition.y <= firstPos.y + MAX_OFFSET && this.mousePosition.y >= firstPos.y - MAX_OFFSET) {
                             // Since a double-click push 2 times the last value, we need to pop the last 2 values
                             this.pathData.pop();
-                            this.pathData.pop();
+                            // We cant pop another point if we double click on the first point
+                            if (this.pathData.length > 1) {
+                                this.pathData.pop();
+                            }
                             this.pathData.push(this.pathData[0]);
                         }
                     }
