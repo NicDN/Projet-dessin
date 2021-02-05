@@ -1,12 +1,14 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
+import { CanvasCommunicationService } from '@app/services/canvas_coms/canvas-communication.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
-export const DEFAULT_WIDTH = 1000;
-export const DEFAULT_HEIGHT = 800;
+export const DEFAULT_SIZE = 250;
+const MINIMUM_WORKSPACE_SIZE = 500;
+const SIDE_BAR_SIZE = 300;
 const HALF_RATIO = 0.5;
 
 @Component({
@@ -21,16 +23,12 @@ export class DrawingComponent implements AfterViewInit {
 
     private baseCtx: CanvasRenderingContext2D;
     private previewCtx: CanvasRenderingContext2D;
-    private canvasSize: Vec2 = { x: window.innerWidth * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
+
+    private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
     private canDraw: boolean = true;
-    // TODO : Avoir un service dédié pour gérer tous les outils ? Ceci peut devenir lourd avec le temps
-    // private tools: Tool[];
-    // currentTool: Tool;
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService) {
-        // this.tools = [pencilService];
-        // this.currentTool = this.tools[0];
-    }
+
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {}
 
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -48,7 +46,11 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw) this.toolsService.currentTool.onMouseDown(event);
+        if (this.canDraw) {
+            this.comsCanvasService.canvasModified();
+            console.log(this.comsCanvasService.canvasIsEmpty);
+            this.toolsService.currentTool.onMouseDown(event);
+        }
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -95,11 +97,16 @@ export class DrawingComponent implements AfterViewInit {
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
     }
 
+    isEmpty(): boolean {
+        console.log('Is perhaps empty');
+        return false;
+    }
+
     get width(): number {
-        return this.canvasSize.x;
+        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_SIZE;
     }
 
     get height(): number {
-        return this.canvasSize.y;
+        return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_SIZE;
     }
 }

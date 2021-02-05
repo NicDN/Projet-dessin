@@ -1,8 +1,16 @@
 .attributes-panel-container {
-  background-color: rgb(42, 49, 54);
-  width: 82%;
+  background-color: rgb(66, 76, 83);
+  width: 350px;
   height: 100%;  
   display: block;
   float: right;
   text-align : center;
+}
+
+.tool-name-header{
+  padding-top: 10px;
+  margin-bottom: 0px;
+  background-color:rgb(229,18,130) ;
+  height: 40px;
+  color: white;
 }

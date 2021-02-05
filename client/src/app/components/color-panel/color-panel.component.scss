@@ -1,5 +1,67 @@
-.color-panel{
-    background-color: blueviolet;
-    height: 100px;
-    
+// Reference: https://malcoded.com/posts/angular-color-picker/
+.color-container {
+    padding-bottom: 10px;
+}
+.list-previous-color {
+    display: inline;
+    margin-bottom: 10px;
+}
+.previousColor {
+    width: 20px;
+    height: 20px;
+    margin: 3px;
+}
+:host {
+    display: block;
+    width: 316px;
+    padding: 16px;
+}
+.color-wrapper {
+    display: flex;
+    margin-top: 10px;
+    height: 250px;
+}
+
+.input-wrapper {
+    margin-top: 16px;
+    display: flex;
+    border-radius: 1px;
+    border: 1px solid rgb(220, 220, 220);
+    padding: 8px;
+    height: 32px;
+    justify-content: center;
+}
+
+.color-div {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgb(220, 220, 220);
+}
+
+.text {
+    flex: 1;
+    font-family: 'Helvetica';
+    line-height: 32px;
+}
+.opacity-slider{
+    width: 300px;
+}
+.check{
+    font-size: 15px;
+}
+.preview-color{
+    width: 50px;
+    height: 36px;
+    border-radius: 5px;
+}
+.confirm-color-button{
+    margin-left: 5px;
+    width: 40px;
+    height: 36px;
+    background-color: green;
+}
+.input-rgb{
+    width: 20px;
+    margin: 5px;
 }

@@ -4,12 +4,6 @@ import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-// import { ColorService } from '@app/services/color/color.service';
-
-// Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet
-// L'implémentation ici ne couvre pas tous les critères d'accepetation du projet
-// Vous êtes encouragés de modifier et compléter le code.
-// N'oubliez pas de regarder les tests dans le fichier spec.ts aussi!
 
 const DEFAULTTHICKNESS = 1;
 
@@ -17,10 +11,8 @@ const DEFAULTTHICKNESS = 1;
     providedIn: 'root',
 })
 export class PencilService extends DrawingTool {
-    thickness: number;
-
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+        super(drawingService, colorService, 'Crayon');
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
     }
@@ -65,11 +57,12 @@ export class PencilService extends DrawingTool {
         ctx.lineWidth = this.thickness;
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
+        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
 
         for (const point of path) {
             ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
-            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
             ctx.stroke();
 

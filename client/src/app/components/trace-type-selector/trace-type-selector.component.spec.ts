@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ColorPickerComponent } from './color-picker.component';
+import { TraceTypeSelectorComponent } from './trace-type-selector.component';
 
-describe('ColorPickerComponent', () => {
-    let component: ColorPickerComponent;
-    let fixture: ComponentFixture<ColorPickerComponent>;
+describe('TraceTypeSelectorComponent', () => {
+    let component: TraceTypeSelectorComponent;
+    let fixture: ComponentFixture<TraceTypeSelectorComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ColorPickerComponent],
+            declarations: [TraceTypeSelectorComponent],
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ColorPickerComponent);
+        fixture = TestBed.createComponent(TraceTypeSelectorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

@@ -1,42 +1,34 @@
 import { Injectable } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
+import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+
 // import { ColorService } from '@app/services/color/color.service';
-
-const DEFAULT_THICKNESS = 10;
-const DEFAULT_JONCTION = false;
-const DEFAULT_JONCTION_THICKNESS = 10;
-
-export enum MouseButton {
-    Left = 0,
-    Middle = 1,
-    Right = 2,
-    Back = 3,
-    Forward = 4,
-}
 
 @Injectable({
     providedIn: 'root',
 })
 export class LineService extends DrawingTool {
     thickness: number;
-    // values for the force alignment
+
     isShiftDown: boolean;
     shiftAngle: number;
     lastSelectedPoint: Vec2;
+    readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
 
-    // parameters for the dot jonctions
-    private dotJonction: boolean;
-    private dotThickness: number;
+    drawWithJunction: boolean;
+    junctionDiameter: number;
 
     private pathData: Vec2[];
     private mousePosition: Vec2;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+        super(drawingService, colorService, 'Ligne');
         this.clearPath();
+        this.drawWithJunction = false;
+        this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
     }
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');
@@ -175,19 +167,18 @@ export class LineService extends DrawingTool {
     }
 
     private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        this.thickness = DEFAULT_THICKNESS; // default value, to be removed
-        this.dotJonction = DEFAULT_JONCTION; // default value, to be removed
-        this.dotThickness = DEFAULT_JONCTION_THICKNESS; // default value, to be removed
-
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
+        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+        ctx.fillStyle = this.colorService.mainColor.rgbValue;
         ctx.lineJoin = ctx.lineCap = 'round';
         ctx.beginPath();
 
         for (const point of path) {
             ctx.lineWidth = this.thickness;
             ctx.lineTo(point.x, point.y);
-            if (this.dotJonction) {
+            if (this.drawWithJunction) {
                 const circle = new Path2D();
-                circle.arc(point.x, point.y, this.dotThickness, 0, 2 * Math.PI);
+                circle.arc(point.x, point.y, this.junctionDiameter, 0, 2 * Math.PI);
                 ctx.fill(circle);
             }
         }

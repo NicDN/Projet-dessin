@@ -1,6 +1,6 @@
 <div>
     <mat-nav-list *ngFor="let optionBarElement of optionBarElements">
-       <a mat-list-item (click)="toggleActive()" matTooltip="{{ optionBarElement.toolTipContent }}"
+       <a mat-list-item (click)="toggleActive($event, optionBarElement.toolTipContent)" matTooltip="{{ optionBarElement.toolTipContent }}"
            matTooltipPosition="right" [matTooltipShowDelay]="showDelay.value">
            <fa-icon icon="{{ optionBarElement.icon }}"></fa-icon>
        </a>
