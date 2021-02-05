@@ -14,6 +14,7 @@ export class ToolBarComponent {
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
     subscription: Subscription;
+    // activeTool: Tool;
 
     toolBarElements: { icon: string; toolTipContent: string; tool?: Tool }[] = [
         { icon: 'pencil-alt', toolTipContent: 'Crayon (C)', tool: this.toolService.pencilService },
@@ -25,7 +26,7 @@ export class ToolBarComponent {
     constructor(private toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);
         this.subscription = this.toolService.getCurrentTool().subscribe((currenTool: Tool) => {
-           // changer boolean pour affecter a nouveau style
+            // changer boolean pour affecter a nouveau style
         });
     }
 
@@ -35,8 +36,9 @@ export class ToolBarComponent {
     //     this.toolService.setCurrentTool(tool);
     // }
     toggleActive(tool: Tool): void {
-        //this.applyBtnStyle(event);
+        // this.applyBtnStyle(event);
         this.toolService.setCurrentTool(tool);
+        // this.activeTool = Tool;
     }
 
     // tslint:disable-next-line: no-any
