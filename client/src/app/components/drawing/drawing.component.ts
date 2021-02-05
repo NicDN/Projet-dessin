@@ -50,28 +50,20 @@ export class DrawingComponent implements AfterViewInit {
         }
     }
 
+    // @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         if (this.canDraw) {
             this.comsCanvasService.canvasModified();
-            console.log(this.comsCanvasService.canvasIsEmpty);
+            // console.log(this.comsCanvasService.canvasIsEmpty);
             this.toolsService.currentTool.onMouseDown(event);
         }
     }
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
+        console.log(event.x);
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
         this.canDraw = true;
-    }
-
-    @HostListener('window:keydown', ['$event'])
-    onKeyDown(event: KeyboardEvent): void {
-        this.toolsService.onKeyDown(event);
-    }
-
-    @HostListener('window:keyup', ['$event'])
-    onKeyUp(event: KeyboardEvent): void {
-        this.toolsService.onKeyUp(event);
     }
 
     @HostListener('mouseout', ['$event'])
@@ -82,6 +74,16 @@ export class DrawingComponent implements AfterViewInit {
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        this.toolsService.onKeyDown(event);
+    }
+
+    @HostListener('window:keyup', ['$event'])
+    onKeyUp(event: KeyboardEvent): void {
+        this.toolsService.onKeyUp(event);
     }
 
     disableDrawing(isUsingButton: boolean): void {
