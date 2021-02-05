@@ -18,6 +18,7 @@ export class EraserService extends PencilService {
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx = this.drawingService.baseCtx; // TO_CHANGE
+        ctx.lineJoin = ctx.lineCap = 'round';
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
         ctx.globalCompositeOperation = 'destination-out';
