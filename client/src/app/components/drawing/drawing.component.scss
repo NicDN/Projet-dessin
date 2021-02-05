@@ -1,23 +1,21 @@
 canvas {
-    cursor: crosshair;
     border: 2px solid #000000;
     position: absolute;
     left: 0;
     top: 0;
-    z-index : 2;
-    
-}
-
-#canvas{
-    z-index: 1;
-    background-color:white;
-}
-
-#drawCanvas{
     z-index: 2;
 }
 
-#canvas-container{
-    position: absolute;   
+#canvas {
+    z-index: 1;
+    background-color: white;
 }
 
+
+#drawCanvas{   
+    z-index: 2;
+}
+
+#canvas-container {
+    position: absolute;
+}

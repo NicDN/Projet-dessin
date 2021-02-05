@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
@@ -24,7 +25,7 @@ export class AttributesPanelComponent implements OnInit {
     }
 
     setThickness(thickness: number): void {
-        this.currentTool.thickness = thickness;
+        (this.currentTool as DrawingTool).thickness = thickness;
     }
 
     setTraceType(type: number): void {

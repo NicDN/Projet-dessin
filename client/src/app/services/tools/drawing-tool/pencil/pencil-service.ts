@@ -1,18 +1,26 @@
 import { Injectable } from '@angular/core';
-import { DrawingTool } from '@app/classes/drawing-tool';
 import { MouseButton } from '@app/classes/tool';
+import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+// import { ColorService } from '@app/services/color/color.service';
+
+// Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet
+// L'implémentation ici ne couvre pas tous les critères d'accepetation du projet
+// Vous êtes encouragés de modifier et compléter le code.
+// N'oubliez pas de regarder les tests dans le fichier spec.ts aussi!
 
 const DEFAULTTHICKNESS = 1;
 
 @Injectable({
     providedIn: 'root',
 })
-export class PencilService extends DrawingTool {
+export class PencilService extends TraceTool {
+    thickness: number;
+
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService, 'Crayon');
+        super(drawingService, colorService, 'crayon');
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
     }
@@ -42,7 +50,7 @@ export class PencilService extends DrawingTool {
         this.clearPath();
     }
 
-    onMouseMove(event: MouseEvent): void {
+    everyMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
@@ -52,6 +60,10 @@ export class PencilService extends DrawingTool {
         }
     }
 
+    onMouseMove(event: MouseEvent): void {
+        this.everyMouseMove(event);
+    }
+
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx.lineJoin = ctx.lineCap = 'round';
         ctx.lineWidth = this.thickness;
@@ -59,16 +71,17 @@ export class PencilService extends DrawingTool {
         let oldPointY: number = path[0].y;
         ctx.globalAlpha = this.colorService.mainColor.opacity;
         ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+        ctx.beginPath();
 
         for (const point of path) {
-            ctx.beginPath();
             ctx.moveTo(oldPointX, oldPointY);
+            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
-            ctx.stroke();
 
             oldPointX = point.x;
             oldPointY = point.y;
         }
+        ctx.stroke();
     }
 
     private clearPath(): void {
