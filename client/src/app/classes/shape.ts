@@ -29,6 +29,7 @@ export abstract class Shape extends Tool {
     }
 
     onMouseUp(event: MouseEvent): void {
+        console.log('mouseUp');
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -38,6 +39,10 @@ export abstract class Shape extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
+        // 1 = leftclick
+        if (event.buttons !== 1) {
+            this.mouseDown = false;
+        }
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawPreview();
