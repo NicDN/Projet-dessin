@@ -2,6 +2,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MouseButton, Tool } from './tool';
 import { Vec2 } from './vec2';
+//import { DrawingTool } from '@app/classes/drawing-tool';
 
 export enum TraceType {
     Bordered,

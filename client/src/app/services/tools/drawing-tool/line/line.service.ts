@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DrawingTool } from '@app/classes/drawing-tool';
+import { TraceTool } from '@app/classes/trace-tool';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -10,7 +10,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 @Injectable({
     providedIn: 'root',
 })
-export class LineService extends DrawingTool {
+export class LineService extends TraceTool {
     thickness: number;
 
     isShiftDown: boolean;
