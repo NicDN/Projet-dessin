@@ -48,7 +48,7 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.subscription = this.drawingService.getMessage().subscribe((message) => {
             if (message) {
                 this.newDrawingNotification();
-                console.log("Passe par icitte, tout de suite");
+                console.log('Passe par icitte, tout de suite');
             }
         });
     }
