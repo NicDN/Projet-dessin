@@ -2,20 +2,22 @@
 <div class="color-panel">
     <div class="color-container">
 
-        <button mat-fab [ngStyle]="getButtonStyle(colorService.mainColor.rgbValue,colorService.mainColor.opacity)"
-            (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left" matTooltipShowDelay="1000"></button>
+        <button mat-fab [ngStyle]="{'background-color':colorService.mainColor.rgbValue,'opacity':colorService.mainColor.opacity}"
+            (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left"
+            matTooltipShowDelay="1000"></button>
 
         <button mat-button (click)="switchColors()">
             <mat-icon>compare_arrows</mat-icon>
         </button>
         <button mat-mini-fab
-            [ngStyle]="getButtonStyle(colorService.secondaryColor.rgbValue,colorService.secondaryColor.opacity)"
-            (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire" matTooltipPosition="right" matTooltipShowDelay="1000"></button>
+            [ngStyle]="{'background-color':colorService.secondaryColor.rgbValue,'opacity':colorService.secondaryColor.opacity}"
+            (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire"
+            matTooltipPosition="right" matTooltipShowDelay="1000"></button>
     </div>
     <div *ngFor="let previousColor of previousColors; let index=index;" class="list-previous-color">
         <button mat-mini-fab class="previousColor" (click)="setPrimaryColor(index)"
             (contextmenu)="setSecondaryColor(index)"
-            [ngStyle]="getButtonStyle(previousColor.rgbValue,previousColor.opacity)"></button>
+            [ngStyle]="{'background-color':previousColor.rgbValue,'opacity':previousColor.opacity}"></button>
     </div>
     <div *ngIf="openColorPicker">
         <div class=color-wrapper>
@@ -23,7 +25,8 @@
             <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
         </div>
 
-        <mat-slider #slider class="opacity-slider" min="15" [(ngModel)]="opacity"></mat-slider>
+        <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)">
+        </mat-slider>
 
         <div class="input-wrapper">
 
@@ -33,11 +36,11 @@
             </mat-form-field>
 
 
-            <span class="preview-color" [ngStyle]="getButtonStyle(color,opacity)">
+            <span class="preview-color" [ngStyle]="{'background-color':color,'opacity':opacity}">
 
             </span>
             <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
-                <fa-icon icon="check" class="check" ></fa-icon>
+                <fa-icon icon="check" class="check"></fa-icon>
             </button>
 
         </div>
