@@ -1,14 +1,13 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
-import { CanvasCommunicationService } from '@app/services/canvas_coms/canvas-communication.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_SIZE = 250;
 const MINIMUM_WORKSPACE_SIZE = 500;
-const SIDE_BAR_SIZE = 300;
+const SIDE_BAR_SIZE = 400;
 const HALF_RATIO = 0.5;
 
 @Component({
@@ -28,7 +27,7 @@ export class DrawingComponent implements AfterViewInit {
 
     private canDraw: boolean = true;
 
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private comsCanvasService: CanvasCommunicationService) {}
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService) {}
 
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -48,8 +47,6 @@ export class DrawingComponent implements AfterViewInit {
 
     onMouseDown(event: MouseEvent): void {
         if (this.canDraw) {
-            this.comsCanvasService.canvasModified();
-            console.log(this.comsCanvasService.canvasIsEmpty);
             this.toolsService.currentTool.onMouseDown(event);
         }
     }
@@ -96,11 +93,6 @@ export class DrawingComponent implements AfterViewInit {
 
         this.previewCanvas.nativeElement.width = boxsize.widthBox;
         this.previewCanvas.nativeElement.height = boxsize.heightBox;
-    }
-
-    isEmpty(): boolean {
-        console.log('Is perhaps empty');
-        return false;
     }
 
     get width(): number {
