@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 import { IndexService } from '@app/services/index/index.service';
 import { Message } from '@common/communication/message';
 import { BehaviorSubject } from 'rxjs';
@@ -12,10 +13,10 @@ import { map } from 'rxjs/operators';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
+    controlKeyDown: boolean = false;
     containsDrawing: boolean = false; // temporary boolean
 
-    constructor(private basicService: IndexService) {}
+    constructor(private basicService: IndexService, private router: Router) {}
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
@@ -36,5 +37,28 @@ export class MainPageComponent {
                 }),
             )
             .subscribe(this.message);
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        event.stopPropagation();
+        if (event.ctrlKey) {
+            this.controlKeyDown = true;
+            event.preventDefault();
+        }
+        switch (event.code) {
+            case 'KeyO':
+                this.router.navigate(['/editor']);
+                break;
+            default:
+            /* Nothing happens if a random key is pressed */
+            /* Maybe we want this to be in a service */
+        }
+        event.returnValue = true; // Renables shortcuts like f11
+    }
+
+    @HostListener('window:keyup', ['$event'])
+    onKeyUp(event: KeyboardEvent): void {
+        if (event.ctrlKey) this.controlKeyDown = false;
     }
 }

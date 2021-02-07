@@ -56,7 +56,5 @@ export class ColorService {
 
         // regarder si lopaciter a changer ou non
         this.updatePreviousColors(color, opacity);
-
-
     }
 }

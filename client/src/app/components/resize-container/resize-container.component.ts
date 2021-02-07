@@ -52,14 +52,6 @@ export class ResizeContainerComponent implements AfterViewInit {
         console.log(this.boxPosition);
     }
 
-    setStatus(event: MouseEvent, status: number): void {
-        if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
-        this.status = status;
-        if (this.status !== Status.NOT_RESIZING) {
-            this.usingButton.emit(true);
-        }
-    }
-
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
         this.resize(event);
@@ -68,6 +60,18 @@ export class ResizeContainerComponent implements AfterViewInit {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         this.onMouseUpContainer(event);
+    }
+
+    onMouseDown(event: MouseEvent, status: number): void {
+        this.setStatus(event, status);
+    }
+
+    setStatus(event: MouseEvent, status: number): void {
+        if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
+        this.status = status;
+        if (this.status !== Status.NOT_RESIZING) {
+            this.usingButton.emit(true);
+        }
     }
 
     onMouseUpContainer(event: MouseEvent): void {
