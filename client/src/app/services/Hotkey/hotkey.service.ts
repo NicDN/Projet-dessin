@@ -1,0 +1,50 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { DrawingService } from '@app/services/drawing/drawing.service';
+
+@Injectable({
+    providedIn: 'root',
+})
+export class HotkeyService {
+    controlKeyDown: boolean = false;
+
+    constructor(private router: Router, private drawingService: DrawingService) {}
+
+    onKeyDownMainPage(event: KeyboardEvent): void {
+        event.stopPropagation();
+        if (event.ctrlKey) {
+            this.controlKeyDown = true;
+            event.preventDefault();
+        }
+        switch (event.code) {
+            case 'KeyO':
+                this.router.navigate(['/editor']);
+                break;
+            default:
+            /* Nothing happens if a random key is pressed */
+            /* Maybe we want this to be in a service */
+        }
+        event.returnValue = true; // Renables all normal web shortcuts
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        event.stopPropagation();
+        if (event.ctrlKey) {
+            this.controlKeyDown = true;
+            event.preventDefault();
+        }
+        switch (event.code) {
+            case 'KeyO':
+                if (this.controlKeyDown) this.drawingService.handleNewDrawing();
+                break;
+            default:
+            /* Nothing happens if a random key is pressed */
+            /* Maybe we want this to be in a service */
+        }
+        event.returnValue = true; // Renables shortcuts like f11
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        if (event.ctrlKey) this.controlKeyDown = false;
+    }
+}

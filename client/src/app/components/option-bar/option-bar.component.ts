@@ -1,26 +1,21 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { HotkeyService } from '@app/services/HotKey/hotkey.service';
 
 @Component({
     selector: 'app-option-bar',
     templateUrl: './option-bar.component.html',
     styleUrls: ['./option-bar.component.scss'],
 })
-export class OptionBarComponent implements OnInit {
+export class OptionBarComponent {
     readonly SHOW_DELAY_MS: number = 750;
     routerLink: RouterModule;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
+    constructor(private drawingService: DrawingService, private hotkey: HotkeyService) {}
 
-    controlKeyDown: boolean = false;
-
-    constructor(private drawingService: DrawingService) {}
-
-    ngOnInit(): void {
-        //
-    }
     toggleActive(event: EventTarget, toolTipContent: string): void {
         if (toolTipContent === 'Créer un nouveau dessin (Ctrl+O)') {
             this.drawingService.handleNewDrawing();
@@ -29,24 +24,11 @@ export class OptionBarComponent implements OnInit {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        event.stopPropagation();
-        if (event.ctrlKey) {
-            this.controlKeyDown = true;
-            event.preventDefault();
-        }
-        switch (event.code) {
-            case 'KeyO':
-                if (this.controlKeyDown) this.drawingService.handleNewDrawing();
-                break;
-            default:
-            /* Nothing happens if a random key is pressed */
-            /* Maybe we want this to be in a service */
-        }
-        event.returnValue = true; // Renables shortcuts like f11
+        this.hotkey.onKeyDown(event);
     }
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        if (event.ctrlKey) this.controlKeyDown = false;
+        this.hotkey.onKeyUp(event);
     }
 }
