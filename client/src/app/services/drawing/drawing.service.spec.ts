@@ -24,4 +24,9 @@ describe('DrawingService', () => {
         const hasColoredPixels = pixelBuffer.some((color) => color !== 0);
         expect(hasColoredPixels).toEqual(false);
     });
+
+    it('should check if canvas is empty', () => {
+        service.baseCtx.fillRect(0, 0, 1, 1);
+        expect(service.checkIfCanvasEmpty()).toEqual(false);
+    });
 });

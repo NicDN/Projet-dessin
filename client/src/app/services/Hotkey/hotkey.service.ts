@@ -21,8 +21,6 @@ export class HotkeyService {
                 if(this.controlKeyDown) this.router.navigate(['/editor']);
                 break;
             default:
-            /* Nothing happens if a random key is pressed */
-            /* Maybe we want this to be in a service */
         }
         event.returnValue = true; // Reanables all normal web shortcuts
     }

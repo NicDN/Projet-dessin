@@ -49,6 +49,7 @@ export class DrawingService {
     }
 
     checkIfCanvasEmpty(): boolean {
+        this.clearCanvas(this.previewCtx);
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
