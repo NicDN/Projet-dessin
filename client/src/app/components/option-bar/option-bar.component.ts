@@ -14,7 +14,7 @@ export class OptionBarComponent {
     routerLink: RouterModule;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
-    constructor(private drawingService: DrawingService, private hotkeyService: HotkeyService) {}
+    constructor(private drawingService: DrawingService, public hotkeyService: HotkeyService) {}
 
     toggleActive(event: EventTarget, toolTipContent: string): void {
         if (toolTipContent === 'Créer un nouveau dessin (Ctrl+O)') {

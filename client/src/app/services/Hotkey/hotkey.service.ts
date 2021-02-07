@@ -8,7 +8,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class HotkeyService {
     controlKeyDown: boolean = false;
 
-    constructor(private router: Router, private drawingService: DrawingService) {}
+    constructor(private router: Router, public drawingService: DrawingService) {}
 
     onKeyDownMainPage(event: KeyboardEvent): void {
         event.stopPropagation();
@@ -28,7 +28,6 @@ export class HotkeyService {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        event.stopPropagation();
         if (event.ctrlKey) {
             this.controlKeyDown = true;
             event.preventDefault();

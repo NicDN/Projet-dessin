@@ -41,10 +41,10 @@ export class DrawingService {
     reloadDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        this.resizeCanvas();
+        this.resetCanvas();
     }
 
-    resizeCanvas(): void {
+    resetCanvas(): void {
         this.sendNotifReload('Resizing the canvas');
     }
 
