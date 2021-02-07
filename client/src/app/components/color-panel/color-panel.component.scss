@@ -49,12 +49,25 @@
     text-align: left;
 }
 .opacity-slider {
-    width: 240px;
+    width: 220px;
     display: inline-block;
 }
+.slider-container {
+    text-align: left;
+}
+
 .opacity-value {
     display: inline-block;
     padding-right: 5px;
+}
+
+.opacity-value {
+    display: inline-block;
+    padding-left: 8px;
+}
+.opacity-title{
+    display: inline-block;
+    padding-right: 4px;
 }
 .check {
     font-size: 15px;

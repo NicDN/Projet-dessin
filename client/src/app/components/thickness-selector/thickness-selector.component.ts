@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { DrawingTool } from '@app/classes/drawing-tool';
+// import { EraserService } from '@app/services/tools/eraser/eraser.service';
 
 @Component({
     selector: 'app-thickness-selector',
