@@ -9,9 +9,9 @@ import { Subscription } from 'rxjs';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_SIZE = 250;
-const MINIMUM_WORKSPACE_SIZE = 500;
-const SIDE_BAR_SIZE = 400;
-const HALF_RATIO = 0.5;
+export const MINIMUM_WORKSPACE_SIZE = 500;
+export const SIDE_BAR_SIZE = 400;
+export const HALF_RATIO = 0.5;
 
 @Component({
     selector: 'app-drawing',
@@ -38,8 +38,6 @@ export class DrawingComponent implements AfterViewInit {
             this.isEraser = currentTool instanceof EraserService;
         });
     }
-
-
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
