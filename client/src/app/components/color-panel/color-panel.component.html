@@ -25,19 +25,29 @@
             <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
             <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
         </div>
-        <div class="slider-container" >
+        <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)"></mat-slider>
+            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)">
+            </mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
 
 
         <div class="input-wrapper">
-
-            <mat-form-field>
-                <mat-label>{{color}}</mat-label>
-                <input type="text" matInput>
-            </mat-form-field>
+            <form class="rgb-form" *ngFor="let index of rgbIndexArray">
+                <mat-form-field>
+                    <!-- <mat-label>{{getRGB("red")}}</mat-label> -->
+                    <input  
+                    type="text" 
+                   
+                    maxlength="3"
+                    minlength="1"
+                    [formControl]="formControl"
+                    [value]="getRGB(index)" 
+                    (input)="applyRGBInput($event.target.value,index)" matInput>
+                    <mat-error *ngIf="formControl.hasError('max')">Erreur!</mat-error>
+                </mat-form-field>
+            </form>
 
             <span class="preview-color" [ngStyle]="{'background-color':color,'opacity':opacity}"></span>
 

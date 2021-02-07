@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
 // import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
@@ -11,6 +12,9 @@ import { ColorService } from '@app/services/color/color.service';
 })
 export class ColorPanelComponent {
     readonly OPACITY_AJUSTMENT: number = 100;
+    readonly MAX_RGB_VALUE: number = 255;
+
+    readonly rgbIndexArray: number[] = [0, 1, 2];
 
     colorService: ColorService;
     previousColors: Color[];
@@ -18,13 +22,13 @@ export class ColorPanelComponent {
     selectedColor: Color;
     openColorPicker: boolean = false;
 
-    // red: string;
-    // green: string;
-    // blue: string;
-
-    hue: string;
     color: string;
+    hue: string;
     opacity: number;
+
+    rgbArray: RegExpMatchArray | null;
+
+    formControl: FormControl = new FormControl('', [Validators.max(this.MAX_RGB_VALUE), Validators.min(0)]);
 
     constructor(colorService: ColorService) {
         this.colorService = colorService;
@@ -38,6 +42,7 @@ export class ColorPanelComponent {
         this.hue = this.selectedColor.rgbValue;
 
         this.openColorPicker = true;
+        this.rgbArray = this.color.match(/\d+/g);
     }
 
     switchColors(): void {
@@ -75,5 +80,17 @@ export class ColorPanelComponent {
 
     getOpacity(): number {
         return this.opacity * this.OPACITY_AJUSTMENT;
+    }
+
+    getRGB(rgbIndex: number): string {
+        this.rgbArray = this.color.match(/\d+/g);
+        // tslint:disable-next-line: no-non-null-assertion
+        return this.rgbArray![rgbIndex];
+    }
+
+    applyRGBInput(input: string, rgbIndex: number): void {
+        // tslint:disable-next-line: no-non-null-assertion
+        this.rgbArray![rgbIndex] = input;
+        this.color = `rgb(${this.rgbArray})`;
     }
 }
