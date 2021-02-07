@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { HotkeyService } from '@app/services/HotKey/hotkey.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { IndexService } from '@app/services/index/index.service';
 import { Message } from '@common/communication/message';
 import { BehaviorSubject } from 'rxjs';

@@ -28,7 +28,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     private boxPosition: { left: number; top: number };
 
-    readonly MOUSE_OFFSET: number = 15;
+    readonly MOUSE_OFFSET: number = 10;
     status: Status = Status.NOT_RESIZING;
 
     boxSize: BoxSize;
@@ -112,10 +112,10 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     XisOverMinimum(event: MouseEvent): boolean {
-        return event.clientX - this.boxPosition.left - this.MOUSE_OFFSET > DEFAULT_SIZE;
+        return event.clientX - this.boxPosition.left - this.MOUSE_OFFSET >= DEFAULT_SIZE;
     }
 
     YisOverMinimum(event: MouseEvent): boolean {
-        return event.clientY - this.boxPosition.top - this.MOUSE_OFFSET > DEFAULT_SIZE;
+        return event.clientY - this.boxPosition.top - this.MOUSE_OFFSET >= DEFAULT_SIZE;
     }
 }

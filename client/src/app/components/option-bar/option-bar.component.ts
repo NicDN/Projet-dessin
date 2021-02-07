@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { HotkeyService } from '@app/services/HotKey/hotkey.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 
 @Component({
     selector: 'app-option-bar',
@@ -14,7 +14,7 @@ export class OptionBarComponent {
     routerLink: RouterModule;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
-    constructor(private drawingService: DrawingService, private hotkey: HotkeyService) {}
+    constructor(private drawingService: DrawingService, private hotkeyService: HotkeyService) {}
 
     toggleActive(event: EventTarget, toolTipContent: string): void {
         if (toolTipContent === 'Créer un nouveau dessin (Ctrl+O)') {
@@ -24,11 +24,11 @@ export class OptionBarComponent {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        this.hotkey.onKeyDown(event);
+        this.hotkeyService.onKeyDown(event);
     }
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.hotkey.onKeyUp(event);
+        this.hotkeyService.onKeyUp(event);
     }
 }

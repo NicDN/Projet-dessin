@@ -8,12 +8,8 @@ import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rec
 import { ToolsService } from '@app/services/tools/tools.service';
 import { DrawingComponent } from './drawing.component';
 
-// class ToolStub extends Tool {}
-
-// TODO : Déplacer dans un fichier accessible à tous
-// A changer !! Deux fois la constante halfratio
 const HALF_RATIO = 0.5;
-const SIDE_BAR_SIZE = 300;
+const SIDE_BAR_SIZE = 400;
 const DEFAULT_WIDTH = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
 const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
 

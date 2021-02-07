@@ -27,7 +27,9 @@ export class DrawingService {
 
     handleNewDrawing(): void {
         if (!this.checkIfCanvasEmpty()) {
-            const response = confirm('Si vous créez un nouveau dessin, vos changements seront perdus. Voulez-vous continuer ?');
+            const response = window.confirm(
+                'Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?',
+            );
             if (response === true) {
                 this.reloadDrawing();
             }

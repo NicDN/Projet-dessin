@@ -18,13 +18,13 @@ export class HotkeyService {
         }
         switch (event.code) {
             case 'KeyO':
-                this.router.navigate(['/editor']);
+                if(this.controlKeyDown) this.router.navigate(['/editor']);
                 break;
             default:
             /* Nothing happens if a random key is pressed */
             /* Maybe we want this to be in a service */
         }
-        event.returnValue = true; // Renables all normal web shortcuts
+        event.returnValue = true; // Reanables all normal web shortcuts
     }
 
     onKeyDown(event: KeyboardEvent): void {
@@ -45,6 +45,6 @@ export class HotkeyService {
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        if (event.ctrlKey) this.controlKeyDown = false;
+        if (!event.ctrlKey) this.controlKeyDown = false;
     }
 }
