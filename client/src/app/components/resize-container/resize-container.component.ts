@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input
 import { BoxSize } from '@app/classes/box-size';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Subscription } from 'rxjs';
+import { __assign } from 'tslib';
 
 const enum Status {
     OFF = 0,
@@ -33,12 +34,8 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     private boxPosition: { left: number; top: number };
 
-    private DEFAULT_HEIGHT: number = 250;
-    private DEFAULT_WIDTH: number = 250;
-
     private MOUSE_OFFSET: number = 15;
-
-    mouse: { x: number; y: number };
+    
     status: Status = Status.OFF;
 
     boxSize: BoxSize;
@@ -60,6 +57,7 @@ export class ResizeContainerComponent implements AfterViewInit {
     private loadBox(): void {
         const { left, top } = this.box.nativeElement.getBoundingClientRect();
         this.boxPosition = { left, top };
+        console.log(this.boxPosition);
     }
 
     setStatus(event: MouseEvent, status: number): void {
@@ -73,7 +71,7 @@ export class ResizeContainerComponent implements AfterViewInit {
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
         this.mouse = { x: event.clientX, y: event.clientY };
-        this.resize();
+        this.resize(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -82,9 +80,6 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     onMouseUpContainer(event: MouseEvent): void {
-        if (this.width < this.DEFAULT_WIDTH) this.width = this.DEFAULT_WIDTH;
-        if (this.height < this.DEFAULT_HEIGHT) this.height = this.DEFAULT_HEIGHT;
-
         if (this.status !== Status.OFF) {
             this.boxSize = { widthBox: this.width, heightBox: this.height };
             this.notifyResize.emit(this.boxSize);
@@ -93,17 +88,17 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.setStatus(event, Status.OFF);
     }
 
-    resize(): void {
-        if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) {
-            this.width = this.mouse.x - this.boxPosition.left - this.MOUSE_OFFSET;
+    resize(event: MouseEvent): void {
+        if (this.updateWidthValid(event)) {
+            this.width = event.clientX - this.boxPosition.left - this.MOUSE_OFFSET;
         }
-        if (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) {
-            this.height = this.mouse.y - this.boxPosition.top - this.MOUSE_OFFSET;
+        if (this.updateHeightValid(event)) {
+            this.height = event.clientY - this.boxPosition.top - this.MOUSE_OFFSET;
         }
     }
 
     newDrawingNotification(): void {
-        /* Recoit un message */
+        /* When creating a new drawing*/
         console.log(window.innerWidth, window.innerHeight);
         this.width =
             (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO > MINIMUM_WORKSPACE_SIZE
@@ -112,5 +107,21 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.height = window.innerHeight * HALF_RATIO < MINIMUM_WORKSPACE_SIZE ? window.innerHeight * HALF_RATIO : DEFAULT_SIZE;
         this.boxSize = { widthBox: this.width, heightBox: this.height };
         this.notifyResize.emit(this.boxSize);
+    }
+
+    updateWidthValid(event: MouseEvent): boolean {
+        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.XisOverMinimum(event);
+    }
+
+    updateHeightValid(event: MouseEvent): boolean{
+        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) && this.YisOverMinimum(event);
+    }
+
+    XisOverMinimum(event: MouseEvent): boolean {
+        return event.clientX - this.boxPosition.left - this.MOUSE_OFFSET > DEFAULT_SIZE;
+    }
+
+    YisOverMinimum(event: MouseEvent): boolean {
+        return event.clientY - this.boxPosition.top - this.MOUSE_OFFSET > DEFAULT_SIZE;
     }
 }
