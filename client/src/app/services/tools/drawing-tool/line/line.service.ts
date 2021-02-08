@@ -29,6 +29,8 @@ export class LineService extends TraceTool {
         this.clearPath();
         this.drawWithJunction = false;
         this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
+        this.thickness = 1;
+        this.minThickness = 1;
     }
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');

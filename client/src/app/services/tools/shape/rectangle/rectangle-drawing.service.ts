@@ -11,6 +11,7 @@ export class RectangleDrawingService extends Shape {
         super(drawingService, colorService, 'Rectangle');
         this.traceType = TraceType.FilledAndBordered;
         this.thickness = 1;
+        this.minThickness = 1;
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.setLineDash([]);

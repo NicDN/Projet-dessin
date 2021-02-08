@@ -1,21 +1,16 @@
 <mat-drawer-content class="attributes-panel-container">
     <h2 class="tool-name-header">{{currentTool.toolName}}</h2>
     <app-color-panel></app-color-panel>
-    <!-- Needs refactoring to be more compact --> 
-    <!-- We should make an interface to check if tool implements IThickness. It will avoid adding app-thickness-selector in each div -->
-    <div *ngIf="pencilOrEraserIsActive()">
+
+    <div *ngIf="drawingToolIsActive()">
         <app-thickness-selector [tool]="currentTool" (updateThicknessEmitter)="setThickness($event)"></app-thickness-selector>
     </div>
-
     <div *ngIf="shapeIsActive()">
-        <app-thickness-selector [tool]="currentTool" (updateThicknessEmitter)="setThickness($event)"></app-thickness-selector>
         <app-trace-type-selector [tool]="currentTool" (updateTraceTypeEmitter)="setTraceType($event)"></app-trace-type-selector>
     </div>
 
     <div *ngIf="lineIsActive()">
-        <app-thickness-selector [tool]="currentTool" (updateThicknessEmitter)="setThickness($event)"></app-thickness-selector>
         <app-line-settings-selector [tool]="currentTool" (updatedotJunctionCheckedEmitter)="setJunctionChecked($event)"
             (updateJunctionDiameterEmitter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
     </div>
-    <!-- <p style="font-size: 16px; color: white;">Epaisseur de l outil courant: {{currentTool.thickness}}</p> -->
 </mat-drawer-content>

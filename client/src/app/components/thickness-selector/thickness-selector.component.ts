@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { DrawingTool } from '@app/classes/drawing-tool';
 
+
 @Component({
     selector: 'app-thickness-selector',
     templateUrl: './thickness-selector.component.html',

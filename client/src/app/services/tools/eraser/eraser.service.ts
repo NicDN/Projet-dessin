@@ -4,15 +4,15 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
 
-const MINTHICKNESS = 5;
-
 @Injectable({
     providedIn: 'root',
 })
 export class EraserService extends PencilService {
+    readonly MINTHICKNESS: number = 5;
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
-        this.thickness = MINTHICKNESS;
+        this.thickness = this.MINTHICKNESS;
+        this.minThickness = this.MINTHICKNESS;
         this.toolName = 'Efface';
     }
 
@@ -31,7 +31,7 @@ export class EraserService extends PencilService {
         let oldPointY: number = path[0].y;
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'destination-out';
-        if (this.thickness < MINTHICKNESS) this.thickness = MINTHICKNESS;
+        if (this.thickness < this.MINTHICKNESS) this.thickness = this.MINTHICKNESS;
         ctx.lineWidth = this.thickness;
 
         if (path.length === 2) {
