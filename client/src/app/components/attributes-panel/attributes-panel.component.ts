@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
-import { Shape } from '@app/classes/shape';
+import { Shape, TraceType } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -25,8 +25,8 @@ export class AttributesPanelComponent {
         (this.currentTool as DrawingTool).thickness = thickness;
     }
 
-    setTraceType(type: number): void {
-        (this.currentTool as Shape).setTraceType(type);
+    setTraceType(type: TraceType): void {
+        (this.currentTool as Shape).traceType = type;
     }
 
     setLineJunctionDiameter(junctionDiameter: number): void {

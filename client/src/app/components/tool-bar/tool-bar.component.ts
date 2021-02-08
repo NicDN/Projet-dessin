@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { Subscription } from 'rxjs';
-
 @Component({
     selector: 'app-tool-bar',
     templateUrl: './tool-bar.component.html',
@@ -13,8 +11,6 @@ export class ToolBarComponent {
     readonly SHOW_DELAY_MS: number = 750;
     showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     element: HTMLElement;
-    subscription: Subscription;
-    // activeTool: Tool;
 
     toolBarElements: { icon: string; toolTipContent: string; tool?: Tool }[] = [
         { icon: 'pencil-alt', toolTipContent: 'Crayon (C)', tool: this.toolService.pencilService },
@@ -25,22 +21,9 @@ export class ToolBarComponent {
     ];
     constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);
-        this.subscription = this.toolService.getCurrentTool().subscribe((currenTool: Tool) => {
-            // changer boolean pour affecter a nouveau style
-        });
     }
 
     toggleActive(tool: Tool): void {
         this.toolService.setCurrentTool(tool);
-    }
-
-    // tslint:disable-next-line: no-any
-    applyBtnStyle(event: any): void {
-        if (this.element !== undefined) {
-            this.element.style.backgroundColor = 'rgb(33, 38, 43)';
-        }
-        const target = event.currentTarget;
-        target.style.backgroundColor = '#e51282';
-        this.element = target;
     }
 }
