@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder} from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 // import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
@@ -90,12 +90,13 @@ export class ColorPanelComponent {
             .substring(this.CONCATENATE_OFFSET, this.color.length - 1)
             .replace(/ /, '')
             .split(',');
-        return this.rgbArray[rgbIndex];
+
+        return Number(this.rgbArray[rgbIndex]).toString(16);
     }
 
     applyRGBInput(input: string, rgbIndex: number): void {
-        if (Number(input) <= this.MAX_RGB_VALUE) {
-            this.rgbArray[rgbIndex] = input;
+        if (Number(parseInt(input, 16) <= this.MAX_RGB_VALUE)) {
+            this.rgbArray[rgbIndex] = '' + parseInt(input, 16);
             this.color = `rgb(${this.rgbArray})`;
             if (this.rgbInputs[rgbIndex].inputError) {
                 this.rgbInputs[rgbIndex].inputError = false;
