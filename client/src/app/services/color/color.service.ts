@@ -5,7 +5,6 @@ import { Color } from '@app/classes/color';
     providedIn: 'root',
 })
 export class ColorService {
-    readonly START_POS_SHIFT: number = 8;
     mainColor: Color;
     secondaryColor: Color;
 
@@ -37,6 +36,7 @@ export class ColorService {
         this.secondaryColor.rgbValue = color;
         this.secondaryColor.opacity = opacity;
     }
+
     updateMainColor(color: string, opacity: number): void {
         this.mainColor.rgbValue = color;
         this.mainColor.opacity = opacity;
@@ -44,7 +44,7 @@ export class ColorService {
 
     updatePreviousColors(color: string, opacity: number): void {
         this.previousColors.pop();
-        this.previousColors.unshift(new Color(color, opacity)); // ne fonctionne pas bien
+        this.previousColors.unshift(new Color(color, opacity));
     }
 
     updateColor(selectedColor: Color, color: string, opacity: number): void {
