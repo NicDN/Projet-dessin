@@ -59,6 +59,15 @@ describe('DrawingComponent', () => {
         expect(width).toEqual(DEFAULT_WIDTH);
     });
 
+    it('Should disable drawing if the resize button is being used', () => {
+        const isUsingResizeButtonStub = true;
+        component.disableDrawing(isUsingResizeButtonStub);
+        expect(component.canDraw).toEqual(false);
+
+        component.disableDrawing(!isUsingResizeButtonStub);
+        expect(component.canDraw).toEqual(true);
+    });
+
     // it('should get stubTool', () => {
     //     // const currentTool = component.currentTool;
     //     const currentTool = toolsService.currentTool;

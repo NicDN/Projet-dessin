@@ -27,7 +27,7 @@ export class DrawingComponent implements AfterViewInit {
     private previewCtx: CanvasRenderingContext2D;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-    private canDraw: boolean = true;
+    canDraw: boolean = true;
 
     subscription: Subscription;
 
@@ -55,6 +55,7 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent): void {
+        console.log(event.pageX, event.pageY);
         if (this.canDraw) {
             this.toolsService.currentTool.onMouseDown(event);
         }
@@ -86,8 +87,8 @@ export class DrawingComponent implements AfterViewInit {
         if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
     }
 
-    disableDrawing(isUsingButton: boolean): void {
-        this.canDraw = !isUsingButton;
+    disableDrawing(isUsingResizeButton: boolean): void {
+        this.canDraw = !isUsingResizeButton;
     }
 
     onSizeChange(boxsize: BoxSize): void {

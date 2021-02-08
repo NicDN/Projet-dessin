@@ -61,7 +61,7 @@ export class DrawingService {
 
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
 
-        this.changeSizeOfCanvas(this.previewCanvas, boxsize);
+        this.clearCanvas(this.previewCtx);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
