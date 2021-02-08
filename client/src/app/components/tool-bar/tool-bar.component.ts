@@ -30,15 +30,8 @@ export class ToolBarComponent {
         });
     }
 
-    // tslint:disable-next-line: no-any
-    // toggleActive(event: any, tool: Tool): void {
-    //     this.applyBtnStyle(event);
-    //     this.toolService.setCurrentTool(tool);
-    // }
     toggleActive(tool: Tool): void {
-        // this.applyBtnStyle(event);
         this.toolService.setCurrentTool(tool);
-        // this.activeTool = Tool;
     }
 
     // tslint:disable-next-line: no-any

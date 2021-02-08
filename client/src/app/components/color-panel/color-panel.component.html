@@ -31,22 +31,20 @@
             </mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
-
-
+        {{color}}
         <div class="input-wrapper">
-            <form class="rgb-form" *ngFor="let index of rgbIndexArray">
+            <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index=index">
                 <mat-form-field>
-                    <!-- <mat-label>{{getRGB("red")}}</mat-label> -->
+                    <mat-label class="input" [ngStyle]="rgbInput.inputError && {'color':'red'}">{{rgbInput.color}}</mat-label>
                     <input  
+                    
                     type="text" 
-                   
+                    class="input"
                     maxlength="3"
-                    minlength="1"
-                    [formControl]="formControl"
-                    [value]="getRGB(index)" 
-                    (input)="applyRGBInput($event.target.value,index)" matInput>
-                    <mat-error *ngIf="formControl.hasError('max')">Erreur!</mat-error>
+                    [value]="getRGB(index)"   
+                    (input)="applyRGBInput($event.target.value,index)" [ngStyle]="rgbInput.inputError && {'color':'red'}" matInput>
                 </mat-form-field>
+                
             </form>
 
             <span class="preview-color" [ngStyle]="{'background-color':color,'opacity':opacity}"></span>

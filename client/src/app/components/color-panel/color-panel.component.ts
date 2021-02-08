@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormBuilder} from '@angular/forms';
+// import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
-// import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 
@@ -13,8 +13,13 @@ import { ColorService } from '@app/services/color/color.service';
 export class ColorPanelComponent {
     readonly OPACITY_AJUSTMENT: number = 100;
     readonly MAX_RGB_VALUE: number = 255;
+    readonly CONCATENATE_OFFSET: number = 4;
 
-    readonly rgbIndexArray: number[] = [0, 1, 2];
+    rgbInputs: { color: string; inputError: boolean }[] = [
+        { color: 'Rouge', inputError: false },
+        { color: 'Vert', inputError: false },
+        { color: 'Bleu', inputError: false },
+    ];
 
     colorService: ColorService;
     previousColors: Color[];
@@ -26,11 +31,9 @@ export class ColorPanelComponent {
     hue: string;
     opacity: number;
 
-    rgbArray: RegExpMatchArray | null;
+    rgbArray: string[];
 
-    formControl: FormControl = new FormControl('', [Validators.max(this.MAX_RGB_VALUE), Validators.min(0)]);
-
-    constructor(colorService: ColorService) {
+    constructor(colorService: ColorService, public formBuilder: FormBuilder) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
@@ -41,12 +44,12 @@ export class ColorPanelComponent {
         this.opacity = this.selectedColor.opacity;
         this.hue = this.selectedColor.rgbValue;
 
-        this.openColorPicker = true;
-        this.rgbArray = this.color.match(/\d+/g);
+        this.openColorPicker = !this.openColorPicker;
     }
 
     switchColors(): void {
         this.colorService.switchColors();
+        this.openColorPicker = false;
     }
 
     updateColor(selectedColor: Color): void {
@@ -83,14 +86,22 @@ export class ColorPanelComponent {
     }
 
     getRGB(rgbIndex: number): string {
-        this.rgbArray = this.color.match(/\d+/g);
-        // tslint:disable-next-line: no-non-null-assertion
-        return this.rgbArray![rgbIndex];
+        this.rgbArray = this.color
+            .substring(this.CONCATENATE_OFFSET, this.color.length - 1)
+            .replace(/ /, '')
+            .split(',');
+        return this.rgbArray[rgbIndex];
     }
 
     applyRGBInput(input: string, rgbIndex: number): void {
-        // tslint:disable-next-line: no-non-null-assertion
-        this.rgbArray![rgbIndex] = input;
-        this.color = `rgb(${this.rgbArray})`;
+        if (Number(input) <= this.MAX_RGB_VALUE) {
+            this.rgbArray[rgbIndex] = input;
+            this.color = `rgb(${this.rgbArray})`;
+            if (this.rgbInputs[rgbIndex].inputError) {
+                this.rgbInputs[rgbIndex].inputError = false;
+            }
+        } else {
+            this.rgbInputs[rgbIndex].inputError = true;
+        }
     }
 }
