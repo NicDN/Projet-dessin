@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Tool } from '@app/classes/tool';
+import { Shape, TraceType } from '@app/classes/shape';
 @Component({
     selector: 'app-trace-type-selector',
     templateUrl: './trace-type-selector.component.html',
@@ -7,9 +7,15 @@ import { Tool } from '@app/classes/tool';
 })
 export class TraceTypeSelectorComponent {
     @Output() updateTraceTypeEmitter: EventEmitter<number> = new EventEmitter<number>();
-    @Input() tool: Tool; // could be a any subtype of shape to be drawn
+    @Input() tool: Shape;
 
-    setActiveTraceType(type: number): void {
+    traceTypeOptions: { iconFamily: string; icon: string; toolTipContent: string; traceType: TraceType }[] = [
+        { iconFamily: 'far', icon: 'square', toolTipContent: 'Contour', traceType: TraceType.Bordered },
+        { iconFamily: 'fas', icon: 'square', toolTipContent: 'Plein', traceType: TraceType.FilledNoBordered },
+        { iconFamily: 'fas', icon: 'battery-full', toolTipContent: 'Plein avec contour', traceType: TraceType.FilledAndBordered },
+    ];
+
+    setActiveTraceType(type: TraceType): void {
         this.updateTraceTypeEmitter.emit(type);
     }
 }

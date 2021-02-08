@@ -13,10 +13,25 @@ fa-icon {
 p {
     color: white;
     font-size: 16px;
-    padding-top: 16px;
-    padding-left: 16px;
-    float: left;
+    padding-top: 15px;
+    margin-right: 20px;
+    display: inline-block;
 }
 mat-divider{
     border-top-color:white;
+    margin-bottom: 15px;
 }
+
+.active {
+    background-color: #e51282;
+}
+
+.trace-container{
+   display: flex;
+   display: inline-block;
+}
+mat-button{
+    display: inline-block;
+}
+
+

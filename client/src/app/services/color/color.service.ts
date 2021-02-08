@@ -53,8 +53,5 @@ export class ColorService {
         } else if (selectedColor === this.secondaryColor) {
             this.updateSecondaryColor(color, opacity);
         }
-
-        // regarder si lopaciter a changer ou non
-        this.updatePreviousColors(color, opacity);
     }
 }

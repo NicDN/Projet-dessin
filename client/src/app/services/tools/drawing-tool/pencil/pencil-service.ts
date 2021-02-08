@@ -20,9 +20,10 @@ export class PencilService extends TraceTool {
     thickness: number;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService, 'crayon');
+        super(drawingService, colorService, 'Crayon');
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
+        this.minThickness = 1;
     }
 
     private pathData: Vec2[];
