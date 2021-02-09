@@ -28,7 +28,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     private boxPosition: { left: number; top: number };
 
-    readonly MOUSE_OFFSET: number = 10;
+    readonly MOUSE_OFFSET: number = 5;
     status: Status = Status.NOT_RESIZING;
 
     boxSize: BoxSize;

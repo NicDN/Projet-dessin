@@ -18,8 +18,8 @@
 
 .resize-action-diagonal {
     position: absolute;
-    left: 101%;
-    top: 101%;
+    left: 100%;
+    top: 100%;
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
@@ -30,7 +30,7 @@
 }
 .resize-action-horizontal {
     position: absolute;
-    left: 101%;
+    left: 100%;
     top: 50%;
     border-style: solid;
     border-width: 6px;
@@ -44,7 +44,7 @@
 .resize-action-vertical {
     position: absolute;
     left: 50%;
-    top: 101%;
+    top: 100%;
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
