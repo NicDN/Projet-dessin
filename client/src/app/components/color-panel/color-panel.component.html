@@ -39,55 +39,11 @@
                     <input  
                     type="text" 
                     class="input"
-                    maxlength="3"
+                    maxlength="2"
                     [value]="getRGB(index)"   
                     (input)="applyRGBInput($event.target.value,index)" [ngStyle]="rgbInput.inputError && {'color':'red'}" matInput>
                 </mat-form-field>
             </form>
-
-            <!-- <form class="rgb-form">
-                <mat-form-field>
-                    <mat-label class="input" >Rouge</mat-label>
-                    <input  
-                    type="text" 
-                    class="input"
-                    maxlength="3"
-                    [placeholder]="getRGB(0)"   
-                    (input)="applyRGBInput($event.target.value,0)" matInput
-                    [formControl]="formControl">
-                    <mat-error *ngIf="formControl.hasError('min')" >
-                        invalide
-                    </mat-error>
-                </mat-form-field>
-
-                <mat-form-field>
-                    <mat-label class="input">Vert</mat-label>
-                    <input  
-                    type="text" 
-                    class="input"
-                    maxlength="3"
-                    [placeholder]="getRGB(1)"   
-                    (input)="applyRGBInput($event.target.value,1)" matInput 
-                    [formControl]="formControl">
-                    <mat-error *ngIf="formControl.hasError('max') || formControl.hasError('min')" >
-                        invalide
-                    </mat-error>
-                </mat-form-field>
-
-                <mat-form-field>
-                    <mat-label class="input" >Bleu</mat-label>
-                    <input  
-                    type="text" 
-                    class="input"
-                    maxlength="3"
-                    [placeholder]="getRGB(2)"   
-                    (input)="applyRGBInput($event.target.value,2)" matInput
-                    [formControl]="formControl">
-                    <mat-error *ngIf="formControl.hasError('max') || formControl.hasError('min')" >
-                        invalide
-                    </mat-error>
-                </mat-form-field>
-            </form> -->
 
             <span class="preview-color" [ngStyle]="{'background-color':color,'opacity':opacity}"></span>
 

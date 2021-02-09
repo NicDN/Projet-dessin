@@ -11,6 +11,10 @@ fdescribe('ColorPanelComponent', () => {
     const DEFAULT_COLOR = new Color('rgb(1,2,3)', 1);
     let colorService: ColorService;
 
+    const CHANGED_OPACITY = 0.2;
+    const CHANGED_RGB_VALUE = 'rgb(5,2,12)';
+    let RGB_INDEX = 1;
+
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ColorPanelComponent],
@@ -24,7 +28,7 @@ fdescribe('ColorPanelComponent', () => {
         fixture.detectChanges();
 
         colorService = TestBed.inject(ColorService);
-        // colorService = fixture.debugElement.injector.get(ColorService);
+        component.rgbArray = ['1', '2', '3'];
     });
 
     it('should create', () => {
@@ -47,13 +51,51 @@ fdescribe('ColorPanelComponent', () => {
         expect(component.openColorPicker).toBe(false);
     });
 
+    it('should update a color correctly', () => {
+        spyOn(colorService, 'updateColor');
+        component.updateColor(DEFAULT_COLOR);
+        expect(colorService.updateColor).toHaveBeenCalled();
+        expect(component.openColorPicker).toBe(false);
+    });
+
+    it('should update previous colors when the rgb value has changed and opacity has not changed', () => {
+        component.color = CHANGED_RGB_VALUE;
+        component.opacity = 1;
+        spyOn(colorService, 'updatePreviousColors');
+        component.updatePreviousColors(DEFAULT_COLOR);
+        expect(colorService.updatePreviousColors).toHaveBeenCalled();
+    });
+
+    it('should update previous colors when the rgb value has changed and opacity has changed', () => {
+        component.color = CHANGED_RGB_VALUE;
+        component.opacity = CHANGED_OPACITY;
+        spyOn(colorService, 'updatePreviousColors');
+        component.updatePreviousColors(DEFAULT_COLOR);
+        expect(colorService.updatePreviousColors).toHaveBeenCalled();
+    });
+
+    it('should not update previous colors when the rgb value has not changed and opacity has changed', () => {
+        const UNCHANGED_RGB_VALUE = 'rgb(1,2,3)';
+        component.color = UNCHANGED_RGB_VALUE;
+        component.opacity = CHANGED_OPACITY;
+        spyOn(colorService, 'updatePreviousColors');
+        component.updatePreviousColors(DEFAULT_COLOR);
+        expect(colorService.updatePreviousColors).not.toHaveBeenCalled();
+    });
+
     it('should set the primary color correctly', () => {
         const DEFAULT_INDEX = 3;
         spyOn(colorService, 'updateMainColor');
         component.setPrimaryColor(DEFAULT_INDEX);
         expect(colorService.updateMainColor).toHaveBeenCalled();
-        expect(component.openColorPicker).toBe(false);
+        expect(component.openColorPicker).toBe(false); // needed ?
         // can i assume that the boolean openColorPicker is by default false
+    });
+
+    it('should close the color picker if the colopicker was opened', () => {
+        component.openColorPicker = true;
+        component.closeColorPicker();
+        expect(component.openColorPicker).toBe(false); // needed ?
     });
 
     it('should set the secondary color correctly', () => {
@@ -61,7 +103,7 @@ fdescribe('ColorPanelComponent', () => {
         spyOn(colorService, 'updateSecondaryColor');
         component.setSecondaryColor(DEFAULT_INDEX);
         expect(colorService.updateSecondaryColor).toHaveBeenCalled();
-        expect(component.openColorPicker).toBe(false);
+        expect(component.openColorPicker).toBe(false); // needed ?
         // can i assume that the boolean openColorPicker is by default false
     });
 
@@ -83,7 +125,7 @@ fdescribe('ColorPanelComponent', () => {
 
     it('should get a rgb value correctly', () => {
         // for the red value
-        let RGB_INDEX = 0;
+        RGB_INDEX = 0;
         component.color = DEFAULT_COLOR.rgbValue;
         expect(component.getRGB(RGB_INDEX)).toBe('1');
         // for the green value
@@ -100,7 +142,6 @@ fdescribe('ColorPanelComponent', () => {
         // Testing with a normal hex value (A)
         const NORMAL_HEX = 'A';
         component.color = DEFAULT_COLOR.rgbValue;
-        component.rgbArray = ['1', '2', '3'];
         component.applyRGBInput(NORMAL_HEX, 1);
         expect(component.rgbArray).toEqual(['1', '10', '3']);
         expect(component.color).toBe('rgb(1,10,3)');
@@ -110,7 +151,6 @@ fdescribe('ColorPanelComponent', () => {
         // Testing with a minmumum hex value (0)
         const MIMIMUM_HEX = '0';
         component.color = DEFAULT_COLOR.rgbValue;
-        component.rgbArray = ['1', '2', '3'];
         component.applyRGBInput(MIMIMUM_HEX, 1);
         expect(component.rgbArray).toEqual(['1', '0', '3']);
         expect(component.color).toBe('rgb(1,0,3)');
@@ -120,7 +160,6 @@ fdescribe('ColorPanelComponent', () => {
         // Testing with a maximum hex value (FF)
         const MAXIMUM_HEX = 'ff';
         component.color = DEFAULT_COLOR.rgbValue;
-        component.rgbArray = ['1', '2', '3'];
         component.applyRGBInput(MAXIMUM_HEX, 1);
         expect(component.rgbArray).toEqual(['1', '255', '3']);
         expect(component.color).toBe('rgb(1,255,3)');
@@ -129,22 +168,32 @@ fdescribe('ColorPanelComponent', () => {
     it('should not apply the rgb input when a hex value above FF provided', () => {
         const INCORRECT_HEX = 'AF4';
         component.color = DEFAULT_COLOR.rgbValue;
-        component.rgbArray = ['1', '2', '3'];
         component.applyRGBInput(INCORRECT_HEX, 1);
         expect(component.rgbArray).toEqual(['1', '2', '3']);
         expect(component.color).toBe('rgb(1,2,3)');
+        expect(component.rgbInputs[1].inputError).toBe(true);
     });
 
-    it('should not apply the rgb input when a hex value is negative', () => {
-        const INCORRECT_HEX = '-B';
+    it('should not apply the rgb input when a minus sign "-" is provided ', () => {
+        const INCORRECT_HEX = '-';
         component.color = DEFAULT_COLOR.rgbValue;
-        component.rgbArray = ['1', '2', '3'];
         component.applyRGBInput(INCORRECT_HEX, 1);
         expect(component.rgbArray).toEqual(['1', '2', '3']);
         expect(component.color).toBe('rgb(1,2,3)');
     });
 
-    it('should not apply the rgb input when the value provided is not a hex value', () => {});
+    it('should not apply the rgb input when the value provided is not a hex value', () => {
+        const INCORRECT_HEX = 'm';
+        component.color = DEFAULT_COLOR.rgbValue;
+        component.applyRGBInput(INCORRECT_HEX, 1);
+        expect(component.rgbArray).toEqual(['1', '2', '3']);
+        expect(component.color).toBe('rgb(1,2,3)');
+    });
 
-    // empty string = 0;
+    it('should remove the input error is the incorrect input is changed to a correct one', () => {
+        component.color = DEFAULT_COLOR.rgbValue;
+        component.rgbInputs[RGB_INDEX].inputError = true;
+        component.applyRGBInput('C', RGB_INDEX);
+        expect(component.rgbInputs[RGB_INDEX].inputError).toBe(false);
+    });
 });

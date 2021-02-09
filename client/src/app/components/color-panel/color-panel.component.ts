@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
@@ -32,10 +31,6 @@ export class ColorPanelComponent {
 
     rgbArray: string[];
 
-    formControl: FormControl = new FormControl('', [
-        Validators.max(255), Validators.min(0), Validators.required
-    ]);
-
     constructor(colorService: ColorService) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
@@ -56,25 +51,28 @@ export class ColorPanelComponent {
     }
 
     updateColor(selectedColor: Color): void {
-        const previousOpacity = selectedColor.opacity;
-        const prevousRGBValue = selectedColor.rgbValue;
+        this.updatePreviousColors(selectedColor);
         this.colorService.updateColor(selectedColor, this.color, this.opacity);
+        this.openColorPicker = false;
+    }
 
-        if ((previousOpacity !== this.opacity || previousOpacity === this.opacity) && prevousRGBValue !== this.color) {
+    updatePreviousColors(selectedColor: Color): void {
+        if ((selectedColor.opacity !== this.opacity || selectedColor.opacity === this.opacity) && selectedColor.rgbValue !== this.color) {
             this.colorService.updatePreviousColors(this.color, this.opacity);
         }
-        this.openColorPicker = false;
     }
 
     setPrimaryColor(index: number): void {
         this.colorService.updateMainColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
-        if (this.openColorPicker) {
-            this.openColorPicker = false;
-        }
+        this.closeColorPicker();
     }
 
     setSecondaryColor(index: number): void {
         this.colorService.updateSecondaryColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
+        this.closeColorPicker();
+    }
+
+    closeColorPicker(): void {
         if (this.openColorPicker) {
             this.openColorPicker = false;
         }
@@ -99,14 +97,17 @@ export class ColorPanelComponent {
 
     applyRGBInput(input: string, rgbIndex: number): void {
         const convertedHexToNumber: number = parseInt(input, 16);
-        if (convertedHexToNumber <= this.MAX_RGB_VALUE) {
-            this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
-            this.color = `rgb(${this.rgbArray})`;
-            if (this.rgbInputs[rgbIndex].inputError) {
-                this.rgbInputs[rgbIndex].inputError = false;
+
+        if (input[0] !== '-') {
+            if (convertedHexToNumber <= this.MAX_RGB_VALUE) {
+                this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
+                this.color = `rgb(${this.rgbArray})`;
+                if (this.rgbInputs[rgbIndex].inputError) {
+                    this.rgbInputs[rgbIndex].inputError = false;
+                }
+            } else {
+                this.rgbInputs[rgbIndex].inputError = true;
             }
-        } else {
-            this.rgbInputs[rgbIndex].inputError = true;
         }
     }
 }
