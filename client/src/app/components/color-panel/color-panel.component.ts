@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-// import { FormControl, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
@@ -33,7 +32,11 @@ export class ColorPanelComponent {
 
     rgbArray: string[];
 
-    constructor(colorService: ColorService, public formBuilder: FormBuilder) {
+    formControl: FormControl = new FormControl('', [
+        Validators.max(255), Validators.min(0), Validators.required
+    ]);
+
+    constructor(colorService: ColorService) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
@@ -95,8 +98,9 @@ export class ColorPanelComponent {
     }
 
     applyRGBInput(input: string, rgbIndex: number): void {
-        if (Number(parseInt(input, 16) <= this.MAX_RGB_VALUE)) {
-            this.rgbArray[rgbIndex] = '' + parseInt(input, 16);
+        const convertedHexToNumber: number = parseInt(input, 16);
+        if (convertedHexToNumber <= this.MAX_RGB_VALUE) {
+            this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
             this.color = `rgb(${this.rgbArray})`;
             if (this.rgbInputs[rgbIndex].inputError) {
                 this.rgbInputs[rgbIndex].inputError = false;

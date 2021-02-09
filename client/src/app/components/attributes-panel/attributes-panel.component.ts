@@ -14,8 +14,6 @@ import { Subscription } from 'rxjs';
 export class AttributesPanelComponent {
     subscription: Subscription;
     currentTool: Tool;
-    thickness: number;
-    trace: number;
 
     constructor(private toolsService: ToolsService) {
         this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => (this.currentTool = currentTool));

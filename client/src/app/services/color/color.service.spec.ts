@@ -3,7 +3,7 @@ import { Color } from '@app/classes/color';
 
 import { ColorService } from './color.service';
 
-fdescribe('ColorService', () => {
+describe('ColorService', () => {
     let service: ColorService;
     const EXPECT_SECONDARY_COLOR: Color = new Color('rgb(255,0,0)', 1);
     const EXPECT_MAIN_COLOR: Color = new Color('rgb(0,0,255)', 1);
