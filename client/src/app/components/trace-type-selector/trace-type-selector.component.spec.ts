@@ -6,7 +6,7 @@ import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rec
 
 import { TraceTypeSelectorComponent } from './trace-type-selector.component';
 
-fdescribe('TraceTypeSelectorComponent', () => {
+describe('TraceTypeSelectorComponent', () => {
     let component: TraceTypeSelectorComponent;
     let fixture: ComponentFixture<TraceTypeSelectorComponent>;
     const shape: Shape = new RectangleDrawingService(new DrawingService(), new ColorService());
