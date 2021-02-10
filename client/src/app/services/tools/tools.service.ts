@@ -35,7 +35,6 @@ export class ToolsService {
 
     onKeyDown(event: KeyboardEvent): void {
         this.currentTool.onKeyDown(event);
-        // TODO: completing the shortcuts
         switch (event.code) {
             case 'KeyL':
                 this.currentTool = this.lineService;

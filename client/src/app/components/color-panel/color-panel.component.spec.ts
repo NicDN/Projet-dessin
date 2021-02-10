@@ -5,7 +5,7 @@ import { ColorService } from '@app/services/color/color.service';
 
 import { ColorPanelComponent } from './color-panel.component';
 
-fdescribe('ColorPanelComponent', () => {
+describe('ColorPanelComponent', () => {
     let component: ColorPanelComponent;
     let fixture: ComponentFixture<ColorPanelComponent>;
     const DEFAULT_COLOR = new Color('rgb(1,2,3)', 1);
