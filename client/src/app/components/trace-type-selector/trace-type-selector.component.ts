@@ -15,7 +15,7 @@ export class TraceTypeSelectorComponent {
         { iconFamily: 'fas', icon: 'battery-full', toolTipContent: 'Plein avec contour', traceType: TraceType.FilledAndBordered },
     ];
 
-    setActiveTraceType(type: TraceType): void {
-        this.updateTraceTypeEmitter.emit(type);
+    setActiveTraceType(traceType: TraceType): void {
+        this.updateTraceTypeEmitter.emit(traceType);
     }
 }
