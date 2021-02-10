@@ -19,6 +19,7 @@ export abstract class Shape extends DrawingTool {
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
         super(drawingService, colorService, toolName);
+        this.traceType = TraceType.FilledAndBordered;
     }
 
     onMouseDown(event: MouseEvent): void {

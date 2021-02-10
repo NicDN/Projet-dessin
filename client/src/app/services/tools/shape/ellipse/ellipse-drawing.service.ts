@@ -10,7 +10,6 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class EllipseDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Ellipse');
-        this.traceType = TraceType.FilledAndBordered;
         this.thickness = 1;
         this.minThickness = 1;
     }

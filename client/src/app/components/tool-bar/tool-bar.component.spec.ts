@@ -8,7 +8,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 
 import { ToolBarComponent } from './tool-bar.component';
 
-fdescribe('ToolBarComponent', () => {
+describe('ToolBarComponent', () => {
     let component: ToolBarComponent;
     let fixture: ComponentFixture<ToolBarComponent>;
     const tool: Tool = new PencilService(new DrawingService(), new ColorService());

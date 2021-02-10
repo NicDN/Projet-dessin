@@ -16,11 +16,15 @@ export class AttributesPanelComponent {
     currentTool: Tool;
 
     constructor(private toolsService: ToolsService) {
+        this.getCurrentTool();
+    }
+
+    getCurrentTool(): void {
         this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => (this.currentTool = currentTool));
     }
 
     setThickness(thickness: number): void {
-        (this.currentTool as DrawingTool).thickness = thickness;
+        (this.currentTool as DrawingTool).setThickness(thickness);
     }
 
     setTraceType(type: TraceType): void {
@@ -28,11 +32,11 @@ export class AttributesPanelComponent {
     }
 
     setLineJunctionDiameter(junctionDiameter: number): void {
-        (this.currentTool as LineService).junctionDiameter = junctionDiameter;
+        (this.currentTool as LineService).setJunctionDiameter(junctionDiameter);
     }
 
-    setJunctionChecked(checked: boolean): void {
-        (this.currentTool as LineService).drawWithJunction = checked;
+    setJunctionChecked(junction: boolean): void {
+        (this.currentTool as LineService).drawWithJunction = junction;
     }
 
     shapeIsActive(): boolean {
@@ -40,7 +44,7 @@ export class AttributesPanelComponent {
     }
 
     lineIsActive(): boolean {
-        return this.currentTool === this.toolsService.lineService;
+        return this.currentTool instanceof LineService;
     }
 
     drawingToolIsActive(): boolean {
