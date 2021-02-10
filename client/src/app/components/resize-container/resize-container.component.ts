@@ -67,7 +67,7 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     setStatus(event: MouseEvent, status: number): void {
-        if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
+        // if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
         this.status = status;
         if (this.status !== Status.NOT_RESIZING) {
             this.usingButton.emit(true);

@@ -1,7 +1,7 @@
+import { TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { DrawingService } from './drawing.service';
-import { TestBed } from '@angular/core/testing';
 
 describe('DrawingService', () => {
     let service: DrawingService;

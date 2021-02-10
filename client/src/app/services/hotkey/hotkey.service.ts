@@ -10,35 +10,26 @@ export class HotkeyService {
 
     constructor(private router: Router, public drawingService: DrawingService) {}
 
-    onKeyDownMainPage(event: KeyboardEvent): void {
-        event.stopPropagation();
-        if (event.ctrlKey) {
-            this.controlKeyDown = true;
-            event.preventDefault();
-        }
+    onKeyDown(event: KeyboardEvent): void {
+        this.handleCtrlKey(event);
         switch (event.code) {
             case 'KeyO':
-                if(this.controlKeyDown) this.router.navigate(['/editor']);
+                if (this.controlKeyDown) {
+                    this.router.navigate(['/editor']);
+                    this.drawingService.handleNewDrawing();
+                }
                 break;
             default:
+            
         }
-        event.returnValue = true; // Reanables all normal web shortcuts
+        event.returnValue = true;
     }
 
-    onKeyDown(event: KeyboardEvent): void {
+    handleCtrlKey(event: KeyboardEvent): void {
         if (event.ctrlKey) {
             this.controlKeyDown = true;
             event.preventDefault();
         }
-        switch (event.code) {
-            case 'KeyO':
-                if (this.controlKeyDown) this.drawingService.handleNewDrawing();
-                break;
-            default:
-            /* Nothing happens if a random key is pressed */
-            /* Maybe we want this to be in a service */
-        }
-        event.returnValue = true; // Renables shortcuts like f11
     }
 
     onKeyUp(event: KeyboardEvent): void {

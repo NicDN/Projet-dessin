@@ -41,7 +41,7 @@ export class MainPageComponent {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        this.hotkeyService.onKeyDownMainPage(event);
+        this.hotkeyService.onKeyDown(event);
     }
 
     @HostListener('window:keyup', ['$event'])
