@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { DrawingTool } from '@app/classes/drawing-tool';
 import { MouseButton } from '@app/classes/tool';
+import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -10,7 +10,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 @Injectable({
     providedIn: 'root',
 })
-export class LineService extends DrawingTool {
+export class LineService extends TraceTool {
     thickness: number;
 
     isShiftDown: boolean;
@@ -29,6 +29,8 @@ export class LineService extends DrawingTool {
         this.clearPath();
         this.drawWithJunction = false;
         this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
+        this.thickness = 1;
+        this.minThickness = 1;
     }
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');

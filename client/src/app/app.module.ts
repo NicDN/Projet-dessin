@@ -1,6 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -68,6 +68,7 @@ import { TraceTypeSelectorComponent } from './components/trace-type-selector/tra
         FormsModule,
         MatSlideToggleModule,
         MatInputModule,
+        ReactiveFormsModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

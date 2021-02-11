@@ -1,15 +1,9 @@
-
-    <mat-divider></mat-divider>
-    <p>Type de tracé</p>
-    <div>
-        <button mat-button matTooltip="Contour" (click)="setActiveTraceType(0)">
-            <fa-icon [icon]="['far','square']"></fa-icon>
-        </button>
-        <button mat-button matTooltip="Plein" (click)="setActiveTraceType(1)">
-            <fa-icon [icon]="['fas','square']"></fa-icon>
-        </button>
-        <button mat-button matTooltip="Plein avec contour" (click)="setActiveTraceType(2)">
-            <fa-icon [icon]="['fas','battery-full']"></fa-icon>
-        </button>
-    </div>
-    <mat-divider></mat-divider>
+<mat-divider></mat-divider>
+<p>Type de tracé</p>
+<div class="trace-container" *ngFor="let trace of traceTypeOptions" >
+    <button mat-button matTooltip="{{trace.toolTipContent}}" (click)="setActiveTraceType(trace.traceType)" 
+    [class.active]="tool.traceType == trace.traceType">
+        <fa-icon [icon]="[trace.iconFamily,trace.icon]"></fa-icon>
+    </button>
+</div>
+<mat-divider></mat-divider>

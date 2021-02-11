@@ -23,13 +23,11 @@
 }
 
 .input-wrapper {
-    margin-top: 16px;
     display: flex;
     border-radius: 1px;
-    border: 1px solid rgb(220, 220, 220);
-    padding: 8px;
     height: 32px;
-    justify-content: center;
+    text-align: left;
+    margin-bottom: 10px;
 }
 
 .color-div {
@@ -44,24 +42,61 @@
     font-family: 'Helvetica';
     line-height: 32px;
 }
-.opacity-slider{
-    width: 300px;
+
+.slider-container {
+    text-align: left;
 }
-.check{
+.opacity-slider {
+    width: 220px;
+    display: inline-block;
+}
+.slider-container {
+    text-align: left;
+}
+
+.opacity-value {
+    display: inline-block;
+    padding-right: 5px;
+}
+
+.opacity-value {
+    display: inline-block;
+    padding-left: 8px;
+}
+.opacity-title {
+    display: inline-block;
+    padding-right: 4px;
+}
+.check {
     font-size: 15px;
 }
-.preview-color{
+.preview-color {
     width: 50px;
     height: 36px;
     border-radius: 5px;
+    margin-top: 5px;
+    margin-left: 30px;
 }
-.confirm-color-button{
+.confirm-color-button {
     margin-left: 5px;
     width: 40px;
     height: 36px;
     background-color: green;
+    margin-top: 5px;
 }
-.input-rgb{
+.input-rgb {
     width: 20px;
     margin: 5px;
+}
+
+.rgb-form {
+    display: left;
+}
+mat-form-field {
+    display: inline-block;
+    width: 40px;
+    margin:5px;
+}
+.input{
+    color:black
 }
