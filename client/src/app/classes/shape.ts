@@ -13,7 +13,7 @@ export abstract class Shape extends DrawingTool {
     private beginCoord: Vec2;
     private endCoord: Vec2;
 
-    protected traceType: TraceType;
+    traceType: TraceType;
     protected alternateShape: boolean;
     readonly dashSize: number = 5;
 
@@ -47,19 +47,6 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawPreview();
-        }
-    }
-    setTraceType(type: number): void {
-        switch (type) {
-            case 0:
-                this.traceType = TraceType.Bordered;
-                break;
-            case 1:
-                this.traceType = TraceType.FilledNoBordered;
-                break;
-            case 2:
-                this.traceType = TraceType.FilledAndBordered;
-                break;
         }
     }
 

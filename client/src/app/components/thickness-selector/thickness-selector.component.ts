@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { Tool } from '@app/classes/tool';
+import { DrawingTool } from '@app/classes/drawing-tool';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { EraserService } from '@app/services/tools/eraser/eraser.service';
 })
 export class ThicknessSelectorComponent {
     @Output() updateThicknessEmitter: EventEmitter<number> = new EventEmitter<number>();
-    @Input() tool: Tool;
+    @Input() tool: DrawingTool;
 
     readonly ERASER_THICKNESS: number = 5;
     readonly DEFAULT_THICKNESS: number = 1;

@@ -12,7 +12,6 @@ export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
     toolName: string;
-    thickness: number = 1; // thickness ne devrait pas aller necessairement ici parce que des tools ne pourraient ne pas sen servir
 
     constructor(protected drawingService: DrawingService, toolName: string) {
         this.toolName = toolName;

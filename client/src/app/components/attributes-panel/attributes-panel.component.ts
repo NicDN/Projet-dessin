@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Shape } from '@app/classes/shape';
+import { DrawingTool } from '@app/classes/drawing-tool';
+import { Shape, TraceType } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -21,29 +22,19 @@ export class AttributesPanelComponent {
     }
 
     setThickness(thickness: number): void {
-        this.currentTool.thickness = thickness;
+        (this.currentTool as DrawingTool).thickness = thickness;
     }
 
-    setTraceType(type: number): void {
-        if (this.currentTool instanceof Shape) {
-            this.currentTool.setTraceType(type);
-        }
+    setTraceType(type: TraceType): void {
+        (this.currentTool as Shape).traceType = type;
     }
 
     setLineJunctionDiameter(junctionDiameter: number): void {
-        if (this.currentTool instanceof LineService) {
-            this.currentTool.junctionDiameter = junctionDiameter;
-        }
+        (this.currentTool as LineService).junctionDiameter = junctionDiameter;
     }
 
     setJunctionChecked(checked: boolean): void {
-        if (this.currentTool instanceof LineService) {
-            this.currentTool.drawWithJunction = checked;
-        }
-    }
-
-    pencilOrEraserIsActive(): boolean {
-        return this.currentTool === this.toolsService.pencilService || this.currentTool === this.toolsService.eraserService;
+        (this.currentTool as LineService).drawWithJunction = checked;
     }
 
     shapeIsActive(): boolean {
@@ -52,5 +43,9 @@ export class AttributesPanelComponent {
 
     lineIsActive(): boolean {
         return this.currentTool === this.toolsService.lineService;
+    }
+
+    drawingToolIsActive(): boolean {
+        return this.currentTool instanceof DrawingTool;
     }
 }

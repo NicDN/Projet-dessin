@@ -36,18 +36,30 @@
             <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
             <app-color-slider (color)="hue = $event" style="margin-left: 16px"></app-color-slider>
         </div>
-
         <div class="slider-container">
+            <p class="opacity-title">Opacité</p>
+            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)"> </mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
-            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)"></mat-slider>
         </div>
         <div class="input-wrapper">
-            <mat-form-field>
-                <mat-label>{{ color }}</mat-label>
-                <input type="text" matInput />
-            </mat-form-field>
+            <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index = index">
+                <mat-form-field>
+                    <mat-label class="input" [ngStyle]="rgbInput.inputError && { color: 'red' }">{{ rgbInput.color }}</mat-label>
+                    <input
+                        type="text"
+                        class="input"
+                        maxlength="3"
+                        [value]="getRGB(index)"
+                        (input)="applyRGBInput($event.target.value, index)"
+                        [ngStyle]="rgbInput.inputError && { color: 'red' }"
+                        matInput
+                    />
+                </mat-form-field>
+            </form>
 
-            <span class="preview-color" [ngStyle]="{ 'background-color': color, opacity: opacity }"> </span>
+            <span class="preview-color" [ngStyle]="{ 'background-color': color, opacity: opacity }"></span>
+
+            >>>>>>> dev
             <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
                 <fa-icon icon="check" class="check"></fa-icon>
             </button>

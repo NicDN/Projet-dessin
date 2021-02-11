@@ -12,6 +12,7 @@ export class EllipseDrawingService extends Shape {
         super(drawingService, colorService, 'Ellipse');
         this.traceType = TraceType.FilledAndBordered;
         this.thickness = 1;
+        this.minThickness = 1;
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {

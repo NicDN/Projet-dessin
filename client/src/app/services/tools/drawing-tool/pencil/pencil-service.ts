@@ -4,6 +4,12 @@ import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+// import { ColorService } from '@app/services/color/color.service';
+
+// Ceci est une implémentation de base de l'outil Crayon pour aider à débuter le projet
+// L'implémentation ici ne couvre pas tous les critères d'accepetation du projet
+// Vous êtes encouragés de modifier et compléter le code.
+// N'oubliez pas de regarder les tests dans le fichier spec.ts aussi!
 
 const DEFAULTTHICKNESS = 1;
 
@@ -11,10 +17,12 @@ const DEFAULTTHICKNESS = 1;
     providedIn: 'root',
 })
 export class PencilService extends TraceTool {
+    thickness: number;
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Crayon');
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
+        this.minThickness = 1;
     }
 
     private pathData: Vec2[];
@@ -42,7 +50,7 @@ export class PencilService extends TraceTool {
         this.clearPath();
     }
 
-    onMouseMove(event: MouseEvent): void {
+    everyMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
@@ -50,6 +58,10 @@ export class PencilService extends TraceTool {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawLine(this.drawingService.previewCtx, this.pathData);
         }
+    }
+
+    onMouseMove(event: MouseEvent): void {
+        this.everyMouseMove(event);
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
@@ -63,6 +75,7 @@ export class PencilService extends TraceTool {
 
         for (const point of path) {
             ctx.moveTo(oldPointX, oldPointY);
+            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
             ctx.lineTo(point.x, point.y);
 
             oldPointX = point.x;

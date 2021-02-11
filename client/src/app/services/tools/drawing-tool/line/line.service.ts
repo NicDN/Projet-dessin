@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { TraceTool } from '@app/classes/trace-tool';
 import { MouseButton } from '@app/classes/tool';
+import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -29,6 +29,8 @@ export class LineService extends TraceTool {
         this.clearPath();
         this.drawWithJunction = false;
         this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
+        this.thickness = 1;
+        this.minThickness = 1;
     }
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');

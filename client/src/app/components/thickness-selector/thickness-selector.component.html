@@ -2,10 +2,10 @@
     <mat-divider></mat-divider>
     <div class="divider">
         <p class="thicknessHeader">Épaisseur du trait</p>
-        <p class="thicknessValue">{{slider.value}} px</p>
+        <p class="thicknessValue">{{ slider.value }} px</p>
     </div>
 
     <!-- Faire simplement un ngmodel pour le slider -->
-    <mat-slider #slider [min]="getValue()" max="50" tickInterval="1" (change)="updateThickness($event)" [value]="tool.thickness"></mat-slider> 
+    <mat-slider #slider [min]="tool.minThickness" max="50" tickInterval="1" (change)="updateThickness($event)" [value]="tool.thickness"></mat-slider>
     <mat-divider></mat-divider>
 </div>
