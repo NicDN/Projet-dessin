@@ -37,14 +37,14 @@ describe('ColorService', () => {
         expect(service.secondaryColor).toEqual(EXPECT_MAIN_COLOR);
     });
 
-    it('should call updateMainColor when an instance of mainColor is provided', () => {
+    it('should call #updateMainColor when an instance of mainColor is provided', () => {
         spyOn(service, 'updateMainColor');
         service.mainColor = new Color(DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
         service.updateColor(service.mainColor, DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
         expect(service.updateMainColor).toHaveBeenCalled();
     });
 
-    it('should call updateSecondaryColor when an instance of secondaryColor is provided', () => {
+    it('should call #updateSecondaryColor when an instance of secondaryColor is provided', () => {
         spyOn(service, 'updateSecondaryColor');
         service.secondaryColor = new Color(DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
         service.updateColor(service.secondaryColor, DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
@@ -59,7 +59,7 @@ describe('ColorService', () => {
         expect(service.previousColors[service.previousColors.length - 1].rgbValue).toEqual(EXPECTED_LAST_COLOR.rgbValue);
     });
 
-    it('should not call any of updatreXColor when no instance of main color or secondary color is provided', () => {
+    it('should not call any of #updateXColor when no instance of main color or secondary color is provided', () => {
         spyOn(service, 'updateSecondaryColor');
         spyOn(service, 'updateMainColor');
         service.updateColor(DEFAULT_COLOR, DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
@@ -67,7 +67,7 @@ describe('ColorService', () => {
         expect(service.updateMainColor).not.toHaveBeenCalled();
     });
 
-    it('constructor attributes main color and secondary color correctly', () => {
+    it('constructor sets main color and secondary color correctly', () => {
         const EXPECT_INDEX0: Color = new Color('rgb(255,0,0)', 1);
         const EXPECT_INDEX1: Color = new Color('rgb(0,0,255)', 1);
         expect(service.mainColor).toEqual(EXPECT_INDEX0);

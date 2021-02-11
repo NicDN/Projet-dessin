@@ -1,6 +1,6 @@
 // Reference: https://malcoded.com/posts/angular-color-picker/
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
+// import { ColorPaletteService } from '@app/services/color/color-palette/color-palette.service';
 @Component({
     selector: 'app-color-palette',
     templateUrl: './color-palette.component.html',
@@ -24,6 +24,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     private mousedown: boolean = false;
 
     selectedPosition: { x: number; y: number };
+
+    // constructor(private colorPaletteService: ColorPaletteService) {}
 
     ngAfterViewInit(): void {
         this.draw();
@@ -63,13 +65,11 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.hue) {
-            this.draw();
-            const pos = this.selectedPosition;
-            if (pos) {
-                this.color.emit(this.getColorAtPosition(pos.x, pos.y));
-            }
+    ngOnChanges(): void {
+        this.draw();
+        const pos = this.selectedPosition;
+        if (this.selectedPosition) {
+            this.color.emit(this.getColorAtPosition(pos.x, pos.y));
         }
     }
 

@@ -6,7 +6,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ThicknessSelectorComponent } from './thickness-selector.component';
 
-fdescribe('ThicknessSelectorComponent', () => {
+describe('ThicknessSelectorComponent', () => {
     let component: ThicknessSelectorComponent;
     let fixture: ComponentFixture<ThicknessSelectorComponent>;
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'drawing tool');
