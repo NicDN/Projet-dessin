@@ -1,6 +1,6 @@
 <mat-divider></mat-divider>
 <div>
-    <mat-slide-toggle class="slide-toggle" (change)="onChange($event)" [checked]="tool.drawWithJunction">
+    <mat-slide-toggle class="slide-toggle" (change)="updateJunction($event)" [checked]="tool.drawWithJunction">
         <p>Jonction avec point</p>
     </mat-slide-toggle>
     <p class="diameter" *ngIf="tool.drawWithJunction">{{slider.value}} px</p>

@@ -1,11 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSliderChange } from '@angular/material/slider';
+import { By } from '@angular/platform-browser';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 
 import { ColorPanelComponent } from './color-panel.component';
 
-describe('ColorPanelComponent', () => {
+fdescribe('ColorPanelComponent', () => {
     let component: ColorPanelComponent;
     let fixture: ComponentFixture<ColorPanelComponent>;
     const DEFAULT_COLOR = new Color('rgb(1,2,3)', 1);
@@ -26,13 +27,28 @@ describe('ColorPanelComponent', () => {
         fixture = TestBed.createComponent(ColorPanelComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-
         colorService = TestBed.inject(ColorService);
-        component.rgbArray = ['1', '2', '3'];
+        // tslint:disable-next-line: no-string-literal
+        component['rgbArray'] = ['1', '2', '3'];
+        component.color = DEFAULT_COLOR.rgbValue;
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('click from main-color-button should toggle #selectColor ', () => {
+        spyOn(component, 'selectColor');
+        const mainColorButton = fixture.debugElement.query(By.css('.main-color-button'));
+        mainColorButton.triggerEventHandler('click', null);
+        expect(component.selectColor).toHaveBeenCalled();
+    });
+
+    it('click from secondary-color-button should toggle #selectColor', () => {
+        spyOn(component, 'selectColor');
+        const secondaryColorButton = fixture.debugElement.query(By.css('.secondary-color-button'));
+        secondaryColorButton.triggerEventHandler('click', null);
+        expect(component.selectColor).toHaveBeenCalled();
     });
 
     it('should select a color correctly', () => {
@@ -83,19 +99,32 @@ describe('ColorPanelComponent', () => {
         expect(colorService.updatePreviousColors).not.toHaveBeenCalled();
     });
 
+    it('left click from previous-color should toggle #setPrimaryColor', () => {
+        spyOn(component, 'setPrimaryColor');
+        const previousColor = fixture.debugElement.query(By.css('.previous-color'));
+        previousColor.triggerEventHandler('click', null);
+        expect(component.setPrimaryColor).toHaveBeenCalled();
+    });
+
     it('should set the primary color correctly', () => {
         const DEFAULT_INDEX = 3;
         spyOn(colorService, 'updateMainColor');
         component.setPrimaryColor(DEFAULT_INDEX);
         expect(colorService.updateMainColor).toHaveBeenCalled();
-        expect(component.openColorPicker).toBe(false); // needed ?
-        // can i assume that the boolean openColorPicker is by default false
+        expect(component.openColorPicker).toBe(false);
     });
 
     it('should close the color picker if the colopicker was opened', () => {
         component.openColorPicker = true;
         component.closeColorPicker();
-        expect(component.openColorPicker).toBe(false); // needed ?
+        expect(component.openColorPicker).toBe(false);
+    });
+
+    it('right click from previous-color should toggle #setSecondaryColor', () => {
+        spyOn(component, 'setSecondaryColor');
+        const previousColor = fixture.debugElement.query(By.css('.previous-color'));
+        previousColor.triggerEventHandler('contextmenu', null); // right click is contextmenu event
+        expect(component.setSecondaryColor).toHaveBeenCalled();
     });
 
     it('should set the secondary color correctly', () => {
@@ -103,8 +132,16 @@ describe('ColorPanelComponent', () => {
         spyOn(colorService, 'updateSecondaryColor');
         component.setSecondaryColor(DEFAULT_INDEX);
         expect(colorService.updateSecondaryColor).toHaveBeenCalled();
-        expect(component.openColorPicker).toBe(false); // needed ?
-        // can i assume that the boolean openColorPicker is by default false
+        expect(component.openColorPicker).toBe(false);
+    });
+
+    it('input event from opacity-slider should toggle #updateOpacity ', () => {
+        component.openColorPicker = true;
+        fixture.detectChanges();
+        spyOn(component, 'updateOpacity');
+        const opacitySlider = fixture.debugElement.query(By.css('.opacity-slider'));
+        opacitySlider.triggerEventHandler('change', null);
+        expect(component.updateOpacity).toHaveBeenCalled();
     });
 
     it('should update opacity correctly', () => {
@@ -126,72 +163,79 @@ describe('ColorPanelComponent', () => {
     it('should get a rgb value correctly', () => {
         // for the red value
         RGB_INDEX = 0;
-        component.color = DEFAULT_COLOR.rgbValue;
         expect(component.getRGB(RGB_INDEX)).toBe('1');
+
         // for the green value
         RGB_INDEX = 1;
-        component.color = DEFAULT_COLOR.rgbValue;
         expect(component.getRGB(RGB_INDEX)).toBe('2');
+
         // for the blue value
         RGB_INDEX = 2;
-        component.color = DEFAULT_COLOR.rgbValue;
         expect(component.getRGB(RGB_INDEX)).toBe('3');
     });
 
     it('should apply the rgb input correctly when a normal hex value is provided', () => {
         // Testing with a normal hex value (A)
         const NORMAL_HEX = 'A';
-        component.color = DEFAULT_COLOR.rgbValue;
         component.applyRGBInput(NORMAL_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '10', '3']);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '10', '3']);
         expect(component.color).toBe('rgb(1,10,3)');
     });
 
-    it('should apply the rgb input correctly when a minimum hex value is provided', () => {
+    it('should apply the rgb input correctly when the minimum hex value is provided', () => {
         // Testing with a minmumum hex value (0)
         const MIMIMUM_HEX = '0';
-        component.color = DEFAULT_COLOR.rgbValue;
         component.applyRGBInput(MIMIMUM_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '0', '3']);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '0', '3']);
         expect(component.color).toBe('rgb(1,0,3)');
     });
+
+    // it('input event from rgb-input should toggle #applyRGBInput ', () => {
+    //     component.openColorPicker = true;
+    //     fixture.detectChanges();
+    //     spyOn(component, 'applyRGBInput');
+    //     const rgbInputs = fixture.debugElement.queryAll(By.css('.rgb-input'));
+    //     rgbInputs[1].triggerEventHandler('input', null);
+    //     expect(component.applyRGBInput).toHaveBeenCalled();
+    // });
 
     it('should apply the rgb input correctly when a maximum hex value is provided', () => {
         // Testing with a maximum hex value (FF)
         const MAXIMUM_HEX = 'ff';
-        component.color = DEFAULT_COLOR.rgbValue;
         component.applyRGBInput(MAXIMUM_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '255', '3']);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '255', '3']);
         expect(component.color).toBe('rgb(1,255,3)');
     });
 
     it('should not apply the rgb input when a hex value above FF provided', () => {
         const INCORRECT_HEX = 'AF4';
-        component.color = DEFAULT_COLOR.rgbValue;
-        component.applyRGBInput(INCORRECT_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '2', '3']);
+        component.applyRGBInput(INCORRECT_HEX, RGB_INDEX);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '2', '3']);
         expect(component.color).toBe('rgb(1,2,3)');
-        expect(component.rgbInputs[1].inputError).toBe(true);
+        expect(component.rgbInputs[RGB_INDEX].inputError).toBe(true);
     });
 
     it('should not apply the rgb input when a minus sign "-" is provided ', () => {
         const INCORRECT_HEX = '-';
-        component.color = DEFAULT_COLOR.rgbValue;
         component.applyRGBInput(INCORRECT_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '2', '3']);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '2', '3']);
         expect(component.color).toBe('rgb(1,2,3)');
     });
 
     it('should not apply the rgb input when the value provided is not a hex value', () => {
         const INCORRECT_HEX = 'm';
-        component.color = DEFAULT_COLOR.rgbValue;
         component.applyRGBInput(INCORRECT_HEX, 1);
-        expect(component.rgbArray).toEqual(['1', '2', '3']);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['rgbArray']).toEqual(['1', '2', '3']);
         expect(component.color).toBe('rgb(1,2,3)');
     });
 
-    it('should remove the input error is the incorrect input is changed to a correct one', () => {
-        component.color = DEFAULT_COLOR.rgbValue;
+    it('should remove the input error if the incorrect input is changed to a correct one', () => {
         component.rgbInputs[RGB_INDEX].inputError = true;
         component.applyRGBInput('C', RGB_INDEX);
         expect(component.rgbInputs[RGB_INDEX].inputError).toBe(false);

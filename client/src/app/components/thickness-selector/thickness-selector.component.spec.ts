@@ -1,12 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSliderChange } from '@angular/material/slider';
+import { By } from '@angular/platform-browser';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-
 import { ThicknessSelectorComponent } from './thickness-selector.component';
 
-describe('ThicknessSelectorComponent', () => {
+fdescribe('ThicknessSelectorComponent', () => {
     let component: ThicknessSelectorComponent;
     let fixture: ComponentFixture<ThicknessSelectorComponent>;
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'drawing tool');
@@ -29,7 +29,14 @@ describe('ThicknessSelectorComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should raise updateThicknessEmitter event when updateThickness is called', () => {
+    it('change from thickness-slider should toggle #updateThickness', () => {
+        spyOn(component, 'updateThickness');
+        const thicknessSlider = fixture.debugElement.query(By.css('.thickness-slider'));
+        thicknessSlider.triggerEventHandler('change', null);
+        expect(component.updateThickness).toHaveBeenCalled();
+    });
+
+    it('should raise updateThicknessEmitter event when #updateThickness is called', () => {
         const SLIDER_EXPECTED_VALUE = 30;
         const matSliderChange: MatSliderChange = new MatSliderChange();
         let sliderEmmitedValue = 0;

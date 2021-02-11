@@ -5,7 +5,7 @@
         <button mat-fab
             [ngStyle]="{'background-color':colorService.mainColor.rgbValue,'opacity':colorService.mainColor.opacity}"
             (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left"
-            matTooltipShowDelay="1000"></button>
+            matTooltipShowDelay="1000" class="main-color-button"></button>
 
         <button mat-button (click)="switchColors()">
             <mat-icon>compare_arrows</mat-icon>
@@ -13,10 +13,10 @@
         <button mat-mini-fab
             [ngStyle]="{'background-color':colorService.secondaryColor.rgbValue,'opacity':colorService.secondaryColor.opacity}"
             (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire"
-            matTooltipPosition="right" matTooltipShowDelay="1000"></button>
+            matTooltipPosition="right" matTooltipShowDelay="1000" class="secondary-color-button"></button>
     </div>
     <div *ngFor="let previousColor of previousColors; let index=index;" class="list-previous-color">
-        <button mat-mini-fab class="previousColor" (click)="setPrimaryColor(index)"
+        <button mat-mini-fab class="previous-color" (click)="setPrimaryColor(index)"
             (contextmenu)="setSecondaryColor(index)"
             [ngStyle]="{'background-color':previousColor.rgbValue,'opacity':previousColor.opacity}"></button>
     </div>
@@ -27,20 +27,20 @@
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)">
-            </mat-slider>
+            <mat-slider class="opacity-slider" #slider  min="15" [value]="getOpacity()" (change)="updateOpacity($event)"></mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
         <div class="input-wrapper">
             <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index=index">
                 <mat-form-field>
-                    <mat-label class="input" [ngStyle]="rgbInput.inputError && {'color':'red'}">{{rgbInput.color}}</mat-label>
+                    <mat-label class="rgb-label" [ngStyle]="rgbInput.inputError && {'color':'red'}">{{rgbInput.color}}</mat-label>
                     <input  
                     type="text" 
-                    class="input"
+                    class="rgb-input"
                     maxlength="2"
                     [value]="getRGB(index)"   
-                    (input)="applyRGBInput($event.target.value,index)" [ngStyle]="rgbInput.inputError && {'color':'red'}" matInput>
+                    (input)="applyRGBInput($event.target.value,index)" 
+                    [ngStyle]="rgbInput.inputError && {'color':'red'}" matInput>
                 </mat-form-field>
             </form>
 

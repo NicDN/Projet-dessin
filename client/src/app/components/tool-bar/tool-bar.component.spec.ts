@@ -5,7 +5,6 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
 import { ToolsService } from '@app/services/tools/tools.service';
-
 import { ToolBarComponent } from './tool-bar.component';
 
 describe('ToolBarComponent', () => {
@@ -32,7 +31,7 @@ describe('ToolBarComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should raise setCurrenTool event when a tool bar element is clicked', () => {
+    it('should call #toggleActive when a tool bar element is clicked', () => {
         const toolBarElement = fixture.debugElement.query(By.css('.list-item'));
         spyOn(toolsService, 'setCurrentTool');
         toolBarElement.triggerEventHandler('click', tool);

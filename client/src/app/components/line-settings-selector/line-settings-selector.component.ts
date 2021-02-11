@@ -17,7 +17,7 @@ export class LineSettingsSelectorComponent {
         this.updateJunctionDiameterEmitter.emit(event.value as number);
     }
 
-    onChange(junction: MatSlideToggleChange): void {
+    updateJunction(junction: MatSlideToggleChange): void {
         this.updatedotJunctionCheckedEmitter.emit(junction.checked);
     }
 }

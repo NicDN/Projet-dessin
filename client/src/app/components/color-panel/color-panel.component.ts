@@ -29,7 +29,7 @@ export class ColorPanelComponent {
     hue: string;
     opacity: number;
 
-    rgbArray: string[];
+    private rgbArray: string[]; // represents R/G/B decimal values
 
     constructor(colorService: ColorService) {
         this.colorService = colorService;
