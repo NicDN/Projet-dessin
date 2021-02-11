@@ -18,7 +18,6 @@ const DEFAULTTHICKNESS = 1;
 })
 export class PencilService extends TraceTool {
     thickness: number;
-
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };

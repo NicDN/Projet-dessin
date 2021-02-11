@@ -1,6 +1,6 @@
+import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingTool } from './drawing-tool';
 import { MouseButton } from './tool';
 import { Vec2 } from './vec2';
 

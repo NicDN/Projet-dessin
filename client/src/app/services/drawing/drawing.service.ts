@@ -49,11 +49,14 @@ export class DrawingService {
         this.sendNotifReload('Resizing the canvas');
     }
 
+    resizeCanvas(): void {
+        this.sendNotifReload('Plz reload');
+    }
+
     checkIfCanvasEmpty(): boolean {
         this.clearCanvas(this.previewCtx);
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
-
 
     // Last to test
     onSizeChange(boxsize: BoxSize): void {
