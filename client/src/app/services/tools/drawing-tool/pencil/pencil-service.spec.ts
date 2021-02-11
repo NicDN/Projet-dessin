@@ -109,7 +109,7 @@ fdescribe('PencilService', () => {
 
         // Premier pixel seulement
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(imageData.data[0]).toEqual(255); // R
+        expect(imageData.data[0]).toEqual(255); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
         // tslint:disable-next-line:no-magic-numbers
