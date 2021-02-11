@@ -1,9 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
-// import { DEFAULT_SIZE, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
+import { SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
-describe('ResizeContainerComponent', () => {
+fdescribe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
     const OVER_MINIMUM_X = 800;
@@ -69,32 +69,34 @@ describe('ResizeContainerComponent', () => {
     });
 
     // Problems with enum in Jasmine
-    // it('should set status', () => {
-    //     const value = Status.RESIZE_DIAGONAL as Status;
-    //     expect(value).toEqual(Status.NOT_RESIZING);
-    //     // component.setStatus(Status.RESIZE_DIAGONAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_DIAGONAL);
+    it('should set status', () => {
 
-    //     // component.setStatus(Status.RESIZE_HORIZONTAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_HORIZONTAL);
+        component.setStatus(Status.NOT_RESIZING);
+        expect(component.status).toEqual(Status.NOT_RESIZING);
+        
+        component.setStatus(Status.RESIZE_DIAGONAL);
+        expect(component.status).toEqual(Status.RESIZE_DIAGONAL);
 
-    //     // component.setStatus(Status.RESIZE_VERTICAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_VERTICAL);
-    // });
+        component.setStatus(Status.RESIZE_HORIZONTAL);
+        expect(component.status).toEqual(Status.RESIZE_HORIZONTAL);
 
-    it('should resize on mouse up only if status was not NOT_RESIZING', () => {
+        component.setStatus(Status.RESIZE_VERTICAL);
+        expect(component.status).toEqual(Status.RESIZE_VERTICAL);
+    });
+
+    it('should not resize on mouse up only if status was not NOT_RESIZING', () => {
         const emitResizeNewDrawing: jasmine.Spy = spyOn(component.notifyResize, 'emit');
         component.status = Status.NOT_RESIZING;
         component.onMouseUpContainer(mouseEventClick);
         expect(emitResizeNewDrawing).not.toHaveBeenCalled();
     });
 
-    // Input is technically not a number
-    // it('should resize with the good dimensions', () => {
-    //     const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
-    //     const EXPECTED_HEIGHT = mouseEventClick.pageY - 2 - component.MOUSE_OFFSET;
-    //     component.resize(mouseEventClick);
-    //     expect(component.width).toEqual(EXPECTED_WIDTH);
-    //     expect(component.height).toEqual(EXPECTED_HEIGHT);
-    // });
+    
+    it('should resize with the good dimensions', () => {
+        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - 2 - component.MOUSE_OFFSET;
+        component.resize(mouseEventClick);
+        expect(component.width).toEqual(EXPECTED_WIDTH);
+        expect(component.height).toEqual(EXPECTED_HEIGHT);
+    });
 });

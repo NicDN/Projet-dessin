@@ -4,7 +4,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 
 import { HotkeyService } from './hotkey.service';
 
-fdescribe('HotkeyService', () => {
+describe('HotkeyService', () => {
     let service: HotkeyService;
     let drawServiceSpy: jasmine.SpyObj<DrawingService>;
     beforeEach(async(() => {

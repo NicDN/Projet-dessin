@@ -3,7 +3,7 @@
     [style.width.px]="width" 
     [style.height.px]="height" 
     [class.active]="status === 1 || status === 2 || status===3"
-    (window:mouseup)="setStatus($event, 0)"
+    (window:mouseup)="setStatus(0)"
 >
 
     <div class="resize-action-diagonal" (mousedown)="onMouseDown($event, 1)"></div>
