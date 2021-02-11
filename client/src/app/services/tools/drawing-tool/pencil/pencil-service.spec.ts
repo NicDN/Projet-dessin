@@ -34,8 +34,8 @@ describe('PencilService', () => {
         service['drawingService'].previewCtx = previewCtxStub;
 
         mouseEvent = {
-            offsetX: 25,
-            offsetY: 25,
+            pageX: 430,
+            pageY: 27,
             button: 0,
         } as MouseEvent;
     });
@@ -101,14 +101,15 @@ describe('PencilService', () => {
 
     // Exemple de test d'intégration qui est quand même utile
     it(' should change the pixel of the canvas ', () => {
-        mouseEvent = { offsetX: 0, offsetY: 0, button: 0 } as MouseEvent;
+        mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
         service.onMouseDown(mouseEvent);
-        mouseEvent = { offsetX: 1, offsetY: 0, button: 0 } as MouseEvent;
+        mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
+        service.thickness = 50;
         service.onMouseUp(mouseEvent);
 
         // Premier pixel seulement
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(imageData.data[0]).toEqual(0); // R
+        expect(imageData.data[0]).toEqual(255); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
         // tslint:disable-next-line:no-magic-numbers

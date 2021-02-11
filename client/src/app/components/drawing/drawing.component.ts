@@ -9,9 +9,9 @@ import { Subscription } from 'rxjs';
 
 // TODO : Avoir un fichier séparé pour les constantes ?
 export const DEFAULT_SIZE = 250;
-const MINIMUM_WORKSPACE_SIZE = 500;
-const SIDE_BAR_SIZE = 400;
-const HALF_RATIO = 0.5;
+export const MINIMUM_WORKSPACE_SIZE = 500;
+export const SIDE_BAR_SIZE = 400;
+export const HALF_RATIO = 0.5;
 
 @Component({
     selector: 'app-drawing',
@@ -27,7 +27,7 @@ export class DrawingComponent implements AfterViewInit {
     private previewCtx: CanvasRenderingContext2D;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-    private canDraw: boolean = true;
+    canDraw: boolean = true;
 
     subscription: Subscription;
 
@@ -38,8 +38,6 @@ export class DrawingComponent implements AfterViewInit {
             this.isEraser = currentTool instanceof EraserService;
         });
     }
-
-
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -57,6 +55,7 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent): void {
+        console.log(event.pageX, event.pageY);
         if (this.canDraw) {
             this.toolsService.currentTool.onMouseDown(event);
         }
@@ -88,22 +87,12 @@ export class DrawingComponent implements AfterViewInit {
         if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
     }
 
-    disableDrawing(isUsingButton: boolean): void {
-        this.canDraw = !isUsingButton;
+    disableDrawing(isUsingResizeButton: boolean): void {
+        this.canDraw = !isUsingResizeButton;
     }
 
     onSizeChange(boxsize: BoxSize): void {
-        this.previewCanvas.nativeElement.width = boxsize.widthBox;
-        this.previewCanvas.nativeElement.height = boxsize.heightBox;
-        this.previewCtx.drawImage(this.baseCanvas.nativeElement, 0, 0);
-
-        this.baseCanvas.nativeElement.width = boxsize.widthBox;
-        this.baseCanvas.nativeElement.height = boxsize.heightBox;
-
-        this.baseCtx.drawImage(this.previewCanvas.nativeElement, 0, 0);
-
-        this.previewCanvas.nativeElement.width = boxsize.widthBox;
-        this.previewCanvas.nativeElement.height = boxsize.heightBox;
+        this.drawingService.onSizeChange(boxsize);
     }
 
     get width(): number {

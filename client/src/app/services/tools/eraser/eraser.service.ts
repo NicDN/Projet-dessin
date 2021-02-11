@@ -71,6 +71,11 @@ export class EraserService extends PencilService {
         const ctx = this.drawingService.previewCtx;
         ctx.beginPath();
         ctx.rect(mousePosition.x - this.thickness, mousePosition.y - this.thickness, this.thickness * 2, this.thickness * 2);
+        ctx.fillStyle = 'black';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.rect(mousePosition.x - this.thickness + 1, mousePosition.y - this.thickness + 1, this.thickness * 2 - 2, this.thickness * 2 - 2);
         ctx.fillStyle = 'white';
         ctx.fill();
     }

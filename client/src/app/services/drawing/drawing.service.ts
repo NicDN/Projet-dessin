@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Vec2 } from '@app/classes/vec2';
+import { BoxSize } from '@app/classes/box-size';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -11,25 +10,14 @@ export class DrawingService {
     previewCtx: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
-    router: Router;
 
-    readonly MINIMUM_WORKSPACE_SIZE: number = 500;
-    readonly SIDE_BAR_SIZE: number = 400;
-    readonly HALF_RATIO: number = 0.5;
-
-    private subject: Subject<any> = new Subject<any>();
-
-    canvasSize: Vec2;
-
-    constructor() {
-        this.canvasSize = { x: (window.innerWidth - this.SIDE_BAR_SIZE) * this.HALF_RATIO, y: window.innerHeight * this.HALF_RATIO };
-    }
+    private subject: Subject<string> = new Subject<string>();
 
     sendNotifReload(message: string): void {
-        this.subject.next({ text: message });
+        this.subject.next(message);
     }
 
-    getMessage(): Observable<any> {
+    getMessage(): Observable<string> {
         return this.subject.asObservable();
     }
 
@@ -39,8 +27,7 @@ export class DrawingService {
 
     handleNewDrawing(): void {
         if (!this.checkIfCanvasEmpty()) {
-            const response = confirm('Si vous créez un nouveau dessin, vos changements seront perdus. Voulez-vous continuer ?');
-            if (response === true) {
+            if (this.validateUserInput()) {
                 this.reloadDrawing();
             }
         } else {
@@ -48,17 +35,40 @@ export class DrawingService {
         }
     }
 
+    validateUserInput(): boolean {
+        return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
+    }
+
     reloadDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        this.resizeCanvas();
+        this.resetCanvas();
     }
 
-    resizeCanvas(): void {
-        this.sendNotifReload("Plz reload");
+    resetCanvas(): void {
+        this.sendNotifReload('Resizing the canvas');
     }
 
     checkIfCanvasEmpty(): boolean {
+        this.clearCanvas(this.previewCtx);
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
+    }
+
+
+    // Last to test
+    onSizeChange(boxsize: BoxSize): void {
+        this.changeSizeOfCanvas(this.previewCanvas, boxsize);
+        this.previewCtx.drawImage(this.canvas, 0, 0);
+
+        this.changeSizeOfCanvas(this.canvas, boxsize);
+
+        this.baseCtx.drawImage(this.previewCanvas, 0, 0);
+
+        this.clearCanvas(this.previewCtx);
+    }
+
+    changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
+        canvas.width = boxsize.widthBox;
+        canvas.height = boxsize.heightBox;
     }
 }
