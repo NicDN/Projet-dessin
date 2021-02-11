@@ -5,7 +5,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Subscription } from 'rxjs';
 import { __assign } from 'tslib';
 
-const enum Status {
+export const enum Status {
     NOT_RESIZING = 0,
     RESIZE_DIAGONAL = 1,
     RESIZE_HORIZONTAL = 2,
@@ -49,7 +49,6 @@ export class ResizeContainerComponent implements AfterViewInit {
     private loadBox(): void {
         const { left, top } = this.box.nativeElement.getBoundingClientRect();
         this.boxPosition = { left, top };
-        console.log(this.boxPosition);
     }
 
     @HostListener('window:mousemove', ['$event'])
@@ -112,10 +111,10 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     XisOverMinimum(event: MouseEvent): boolean {
-        return event.clientX - this.boxPosition.left - this.MOUSE_OFFSET >= DEFAULT_SIZE;
+        return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_SIZE;
     }
 
     YisOverMinimum(event: MouseEvent): boolean {
-        return event.clientY - this.boxPosition.top - this.MOUSE_OFFSET >= DEFAULT_SIZE;
+        return event.pageY - this.boxPosition.top - this.MOUSE_OFFSET >= DEFAULT_SIZE;
     }
 }
