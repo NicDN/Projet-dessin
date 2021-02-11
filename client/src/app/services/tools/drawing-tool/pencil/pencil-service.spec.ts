@@ -34,8 +34,8 @@ fdescribe('PencilService', () => {
         service['drawingService'].previewCtx = previewCtxStub;
 
         mouseEvent = {
-            offsetX: 25,
-            offsetY: 25,
+            pageX: 430,
+            pageY: 27,
             button: 0,
         } as MouseEvent;
     });
@@ -45,7 +45,7 @@ fdescribe('PencilService', () => {
     });
 
     it(' mouseDown should set mouseDownCoord to correct position', () => {
-        const expectedResult: Vec2 = { x: 25, y: 25 };
+        const expectedResult: Vec2 = { x: 25, y: 25  };
         service.onMouseDown(mouseEvent);
         expect(service.mouseDownCoord).toEqual(expectedResult);
     });
@@ -101,14 +101,15 @@ fdescribe('PencilService', () => {
 
     // Exemple de test d'intégration qui est quand même utile
     it(' should change the pixel of the canvas ', () => {
-        mouseEvent = { pageX: 405, pageY: 2, button: 0 } as MouseEvent;
+        mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
         service.onMouseDown(mouseEvent);
-        mouseEvent = { pageX: 405, pageY: 2, button: 0 } as MouseEvent;
+        mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
+        service.thickness = 50;
         service.onMouseUp(mouseEvent);
 
         // Premier pixel seulement
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(imageData.data[0]).toEqual(0); // R
+        expect(imageData.data[0]).toEqual(255); // R
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
         // tslint:disable-next-line:no-magic-numbers

@@ -6,21 +6,16 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class HotkeyService {
+    constructor(public router: Router, public drawingService: DrawingService) { }
     controlKeyDown: boolean = false;
-
-    constructor(private router: Router, public drawingService: DrawingService) {}
 
     onKeyDown(event: KeyboardEvent): void {
         this.handleCtrlKey(event);
         switch (event.code) {
             case 'KeyO':
-                if (this.controlKeyDown) {
-                    this.router.navigate(['/editor']);
-                    this.drawingService.handleNewDrawing();
-                }
+                this.handleCtrlO();
                 break;
             default:
-            
         }
         event.returnValue = true;
     }
@@ -29,6 +24,13 @@ export class HotkeyService {
         if (event.ctrlKey) {
             this.controlKeyDown = true;
             event.preventDefault();
+        }
+    }
+
+    handleCtrlO(): void {
+        if (this.controlKeyDown) {
+            this.router.navigate(['/editor']);
+            this.drawingService.handleNewDrawing();
         }
     }
 

@@ -21,6 +21,7 @@ export class PencilService extends TraceTool {
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Crayon');
+        this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
         this.minThickness = 1;

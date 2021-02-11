@@ -1,20 +1,37 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
 import { DrawingService } from './drawing.service';
 
 describe('DrawingService', () => {
+    let resizeContainerComponent: ResizeContainerComponent;
+    let fixture: ComponentFixture<ResizeContainerComponent>;
+
     let service: DrawingService;
     let canvasTestHelper: CanvasTestHelper;
     let boxSizeStub: BoxSize;
+    let drawingServiceSpyCheckIfEmpty: jasmine.Spy<any>;
+    let drawingServiceSpyReloadDrawing: jasmine.Spy<any>;
+    let drawingServiceSpyValidateInput: jasmine.Spy<any>;
+
+    beforeEach(async(() => {
+        TestBed.configureTestingModule({
+            declarations: [ResizeContainerComponent],
+        }).compileComponents();
+    }));
+
     beforeEach(() => {
-        TestBed.configureTestingModule({});
         service = TestBed.inject(DrawingService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         service.canvas = canvasTestHelper.canvas;
         service.previewCanvas = canvasTestHelper.selectionCanvas;
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
+
+        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'checkIfCanvasEmpty').and.callThrough();
+        drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadDrawing').and.callThrough();
+        drawingServiceSpyValidateInput = spyOn<any>(service, 'validateUserInput').and.callThrough();
     });
 
     it('should be created', () => {
@@ -40,6 +57,64 @@ describe('DrawingService', () => {
         expect(service.canvas.width).toEqual(boxSizeStub.widthBox);
         expect(service.canvas.height).toEqual(boxSizeStub.heightBox);
     });
+
+    it('should clear the canvas and have default height and width', () => {
+        const drawingServiceSpyClearCanvas: jasmine.Spy<any> = spyOn<any>(service, 'clearCanvas').and.callThrough();
+        const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
+        service.reloadDrawing();
+        expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
+        expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
+    });
+
+    it('should call sendNotifReload saying the canvas is resizing', () => {
+        const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
+        service.resetCanvas();
+        expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
+    });
+
+    it('should send a notification to the observer about the new drawing', () => {
+        fixture = TestBed.createComponent(ResizeContainerComponent);
+        resizeContainerComponent = fixture.componentInstance;
+        fixture.detectChanges();
+        const checkNotif: jasmine.Spy<any> = spyOn<any>(resizeContainerComponent, 'newDrawingNotification');
+        service.sendNotifReload('A message');
+        expect(checkNotif).toHaveBeenCalled();
+    });
+
+    it('should reload the drawing which clears the drawing if the canvas is empty', () => {
+        const emptyStub = true;
+        drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
+        service.handleNewDrawing();
+        expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
+        expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
+    });
+
+    it('should reload the drawing which clears the drawing if the canvas is not empty', () => {
+        const emptyStub = false;
+        const validateStub = true;
+        drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
+        drawingServiceSpyValidateInput.and.returnValue(validateStub);
+
+        service.handleNewDrawing();
+
+        expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
+        expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
+        expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
+    });
+
+    it('should reload the drawing which clears the drawing if the canvas is not empty', () => {
+        const emptyStub = false;
+        const validateStub = false;
+        drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
+        drawingServiceSpyValidateInput.and.returnValue(validateStub);
+
+        service.handleNewDrawing();
+
+        expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
+        expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
+        expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
+    });
+
 
     // it('should be identical if the canvas is enlarged', () => {
     //     service.baseCtx.fillRect(0, 0, 1, 1);

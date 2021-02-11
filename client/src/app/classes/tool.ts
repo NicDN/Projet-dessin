@@ -32,6 +32,7 @@ export abstract class Tool {
     // tslint:disable-next-line: no-empty
     onKeyUp(event: KeyboardEvent): void {}
 
+    // If the magic numbers are changed, a test in pencilService will fail, go change the MouseEventCoords there too.
     getPositionFromMouse(event: MouseEvent): Vec2 {
         return { x: event.pageX - 405, y: event.pageY - 2 };
     }

@@ -17,6 +17,7 @@ export class DrawingService {
         this.subject.next(message);
     }
 
+    // Test? ( maybe cross tested already ?)
     getMessage(): Observable<string> {
         return this.subject.asObservable();
     }
@@ -27,15 +28,16 @@ export class DrawingService {
 
     handleNewDrawing(): void {
         if (!this.checkIfCanvasEmpty()) {
-            const response = window.confirm(
-                'Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?',
-            );
-            if (response === true) {
+            if (this.validateUserInput()) {
                 this.reloadDrawing();
             }
         } else {
             this.reloadDrawing();
         }
+    }
+
+    validateUserInput(): boolean {
+        return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
     reloadDrawing(): void {
@@ -53,6 +55,8 @@ export class DrawingService {
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
+
+    // Last to test
     onSizeChange(boxsize: BoxSize): void {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
