@@ -17,7 +17,6 @@ export class DrawingService {
         this.subject.next(message);
     }
 
-    // Test? ( maybe cross tested already ?)
     getMessage(): Observable<string> {
         return this.subject.asObservable();
     }

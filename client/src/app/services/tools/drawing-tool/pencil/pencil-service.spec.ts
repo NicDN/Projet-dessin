@@ -45,7 +45,7 @@ describe('PencilService', () => {
     });
 
     it(' mouseDown should set mouseDownCoord to correct position', () => {
-        const expectedResult: Vec2 = { x: 25, y: 25  };
+        const expectedResult: Vec2 = { x: 25, y: 25 };
         service.onMouseDown(mouseEvent);
         expect(service.mouseDownCoord).toEqual(expectedResult);
     });

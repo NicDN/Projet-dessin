@@ -62,15 +62,14 @@ export class ResizeContainerComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent, status: number): void {
-        this.setStatus(event, status);
-    }
-
-    setStatus(event: MouseEvent, status: number): void {
-        // if (status === Status.RESIZE_DIAGONAL || Status.RESIZE_HORIZONTAL || Status.RESIZE_VERTICAL) event.stopPropagation();
-        this.status = status;
+        this.setStatus(status);
         if (this.status !== Status.NOT_RESIZING) {
             this.usingButton.emit(true);
         }
+    }
+
+    setStatus(status: number): void {
+        this.status = status;
     }
 
     onMouseUpContainer(event: MouseEvent): void {
@@ -79,15 +78,15 @@ export class ResizeContainerComponent implements AfterViewInit {
             this.notifyResize.emit(this.boxSize);
         }
 
-        this.setStatus(event, Status.NOT_RESIZING);
+        this.setStatus(Status.NOT_RESIZING);
     }
 
     resize(event: MouseEvent): void {
         if (this.updateWidthValid(event)) {
-            this.width = event.clientX - this.boxPosition.left - this.MOUSE_OFFSET;
+            this.width = event.pageX - this.boxPosition.left - this.MOUSE_OFFSET;
         }
         if (this.updateHeightValid(event)) {
-            this.height = event.clientY - this.boxPosition.top - this.MOUSE_OFFSET;
+            this.height = event.pageY - this.boxPosition.top - this.MOUSE_OFFSET;
         }
     }
 
