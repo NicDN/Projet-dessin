@@ -26,9 +26,4 @@ export class OptionBarComponent {
     onKeyDown(event: KeyboardEvent): void {
         this.hotkeyService.onKeyDown(event);
     }
-
-    @HostListener('window:keyup', ['$event'])
-    onKeyUp(event: KeyboardEvent): void {
-        this.hotkeyService.onKeyUp(event);
-    }
 }

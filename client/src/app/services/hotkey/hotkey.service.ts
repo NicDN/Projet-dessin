@@ -7,34 +7,23 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class HotkeyService {
     constructor(public router: Router, public drawingService: DrawingService) { }
-    controlKeyDown: boolean = false;
-
+    
     onKeyDown(event: KeyboardEvent): void {
-        this.handleCtrlKey(event);
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
         switch (event.code) {
             case 'KeyO':
-                this.handleCtrlO();
+                this.handleCtrlO(event);
                 break;
-            default:
         }
         event.returnValue = true;
     }
 
-    handleCtrlKey(event: KeyboardEvent): void {
+    handleCtrlO(event: KeyboardEvent): void {
         if (event.ctrlKey) {
-            this.controlKeyDown = true;
-            event.preventDefault();
-        }
-    }
-
-    handleCtrlO(): void {
-        if (this.controlKeyDown) {
             this.router.navigate(['/editor']);
             this.drawingService.handleNewDrawing();
         }
-    }
-
-    onKeyUp(event: KeyboardEvent): void {
-        if (!event.ctrlKey) this.controlKeyDown = false;
     }
 }

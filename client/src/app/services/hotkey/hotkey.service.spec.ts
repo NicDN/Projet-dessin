@@ -1,12 +1,11 @@
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { async, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DrawingService } from '@app/services/drawing/drawing.service';
-
 import { HotkeyService } from './hotkey.service';
 
-describe('HotkeyService', () => {
+fdescribe('HotkeyService', () => {
     let service: HotkeyService;
-    let drawServiceSpy: jasmine.SpyObj<DrawingService>;
+    // let drawServiceSpy: jasmine.SpyObj<DrawingService>;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
@@ -15,7 +14,7 @@ describe('HotkeyService', () => {
     }));
 
     beforeEach(() => {
-        drawServiceSpy = jasmine.createSpyObj('DrawingService', ['handleNewDrawing']);
+        // drawServiceSpy = jasmine.createSpyObj('DrawingService', ['handleNewDrawing']);
         service = TestBed.inject(HotkeyService);
     });
 
@@ -24,8 +23,14 @@ describe('HotkeyService', () => {
     });
 
     it('ctrl functions should only be called when the ctrl key is pressed down', () => {
-        const keyEvent = new KeyboardEvent('keydown', { code: 'KeyO' });
-        service.handleCtrlKey(keyEvent);
-        expect(drawServiceSpy.handleNewDrawing).not.toHaveBeenCalled();
+        const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
+
+        const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
+        service.onKeyDown(noCtrlKeyEvent);
+        expect(drawingServiceSpy).not.toHaveBeenCalled();
+
+        const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+        service.onKeyDown(ctrlKeyEvent);
+        expect(drawingServiceSpy).toHaveBeenCalled();
     });
 });
