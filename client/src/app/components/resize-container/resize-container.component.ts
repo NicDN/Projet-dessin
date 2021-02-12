@@ -3,7 +3,6 @@ import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_SIZE, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Subscription } from 'rxjs';
-import { __assign } from 'tslib';
 
 export const enum Status {
     NOT_RESIZING = 0,
@@ -26,7 +25,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     @ViewChild('box') box: ElementRef;
 
-    public boxPosition: { left: number; top: number };
+    boxPosition: { left: number; top: number };
 
     readonly MOUSE_OFFSET: number = 5;
     status: Status = Status.NOT_RESIZING;
