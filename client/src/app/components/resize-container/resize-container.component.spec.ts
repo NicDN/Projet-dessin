@@ -4,9 +4,11 @@ import { ResizeContainerComponent, Status } from './resize-container.component';
 describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
+
     const OVER_MINIMUM_X = 800;
     const OVER_MINIMUM_Y = 800;
     const mouseEventClick = { pageX: OVER_MINIMUM_X, pageY: OVER_MINIMUM_Y, button: 0 } as MouseEvent;
+    const RESIZING = 4;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -83,6 +85,9 @@ describe('ResizeContainerComponent', () => {
         component.status = Status.NOT_RESIZING;
         component.onMouseUpContainer(mouseEventClick);
         expect(emitResizeNewDrawing).not.toHaveBeenCalled();
+        component.status = RESIZING;
+        component.onMouseUpContainer(mouseEventClick);
+        expect(emitResizeNewDrawing).toHaveBeenCalled();
     });
 
     it('should resize with the good dimensions', () => {
@@ -92,5 +97,17 @@ describe('ResizeContainerComponent', () => {
         component.resize(mouseEventClick);
         expect(component.width).toEqual(EXPECTED_WIDTH);
         expect(component.height).toEqual(EXPECTED_HEIGHT);
+    });
+
+    it('should resize on mouse move', () => {
+        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resize');
+        window.dispatchEvent(new MouseEvent('mousemove'));
+        expect(calledResizeFunction).toHaveBeenCalled();
+    });
+
+    it('should call onMouseUpContainer on mouse up ', () => {
+        const calledOnMouseUpContainerFunction: jasmine.Spy = spyOn(component, 'onMouseUpContainer');
+        window.dispatchEvent(new MouseEvent('mouseup'));
+        expect(calledOnMouseUpContainerFunction).toHaveBeenCalled();
     });
 });
