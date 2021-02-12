@@ -22,7 +22,10 @@ export class EllipseDrawingService extends Shape {
 
         const actualEndCoords: Vec2 = this.getActualEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
-        ctx.ellipse(center.x, center.y, this.getRadius(begin.x, actualEndCoords.x), this.getRadius(begin.y, actualEndCoords.y), 0, 0, 2 * Math.PI);
+        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
+        this.adjustWidth(ctx, radiuses, begin, actualEndCoords);
+
+        ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
         if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) {
             this.setFillColor(ctx, this.colorService.mainColor);
@@ -46,7 +49,7 @@ export class EllipseDrawingService extends Shape {
 
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
-        ctx.lineWidth = this.thickness;
+        ctx.lineWidth = thickness;
         ctx.lineCap = 'round';
     }
 
@@ -65,6 +68,23 @@ export class EllipseDrawingService extends Shape {
     }
 
     getRadius(begin: number, end: number): number {
-        return Math.abs(end - begin) / 2 - this.thickness / 2;
+        return Math.abs(end - begin) / 2;
+    }
+
+    adjustWidth(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
+        const thicknessAdjustment: number =
+            this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered ? ctx.lineWidth / 2 : 0;
+        radiuses.x -= thicknessAdjustment;
+        radiuses.y -= thicknessAdjustment;
+        if (radiuses.x <= 0) {
+            ctx.lineWidth = begin.x !== end.x ? Math.abs(begin.x - end.x) : 1;
+            radiuses.x = 1;
+            radiuses.y = this.getRadius(begin.y, end.y) - ctx.lineWidth / 2;
+        }
+        if (radiuses.y <= 0) {
+            ctx.lineWidth = begin.y !== end.y ? Math.abs(begin.y - end.y) : 1;
+            radiuses.y = 1;
+            radiuses.x = this.getRadius(begin.x, end.x) - ctx.lineWidth / 2;
+        }
     }
 }

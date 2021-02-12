@@ -111,6 +111,7 @@ describe('PencilService', () => {
         expect(imageData.data[0]).toEqual(0); // R
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
+        // tslint:disable-next-line: no-magic-numbers
         expect(imageData.data[3]).not.toEqual(0); // A
     });
 });
