@@ -9,7 +9,7 @@ export class DrawingTool extends Tool {
     constructor(protected drawingService: DrawingService, protected colorService: ColorService, toolName: string) {
         super(drawingService, toolName);
     }
-
+    
     setThickness(thickness: number): void {
         if (thickness > 0 || thickness <= this.MAX_VALUE_THICKNESS) {
             this.thickness = thickness;

@@ -1,6 +1,5 @@
 // Reference: https://malcoded.com/posts/angular-color-picker/
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
-// import { ColorPaletteService } from '@app/services/color/color-palette/color-palette.service';
 @Component({
     selector: 'app-color-palette',
     templateUrl: './color-palette.component.html',
@@ -24,8 +23,6 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     private mousedown: boolean = false;
 
     selectedPosition: { x: number; y: number };
-
-    // constructor(private colorPaletteService: ColorPaletteService) {}
 
     ngAfterViewInit(): void {
         this.draw();
@@ -74,7 +71,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     @HostListener('window:mouseup', ['$event'])
-    onMouseUp(evt: MouseEvent): void {
+    onMouseUp(): void {
         this.mousedown = false;
     }
 
@@ -94,12 +91,14 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     emitColor(x: number, y: number): void {
-        const rgbaColor = this.getColorAtPosition(x, y);
-        this.color.emit(rgbaColor);
+        const rgbColor = this.getColorAtPosition(x, y);
+        this.color.emit(rgbColor);
     }
 
     getColorAtPosition(x: number, y: number): string {
+        console.log(x, y);
+        console.log(this.hue);
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
-        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
     }
 }
