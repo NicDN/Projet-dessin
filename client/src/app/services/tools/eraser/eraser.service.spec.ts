@@ -106,19 +106,20 @@ fdescribe('EraserService', () => {
     });
 
     it('EraseSquare should erase part off the context', () => {
-        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 20, 20);
-        baseCtxStub.rect(0, 0, 20, 20);
+        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+        baseCtxStub.rect(0, 0, 1, 1);
+        baseCtxStub.fillStyle = 'red';
         baseCtxStub.fill();
-        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 20, 20);
+        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         baseCtxStub.lineCap = 'square';
         baseCtxStub.lineJoin = 'miter';
         baseCtxStub.globalAlpha = 1;
         baseCtxStub.globalCompositeOperation = 'destination-out';
-        service.thickness = 4;
+        service.thickness = 10;
 
-        service.eraseSquare(baseCtxStub, { x: 1, y: 1 });
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });

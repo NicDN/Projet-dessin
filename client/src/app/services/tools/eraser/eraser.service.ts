@@ -20,12 +20,12 @@ export class EraserService extends PencilService {
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx = this.drawingService.baseCtx;
-        this.setCanvasContextForErasing(ctx);
+        // this.setCanvasContextForErasing(ctx);
         this.verifThickness(ctx, this.thickness);
 
         if (this.singleClick(path)) {
             this.eraseSquare(ctx, { x: path[0].x, y: path[0].y });
-            this.setCanvasContextForOtherTools(ctx);
+            // this.setCanvasContextForOtherTools(ctx);
             return;
         }
 
@@ -45,7 +45,7 @@ export class EraserService extends PencilService {
             oldPointX = point.x;
             oldPointY = point.y;
         }
-        this.setCanvasContextForOtherTools(ctx);
+        // this.setCanvasContextForOtherTools(ctx);
     }
 
     distanceBetween(point1: Vec2, point2: Vec2): number {
@@ -56,16 +56,16 @@ export class EraserService extends PencilService {
         return Math.atan2(point2.x - point1.x, point2.y - point1.y);
     }
 
-    setCanvasContextForErasing(ctx: CanvasRenderingContext2D): void {
-        ctx.lineCap = 'square';
-        ctx.lineJoin = 'miter';
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'destination-out';
-    }
+    // setCanvasContextForErasing(ctx: CanvasRenderingContext2D): void {
+    //     ctx.lineCap = 'square';
+    //     ctx.lineJoin = 'miter';
+    //     ctx.globalAlpha = 1;
+    //     // ctx.globalCompositeOperation = 'destination-out';
+    // }
 
-    setCanvasContextForOtherTools(ctx: CanvasRenderingContext2D): void {
-        ctx.globalCompositeOperation = 'source-over';
-    }
+    // setCanvasContextForOtherTools(ctx: CanvasRenderingContext2D): void {
+    //     ctx.globalCompositeOperation = 'source-over';
+    // }
 
     verifThickness(ctx: CanvasRenderingContext2D, thickness: number): void {
         if (thickness < this.MINTHICKNESS) thickness = this.MINTHICKNESS;
@@ -78,9 +78,7 @@ export class EraserService extends PencilService {
     }
 
     eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {
-        ctx.beginPath();
-        ctx.rect(point.x - this.thickness / 2, point.y - this.thickness / 2, this.thickness, this.thickness);
-        ctx.stroke();
+        ctx.clearRect(point.x - this.thickness / 2, point.y - this.thickness / 2, this.thickness, this.thickness);
     }
 
     onMouseMove(event: MouseEvent): void {
@@ -90,16 +88,30 @@ export class EraserService extends PencilService {
     }
 
     displayPreview(event: MouseEvent): void {
+        let thicknessIfPair = this.thickness;
+
+        // This is necessary since if the thickness is not pair, we won't be able to center properly the preview
+        if (this.thickness % 2 !== 0) thicknessIfPair = this.thickness + 1;
         const mousePosition = this.getPositionFromMouse(event);
         const ctx = this.drawingService.previewCtx;
         ctx.beginPath();
-        ctx.rect(mousePosition.x - this.thickness, mousePosition.y - this.thickness, this.thickness * 2, this.thickness * 2);
+        ctx.rect(
+            mousePosition.x - Math.floor(thicknessIfPair / 2),
+            mousePosition.y - Math.floor(thicknessIfPair / 2),
+            thicknessIfPair,
+            thicknessIfPair,
+        );
         ctx.fillStyle = 'black';
         ctx.globalAlpha = 1;
         ctx.fill();
 
         ctx.beginPath();
-        ctx.rect(mousePosition.x - this.thickness + 1, mousePosition.y - this.thickness + 1, this.thickness * 2 - 2, this.thickness * 2 - 2);
+        ctx.rect(
+            mousePosition.x - Math.floor(thicknessIfPair / 2) + 1,
+            mousePosition.y - Math.floor(thicknessIfPair / 2) + 1,
+            thicknessIfPair - 2,
+            thicknessIfPair - 2,
+        );
         ctx.fillStyle = 'white';
         ctx.fill();
     }
