@@ -9,6 +9,7 @@ import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-se
 })
 export class EraserService extends PencilService {
     readonly MINTHICKNESS: number = 5;
+
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService);
         this.thickness = this.MINTHICKNESS;
@@ -16,48 +17,69 @@ export class EraserService extends PencilService {
         this.toolName = 'Efface';
     }
 
-    distanceBetween(point1x: number, point1y: number, point2x: number, point2y: number): number {
-        return Math.sqrt(Math.pow(point2x - point1x, 2) + Math.pow(point2y - point1y, 2));
-    }
-    angleBetween(point1x: number, point1y: number, point2x: number, point2y: number): number {
-        return Math.atan2(point2x - point1x, point2y - point1y);
-    }
-
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx = this.drawingService.baseCtx; // TO_CHANGE
-        ctx.lineCap = 'square';
-        ctx.lineJoin = 'miter';
-        let oldPointX: number = path[0].x;
-        let oldPointY: number = path[0].y;
-        ctx.globalAlpha = 1;
-        ctx.globalCompositeOperation = 'destination-out';
-        if (this.thickness < this.MINTHICKNESS) this.thickness = this.MINTHICKNESS;
-        ctx.lineWidth = this.thickness;
+        ctx = this.drawingService.baseCtx;
+        this.setCanvasContextForErasing(ctx);
+        this.verifThickness(ctx, this.thickness);
 
-        if (path.length === 2) {
-            ctx.beginPath();
-            ctx.rect(path[0].x - this.thickness / 2, path[0].y - this.thickness / 2, this.thickness, this.thickness);
-            ctx.stroke();
-            ctx.globalCompositeOperation = 'source-over';
+        if (this.singleClick(path)) {
+            this.eraseSquare(ctx, { x: path[0].x, y: path[0].y });
+            this.setCanvasContextForOtherTools(ctx);
             return;
         }
 
+        let oldPointX: number = path[0].x;
+        let oldPointY: number = path[0].y;
+
         for (const point of path) {
-            const dist = this.distanceBetween(oldPointX, oldPointY, point.x, point.y);
-            const angle = this.angleBetween(oldPointX, oldPointY, point.x, point.y);
+            const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+            const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
 
             for (let i = 0; i < dist; i += 1) {
-                const x = oldPointX + Math.sin(angle) * i;
-                const y = oldPointY + Math.cos(angle) * i;
-                ctx.beginPath();
-                ctx.rect(x - this.thickness / 2, y - this.thickness / 2, this.thickness, this.thickness);
-                ctx.stroke();
+                const xValue = oldPointX + Math.sin(angle) * i;
+                const yValue = oldPointY + Math.cos(angle) * i;
+                this.eraseSquare(ctx, { x: xValue, y: yValue });
             }
 
             oldPointX = point.x;
             oldPointY = point.y;
         }
+        this.setCanvasContextForOtherTools(ctx);
+    }
+
+    distanceBetween(point1: Vec2, point2: Vec2): number {
+        return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+    }
+
+    angleBetween(point1: Vec2, point2: Vec2): number {
+        return Math.atan2(point2.x - point1.x, point2.y - point1.y);
+    }
+
+    setCanvasContextForErasing(ctx: CanvasRenderingContext2D): void {
+        ctx.lineCap = 'square';
+        ctx.lineJoin = 'miter';
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'destination-out';
+    }
+
+    setCanvasContextForOtherTools(ctx: CanvasRenderingContext2D): void {
         ctx.globalCompositeOperation = 'source-over';
+    }
+
+    verifThickness(ctx: CanvasRenderingContext2D, thickness: number): void {
+        if (thickness < this.MINTHICKNESS) thickness = this.MINTHICKNESS;
+        ctx.lineWidth = thickness;
+    }
+
+    singleClick(path: Vec2[]): boolean {
+        if (path.length === 2) return true;
+        return false;
+    }
+
+    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {
+        ctx.beginPath();
+        ctx.rect(point.x - this.thickness / 2, point.y - this.thickness / 2, this.thickness, this.thickness);
+        ctx.stroke();
     }
 
     onMouseMove(event: MouseEvent): void {

@@ -4,8 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from './pencil-service';
 
-// tslint:disable:no-any
-fdescribe('PencilService', () => {
+describe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
@@ -14,6 +13,7 @@ fdescribe('PencilService', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy<any>;
+    let onMouseOutSpy: jasmine.Spy<any>;
 
     beforeEach(() => {
         drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
@@ -29,14 +29,15 @@ fdescribe('PencilService', () => {
         drawLineSpy = spyOn<any>(service, 'drawLine').and.callThrough();
 
         // Configuration du spy du service
-        // tslint:disable:no-string-literal
-        service['drawingService'].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
-        service['drawingService'].previewCtx = previewCtxStub;
+        const drawingServiceString = 'drawingService';
+        service[drawingServiceString].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
+        service[drawingServiceString].previewCtx = previewCtxStub;
 
         mouseEvent = {
             pageX: 430,
             pageY: 27,
             button: 0,
+            buttons: 1,
         } as MouseEvent;
     });
 
@@ -44,7 +45,7 @@ fdescribe('PencilService', () => {
         expect(service).toBeTruthy();
     });
 
-    it(' mouseDown should set mouseDownCoord to correct position', () => {
+    it('mouseDown should set mouseDownCoord to correct position', () => {
         const expectedResult: Vec2 = { x: 25, y: 25 };
         service.onMouseDown(mouseEvent);
         expect(service.mouseDownCoord).toEqual(expectedResult);
@@ -104,14 +105,41 @@ fdescribe('PencilService', () => {
         mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
         service.onMouseDown(mouseEvent);
         mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
-        service.thickness = 50;
         service.onMouseUp(mouseEvent);
 
+        const expectedRedColor = 255;
+        const thirdPosition = 3;
         // Premier pixel seulement
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(imageData.data[0]).toEqual(255); // R, the red value is 255 because the default color of the app is red.
+        expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
-        expect(imageData.data[3]).not.toEqual(0); // A
+        expect(imageData.data[thirdPosition]).not.toEqual(0); // A
+    });
+
+    it(' onMouseOut should call onMouseUp', () => {
+        onMouseOutSpy = spyOn<any>(service, 'onMouseOut').and.callThrough();
+        service.onMouseOut(mouseEvent);
+        expect(onMouseOutSpy).toHaveBeenCalled();
+    });
+
+    it(' onMouseEnter should set pencil service bool mouseDown to true if the left click is pressed when entering the canvas ', () => {
+        service.onMouseEnter(mouseEvent);
+        expect(service.mouseDown).toEqual(true);
+    });
+
+    it(' onMouseEnter should set pencil service bool mouseDown to false if left click is not pressed when enterring the canvas ', () => {
+        const mouseEvent2 = {
+            pageX: 430,
+            pageY: 27,
+            button: 0,
+            buttons: 0,
+        } as MouseEvent;
+        service.onMouseEnter(mouseEvent2);
+        expect(service.mouseDown).toEqual(false);
+    });
+
+    it('draw should throw an error if the function draw is called since it is not implemented', () => {
+        expect(service.draw).toThrowError();
     });
 });
