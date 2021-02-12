@@ -1,14 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
-describe('ResizeContainerComponent', () => {
+fdescribe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
 
     const OVER_MINIMUM_X = 800;
     const OVER_MINIMUM_Y = 800;
     const mouseEventClick = { pageX: OVER_MINIMUM_X, pageY: OVER_MINIMUM_Y, button: 0 } as MouseEvent;
-    const RESIZING = 4;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -80,27 +80,33 @@ describe('ResizeContainerComponent', () => {
         expect(component.status).toEqual(Status.RESIZE_VERTICAL);
     });
 
-    it('should not resize on mouse up only if status was not NOT_RESIZING', () => {
+    it('should not resize on mouse up only if status was not NOT_RESIZING and vice-versa', () => {
         const emitResizeNewDrawing: jasmine.Spy = spyOn(component.notifyResize, 'emit');
         component.status = Status.NOT_RESIZING;
         component.onMouseUpContainer(mouseEventClick);
         expect(emitResizeNewDrawing).not.toHaveBeenCalled();
-        component.status = RESIZING;
+
+        component.status = Status.RESIZE_DIAGONAL;
         component.onMouseUpContainer(mouseEventClick);
         expect(emitResizeNewDrawing).toHaveBeenCalled();
     });
 
     it('should resize with the good dimensions', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
-        const EXPECTED_WIDTH = mouseEventClick.pageX - component.boxPosition.left - component.MOUSE_OFFSET;
-        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.boxPosition.top - component.MOUSE_OFFSET;
+        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
         component.resize(mouseEventClick);
         expect(component.width).toEqual(EXPECTED_WIDTH);
         expect(component.height).toEqual(EXPECTED_HEIGHT);
     });
 
-    it('should resize on mouse move', () => {
+    it('should not resize when status is not NOT_RESIZING', () => {
         const calledResizeFunction: jasmine.Spy = spyOn(component, 'resize');
+        component.status = Status.NOT_RESIZING;
+        window.dispatchEvent(new MouseEvent('mousemove'));
+        expect(calledResizeFunction).not.toHaveBeenCalled();
+
+        component.status = Status.RESIZE_DIAGONAL;
         window.dispatchEvent(new MouseEvent('mousemove'));
         expect(calledResizeFunction).toHaveBeenCalled();
     });

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -20,10 +20,5 @@ export class OptionBarComponent {
         if (toolTipContent === 'Créer un nouveau dessin (Ctrl+O)') {
             this.drawingService.handleNewDrawing();
         }
-    }
-
-    @HostListener('window:keydown', ['$event'])
-    onKeyDown(event: KeyboardEvent): void {
-        this.hotkeyService.onKeyDown(event);
     }
 }

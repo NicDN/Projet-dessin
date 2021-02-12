@@ -5,7 +5,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from './hotkey.service';
 // import SpyObj = jasmine.SpyObj;
 
-fdescribe('HotkeyService', () => {
+describe('HotkeyService', () => {
     let service: HotkeyService;
     let fixture: ComponentFixture<DrawingComponent>;
 
