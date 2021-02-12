@@ -1,4 +1,4 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
@@ -114,7 +114,6 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
     });
-
 
     // it('should be identical if the canvas is enlarged', () => {
     //     service.baseCtx.fillRect(0, 0, 1, 1);

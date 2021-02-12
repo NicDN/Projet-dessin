@@ -6,8 +6,8 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class HotkeyService {
-    constructor(public router: Router, public drawingService: DrawingService) { }
-    
+    constructor(public router: Router, public drawingService: DrawingService) {}
+
     onKeyDown(event: KeyboardEvent): void {
         if (event.ctrlKey) {
             event.preventDefault();
