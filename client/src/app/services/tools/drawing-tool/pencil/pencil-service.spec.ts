@@ -9,17 +9,16 @@ describe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
-    let drawServiceSpy: jasmine.SpyObj<DrawingService>;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy<any>;
 
     beforeEach(() => {
-        drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas'], ['baseCtx', 'previewCxt']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawServiceSpy }],
+            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -86,7 +85,7 @@ describe('PencilService', () => {
         service.mouseDown = true;
 
         service.onMouseMove(mouseEvent);
-        expect(drawServiceSpy.clearCanvas).toHaveBeenCalled();
+        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawLineSpy).toHaveBeenCalled();
     });
 
@@ -95,7 +94,7 @@ describe('PencilService', () => {
         service.mouseDown = false;
 
         service.onMouseMove(mouseEvent);
-        expect(drawServiceSpy.clearCanvas).not.toHaveBeenCalled();
+        expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
         expect(drawLineSpy).not.toHaveBeenCalled();
     });
 

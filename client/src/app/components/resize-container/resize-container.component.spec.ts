@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
-fdescribe('ResizeContainerComponent', () => {
+describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
 

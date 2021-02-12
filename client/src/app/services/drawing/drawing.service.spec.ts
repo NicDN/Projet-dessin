@@ -4,7 +4,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
 import { DrawingService } from './drawing.service';
 
-fdescribe('DrawingService', () => {
+describe('DrawingService', () => {
     let resizeContainerComponent: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
 
