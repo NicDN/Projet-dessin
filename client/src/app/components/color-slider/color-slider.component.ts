@@ -15,7 +15,7 @@ export class ColorSliderComponent implements AfterViewInit {
 
     private ctx: CanvasRenderingContext2D;
     private mousedown: boolean = false;
-    private selectedHeight: number;
+    selectedHeight: number;
 
     ngAfterViewInit(): void {
         this.draw();
@@ -53,15 +53,17 @@ export class ColorSliderComponent implements AfterViewInit {
         if (this.selectedHeight) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = 'white';
+            // tslint:disable
             this.ctx.lineWidth = 5;
             this.ctx.rect(0, this.selectedHeight - 5, width, 10);
+            // tslint:enable
             this.ctx.stroke();
             this.ctx.closePath();
         }
     }
 
     @HostListener('window:mouseup', ['$event'])
-    onMouseUp(evt: MouseEvent): void {
+    onMouseUp(): void {
         this.mousedown = false;
     }
 
@@ -79,12 +81,15 @@ export class ColorSliderComponent implements AfterViewInit {
     handleMouseEvent(evt: MouseEvent): void {
         this.selectedHeight = evt.offsetY;
         this.draw();
+        console.log('x:' + evt.offsetX + ' y:' + evt.offsetY);
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 
     emitColor(x: number, y: number): void {
         const rgbaColor = this.getColorAtPosition(x, y);
         this.color.emit(rgbaColor);
+
+        console.log(rgbaColor);
     }
 
     getColorAtPosition(x: number, y: number): string {
