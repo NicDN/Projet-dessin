@@ -12,12 +12,14 @@ const DEFAULTTHICKNESS = 1;
 })
 export class PencilService extends TraceTool {
     thickness: number;
+    isEraser: boolean;
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
         this.thickness = DEFAULTTHICKNESS;
         this.minThickness = 1;
+        this.isEraser = false;
     }
 
     private pathData: Vec2[];
@@ -40,9 +42,16 @@ export class PencilService extends TraceTool {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
             this.drawLine(this.drawingService.baseCtx, this.pathData);
+            this.clearPreviewIfNotEraser(this.isEraser);
         }
         this.mouseDown = false;
         this.clearPath();
+    }
+
+    clearPreviewIfNotEraser(isEraser: boolean): void {
+        if (!isEraser) {
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        }
     }
 
     everyMouseMove(event: MouseEvent): void {

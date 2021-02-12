@@ -15,6 +15,7 @@ export class EraserService extends PencilService {
         this.thickness = this.MINTHICKNESS;
         this.minThickness = this.MINTHICKNESS;
         this.toolName = 'Efface';
+        this.isEraser = true;
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
@@ -94,6 +95,7 @@ export class EraserService extends PencilService {
         ctx.beginPath();
         ctx.rect(mousePosition.x - this.thickness, mousePosition.y - this.thickness, this.thickness * 2, this.thickness * 2);
         ctx.fillStyle = 'black';
+        ctx.globalAlpha = 1;
         ctx.fill();
 
         ctx.beginPath();

@@ -4,7 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from './pencil-service';
 
-describe('PencilService', () => {
+fdescribe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
@@ -12,7 +12,9 @@ describe('PencilService', () => {
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
+    // tslint:disable-next-line: no-any
     let drawLineSpy: jasmine.Spy<any>;
+    // tslint:disable-next-line: no-any
     let onMouseOutSpy: jasmine.Spy<any>;
 
     beforeEach(() => {
@@ -26,12 +28,14 @@ describe('PencilService', () => {
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
         service = TestBed.inject(PencilService);
+        // tslint:disable-next-line: no-any
         drawLineSpy = spyOn<any>(service, 'drawLine').and.callThrough();
 
         // Configuration du spy du service
         const drawingServiceString = 'drawingService';
         service[drawingServiceString].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
         service[drawingServiceString].previewCtx = previewCtxStub;
+        service.isEraser = false;
 
         mouseEvent = {
             pageX: 430,
@@ -60,7 +64,7 @@ describe('PencilService', () => {
         const mouseEventRClick = {
             offsetX: 25,
             offsetY: 25,
-            button: 1, // TODO: Avoir ceci dans un enum accessible
+            button: 1,
         } as MouseEvent;
         service.onMouseDown(mouseEventRClick);
         expect(service.mouseDown).toEqual(false);
@@ -71,6 +75,7 @@ describe('PencilService', () => {
         service.mouseDown = true;
 
         service.onMouseUp(mouseEvent);
+        expect(drawServiceSpy.clearCanvas).toHaveBeenCalled();
         expect(drawLineSpy).toHaveBeenCalled();
     });
 
@@ -118,6 +123,7 @@ describe('PencilService', () => {
     });
 
     it(' onMouseOut should call onMouseUp', () => {
+        // tslint:disable-next-line: no-any
         onMouseOutSpy = spyOn<any>(service, 'onMouseOut').and.callThrough();
         service.onMouseOut(mouseEvent);
         expect(onMouseOutSpy).toHaveBeenCalled();
@@ -141,5 +147,17 @@ describe('PencilService', () => {
 
     it('draw should throw an error if the function draw is called since it is not implemented', () => {
         expect(service.draw).toThrowError();
+    });
+
+    it('should clear the canvas only if the tool is pencil service', () => {
+        service.isEraser = false;
+        service.clearPreviewIfNotEraser(service.isEraser);
+        expect(drawServiceSpy.clearCanvas).toHaveBeenCalled();
+    });
+
+    it('should not clear the canvas the tool is eraser service', () => {
+        service.isEraser = true;
+        service.clearPreviewIfNotEraser(service.isEraser);
+        expect(drawServiceSpy.clearCanvas).not.toHaveBeenCalled();
     });
 });

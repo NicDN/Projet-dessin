@@ -95,7 +95,9 @@ fdescribe('EraserService', () => {
     });
 
     it('onMoveMove should call the mouseMove from pencilService and display the preview', () => {
+        // tslint:disable-next-line: no-any
         const everyMouseMoveSpy: jasmine.Spy<any> = spyOn<any>(service, 'everyMouseMove').and.callThrough();
+        // tslint:disable-next-line: no-any
         const displayPreviewSpy: jasmine.Spy<any> = spyOn<any>(service, 'displayPreview').and.callThrough();
         service.onMouseMove(mouseEvent);
         expect(everyMouseMoveSpy).toHaveBeenCalled();
@@ -104,22 +106,20 @@ fdescribe('EraserService', () => {
     });
 
     it('EraseSquare should erase part off the context', () => {
-        baseCtxStub.globalCompositeOperation = 'source-over';
-        baseCtxStub.rect(0, 0, 1, 1);
+        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 20, 20);
+        baseCtxStub.rect(0, 0, 20, 20);
         baseCtxStub.fill();
+        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 20, 20);
+        expect(imageDataBefore).not.toEqual(imageDataAfter);
+
         baseCtxStub.lineCap = 'square';
         baseCtxStub.lineJoin = 'miter';
         baseCtxStub.globalAlpha = 1;
         baseCtxStub.globalCompositeOperation = 'destination-out';
+        service.thickness = 4;
 
-        service.thickness = 50;
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
-        const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(imageData.data[0]).toEqual(0);
-        expect(imageData.data[3]).toEqual(0);
-        // expect(imageData.data[3]).toEqual(0);
-        // expect(imageData.data[1]).toEqual(0);
-        // expect(imageData.data[2]).toEqual(0);
-        // expect(imageData.data[3]).toEqual(0);
+        service.eraseSquare(baseCtxStub, { x: 1, y: 1 });
+        const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+        expect(imageDataBefore).toEqual(imageDataErased);
     });
 });
