@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSliderChange } from '@angular/material/slider';
@@ -15,6 +16,7 @@ describe('LineSettingsSelectorComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [LineSettingsSelectorComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

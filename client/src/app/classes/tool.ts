@@ -33,6 +33,7 @@ export abstract class Tool {
     onKeyUp(event: KeyboardEvent): void {}
 
     getPositionFromMouse(event: MouseEvent): Vec2 {
+        // AQ calculer les valeurs
         return { x: event.pageX - 405, y: event.pageY - 2 };
     }
 }

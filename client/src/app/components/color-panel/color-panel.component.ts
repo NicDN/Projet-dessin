@@ -42,7 +42,14 @@ export class ColorPanelComponent {
         this.opacity = this.selectedColor.opacity;
         this.hue = this.selectedColor.rgbValue;
 
+        this.clearInputErrors();
         this.openColorPicker = !this.openColorPicker;
+    }
+
+    clearInputErrors(): void {
+        for (const rgbInput of this.rgbInputs) {
+            rgbInput.inputError = false;
+        }
     }
 
     switchColors(): void {

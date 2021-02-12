@@ -15,7 +15,7 @@ export class AttributesPanelComponent {
     subscription: Subscription;
     currentTool: Tool;
 
-    constructor(private toolsService: ToolsService) {
+    constructor(public toolsService: ToolsService) {
         this.getCurrentTool();
     }
 

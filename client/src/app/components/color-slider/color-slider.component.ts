@@ -29,7 +29,7 @@ export class ColorSliderComponent implements AfterViewInit {
         const height = this.canvas.nativeElement.height;
 
         this.ctx.clearRect(0, 0, width, height);
-
+        
         const gradient = this.ctx.createLinearGradient(0, 0, 0, height);
         gradient.addColorStop(0, 'rgba(255, 0, 0, 1)');
         gradient.addColorStop(0.17, 'rgba(255, 255, 0, 1)');
@@ -63,17 +63,19 @@ export class ColorSliderComponent implements AfterViewInit {
 
     onMouseDown(evt: MouseEvent): void {
         this.mousedown = true;
-        this.selectedHeight = evt.offsetY; // template
-        this.draw();
-        this.emitColor(evt.offsetX, evt.offsetY);
+        this.handleMouseEvent(evt);
     }
 
     onMouseMove(evt: MouseEvent): void {
         if (this.mousedown) {
-            this.selectedHeight = evt.offsetY; // template
-            this.draw();
-            this.emitColor(evt.offsetX, evt.offsetY);
+            this.handleMouseEvent(evt);
         }
+    }
+
+    handleMouseEvent(evt: MouseEvent): void {
+        this.selectedHeight = evt.offsetY;
+        this.draw();
+        this.emitColor(evt.offsetX, evt.offsetY);
     }
 
     emitColor(x: number, y: number): void {
