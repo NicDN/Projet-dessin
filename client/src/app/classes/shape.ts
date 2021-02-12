@@ -1,6 +1,7 @@
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { Color } from './color';
 import { MouseButton } from './tool';
 import { Vec2 } from './vec2';
 
@@ -30,7 +31,6 @@ export abstract class Shape extends DrawingTool {
     }
 
     onMouseUp(event: MouseEvent): void {
-        console.log('mouseUp');
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -60,10 +60,6 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) this.drawPreview();
     }
 
-    // onMouseEnter(event: MouseEvent): void {}
-
-    // onMouseOut(event: MouseEvent): void {}
-
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.beginPath();
         ctx.lineWidth = 1;
@@ -78,6 +74,26 @@ export abstract class Shape extends DrawingTool {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
+    }
+
+    getActualEndCoords(begin: Vec2, end: Vec2): Vec2 {
+        let endCoordX: number = end.x;
+        let endCoordY: number = end.y;
+        if (this.alternateShape) {
+            endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
+            endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
+        }
+        return { x: endCoordX, y: endCoordY };
+    }
+
+    setFillColor(ctx: CanvasRenderingContext2D, color: Color): void {
+        ctx.fillStyle = color.rgbValue;
+        ctx.globalAlpha = color.opacity;
+    }
+
+    setStrokeColor(ctx: CanvasRenderingContext2D, color: Color): void {
+        ctx.strokeStyle = color.rgbValue;
+        ctx.globalAlpha = color.opacity;
     }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;

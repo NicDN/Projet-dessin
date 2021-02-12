@@ -14,29 +14,44 @@ export class RectangleDrawingService extends Shape {
         this.minThickness = 1;
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.setLineDash([]);
-        ctx.lineWidth = this.thickness;
-        ctx.lineCap = 'butt';
-        ctx.lineJoin = 'miter';
-        ctx.beginPath();
-        let endCoordX: number = end.x;
-        let endCoordY: number = end.y;
-        if (this.alternateShape) {
-            endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
-            endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
-        }
-        ctx.rect(
-            begin.x + (Math.sign(end.x - begin.x) * this.thickness) / 2,
-            begin.y + (Math.sign(end.y - begin.y) * this.thickness) / 2,
-            endCoordX - begin.x - Math.sign(end.x - begin.x) * this.thickness,
-            endCoordY - begin.y - Math.sign(end.y - begin.y) * this.thickness,
-        );
+        this.setContextParameters(ctx, this.thickness);
 
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) ctx.fill();
-        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
-        ctx.globalAlpha = this.colorService.secondaryColor.opacity;
-        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) ctx.stroke();
+        ctx.beginPath();
+        const actualEndCoords: Vec2 = this.getActualEndCoords(begin, end);
+        const lengths: Vec2 = { x: actualEndCoords.x - begin.x, y: actualEndCoords.y - begin.y };
+        const adjustedBeginCoords: Vec2 = { x: begin.x, y: begin.y };
+
+        this.adjustToWidth(ctx, lengths, adjustedBeginCoords, actualEndCoords);
+        ctx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, lengths.x, lengths.y);
+
+        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) {
+            this.setFillColor(ctx, this.colorService.mainColor);
+            ctx.fill();
+        }
+        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) {
+            this.setStrokeColor(ctx, this.colorService.secondaryColor);
+            ctx.stroke();
+        }
+    }
+
+    adjustToWidth(ctx: CanvasRenderingContext2D, lengths: Vec2, begin: Vec2, end: Vec2): void {
+        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) {
+            if (Math.abs(lengths.x) <= ctx.lineWidth) {
+                ctx.lineWidth = Math.abs(lengths.x) > 1 ? Math.abs(lengths.x) - 1 : 1;
+            }
+            if (Math.abs(lengths.y) <= ctx.lineWidth) {
+                ctx.lineWidth = Math.abs(lengths.y) > 1 ? Math.abs(lengths.y) - 1 : 1;
+            }
+            begin.x += (Math.sign(end.x - begin.x) * ctx.lineWidth) / 2;
+            begin.y += (Math.sign(end.y - begin.y) * ctx.lineWidth) / 2;
+            lengths.x -= Math.sign(end.x - begin.x) * ctx.lineWidth;
+            lengths.y -= Math.sign(end.y - begin.y) * ctx.lineWidth;
+        }
+    }
+
+    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+        ctx.setLineDash([]);
+        ctx.lineWidth = thickness;
+        ctx.lineJoin = 'miter';
     }
 }

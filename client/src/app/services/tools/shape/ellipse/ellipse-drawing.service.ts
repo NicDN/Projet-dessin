@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Color } from '@app/classes/color';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -23,7 +22,7 @@ export class EllipseDrawingService extends Shape {
         const actualEndCoords: Vec2 = this.getActualEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
-        this.adjustWidth(ctx, radiuses, begin, actualEndCoords);
+        this.adjustToWidth(ctx, radiuses, begin, actualEndCoords);
 
         ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
@@ -37,30 +36,10 @@ export class EllipseDrawingService extends Shape {
         }
     }
 
-    setFillColor(ctx: CanvasRenderingContext2D, color: Color): void {
-        ctx.fillStyle = color.rgbValue;
-        ctx.globalAlpha = color.opacity;
-    }
-
-    setStrokeColor(ctx: CanvasRenderingContext2D, color: Color): void {
-        ctx.strokeStyle = color.rgbValue;
-        ctx.globalAlpha = color.opacity;
-    }
-
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineCap = 'round';
-    }
-
-    getActualEndCoords(begin: Vec2, end: Vec2): Vec2 {
-        let endCoordX: number = end.x;
-        let endCoordY: number = end.y;
-        if (this.alternateShape) {
-            endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
-            endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
-        }
-        return { x: endCoordX, y: endCoordY };
     }
 
     getCenterCoords(begin: Vec2, end: Vec2): Vec2 {
@@ -71,7 +50,7 @@ export class EllipseDrawingService extends Shape {
         return Math.abs(end - begin) / 2;
     }
 
-    adjustWidth(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
+    adjustToWidth(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
         const thicknessAdjustment: number =
             this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered ? ctx.lineWidth / 2 : 0;
         radiuses.x -= thicknessAdjustment;

@@ -117,7 +117,7 @@ describe('EllipseDrawingService', () => {
         const radiuses: Vec2 = { x: 20, y: 10 };
         const expectedXRadius = 18;
         const expectedYRadius = 8;
-        service.adjustWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
+        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -128,7 +128,7 @@ describe('EllipseDrawingService', () => {
         const radiuses: Vec2 = { x: 20, y: 10 };
         const expectedXRadius = 20;
         const expectedYRadius = 10;
-        service.adjustWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
+        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -178,7 +178,7 @@ describe('EllipseDrawingService', () => {
         const initialWidth = 50;
         const radius: { x: number; y: number } = { x: -5, y: -15 };
         drawServiceSpy.baseCtx.lineWidth = initialWidth;
-        service.adjustWidth(drawServiceSpy.baseCtx, radius, topLeftCorner, bottomRightCorner);
+        service.adjustToWidth(drawServiceSpy.baseCtx, radius, topLeftCorner, bottomRightCorner);
         expect(drawServiceSpy.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(radius.x).toBeGreaterThan(0);
         expect(radius.y).toBeGreaterThan(0);
