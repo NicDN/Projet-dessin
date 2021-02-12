@@ -1,6 +1,4 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DrawingComponent } from '@app/components/drawing/drawing.component';
-import { SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
 fdescribe('ResizeContainerComponent', () => {
@@ -9,12 +7,10 @@ fdescribe('ResizeContainerComponent', () => {
     const OVER_MINIMUM_X = 800;
     const OVER_MINIMUM_Y = 800;
     const mouseEventClick = { pageX: OVER_MINIMUM_X, pageY: OVER_MINIMUM_Y, button: 0 } as MouseEvent;
-    // let drawingComponent: DrawingComponent;
-    // let drawingFixture: ComponentFixture<DrawingComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ResizeContainerComponent, DrawingComponent],
+            declarations: [ResizeContainerComponent],
         }).compileComponents();
     }));
 
@@ -68,12 +64,10 @@ fdescribe('ResizeContainerComponent', () => {
         expect(emitUsingButton).toHaveBeenCalled();
     });
 
-    // Problems with enum in Jasmine
     it('should set status', () => {
-
         component.setStatus(Status.NOT_RESIZING);
         expect(component.status).toEqual(Status.NOT_RESIZING);
-        
+
         component.setStatus(Status.RESIZE_DIAGONAL);
         expect(component.status).toEqual(Status.RESIZE_DIAGONAL);
 
@@ -91,10 +85,10 @@ fdescribe('ResizeContainerComponent', () => {
         expect(emitResizeNewDrawing).not.toHaveBeenCalled();
     });
 
-    
     it('should resize with the good dimensions', () => {
-        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
-        const EXPECTED_HEIGHT = mouseEventClick.pageY - 2 - component.MOUSE_OFFSET;
+        component.setStatus(Status.RESIZE_DIAGONAL);
+        const EXPECTED_WIDTH = mouseEventClick.pageX - component.boxPosition.left - component.MOUSE_OFFSET;
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.boxPosition.top - component.MOUSE_OFFSET;
         component.resize(mouseEventClick);
         expect(component.width).toEqual(EXPECTED_WIDTH);
         expect(component.height).toEqual(EXPECTED_HEIGHT);
