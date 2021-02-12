@@ -3,14 +3,14 @@
     <app-color-panel></app-color-panel>
 
     <div *ngIf="drawingToolIsActive()">
-        <app-thickness-selector [tool]="currentTool" (updateThicknessEmitter)="setThickness($event)"></app-thickness-selector>
+        <app-thickness-selector [tool]="currentTool" (thickness)="setThickness($event)"></app-thickness-selector>
     </div>
     <div *ngIf="shapeIsActive()">
-        <app-trace-type-selector [tool]="currentTool" (updateTraceTypeEmitter)="setTraceType($event)"></app-trace-type-selector>
+        <app-trace-type-selector [tool]="currentTool" (traceType)="setTraceType($event)"></app-trace-type-selector>
     </div>
 
     <div *ngIf="lineIsActive()">
-        <app-line-settings-selector [tool]="currentTool" (updatedotJunctionCheckedEmitter)="setJunctionChecked($event)"
-            (updateJunctionDiameterEmitter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
+        <app-line-settings-selector [tool]="currentTool" (junction)="setJunctionChecked($event)"
+            (junctionDiameter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
     </div>
 </mat-drawer-content>

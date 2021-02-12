@@ -140,7 +140,7 @@ describe('ColorPanelComponent', () => {
         fixture.detectChanges();
         spyOn(component, 'updateOpacity');
         const opacitySlider = fixture.debugElement.query(By.css('.opacity-slider'));
-        opacitySlider.triggerEventHandler('change', null);
+        opacitySlider.triggerEventHandler('input', null);
         expect(component.updateOpacity).toHaveBeenCalled();
     });
 

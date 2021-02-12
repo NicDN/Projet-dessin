@@ -27,7 +27,7 @@
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider class="opacity-slider" #slider  min="15" [value]="getOpacity()" (change)="updateOpacity($event)"></mat-slider>
+            <mat-slider class="opacity-slider" #slider  min="15" [value]="getOpacity()" (input)="updateOpacity($event)"></mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
         <div class="input-wrapper">

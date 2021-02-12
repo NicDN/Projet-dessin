@@ -36,14 +36,14 @@ describe('ThicknessSelectorComponent', () => {
         expect(component.updateThickness).toHaveBeenCalled();
     });
 
-    it('should raise updateThicknessEmitter event when #updateThickness is called', () => {
+    it('should raise thickness event when #updateThickness is called', () => {
         const SLIDER_EXPECTED_VALUE = 30;
         const matSliderChange: MatSliderChange = new MatSliderChange();
-        let sliderEmmitedValue = 0;
-
         matSliderChange.value = SLIDER_EXPECTED_VALUE;
-        component.updateThicknessEmitter.subscribe((sliderValue: number) => (sliderEmmitedValue = sliderValue));
+
+        spyOn(component.thickness, 'emit');
         component.updateThickness(matSliderChange);
-        expect(sliderEmmitedValue).toBe(SLIDER_EXPECTED_VALUE);
+        expect(component.thickness.emit).toHaveBeenCalled();
+        expect(component.thickness.emit).toHaveBeenCalledWith(SLIDER_EXPECTED_VALUE);
     });
 });

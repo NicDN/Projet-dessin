@@ -36,15 +36,15 @@ describe('LineSettingsSelectorComponent', () => {
         expect(component.updateDiameter).toHaveBeenCalled();
     });
 
-    it('#updateDiameter should raise updateJunctionDiameterEmitter event', () => {
+    it('#updateDiameter should raise junctionDiameter event', () => {
         const SLIDER_EXPECTED_VALUE = 30;
         const matSliderChange: MatSliderChange = new MatSliderChange();
-        let sliderEmmitedValue = 0;
-
         matSliderChange.value = SLIDER_EXPECTED_VALUE;
-        component.updateJunctionDiameterEmitter.subscribe((sliderValue: number) => (sliderEmmitedValue = sliderValue));
+
+        spyOn(component.junctionDiameter, 'emit');
         component.updateDiameter(matSliderChange);
-        expect(sliderEmmitedValue).toBe(SLIDER_EXPECTED_VALUE);
+        expect(component.junctionDiameter.emit).toHaveBeenCalled();
+        expect(component.junctionDiameter.emit).toHaveBeenCalledWith(SLIDER_EXPECTED_VALUE);
     });
 
     it('change from slide toggle should toggle #updateJunction', () => {
@@ -54,14 +54,14 @@ describe('LineSettingsSelectorComponent', () => {
         expect(component.updateJunction).toHaveBeenCalled();
     });
 
-    it('#updateJunction should raise updatedotJunctionCheckedEmitter event', () => {
+    it('#updateJunction should raise junction event', () => {
         const slideToggleExpectedValue = false;
         const slideToggle = fixture.debugElement.query(By.css('.slide-toggle'));
         const matSlideToggleChange: MatSlideToggleChange = new MatSlideToggleChange(slideToggle.nativeElement, slideToggleExpectedValue);
-        let toggleEmmitedValue = true;
 
-        component.updatedotJunctionCheckedEmitter.subscribe((toggleValue: boolean) => (toggleEmmitedValue = toggleValue));
+        spyOn(component.junction, 'emit');
         component.updateJunction(matSlideToggleChange);
-        expect(toggleEmmitedValue).toBe(slideToggleExpectedValue);
+        expect(component.junction.emit).toHaveBeenCalled();
+        expect(component.junction.emit).toHaveBeenCalledWith(slideToggleExpectedValue);
     });
 });

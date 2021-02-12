@@ -36,15 +36,11 @@ describe('TraceTypeSelectorComponent', () => {
         expect(component.setActiveTraceType).toHaveBeenCalled();
     });
 
-    it('should raise updateTraceTypeEmitter event when #setActiveTraceType is called', () => {
+    it('should raise traceType event when #setActiveTraceType is called', () => {
         const traceTypeExpected: TraceType = TraceType.Bordered;
-        let traceTypeEmittedValue: TraceType = TraceType.FilledAndBordered;
-        // I give a arbitrary value to  traceTypeEmittedValue only to avoid error:
-        // Variable 'traceTypeEmittedValue' is used before being assigned.ts(2454)
-        component.updateTraceTypeEmitter.subscribe((traceType: TraceType) => {
-            traceTypeEmittedValue = traceType;
-        });
+        spyOn(component.traceType, 'emit');
         component.setActiveTraceType(traceTypeExpected);
-        expect(traceTypeEmittedValue as TraceType).toBe(traceTypeExpected);
+        expect(component.traceType.emit).toHaveBeenCalled();
+        expect(component.traceType.emit).toHaveBeenCalledWith(traceTypeExpected);
     });
 });

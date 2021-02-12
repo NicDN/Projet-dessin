@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
 @Component({
@@ -8,19 +6,13 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     templateUrl: './option-bar.component.html',
     styleUrls: ['./option-bar.component.scss'],
 })
-export class OptionBarComponent implements OnInit {
-    readonly SHOW_DELAY_MS: number = 750;
-    routerLink: RouterModule;
-    showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
-
+export class OptionBarComponent {
     optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
 
     constructor(private drawingService: DrawingService) {}
 
-    ngOnInit(): void {
-        //
-    }
     toggleActive(event: EventTarget, toolTipContent: string): void {
+        // pas de la bonne facon de passer le hotkey crtl+o avec le tooltipcontent
         if (toolTipContent === 'Créer un nouveau dessin (Ctrl+O)') {
             this.drawingService.handleNewDrawing();
         }
