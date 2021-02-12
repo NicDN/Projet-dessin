@@ -63,14 +63,14 @@ export class ColorSliderComponent implements AfterViewInit {
 
     onMouseDown(evt: MouseEvent): void {
         this.mousedown = true;
-        this.selectedHeight = evt.offsetY;
+        this.selectedHeight = evt.offsetY; // template
         this.draw();
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 
     onMouseMove(evt: MouseEvent): void {
         if (this.mousedown) {
-            this.selectedHeight = evt.offsetY;
+            this.selectedHeight = evt.offsetY; // template
             this.draw();
             this.emitColor(evt.offsetX, evt.offsetY);
         }
@@ -83,6 +83,6 @@ export class ColorSliderComponent implements AfterViewInit {
 
     getColorAtPosition(x: number, y: number): string {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
-        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
     }
 }

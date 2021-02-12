@@ -77,14 +77,14 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     onMouseDown(evt: MouseEvent): void {
         this.mousedown = true;
-        this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
+        this.selectedPosition = { x: evt.offsetX, y: evt.offsetY }; // template
         this.draw();
         this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
     }
 
     onMouseMove(evt: MouseEvent): void {
         if (this.mousedown) {
-            this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
+            this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };  
             this.draw();
             this.emitColor(evt.offsetX, evt.offsetY);
         }
@@ -96,8 +96,6 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     getColorAtPosition(x: number, y: number): string {
-        console.log(x, y);
-        console.log(this.hue);
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
         return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
     }
