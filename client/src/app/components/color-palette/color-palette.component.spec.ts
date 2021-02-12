@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ColorPaletteComponent } from './color-palette.component';
@@ -11,6 +12,7 @@ describe('ColorPaletteComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ColorPaletteComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
@@ -23,6 +24,7 @@ describe('AttributesPanelComponent', () => {
         TestBed.configureTestingModule({
             declarations: [AttributesPanelComponent],
             providers: [ToolsService],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

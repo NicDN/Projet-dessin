@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Tool } from '@app/classes/tool';
@@ -17,6 +18,7 @@ describe('ToolBarComponent', () => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
             providers: [ToolsService],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

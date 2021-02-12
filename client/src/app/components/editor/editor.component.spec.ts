@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { SidebarComponent } from '@app/components/sidebar/sidebar.component';
@@ -10,6 +11,7 @@ describe('EditorComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [EditorComponent, DrawingComponent, SidebarComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

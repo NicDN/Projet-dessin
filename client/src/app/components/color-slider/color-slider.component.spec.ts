@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ColorSliderComponent } from './color-slider.component';
@@ -9,6 +10,7 @@ describe('ColorSliderComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ColorSliderComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

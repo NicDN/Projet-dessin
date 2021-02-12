@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
@@ -14,6 +15,7 @@ describe('ThicknessSelectorComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ThicknessSelectorComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 
