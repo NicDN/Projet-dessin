@@ -84,7 +84,7 @@ export class EraserService extends PencilService {
 
     onMouseMove(event: MouseEvent): void {
         this.everyMouseMove(event);
-        this.drawingService.previewCtx.clearRect(0, 0, this.drawingService.canvas.width, this.drawingService.canvas.height);
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.displayPreview(event);
     }
 

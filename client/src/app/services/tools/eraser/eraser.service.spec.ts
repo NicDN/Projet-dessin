@@ -1,30 +1,45 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Vec2 } from '@app/classes/vec2';
-// import { DrawingService } from '@app/services/drawing/drawing.service';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EraserService } from './eraser.service';
 
 fdescribe('EraserService', () => {
     let service: EraserService;
-    // let drawServiceSpy: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
+    let canvasStub: HTMLCanvasElement;
     let baseCtxStub: CanvasRenderingContext2D;
-    // let previewCtxStub: CanvasRenderingContext2D;
+    let previewCtxStub: CanvasRenderingContext2D;
+    let mouseEvent: MouseEvent;
+    let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
 
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        drawingServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+
+        TestBed.configureTestingModule({
+            providers: [{ provide: DrawingService, useValue: drawingServiceSpy }],
+        });
         service = TestBed.inject(EraserService);
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
+        canvasStub = canvasTestHelper.canvas;
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
-        // previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
+        previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        // drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-        // service['drawingService'].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
-        // service['drawingService'].previewCtx = previewCtxStub;
+        const drawingServiceString = 'drawingService';
+        service[drawingServiceString].canvas = canvasStub;
+        service[drawingServiceString].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
+        service[drawingServiceString].previewCtx = previewCtxStub;
+
+        mouseEvent = {
+            pageX: 430,
+            pageY: 27,
+            button: 0,
+            buttons: 1,
+        } as MouseEvent;
     });
 
     it('should be created', () => {
@@ -79,19 +94,30 @@ fdescribe('EraserService', () => {
         expect(service.singleClick(path2)).toEqual(false);
     });
 
+    it('onMoveMove should call the mouseMove from pencilService and display the preview', () => {
+        const everyMouseMoveSpy: jasmine.Spy<any> = spyOn<any>(service, 'everyMouseMove').and.callThrough();
+        const displayPreviewSpy: jasmine.Spy<any> = spyOn<any>(service, 'displayPreview').and.callThrough();
+        service.onMouseMove(mouseEvent);
+        expect(everyMouseMoveSpy).toHaveBeenCalled();
+        expect(displayPreviewSpy).toHaveBeenCalled();
+        expect(drawingServiceSpy.clearCanvas).toHaveBeenCalled();
+    });
+
     it('EraseSquare should erase part off the context', () => {
-        baseCtxStub.beginPath();
-        baseCtxStub.rect(0, 0, 5, 5);
+        baseCtxStub.globalCompositeOperation = 'source-over';
+        baseCtxStub.rect(0, 0, 1, 1);
         baseCtxStub.fill();
-        baseCtxStub.stroke();
         baseCtxStub.lineCap = 'square';
         baseCtxStub.lineJoin = 'miter';
         baseCtxStub.globalAlpha = 1;
         baseCtxStub.globalCompositeOperation = 'destination-out';
 
         service.thickness = 50;
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+        expect(imageData.data[0]).toEqual(0);
         expect(imageData.data[3]).toEqual(0);
+        // expect(imageData.data[3]).toEqual(0);
         // expect(imageData.data[1]).toEqual(0);
         // expect(imageData.data[2]).toEqual(0);
         // expect(imageData.data[3]).toEqual(0);
