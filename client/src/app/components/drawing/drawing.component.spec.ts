@@ -12,8 +12,8 @@ import { DrawingComponent } from './drawing.component';
 
 const HALF_RATIO = 0.5;
 const SIDE_BAR_SIZE = 400;
-const DEFAULT_WIDTH = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
-const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
+let DEFAULT_WIDTH: number;
+let DEFAULT_HEIGHT: number;
 
 describe('DrawingComponent', () => {
     let component: DrawingComponent;
@@ -49,6 +49,8 @@ describe('DrawingComponent', () => {
         fixture = TestBed.createComponent(DrawingComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        DEFAULT_WIDTH = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
+        DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
     });
 
     it('should create', () => {

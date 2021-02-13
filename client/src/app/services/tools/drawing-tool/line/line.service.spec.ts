@@ -7,7 +7,7 @@ import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { LineService } from './line.service';
 
-fdescribe('LineService', () => {
+describe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;

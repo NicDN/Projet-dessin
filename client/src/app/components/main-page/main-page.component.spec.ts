@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 import { MainPageComponent } from './main-page.component';
 import SpyObj = jasmine.SpyObj;
 
-fdescribe('MainPageComponent', () => {
+describe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
     let indexServiceSpy: SpyObj<IndexService>;

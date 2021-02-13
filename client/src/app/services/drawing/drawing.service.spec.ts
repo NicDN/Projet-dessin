@@ -5,7 +5,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
 import { DrawingService } from './drawing.service';
 
-fdescribe('DrawingService', () => {
+describe('DrawingService', () => {
     let resizeContainerComponent: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
 
@@ -128,13 +128,12 @@ fdescribe('DrawingService', () => {
     });
 
     it('validateUserInput should return the value of the window.confirm function', () => {
-        // tslint:disable-next-line: no-any
-        const windowConfirmSpy = spyOn<any>(window, 'confirm');
+        const windowConfirmSpy = spyOn(window, 'confirm');
         windowConfirmSpy.and.returnValue(true);
-        expect(service.confirmReload).toEqual(true);
+        expect(service.confirmReload()).toEqual(true);
 
         windowConfirmSpy.and.returnValue(false);
-        expect(service.confirmReload).toEqual(false);
+        expect(service.confirmReload()).toEqual(false);
     });
 
     // it('should be identical if the canvas is enlarged', () => {

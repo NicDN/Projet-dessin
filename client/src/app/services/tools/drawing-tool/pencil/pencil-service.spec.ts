@@ -4,7 +4,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from './pencil-service';
 
-fdescribe('PencilService', () => {
+// tslint:disable: no-string-literal
+describe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
@@ -18,7 +19,7 @@ fdescribe('PencilService', () => {
     let onMouseOutSpy: jasmine.Spy<any>;
 
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas'], ['baseCtx', 'previewCxt']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
@@ -31,9 +32,8 @@ fdescribe('PencilService', () => {
         drawLineSpy = spyOn<any>(service, 'drawLine').and.callThrough();
 
         // Configuration du spy du service
-        const drawingServiceString = 'drawingService';
-        service[drawingServiceString].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
-        service[drawingServiceString].previewCtx = previewCtxStub;
+        service['drawingService'].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
+        service['drawingService'].previewCtx = previewCtxStub;
         service.isEraser = false;
 
         mouseEvent = {
@@ -72,7 +72,7 @@ fdescribe('PencilService', () => {
     it(' onMouseUp should call drawLine if mouse was already down', () => {
         service.mouseDownCoord = { x: 0, y: 0 };
         service.mouseDown = true;
-
+        drawLineSpy.and.stub();
         service.onMouseUp(mouseEvent);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawLineSpy).toHaveBeenCalled();
@@ -105,7 +105,7 @@ fdescribe('PencilService', () => {
     });
 
     // Exemple de test d'intégration qui est quand même utile
-    it(' should change the pixel of the canvas ', () => {
+    it('should change the pixel of the canvas ', () => {
         mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
         service.onMouseDown(mouseEvent);
         mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;

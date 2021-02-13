@@ -4,10 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-<<<<<<< HEAD
 import { ToolsService } from '@app/services/tools/tools.service';
-=======
->>>>>>> feature/efface
 import { HotkeyService } from './hotkey.service';
 // import SpyObj = jasmine.SpyObj;
 
