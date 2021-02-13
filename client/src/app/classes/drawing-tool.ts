@@ -6,7 +6,7 @@ export class DrawingTool extends Tool {
     minThickness: number;
     readonly MAX_VALUE_THICKNESS: number = 50;
 
-    constructor(protected drawingService: DrawingService, protected colorService: ColorService, toolName: string) {
+    constructor(drawingService: DrawingService, protected colorService: ColorService, toolName: string) {
         super(drawingService, toolName);
     }
 }

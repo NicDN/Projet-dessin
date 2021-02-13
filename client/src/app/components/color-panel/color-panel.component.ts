@@ -48,7 +48,9 @@ export class ColorPanelComponent {
 
     clearInputErrors(): void {
         for (const rgbInput of this.rgbInputs) {
-            rgbInput.inputError = false;
+            if (rgbInput.inputError) {
+                rgbInput.inputError = false;
+            }
         }
     }
 

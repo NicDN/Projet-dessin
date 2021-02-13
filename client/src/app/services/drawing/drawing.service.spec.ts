@@ -5,7 +5,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
 import { DrawingService } from './drawing.service';
 
-describe('DrawingService', () => {
+fdescribe('DrawingService', () => {
     let resizeContainerComponent: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
 
@@ -46,7 +46,7 @@ describe('DrawingService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should clear the whole canvas', () => {
+    it('clearCanvas should clear the whole canvas', () => {
         service.clearCanvas(service.baseCtx);
         const pixelBuffer = new Uint32Array(service.baseCtx.getImageData(0, 0, service.canvas.width, service.canvas.height).data.buffer);
         const hasColoredPixels = pixelBuffer.some((color) => color !== 0);
@@ -59,14 +59,14 @@ describe('DrawingService', () => {
         expect(service.canvasIsEmpty()).toEqual(false);
     });
 
-    it('should resize the width and height of a canvas', () => {
+    it('changeSizeOfCanvas should resize the width and height of a canvas', () => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
         service.changeSizeOfCanvas(service.canvas, boxSizeStub);
         expect(service.canvas.width).toEqual(boxSizeStub.widthBox);
         expect(service.canvas.height).toEqual(boxSizeStub.heightBox);
     });
 
-    it('should clear the canvas and reset it', () => {
+    it('reloadDrawing should clear the canvas and have default height and width', () => {
         // tslint:disable-next-line: no-any
         const drawingServiceSpyClearCanvas: jasmine.Spy<any> = spyOn<any>(service, 'clearCanvas').and.callThrough();
         // tslint:disable-next-line: no-any
@@ -76,15 +76,15 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
-    it('should send a notification relaod saying the canvas is resizing', () => {
-        // tslint:disable-next-line: no-any ******
+    it('resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
+        // tslint:disable-next-line: no-any
         const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
         service.resetCanvas();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
-    it('should send a notification to the observer about the new drawing', () => {
-        fixture = TestBed.createComponent(ResizeContainerComponent); // ****
+    it('sendNotifReload should send a notification to the observer about the new drawing', () => {
+        fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
         // tslint:disable-next-line: no-any
@@ -93,7 +93,7 @@ describe('DrawingService', () => {
         expect(checkNotif).toHaveBeenCalled();
     });
 
-    it('should reload the drawing which clears the drawing if the canvas is empty', () => {
+    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is empty', () => {
         const emptyStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         service.handleNewDrawing();
@@ -101,7 +101,7 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
         const emptyStub = false;
         const validateStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
@@ -114,10 +114,9 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('should not reload the drawing if user decided not to create a new drawing and vice-versa', () => {
+    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
         const emptyStub = false;
         const cancelStub = false;
-        const okStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         drawingServiceSpyValidateInput.and.returnValue(cancelStub);
 
@@ -126,25 +125,24 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
         expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
+    });
 
-        drawingServiceSpyValidateInput.and.returnValue(okStub);
-        service.handleNewDrawing();
-        expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
+    it('validateUserInput should return the value of the window.confirm function', () => {
+        // tslint:disable-next-line: no-any
+        const windowConfirmSpy = spyOn<any>(window, 'confirm');
+        windowConfirmSpy.and.returnValue(true);
+        expect(service.confirmReload).toEqual(true);
+
+        windowConfirmSpy.and.returnValue(false);
+        expect(service.confirmReload).toEqual(false);
     });
 
     // it('should be identical if the canvas is enlarged', () => {
     //     service.baseCtx.fillRect(0, 0, 1, 1);
-    //     const oldImgData = service.baseCtx.getImageData(0, 0, 5, 5);
+    //     const oldImgData = service.baseCtx.getImageData(0, 0, 1, 1);
     //     const NEW_SIZE = 150;
     //     service.onSizeChange({ widthBox: NEW_SIZE, heightBox: NEW_SIZE });
-    //     const newImgData = service.baseCtx.getImageData(0, 0, 5, 5);
-    //     let unBool: boolean = true;
-    //     for (let i = 0; i < 12; i += 1) {
-    //         if (newImgData.data[i] !== oldImgData.data[i]) {
-    //             unBool = false;
-    //         }
-    //     }
-    //     expect(unBool).toEqual(true);
-    //     // expect(newImgData.data.length).toEqual(oldImgData.data.length);
-    // }); // To be continued
+    //     const newImgData = service.baseCtx.getImageData(0, 0, 1, 1);
+    //     expect(oldImgData).toEqual(newImgData);
+    // }); Not completed
 });

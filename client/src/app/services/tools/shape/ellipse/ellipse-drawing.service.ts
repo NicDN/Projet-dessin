@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Color } from '@app/classes/color';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -15,30 +16,54 @@ export class EllipseDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        this.setContextParameters(ctx, this.thickness);
+        ctx.beginPath();
+
+        const actualEndCoords: Vec2 = this.getActualEndCoords(begin, end);
+        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
+        ctx.ellipse(center.x, center.y, this.getRadius(begin.x, actualEndCoords.x), this.getRadius(begin.y, actualEndCoords.y), 0, 0, 2 * Math.PI);
+
+        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) {
+            this.setFillColor(ctx, this.colorService.mainColor);
+            ctx.fill();
+        }
+        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) {
+            this.setStrokeColor(ctx, this.colorService.secondaryColor);
+            ctx.stroke();
+        }
+    }
+
+    setFillColor(ctx: CanvasRenderingContext2D, color: Color): void {
+        ctx.fillStyle = color.rgbValue;
+        ctx.globalAlpha = color.opacity;
+    }
+
+    setStrokeColor(ctx: CanvasRenderingContext2D, color: Color): void {
+        ctx.strokeStyle = color.rgbValue;
+        ctx.globalAlpha = color.opacity;
+    }
+
+    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = this.thickness;
-        ctx.beginPath();
+        ctx.lineCap = 'round';
+    }
+
+    getActualEndCoords(begin: Vec2, end: Vec2): Vec2 {
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
         if (this.alternateShape) {
             endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
         }
-        ctx.ellipse(
-            (endCoordX + begin.x) / 2,
-            (endCoordY + begin.y) / 2,
-            Math.abs(endCoordX - begin.x) / 2 - this.thickness / 2,
-            Math.abs(endCoordY - begin.y) / 2 - this.thickness / 2,
-            0,
-            0,
-            2 * Math.PI,
-        );
+        return { x: endCoordX, y: endCoordY };
+    }
 
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) ctx.fill();
-        ctx.strokeStyle = this.colorService.secondaryColor.rgbValue;
-        ctx.globalAlpha = this.colorService.secondaryColor.opacity;
-        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) ctx.stroke();
+    getCenterCoords(begin: Vec2, end: Vec2): Vec2 {
+        return { x: (end.x + begin.x) / 2, y: (end.y + begin.y) / 2 };
+    }
+
+    getRadius(begin: number, end: number): number {
+        return Math.abs(end - begin) / 2 - this.thickness / 2;
     }
 }
