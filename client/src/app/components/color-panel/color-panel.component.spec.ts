@@ -117,6 +117,12 @@ describe('ColorPanelComponent', () => {
         expect(component.openColorPicker).toBeFalse();
     });
 
+    it('#closeColorPicker should not close the color picker if the colopicker was already closed', () => {
+        component.openColorPicker = false;
+        component.closeColorPicker();
+        expect(component.openColorPicker).toBeFalse();
+    });
+
     it('right click from previous-color should toggle #setSecondaryColor', () => {
         spyOn(component, 'setSecondaryColor');
         const previousColor = fixture.debugElement.query(By.css('.previous-color'));
@@ -165,7 +171,7 @@ describe('ColorPanelComponent', () => {
         expect(component.getRGB(RGB_INDEX)).toBe('3');
     });
 
-    it('#applyRGBInput applies input if the input has not error', () => {
+    it('#applyRGBInput applies input if the input has no error', () => {
         component['rgbArray'] = DEFAULT_RGB_ARRAY;
         component.rgbValue = DEFAULT_COLOR.rgbValue;
         const CORRECT_INPUT = 'A';
@@ -178,7 +184,6 @@ describe('ColorPanelComponent', () => {
         expect(component.rgbInputs[RGB_INDEX].inputError).toBeFalse();
         expect(component['rgbArray']).toEqual(EXPECTED_RGB_ARRAY);
         expect(component.rgbValue).toBe(EXPECTED_RGB_VALUE);
-        expect(component.clearInputErrors).toHaveBeenCalled();
     });
 
     it('#applyRGBInput does not apply input if the input has error', () => {
@@ -193,6 +198,13 @@ describe('ColorPanelComponent', () => {
         expect(component['rgbArray']).toBe(DEFAULT_RGB_ARRAY);
         expect(component.rgbValue).toBe(DEFAULT_COLOR.rgbValue);
         expect(component.clearInputErrors).not.toHaveBeenCalled();
+    });
+
+    it('#applyRGBInput should remove a error at given index if the error is corrected', () => {
+        component['rgbInputs'][RGB_INDEX].inputError = true;
+        spyOn(component, 'inputHasErrors').and.returnValue(false);
+        component.applyRGBInput('test', RGB_INDEX);
+        expect(component['rgbInputs'][RGB_INDEX].inputError).toBeFalse();
     });
 
     it('#inputHasErrors should not return error when normal hex value is provided', () => {
@@ -216,6 +228,11 @@ describe('ColorPanelComponent', () => {
     it('#inputHasErrors should return error when the value provided is not a hex', () => {
         const INCORRECT_HEX = 'm';
         expect(component.inputHasErrors(INCORRECT_HEX)).toBeTrue();
+    });
+
+    it('#inputHasErrors should return error when the value provided is empty', () => {
+        const EMPTY_HEX = '';
+        expect(component.inputHasErrors(EMPTY_HEX)).toBeTrue();
     });
 
     it('#clearInputErrors should clear input errors correctly', () => {

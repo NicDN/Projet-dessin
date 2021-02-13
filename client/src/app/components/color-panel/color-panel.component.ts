@@ -48,9 +48,7 @@ export class ColorPanelComponent {
 
     clearInputErrors(): void {
         for (const rgbInput of this.rgbInputs) {
-            if (rgbInput.inputError) {
-                rgbInput.inputError = false;
-            }
+            rgbInput.inputError = false;
         }
     }
 
@@ -102,25 +100,22 @@ export class ColorPanelComponent {
 
     applyRGBInput(input: string, rgbIndex: number): void {
         const convertedHexToNumber: number = parseInt(input, 16);
+        console.log(convertedHexToNumber);
         if (this.inputHasErrors(input, convertedHexToNumber)) {
             this.rgbInputs[rgbIndex].inputError = true;
             return;
         }
         this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
         this.rgbValue = `rgb(${this.rgbArray})`;
-        // TODO: PAS BON AQ
         if (this.rgbInputs[rgbIndex].inputError) {
             this.rgbInputs[rgbIndex].inputError = false;
         }
     }
 
-    // TODO: PAS BON AQ
     inputHasErrors(input: string, convertedHexToNumber?: number): boolean {
-        // empty string check
-        if (Number.isNaN(convertedHexToNumber)) {
+        if (input === '') {
             return true;
         }
-        // non hex string check
         for (const char of input) {
             if (Number.isNaN(parseInt(char, 16))) {
                 return true;
