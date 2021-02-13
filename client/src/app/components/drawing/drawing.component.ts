@@ -3,6 +3,7 @@ import { BoxSize } from '@app/classes/box-size';
 import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { Subscription } from 'rxjs';
@@ -33,7 +34,7 @@ export class DrawingComponent implements AfterViewInit {
 
     isEraser: boolean;
 
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService) {
+    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private hotKeyService: HotkeyService) {
         this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => {
             this.isEraser = currentTool instanceof EraserService;
         });
@@ -64,12 +65,11 @@ export class DrawingComponent implements AfterViewInit {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
-        this.canDraw = true;
     }
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        this.toolsService.onKeyDown(event);
+        this.hotKeyService.onKeyDown(event);
     }
 
     @HostListener('window:keyup', ['$event'])

@@ -35,25 +35,6 @@ export class ToolsService {
 
     onKeyDown(event: KeyboardEvent): void {
         this.currentTool.onKeyDown(event);
-        switch (event.code) {
-            case 'KeyL':
-                this.currentTool = this.lineService;
-                break;
-            case 'KeyC':
-                this.currentTool = this.pencilService;
-                break;
-            case 'KeyE':
-                this.currentTool = this.eraserService;
-                break;
-            case 'Digit1':
-                this.currentTool = this.rectangleDrawingService;
-                break;
-            case 'Digit2':
-                this.currentTool = this.ellipseDrawingService;
-                break;
-            default:
-        }
-        this.subject.next(this.currentTool);
     }
 
     onKeyUp(event: KeyboardEvent): void {

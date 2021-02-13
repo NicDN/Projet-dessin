@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
@@ -38,6 +39,7 @@ describe('DrawingComponent', () => {
                 { provide: ToolsService, useValue: toolsService },
                 { provide: DrawingService, useValue: drawingStub },
             ],
+            imports: [RouterTestingModule],
         }).compileComponents();
     }));
 
@@ -67,12 +69,6 @@ describe('DrawingComponent', () => {
         component.disableDrawing(!isUsingResizeButtonStub);
         expect(component.canDraw).toEqual(true);
     });
-
-    // it('should get stubTool', () => {
-    //     // const currentTool = component.currentTool;
-    //     const currentTool = toolsService.currentTool;
-    //     expect(currentTool).toEqual(toolStub);
-    // });
 
     /*it(" should call the tool's mouse move when receiving a mouse move event", () => {
         const event = {} as MouseEvent;

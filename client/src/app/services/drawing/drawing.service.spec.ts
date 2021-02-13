@@ -1,4 +1,5 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
@@ -11,13 +12,17 @@ describe('DrawingService', () => {
     let service: DrawingService;
     let canvasTestHelper: CanvasTestHelper;
     let boxSizeStub: BoxSize;
+    // tslint:disable-next-line: no-any
     let drawingServiceSpyCheckIfEmpty: jasmine.Spy<any>;
+    // tslint:disable-next-line: no-any
     let drawingServiceSpyReloadDrawing: jasmine.Spy<any>;
+    // tslint:disable-next-line: no-any
     let drawingServiceSpyValidateInput: jasmine.Spy<any>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
@@ -29,9 +34,12 @@ describe('DrawingService', () => {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'checkIfCanvasEmpty').and.callThrough();
+        // tslint:disable-next-line: no-any
+        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'canvasIsEmpty').and.callThrough();
+        // tslint:disable-next-line: no-any
         drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadDrawing').and.callThrough();
-        drawingServiceSpyValidateInput = spyOn<any>(service, 'validateUserInput').and.callThrough();
+        // tslint:disable-next-line: no-any
+        drawingServiceSpyValidateInput = spyOn<any>(service, 'confirmReload').and.callThrough();
     });
 
     it('should be created', () => {
@@ -46,9 +54,9 @@ describe('DrawingService', () => {
     });
 
     it('should check if canvas is empty', () => {
-        expect(service.checkIfCanvasEmpty()).toEqual(true);
+        expect(service.canvasIsEmpty()).toEqual(true);
         service.baseCtx.fillRect(0, 0, 1, 1);
-        expect(service.checkIfCanvasEmpty()).toEqual(false);
+        expect(service.canvasIsEmpty()).toEqual(false);
     });
 
     it('should resize the width and height of a canvas', () => {
@@ -58,24 +66,28 @@ describe('DrawingService', () => {
         expect(service.canvas.height).toEqual(boxSizeStub.heightBox);
     });
 
-    it('should clear the canvas and have default height and width', () => {
+    it('should clear the canvas and reset it', () => {
+        // tslint:disable-next-line: no-any
         const drawingServiceSpyClearCanvas: jasmine.Spy<any> = spyOn<any>(service, 'clearCanvas').and.callThrough();
+        // tslint:disable-next-line: no-any
         const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
         service.reloadDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
-    it('should call sendNotifReload saying the canvas is resizing', () => {
+    it('should send a notification relaod saying the canvas is resizing', () => {
+        // tslint:disable-next-line: no-any ******
         const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
         service.resetCanvas();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
     it('should send a notification to the observer about the new drawing', () => {
-        fixture = TestBed.createComponent(ResizeContainerComponent);
+        fixture = TestBed.createComponent(ResizeContainerComponent); // ****
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
+        // tslint:disable-next-line: no-any
         const checkNotif: jasmine.Spy<any> = spyOn<any>(resizeContainerComponent, 'newDrawingNotification');
         service.sendNotifReload('A message');
         expect(checkNotif).toHaveBeenCalled();
@@ -102,19 +114,23 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('should not reload the drawing if user decided not to create a new drawing and vice-versa', () => {
         const emptyStub = false;
-        const validateStub = false;
+        const cancelStub = false;
+        const okStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
-        drawingServiceSpyValidateInput.and.returnValue(validateStub);
+        drawingServiceSpyValidateInput.and.returnValue(cancelStub);
 
         service.handleNewDrawing();
 
         expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
         expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
-    });
 
+        drawingServiceSpyValidateInput.and.returnValue(okStub);
+        service.handleNewDrawing();
+        expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
+    });
 
     // it('should be identical if the canvas is enlarged', () => {
     //     service.baseCtx.fillRect(0, 0, 1, 1);

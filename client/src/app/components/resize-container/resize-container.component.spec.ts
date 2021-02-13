@@ -1,24 +1,31 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DrawingComponent } from '@app/components/drawing/drawing.component';
-// import { DEFAULT_SIZE, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DEFAULT_SIZE, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
 describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
+    let drawingService: DrawingService;
+    let drawingFixture: ComponentFixture<DrawingComponent>;
+
     const OVER_MINIMUM_X = 800;
     const OVER_MINIMUM_Y = 800;
     const mouseEventClick = { pageX: OVER_MINIMUM_X, pageY: OVER_MINIMUM_Y, button: 0 } as MouseEvent;
-    // let drawingComponent: DrawingComponent;
-    // let drawingFixture: ComponentFixture<DrawingComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent, DrawingComponent],
+            providers: [DrawingService],
+            imports: [RouterTestingModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
     beforeEach(() => {
+        drawingService = TestBed.inject(DrawingService);
         fixture = TestBed.createComponent(ResizeContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -42,7 +49,7 @@ describe('ResizeContainerComponent', () => {
         expect(component.YisOverMinimum(mouseEvent)).toEqual(true);
     });
 
-    it('should resize according to the status ', () => {
+    it('should enable resize according to the status ', () => {
         component.status = Status.NOT_RESIZING;
         expect(component.updateWidthValid(mouseEventClick)).toEqual(false);
 
@@ -60,6 +67,7 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('should notify drawing component to resize ', () => {
+        drawingFixture = TestBed.createComponent(DrawingComponent);
         const emitResizeNewDrawing: jasmine.Spy = spyOn(component.notifyResize, 'emit');
         const emitUsingButton: jasmine.Spy = spyOn(component.usingButton, 'emit');
         component.onMouseDown(mouseEventClick, Status.RESIZE_DIAGONAL);
@@ -68,33 +76,94 @@ describe('ResizeContainerComponent', () => {
         expect(emitUsingButton).toHaveBeenCalled();
     });
 
-    // Problems with enum in Jasmine
-    // it('should set status', () => {
-    //     const value = Status.RESIZE_DIAGONAL as Status;
-    //     expect(value).toEqual(Status.NOT_RESIZING);
-    //     // component.setStatus(Status.RESIZE_DIAGONAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_DIAGONAL);
+    it('should set status', () => {
+        component.setStatus(Status.NOT_RESIZING);
+        expect(component.status).toEqual(Status.NOT_RESIZING);
 
-    //     // component.setStatus(Status.RESIZE_HORIZONTAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_HORIZONTAL);
+        component.setStatus(Status.RESIZE_DIAGONAL);
+        expect(component.status).toEqual(Status.RESIZE_DIAGONAL);
 
-    //     // component.setStatus(Status.RESIZE_VERTICAL);
-    //     // expect(component.status).toEqual(Status.RESIZE_VERTICAL);
-    // });
+        component.setStatus(Status.RESIZE_HORIZONTAL);
+        expect(component.status).toEqual(Status.RESIZE_HORIZONTAL);
 
-    it('should resize on mouse up only if status was not NOT_RESIZING', () => {
+        component.setStatus(Status.RESIZE_VERTICAL);
+        expect(component.status).toEqual(Status.RESIZE_VERTICAL);
+    });
+
+    it('should not resize on mouse up only if status was not NOT_RESIZING and vice-versa', () => {
         const emitResizeNewDrawing: jasmine.Spy = spyOn(component.notifyResize, 'emit');
         component.status = Status.NOT_RESIZING;
         component.onMouseUpContainer(mouseEventClick);
         expect(emitResizeNewDrawing).not.toHaveBeenCalled();
+
+        component.status = Status.RESIZE_DIAGONAL;
+        component.onMouseUpContainer(mouseEventClick);
+        expect(emitResizeNewDrawing).toHaveBeenCalled();
     });
 
-    // Input is technically not a number
-    // it('should resize with the good dimensions', () => {
-    //     const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
-    //     const EXPECTED_HEIGHT = mouseEventClick.pageY - 2 - component.MOUSE_OFFSET;
-    //     component.resize(mouseEventClick);
-    //     expect(component.width).toEqual(EXPECTED_WIDTH);
-    //     expect(component.height).toEqual(EXPECTED_HEIGHT);
-    // });
+    it('should resize with the good dimensions', () => {
+        component.setStatus(Status.RESIZE_DIAGONAL);
+        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
+        component.resize(mouseEventClick);
+        expect(component.width).toEqual(EXPECTED_WIDTH);
+        expect(component.height).toEqual(EXPECTED_HEIGHT);
+    });
+
+    it('should not resize if position is under 250px', () => {
+        component.width = 1;
+        component.height = 1;
+        component.status = Status.RESIZE_DIAGONAL;
+        const mouseEventUnder250px = { pageX: DEFAULT_SIZE - SIDE_BAR_SIZE, pageY: DEFAULT_SIZE, button: 0 } as MouseEvent;
+        component.resize(mouseEventUnder250px);
+        expect(component.width).toEqual(1);
+        expect(component.height).toEqual(1);
+    });
+
+    it('should not resize when status is not NOT_RESIZING', () => {
+        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resize');
+        component.status = Status.NOT_RESIZING;
+        window.dispatchEvent(new MouseEvent('mousemove'));
+        expect(calledResizeFunction).not.toHaveBeenCalled();
+
+        component.status = Status.RESIZE_DIAGONAL;
+        window.dispatchEvent(new MouseEvent('mousemove'));
+        expect(calledResizeFunction).toHaveBeenCalled();
+    });
+
+    it('should call onMouseUpContainer on mouse up ', () => {
+        const calledOnMouseUpContainerFunction: jasmine.Spy = spyOn(component, 'onMouseUpContainer');
+        window.dispatchEvent(new MouseEvent('mouseup'));
+        expect(calledOnMouseUpContainerFunction).toHaveBeenCalled();
+    });
+
+    it('should receive a message from suscriber', () => {
+        drawingFixture = TestBed.createComponent(DrawingComponent);
+        drawingFixture.detectChanges();
+        // tslint:disable-next-line: no-any
+        const newDrawingNotificationSpy: jasmine.Spy<any> = spyOn<any>(component, 'newDrawingNotification');
+        component.listenToNewDrawingNotifications();
+        drawingService.reloadDrawing();
+        fixture.detectChanges();
+        expect(newDrawingNotificationSpy).toHaveBeenCalled();
+    });
+
+    it('should resize the canvas to the minimum value if the width of the window is less than 500', () => {
+        // const windowWidth = window.innerWidth;
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 600 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 400 });
+        expect(component.WindowWidthIsOverMinimum()).toEqual(false);
+        expect(component.WindowHeightIsOverMinimum()).toEqual(false);
+        component.newDrawingNotification();
+        expect(component.width).toEqual(DEFAULT_SIZE);
+        expect(component.height).toEqual(DEFAULT_SIZE);
+
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1010 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 601 });
+        expect(component.WindowWidthIsOverMinimum()).toEqual(true);
+        expect(component.WindowHeightIsOverMinimum()).toEqual(true);
+        component.newDrawingNotification();
+        expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
+        expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
+    });
 });
