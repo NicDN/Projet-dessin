@@ -9,14 +9,14 @@ import { EraserService } from '@app/services/tools/eraser/eraser.service';
     styleUrls: ['./thickness-selector.component.scss'],
 })
 export class ThicknessSelectorComponent {
-    @Output() updateThicknessEmitter: EventEmitter<number> = new EventEmitter<number>();
+    @Output() thickness: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: DrawingTool;
 
     readonly ERASER_THICKNESS: number = 5;
     readonly DEFAULT_THICKNESS: number = 1;
 
     updateThickness(event: MatSliderChange): void {
-        this.updateThicknessEmitter.emit(event.value as number);
+        this.thickness.emit(event.value as number);
     }
 
     getValue(): number {

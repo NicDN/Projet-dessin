@@ -1,4 +1,6 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
@@ -8,12 +10,8 @@ import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rec
 import { ToolsService } from '@app/services/tools/tools.service';
 import { DrawingComponent } from './drawing.component';
 
-// class ToolStub extends Tool {}
-
-// TODO : Déplacer dans un fichier accessible à tous
-// A changer !! Deux fois la constante halfratio
 const HALF_RATIO = 0.5;
-const SIDE_BAR_SIZE = 300;
+const SIDE_BAR_SIZE = 400;
 const DEFAULT_WIDTH = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
 const DEFAULT_HEIGHT = window.innerHeight * HALF_RATIO;
 
@@ -42,6 +40,8 @@ describe('DrawingComponent', () => {
                 { provide: ToolsService, useValue: toolsService },
                 { provide: DrawingService, useValue: drawingStub },
             ],
+            imports: [RouterTestingModule],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
@@ -63,11 +63,14 @@ describe('DrawingComponent', () => {
         expect(width).toEqual(DEFAULT_WIDTH);
     });
 
-    // it('should get stubTool', () => {
-    //     // const currentTool = component.currentTool;
-    //     const currentTool = toolsService.currentTool;
-    //     expect(currentTool).toEqual(toolStub);
-    // });
+    it('Should disable drawing if the resize button is being used', () => {
+        const isUsingResizeButtonStub = true;
+        component.disableDrawing(isUsingResizeButtonStub);
+        expect(component.canDraw).toEqual(false);
+
+        component.disableDrawing(!isUsingResizeButtonStub);
+        expect(component.canDraw).toEqual(true);
+    });
 
     /*it(" should call the tool's mouse move when receiving a mouse move event", () => {
         const event = {} as MouseEvent;

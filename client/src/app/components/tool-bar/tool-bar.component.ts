@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
 @Component({
@@ -8,11 +7,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
     styleUrls: ['./tool-bar.component.scss'],
 })
 export class ToolBarComponent {
-    readonly SHOW_DELAY_MS: number = 750;
-    showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
-    element: HTMLElement;
-
-    toolBarElements: { icon: string; toolTipContent: string; tool?: Tool }[] = [
+    toolBarElements: { icon: string; toolTipContent: string; tool: Tool }[] = [
         { icon: 'pencil-alt', toolTipContent: 'Crayon (C)', tool: this.toolService.pencilService },
         { icon: 'square', toolTipContent: 'Rectangle (1)', tool: this.toolService.rectangleDrawingService },
         { icon: 'circle', toolTipContent: 'Ellipse (2)', tool: this.toolService.ellipseDrawingService },

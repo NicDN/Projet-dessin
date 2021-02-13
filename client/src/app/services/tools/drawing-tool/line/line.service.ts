@@ -5,7 +5,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
-// import { ColorService } from '@app/services/color/color.service';
+const DEMI_CIRCLE = 180;
+const QUARTER_CIRCLE = 90;
 
 @Injectable({
     providedIn: 'root',
@@ -13,16 +14,16 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class LineService extends TraceTool {
     thickness: number;
 
-    isShiftDown: boolean;
-    shiftAngle: number;
-    lastSelectedPoint: Vec2;
+    isShiftDown: boolean = false;
     readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
+    readonly MAX_JUNCTION_DIAMETER: number = 5;
 
     drawWithJunction: boolean;
     junctionDiameter: number;
 
-    private pathData: Vec2[];
-    private mousePosition: Vec2;
+    pathData: Vec2[];
+    mousePosition: Vec2;
+    canDoubleClick: boolean = false;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Ligne');
@@ -32,6 +33,7 @@ export class LineService extends TraceTool {
         this.thickness = 1;
         this.minThickness = 1;
     }
+
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');
     }
@@ -41,134 +43,114 @@ export class LineService extends TraceTool {
     }
 
     onMouseUp(event: MouseEvent): void {
-        const MAX_OFFSET = 20;
-        if (this.mouseDown) {
-            const delay = 120;
-            this.pathData.push(this.mousePosition);
-            this.updatePreview();
-            this.mouseDown = false;
-            // double click
-            setTimeout(() => {
-                if (this.mouseDown) {
-                    const firstPos = this.pathData[0];
-                    if (this.mousePosition.x <= firstPos.x + MAX_OFFSET && this.mousePosition.x >= firstPos.x - MAX_OFFSET) {
-                        if (this.mousePosition.y <= firstPos.y + MAX_OFFSET && this.mousePosition.y >= firstPos.y - MAX_OFFSET) {
-                            // Since a double-click push 2 times the last value, we need to pop the last 2 values
-                            this.pathData.pop();
-                            // We cant pop another point if we double click on the first point
-                            if (this.pathData.length > 1) {
-                                this.pathData.pop();
-                            }
-                            this.pathData.push(this.pathData[0]);
-                        }
-                    }
-                    this.drawLine(this.drawingService.baseCtx, this.pathData);
-                    this.clearPath();
-                    this.pathData = [];
-                }
-            }, delay);
+        if (event.button !== MouseButton.Left || !this.mouseDown) {
+            return;
         }
+        const DELAY = 200;
+        if (!this.canDoubleClick) {
+            this.addPoint();
+            this.canDoubleClick = true;
+        } else if (this.pathData.length > 1) {
+            this.finishLine();
+        }
+        this.mouseDown = false;
+
+        setTimeout(() => {
+            this.canDoubleClick = false;
+        }, DELAY);
     }
 
     onMouseMove(event: MouseEvent): void {
         this.mousePosition = this.getPositionFromMouse(event);
-        this.updatePreview();
+        this.pathData.pop();
+        this.pathData.push(this.mousePosition);
+
+        if (this.isShiftDown) {
+            this.lockLine();
+        } else {
+            this.updatePreview();
+        }
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        const MIN_LENGTH_FOR_REMOVING_DOT = 2;
-
         switch (event.code) {
             case 'Escape':
-                this.pathData = [];
+                this.clearPath();
                 break;
             case 'Backspace':
-                if (this.pathData.length > MIN_LENGTH_FOR_REMOVING_DOT) {
-                    // We need to remove the preview point AND the last selected point
-                    this.pathData.pop();
-                    this.pathData.pop();
-                    this.pathData.push(this.mousePosition);
-                }
+                this.removePoint();
                 break;
             case 'ShiftRight':
             case 'ShiftLeft':
-                this.lastSelectedPoint = this.pathData[this.pathData.length - 2];
-                if (this.isShiftDown !== true) {
-                    this.updateFixAngle();
-                }
                 this.isShiftDown = true;
-                this.updatePreview();
+                this.lockLine();
                 break;
             default:
                 break;
         }
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawLine(this.drawingService.previewCtx, this.pathData);
+        this.updatePreview();
     }
 
     onKeyUp(event: KeyboardEvent): void {
         if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
             this.isShiftDown = false;
+            this.pathData.pop();
+            this.pathData.push(this.mousePosition);
             this.updatePreview();
         }
     }
 
-    private updatePreview(): void {
-        const HALF_ANGLE = 22.5;
-        const ANGLE_SHIFT = 45;
-        const MAX_ANGLE = 337.5;
+    addPoint(): void {
+        this.pathData.push(this.mousePosition);
+        this.updatePreview();
+    }
 
-        let tempMousePosition: Vec2;
-        tempMousePosition = { x: this.mousePosition.x, y: this.mousePosition.y };
-
-        // force align the line on the closest predefined axe
-        if (this.isShiftDown) {
-            const dx = this.mousePosition.x - this.lastSelectedPoint.x;
-            let i = 0;
-
-            if (this.shiftAngle >= MAX_ANGLE || this.shiftAngle < HALF_ANGLE + i * ANGLE_SHIFT) {
-                tempMousePosition.x = this.lastSelectedPoint.x;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y + dx;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y - dx;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.x = this.lastSelectedPoint.x;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y + dx;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y;
-            } else if (this.shiftAngle < HALF_ANGLE + ++i * ANGLE_SHIFT) {
-                tempMousePosition.y = this.lastSelectedPoint.y - dx;
-            }
+    removePoint(): void {
+        const MIN_LENGTH_FOR_REMOVING_DOT = 2;
+        if (this.pathData.length > MIN_LENGTH_FOR_REMOVING_DOT) {
+            // We need to remove the preview point AND the last selected point
+            this.pathData.pop();
+            this.pathData.pop();
+            this.pathData.push(this.mousePosition);
         }
+    }
 
-        this.pathData.pop();
-        this.pathData.push(tempMousePosition);
+    finishLine(): void {
+        const MAX_OFFSET = 20;
+        const firstPos = this.pathData[0];
+        const dx = Math.abs(firstPos.x - this.mousePosition.x);
+        const dy = Math.abs(firstPos.y - this.mousePosition.y);
+        // We check if we need to bind the first point to the last
+        if (dx <= MAX_OFFSET && dy <= MAX_OFFSET) {
+            // Since a double-click push 2 times the last value, we need to pop the last 2 values
+            this.pathData.pop();
+            this.pathData.pop();
+            this.pathData.push(this.pathData[0]);
+        }
+        this.drawLine(this.drawingService.baseCtx, this.pathData);
+        this.clearPath();
+        this.updatePreview();
+    }
 
+    updatePreview(): void {
         // We draw on the preview canvas and we erase it between each movement of the mouse
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawLine(this.drawingService.previewCtx, this.pathData);
     }
 
-    private updateFixAngle(): void {
+    calculateAngle(point: Vec2): number {
         const FULL_CIRCLE = 360;
-        const DEMI_CIRCLE = 180;
 
-        const dx = this.mousePosition.x - this.lastSelectedPoint.x;
-        const dy = this.mousePosition.y - this.lastSelectedPoint.y;
+        const dx = this.mousePosition.x - point.x;
+        const dy = this.mousePosition.y - point.y;
         const rads = Math.atan2(dx, dy);
         let degrees = (rads * DEMI_CIRCLE) / Math.PI;
 
-        while (degrees >= FULL_CIRCLE) degrees -= FULL_CIRCLE;
         while (degrees < 0) degrees += FULL_CIRCLE;
-
-        this.shiftAngle = degrees;
+        return degrees;
     }
 
-    private drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx.globalAlpha = this.colorService.mainColor.opacity;
         ctx.strokeStyle = this.colorService.mainColor.rgbValue;
         ctx.fillStyle = this.colorService.mainColor.rgbValue;
@@ -187,7 +169,36 @@ export class LineService extends TraceTool {
         ctx.stroke();
     }
 
-    private clearPath(): void {
+    lockLine(): void {
+        const FORTHY_FIVE_DEGREE = 45;
+        const HALF_FF_DEGREE = 22.5;
+
+        const lastSelectedPoint = this.pathData[this.pathData.length - 2];
+        const angle = this.calculateAngle(lastSelectedPoint);
+
+        const tempMousePosition: Vec2 = { x: this.mousePosition.x, y: this.mousePosition.y };
+
+        // force align the line on the closest predefined axe
+        const dx = this.mousePosition.x - lastSelectedPoint.x;
+
+        const quarterAngle = Math.abs(Math.abs(angle - DEMI_CIRCLE) - QUARTER_CIRCLE);
+        const diagonalAngle = Math.abs(Math.abs(angle - DEMI_CIRCLE - FORTHY_FIVE_DEGREE) - QUARTER_CIRCLE);
+
+        if (quarterAngle <= HALF_FF_DEGREE) {
+            tempMousePosition.y = lastSelectedPoint.y;
+        } else if (quarterAngle >= QUARTER_CIRCLE - HALF_FF_DEGREE) {
+            tempMousePosition.x = lastSelectedPoint.x;
+        } else if (diagonalAngle <= HALF_FF_DEGREE) {
+            tempMousePosition.y = lastSelectedPoint.y - dx;
+        } else {
+            tempMousePosition.y = lastSelectedPoint.y + dx;
+        }
+        this.pathData.pop();
+        this.pathData.push(tempMousePosition);
+        this.updatePreview();
+    }
+
+    clearPath(): void {
         this.pathData = [];
     }
 }

@@ -8,6 +8,7 @@
             matTooltip="Couleur principale"
             matTooltipPosition="left"
             matTooltipShowDelay="1000"
+            class="main-color-button"
         ></button>
 
         <button mat-button (click)="switchColors()">
@@ -20,12 +21,13 @@
             matTooltip="Couleur secondaire"
             matTooltipPosition="right"
             matTooltipShowDelay="1000"
+            class="secondary-color-button"
         ></button>
     </div>
     <div *ngFor="let previousColor of previousColors; let index = index" class="list-previous-color">
         <button
             mat-mini-fab
-            class="previousColor"
+            class="previous-color"
             (click)="setPrimaryColor(index)"
             (contextmenu)="setSecondaryColor(index)"
             [ngStyle]="{ 'background-color': previousColor.rgbValue, opacity: previousColor.opacity }"
@@ -33,22 +35,28 @@
     </div>
     <div *ngIf="openColorPicker">
         <div class="color-wrapper">
-            <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
-            <app-color-slider (color)="hue = $event" style="margin-left: 16px"></app-color-slider>
+            <app-color-palette [hue]="hue" (color)="rgbValue = $event; this.clearInputErrors()"></app-color-palette>
+            <app-color-slider (color)="hue = $event; this.clearInputErrors()" style="margin-left: 16px"></app-color-slider>
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider #slider class="opacity-slider" min="15" [value]="getOpacity()" (input)="updateOpacity($event)"> </mat-slider>
+            <mat-slider
+                class="opacity-slider"
+                #slider
+                min="15"
+                [value]="this.opacity * this.OPACITY_AJUSTMENT"
+                (input)="updateOpacity($event)"
+            ></mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
         <div class="input-wrapper">
             <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index = index">
                 <mat-form-field>
-                    <mat-label class="input" [ngStyle]="rgbInput.inputError && { color: 'red' }">{{ rgbInput.color }}</mat-label>
+                    <mat-label class="rgb-label" [ngStyle]="rgbInput.inputError && { color: 'red' }">{{ rgbInput.color }}</mat-label>
                     <input
                         type="text"
-                        class="input"
-                        maxlength="3"
+                        class="rgb-input"
+                        maxlength="2"
                         [value]="getRGB(index)"
                         (input)="applyRGBInput($event.target.value, index)"
                         [ngStyle]="rgbInput.inputError && { color: 'red' }"
@@ -57,9 +65,7 @@
                 </mat-form-field>
             </form>
 
-            <span class="preview-color" [ngStyle]="{ 'background-color': color, opacity: opacity }"></span>
-
-            >>>>>>> dev
+            <span class="preview-color" [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"></span>
             <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
                 <fa-icon icon="check" class="check"></fa-icon>
             </button>
