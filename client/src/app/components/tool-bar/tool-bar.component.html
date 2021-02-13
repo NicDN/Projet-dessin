@@ -1,9 +1,14 @@
 <div>
-     <mat-nav-list *ngFor="let toolBarElement of toolBarElements">
-        <a mat-list-item (click)="toggleActive($event, toolBarElement.tool)" matTooltip="{{ toolBarElement.toolTipContent }}"
-            matTooltipPosition="right" [matTooltipShowDelay]="showDelay.value">
+    <mat-nav-list *ngFor="let toolBarElement of toolBarElements" [class.active]="toolBarElement.tool === this.toolService.currentTool">
+        <a
+            mat-list-item
+            (click)="toggleActive(toolBarElement.tool)"
+            matTooltip="{{ toolBarElement.toolTipContent }}"
+            matTooltipPosition="right"
+            [matTooltipShowDelay]="750"
+            class="list-item"
+        >
             <fa-icon icon="{{ toolBarElement.icon }}"></fa-icon>
         </a>
     </mat-nav-list>
 </div>
-   

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { IndexService } from '@app/services/index/index.service';
 import { Message } from '@common/communication/message';
 import { BehaviorSubject } from 'rxjs';
@@ -12,10 +13,10 @@ import { map } from 'rxjs/operators';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
-
+    controlKeyDown: boolean = false;
     containsDrawing: boolean = false; // temporary boolean
 
-    constructor(private basicService: IndexService) {}
+    constructor(private basicService: IndexService, private hotkeyService: HotkeyService) {}
 
     sendTimeToServer(): void {
         const newTimeMessage: Message = {
@@ -36,5 +37,10 @@ export class MainPageComponent {
                 }),
             )
             .subscribe(this.message);
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        this.hotkeyService.onKeyDown(event);
     }
 }

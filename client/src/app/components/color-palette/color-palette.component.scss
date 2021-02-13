@@ -1,0 +1,13 @@
+// Reference: https://malcoded.com/posts/angular-color-picker/
+.color-palette:hover {
+    cursor: pointer;
+}
+.color-palette {
+    border-radius: 5px;
+}
+
+:host {
+    width: 250px;
+    height: 250px;
+    display: block;
+}

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { Observable, Subject } from 'rxjs';
 import { LineService } from './drawing-tool/line/line.service';
 import { PencilService } from './drawing-tool/pencil/pencil-service';
 import { EraserService } from './eraser/eraser.service';
@@ -10,8 +11,8 @@ import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.ser
     providedIn: 'root',
 })
 export class ToolsService {
-    // private tools: Tool[];
     currentTool: Tool;
+    private subject: Subject<Tool> = new Subject<Tool>();
 
     constructor(
         public pencilService: PencilService,
@@ -20,12 +21,23 @@ export class ToolsService {
         public lineService: LineService,
         public eraserService: EraserService,
     ) {
-        // this.tools = [pencilService, eraserService, ellipseDrawingService, rectangleDrawingService, lineService];
         this.currentTool = pencilService;
     }
 
-    // a voir si on fait correspondre avec le id
     setCurrentTool(tool: Tool): void {
         this.currentTool = tool;
+        this.subject.next(tool);
+    }
+
+    getCurrentTool(): Observable<Tool> {
+        return this.subject.asObservable();
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        this.currentTool.onKeyDown(event);
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        this.currentTool.onKeyUp(event);
     }
 }

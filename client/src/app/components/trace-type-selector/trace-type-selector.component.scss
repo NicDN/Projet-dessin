@@ -1,0 +1,33 @@
+div {
+    height: 60px;
+    display: inline-block;
+}
+.stop {
+    font-size: 40px;
+    color: white;
+}
+fa-icon {
+    font-size: 30px;
+    color: white;
+}
+p {
+    color: white;
+    font-size: 16px;
+    padding-top: 15px;
+    margin-right: 20px;
+    display: inline-block;
+}
+
+.active {
+    background-color: #e51282;
+}
+
+.trace-container{
+   display: flex;
+   display: inline-block;
+}
+mat-button{
+    display: inline-block;
+}
+
+

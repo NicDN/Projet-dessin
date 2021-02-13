@@ -1,73 +1,55 @@
-#resizable-box{
-    width : 500px;
-    height : 500px;
+#resizable-box {
     border-style: dotted;
-    display : none;
-    text-align : center;
-    position:relative;
-    z-index : -1;
+    display: none;
+    position: relative;
+    z-index: 1;
 }
-
 
 .resizable-draggable {
-    outline: 1px dashed #e51282;
+    position: absolute;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg%27%3e%3crect width='100%25' height='100%25' fill='none' stroke='black' stroke-width='0.5' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    transform: translate(2.3px, 2.4px);
     &.active {
-        outline-style: solid;
+        outline-style: dotted;
         background-color: none;
-    }
-    span:first-of-type {
-        position: absolute;
-        left: 50%;
-        transform: translate3d(-50%, -100%, 0);
-    }
-
-    span:nth-of-type(2) {
-        position: absolute;
-        top: 50%;
-        transform: translate3d(-100%, -50%, 0);
-    }
-    
-    span:nth-of-type(3) {
-        position: absolute;
-        transform: translate3d(-100%, -100%, 0);
     }
 }
 
-.resize-action {
+.resize-action-diagonal {
     position: absolute;
-    left: 101%;
-    top: 101%;
-    transform: translate3d(-50%, -50%, 0);
+    left: 100%;
+    top: 100%;
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: nwse-resize;
     }
 }
-.resize-action-2 {
+.resize-action-horizontal {
     position: absolute;
-    left: 101%;
+    left: 100%;
     top: 50%;
-    transform: translate3d(-50%, -50%, 0);
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: w-resize;
     }
-
 }
 
-.resize-action-3 {
+.resize-action-vertical {
     position: absolute;
     left: 50%;
-    top: 101%;
-    transform: translate3d(-50%, -50%, 0);
+    top: 100%;
     border-style: solid;
     border-width: 6px;
     border-color: #e51282;
-    &:hover, &:active {
+    &:hover,
+    &:active {
         cursor: n-resize;
     }
 }

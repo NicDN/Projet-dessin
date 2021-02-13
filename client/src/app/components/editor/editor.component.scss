@@ -1,12 +1,6 @@
 .container {
     height: 100%;
     display: flex;
+    z-index: -1;
+    background-color: grey;
 }
-
-.drawing-container{
-    margin-left: 10px;
-}
-
-
-
-  

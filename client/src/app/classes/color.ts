@@ -1,4 +1,8 @@
 export class Color {
-    rgbValue: string = 'black'; // string ?
-    opacity: number = 1;
+    constructor(rgbValue: string, opacity: number) {
+        this.rgbValue = rgbValue;
+        this.opacity = opacity;
+    }
+    rgbValue: string;
+    opacity: number;
 }
