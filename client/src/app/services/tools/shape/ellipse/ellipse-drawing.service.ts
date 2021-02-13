@@ -63,7 +63,7 @@ export class EllipseDrawingService extends Shape {
         if (radiuses.y <= 0) {
             ctx.lineWidth = begin.y !== end.y ? Math.abs(begin.y - end.y) : 1;
             radiuses.y = 1;
-            radiuses.x = this.getRadius(begin.x, end.x) - ctx.lineWidth / 2;
+            radiuses.x = begin.x !== end.x ? this.getRadius(begin.x, end.x) - ctx.lineWidth / 2 : 1;
         }
     }
 }

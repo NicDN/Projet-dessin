@@ -6,6 +6,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EllipseDrawingService } from './ellipse-drawing.service';
 
+// tslint:disable: no-string-literal
 describe('EllipseDrawingService', () => {
     let service: EllipseDrawingService;
     let colorServiceSpy: jasmine.SpyObj<ColorService>;
@@ -25,10 +26,13 @@ describe('EllipseDrawingService', () => {
     const topRightCorner: Vec2 = { x: 40, y: 0 };
 
     beforeEach(() => {
-        const spy = jasmine.createSpyObj('ColorService', ['mainColor', 'secondaryColor']);
+        const colorSpy = jasmine.createSpyObj('ColorService', [], {
+            mainColor: { rgbValue: colorStub, opacity: opacityStub },
+            secondaryColor: { rgbValue: colorStub, opacity: opacityStub },
+        });
         drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
-            providers: [EllipseDrawingService, { provide: ColorService, useValue: spy }, { provide: DrawingService, useValue: drawServiceSpy }],
+            providers: [EllipseDrawingService, { provide: ColorService, useValue: colorSpy }, { provide: DrawingService, useValue: drawServiceSpy }],
         });
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -38,9 +42,7 @@ describe('EllipseDrawingService', () => {
         service = TestBed.inject(EllipseDrawingService);
         colorServiceSpy = TestBed.inject(ColorService) as jasmine.SpyObj<ColorService>;
 
-        // tslint:disable-next-line: no-string-literal
         service['drawingService'].baseCtx = baseCtxStub;
-        // tslint:disable-next-line: no-string-literal
         service['drawingService'].previewCtx = previewCtxStub;
 
         colorServiceSpy.mainColor.rgbValue = colorStub;
@@ -54,44 +56,11 @@ describe('EllipseDrawingService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('#setFillColor should change the right ctx parameters', () => {
-        // tslint:disable-next-line: no-string-literal
-        service.setFillColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
-        expect(drawServiceSpy.baseCtx.fillStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(opacityStub);
-    });
-
-    it('#setStrokeColor should change the right ctx parameters', () => {
-        // tslint:disable-next-line: no-string-literal
-        service.setStrokeColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
-        expect(drawServiceSpy.baseCtx.strokeStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(opacityStub);
-    });
-
     it('#setContextParameters should change the right ctx parameters', () => {
-        // tslint:disable-next-line: no-string-literal
         service.setContextParameters(drawServiceSpy.baseCtx, thicknessStub);
         expect(drawServiceSpy.baseCtx.getLineDash()).toEqual([]);
         expect(drawServiceSpy.baseCtx.lineWidth).toEqual(thicknessStub);
         expect(drawServiceSpy.baseCtx.lineCap).toEqual('round');
-    });
-
-    it('#getActualEndCoords should return same end coords if not using alternate shape', () => {
-        // tslint:disable-next-line: no-string-literal
-        service['alternateShape'] = false;
-        expect(service.getActualEndCoords(topLeftCorner, bottomRightCorner)).toEqual(bottomRightCorner);
-        expect(service.getActualEndCoords(bottomRightCorner, topLeftCorner)).toEqual(topLeftCorner);
-        expect(service.getActualEndCoords(bottomLeftCorner, topRightCorner)).toEqual(topRightCorner);
-        expect(service.getActualEndCoords(topRightCorner, bottomLeftCorner)).toEqual(bottomLeftCorner);
-    });
-
-    it('#getActualEndCoords should return coords of square if using alternate shape', () => {
-        // tslint:disable-next-line: no-string-literal
-        service['alternateShape'] = true;
-        expect(service.getActualEndCoords(topLeftCorner, bottomRightCorner)).toEqual({ x: 20, y: 20 });
-        expect(service.getActualEndCoords(bottomRightCorner, topLeftCorner)).toEqual({ x: 20, y: 0 });
-        expect(service.getActualEndCoords(bottomLeftCorner, topRightCorner)).toEqual({ x: 20, y: 0 });
-        expect(service.getActualEndCoords(topRightCorner, bottomLeftCorner)).toEqual({ x: 20, y: 20 });
     });
 
     it('#getCenterCoords should return coords of the center of the ellipse', () => {
@@ -152,13 +121,30 @@ describe('EllipseDrawingService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
+    it('#draw without border should draw an ellipse on the canvas at the right position and using the right colours', () => {
+        service.thickness = thicknessStub;
+        colorServiceSpy.mainColor.opacity = 1;
+        colorServiceSpy.secondaryColor.opacity = 1;
+        service.traceType = TraceType.FilledNoBordered;
+        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+
+        const borderPoint: Vec2 = { x: 2, y: 10 };
+        const centerPoint: Vec2 = { x: 20, y: 10 };
+        const outsidePoint: Vec2 = { x: 41, y: 10 };
+        const rgbMax = 255;
+        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
     it('#draw when using alternate shape should draw a circle on the canvas at the right position and using the right colours', () => {
-        // tslint:disable-next-line: no-string-literal
         service.thickness = thicknessStub;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.Bordered;
-        // tslint:disable-next-line: no-string-literal
         service['alternateShape'] = true;
         service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
 
@@ -176,11 +162,21 @@ describe('EllipseDrawingService', () => {
 
     it('should adjust the width if its bigger than the box containing the ellipse', () => {
         const initialWidth = 50;
-        const radius: { x: number; y: number } = { x: -5, y: -15 };
+        const radius: Vec2 = { x: -5, y: -15 };
         drawServiceSpy.baseCtx.lineWidth = initialWidth;
         service.adjustToWidth(drawServiceSpy.baseCtx, radius, topLeftCorner, bottomRightCorner);
         expect(drawServiceSpy.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(radius.x).toBeGreaterThan(0);
         expect(radius.y).toBeGreaterThan(0);
+    });
+
+    it('should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
+        const initialWidth = 50;
+        const radius: Vec2 = { x: 0, y: 0 };
+        drawServiceSpy.baseCtx.lineWidth = initialWidth;
+        service.adjustToWidth(drawServiceSpy.baseCtx, radius, bottomRightCorner, bottomRightCorner);
+        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(1);
+        expect(radius.x).toEqual(1);
+        expect(radius.y).toEqual(1);
     });
 });
