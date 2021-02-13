@@ -22,8 +22,8 @@
     </div>
     <div *ngIf="openColorPicker">
         <div class=color-wrapper>
-            <app-color-palette [hue]="hue" (color)="rgbValue = $event"></app-color-palette>
-            <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
+            <app-color-palette [hue]="hue" (color)="rgbValue = $event; this.clearInputErrors()"></app-color-palette>
+            <app-color-slider (color)="hue=$event; this.clearInputErrors()" style="margin-left:16px"></app-color-slider>
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>

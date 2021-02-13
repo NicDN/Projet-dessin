@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ColorSliderComponent } from './color-slider.component';
-
+// tslint:disable:no-string-literal
 describe('ColorSliderComponent', () => {
     let component: ColorSliderComponent;
     let fixture: ComponentFixture<ColorSliderComponent>;
@@ -27,32 +27,27 @@ describe('ColorSliderComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should create a new CanvasRenderingContext2D instance if ctx is undefined', () => {
-        component.draw();
-        // tslint:disable-next-line: no-string-literal
+    it('#renderSlider should create a new CanvasRenderingContext2D instance if ctx is undefined', () => {
+        component.renderSlider();
         expect(component['ctx']).not.toBeUndefined();
     });
 
-    it('should display a rectangle icon above the mouse if a position is selected on the slider ', () => {
+    it('#renderRectangleIcon should render a rectangle icon if a position is selected on the slider ', () => {
         component.selectedHeight = DEFAULT_X;
         const EXPECTED_LINE_WIDTH = 5;
-        component.draw();
-        // tslint:disable-next-line: no-string-literal
+        component['renderRectangleIcon'](1, 1);
         expect(component['ctx'].lineWidth).toEqual(EXPECTED_LINE_WIDTH); // idicator that we entered the if condition to draw the rectangle
     });
 
-    it('should not display a rectangle icon above the mouse no position is selected on the slider ', () => {
+    it('#renderRectangleIcon should not render a rectangle icon if no position is selected on the slider ', () => {
         const EXPECTED_LINE_WIDTH = 5;
-        component.draw();
-        // tslint:disable-next-line: no-string-literal
+        component['renderRectangleIcon'](1, 1);
         expect(component['ctx'].lineWidth).not.toEqual(EXPECTED_LINE_WIDTH); // idicator that we entered the if condition to draw the rectangle
     });
 
     it('#onMouseUp should set mousedown to false', () => {
-        // tslint:disable-next-line: no-string-literal
         component['mousedown'] = true;
         component.onMouseUp();
-        // tslint:disable-next-line: no-string-literal
         expect(component['mousedown']).toBe(false);
     });
 
@@ -64,7 +59,6 @@ describe('ColorSliderComponent', () => {
     });
 
     it('#onMouseMove should call #handleMouseEvent if the mouse is already down', () => {
-        // tslint:disable-next-line: no-string-literal
         component['mousedown'] = true;
         spyOn(component, 'handleMouseEvent');
         component.onMouseMove(mouseEvent);
@@ -73,30 +67,34 @@ describe('ColorSliderComponent', () => {
     });
 
     it('#onMouseMove should not call #handleMouseEvent if the mouse is not already down', () => {
-        // tslint:disable-next-line: no-string-literal
         component['mousedown'] = false;
         spyOn(component, 'handleMouseEvent');
         component.onMouseMove(mouseEvent);
         expect(component.handleMouseEvent).not.toHaveBeenCalled();
     });
 
-    it('#handleMouseEvent should call #draw and emit a color', () => {
-        spyOn(component, 'draw');
+    it('#handleMouseEvent should handle a mouse event correctly', () => {
+        // tslint:disable-next-line: no-shadowed-variable
+        const mouseEvent: MouseEvent = {
+            offsetX: DEFAULT_X,
+            offsetY: DEFAULT_Y,
+        } as MouseEvent;
+        spyOn(component, 'renderSlider');
         spyOn(component, 'emitColor');
         component.handleMouseEvent(mouseEvent);
-        expect(component.draw).toHaveBeenCalled();
+        expect(component.selectedHeight).toBe(mouseEvent.offsetY);
+        expect(component.renderSlider).toHaveBeenCalled();
         expect(component.emitColor).toHaveBeenCalledWith(mouseEvent.offsetX, mouseEvent.offsetY);
     });
 
-    it('should emit color correctly', () => {
+    it('#emitColor should emit color correctly', () => {
         spyOn(component.color, 'emit');
         component.emitColor(DEFAULT_X, DEFAULT_Y);
         expect(component.color.emit).toHaveBeenCalled();
         expect(component.color.emit).toHaveBeenCalledWith(component.getColorAtPosition(DEFAULT_X, DEFAULT_Y));
     });
 
-    it('should get the right color at given position', () => {
-        // tslint:disable-next-line: no-string-literal
+    it('#getColorAtPosition should get the right color at given position', () => {
         const expectedColor = 'rgb(243,255,0)';
         expect(component.getColorAtPosition(DEFAULT_X, DEFAULT_Y)).toBe(expectedColor);
     });

@@ -11,6 +11,7 @@ describe('ColorPanelComponent', () => {
     let component: ColorPanelComponent;
     let fixture: ComponentFixture<ColorPanelComponent>;
     const DEFAULT_COLOR = new Color('rgb(1,2,3)', 1);
+    const DEFAULT_RGB_ARRAY = ['1', '2', '3'];
     let colorService: ColorService;
 
     const CHANGED_RGB_VALUE = 'rgb(5,2,12)';
@@ -141,7 +142,7 @@ describe('ColorPanelComponent', () => {
         expect(component.updateOpacity).toHaveBeenCalled();
     });
 
-    it('should update opacity correctly', () => {
+    it('#updateOpacity should update opacity correctly', () => {
         const matSliderChange = new MatSliderChange();
         const MAT_SLIDER_CHANGE_DEFAULT_VALUE = 50;
         const OPACITY_EXPECTED_VALUE = 0.5;
@@ -150,7 +151,7 @@ describe('ColorPanelComponent', () => {
         expect(component.opacity).toBe(OPACITY_EXPECTED_VALUE);
     });
 
-    it('should get a rgb value correctly', () => {
+    it('#getRGB should get a rgb value correctly', () => {
         // for the red value
         RGB_INDEX = 0;
         expect(component.getRGB(RGB_INDEX)).toBe('1');
@@ -164,48 +165,57 @@ describe('ColorPanelComponent', () => {
         expect(component.getRGB(RGB_INDEX)).toBe('3');
     });
 
-    it('should apply the rgb input correctly when a normal hex value is provided', () => {
+    it('#applyRGBInput applies input if the input has not error', () => {
+        component['rgbArray'] = DEFAULT_RGB_ARRAY;
+        component.rgbValue = DEFAULT_COLOR.rgbValue;
+        const CORRECT_INPUT = 'A';
+        const EXPECTED_RGB_ARRAY = ['1', '10', '3']; // hex(A) = 10
+        const EXPECTED_RGB_VALUE = 'rgb(1,10,3)';
+        RGB_INDEX = 1;
+        spyOn(component, 'clearInputErrors');
+        spyOn(component, 'inputHasErrors').and.returnValue(false);
+        component.applyRGBInput(CORRECT_INPUT, RGB_INDEX);
+        expect(component.rgbInputs[RGB_INDEX].inputError).toBeFalse();
+        expect(component['rgbArray']).toEqual(EXPECTED_RGB_ARRAY);
+        expect(component.rgbValue).toBe(EXPECTED_RGB_VALUE);
+        expect(component.clearInputErrors).toHaveBeenCalled();
+    });
+
+    it('#applyRGBInput does not apply input if the input has error', () => {
+        const INCORRECT_INPUT = 'x';
+        component['rgbArray'] = DEFAULT_RGB_ARRAY;
+        component.rgbValue = DEFAULT_COLOR.rgbValue;
+        RGB_INDEX = 1;
+        spyOn(component, 'clearInputErrors');
+        spyOn(component, 'inputHasErrors').and.returnValue(true);
+        component.applyRGBInput(INCORRECT_INPUT, RGB_INDEX);
+        expect(component.rgbInputs[RGB_INDEX].inputError).toBeTrue();
+        expect(component['rgbArray']).toBe(DEFAULT_RGB_ARRAY);
+        expect(component.rgbValue).toBe(DEFAULT_COLOR.rgbValue);
+        expect(component.clearInputErrors).not.toHaveBeenCalled();
+    });
+
+    it('#inputHasErrors should not return error when normal hex value is provided', () => {
         // Testing with a normal hex value (A)
         const NORMAL_HEX = 'A';
-        component.applyRGBInput(NORMAL_HEX, 1);
-        expect(component['rgbArray']).toEqual(['1', '10', '3']);
-        expect(component.rgbValue).toBe('rgb(1,10,3)');
+        expect(component.inputHasErrors(NORMAL_HEX)).toBeFalse();
     });
 
-    it('should apply the rgb input correctly when the minimum hex value is provided', () => {
+    it('#inputHasErrors should not return error when minimum hex value is provided', () => {
         // Testing with a minmumum hex value (0)
         const MIMIMUM_HEX = '0';
-        component.applyRGBInput(MIMIMUM_HEX, 1);
-        expect(component['rgbArray']).toEqual(['1', '0', '3']);
-        expect(component.rgbValue).toBe('rgb(1,0,3)');
+        expect(component.inputHasErrors(MIMIMUM_HEX)).toBeFalse();
     });
 
-    it('should apply the rgb input correctly when a maximum hex value is provided', () => {
+    it('#inputHasErrors should not return error when maximum hex value is provided', () => {
         // Testing with a maximum hex value (FF)
         const MAXIMUM_HEX = 'ff';
-        component.applyRGBInput(MAXIMUM_HEX, 1);
-        expect(component['rgbArray']).toEqual(['1', '255', '3']);
-        expect(component.rgbValue).toBe('rgb(1,255,3)');
+        expect(component.inputHasErrors(MAXIMUM_HEX)).toBeFalse();
     });
 
-    it('should not apply the rgb input when a minus sign "-" is provided ', () => {
-        const INCORRECT_HEX = '-';
-        component.applyRGBInput(INCORRECT_HEX, 1);
-        expect(component['rgbArray']).toEqual(['1', '2', '3']);
-        expect(component.rgbValue).toBe('rgb(1,2,3)');
-    });
-
-    it('should not apply the rgb input when the value provided is not a hex value', () => {
+    it('#inputHasErrors should return error when the value provided is not a hex', () => {
         const INCORRECT_HEX = 'm';
-        component.applyRGBInput(INCORRECT_HEX, 1);
-        expect(component['rgbArray']).toEqual(['1', '2', '3']);
-        expect(component.rgbValue).toBe('rgb(1,2,3)');
-    });
-
-    it('should remove the input error if the incorrect input is changed to a correct one', () => {
-        component.rgbInputs[RGB_INDEX].inputError = true;
-        component.applyRGBInput('C', RGB_INDEX);
-        expect(component.rgbInputs[RGB_INDEX].inputError).toBeFalse();
+        expect(component.inputHasErrors(INCORRECT_HEX)).toBeTrue();
     });
 
     it('#clearInputErrors should clear input errors correctly', () => {

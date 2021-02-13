@@ -39,7 +39,7 @@ describe('AttributesPanelComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('the getCurrentTool subscribed method assings current tool correctly ', async(() => {
+    it('#subscribe assings current tool correctly ', async(() => {
         const expectedCurrentTool = new LineService(new DrawingService(), new ColorService());
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         component.subscribe();
@@ -47,27 +47,27 @@ describe('AttributesPanelComponent', () => {
         expect(component.currentTool).toBe(expectedCurrentTool);
     }));
 
-    it('should set the thickness correctly', () => {
+    it('#setThickness should set the thickness correctly', () => {
         const EXPECTED_THICKNESS = 10;
         component.setThickness(EXPECTED_THICKNESS);
         expect((component.currentTool as DrawingTool).thickness).toBe(EXPECTED_THICKNESS);
     });
 
-    it('should set the trace type correctly', () => {
+    it('#setTraceType should set the trace type correctly', () => {
         component.currentTool = ellipseDrawingService;
         const expectedTraceType: TraceType = TraceType.Bordered;
         component.setTraceType(expectedTraceType);
         expect((component.currentTool as Shape).traceType).toBe(expectedTraceType);
     });
 
-    it('should set the line junction diameter correctly', () => {
+    it('#setLineJunctionDiameter should set the line junction diameter correctly', () => {
         component.currentTool = lineService;
         const EXPECTED_LINE_DIAMETER = 10;
         component.setLineJunctionDiameter(EXPECTED_LINE_DIAMETER);
         expect((component.currentTool as LineService).junctionDiameter).toBe(EXPECTED_LINE_DIAMETER);
     });
 
-    it('should set the type of line junction correctly', () => {
+    it('#setJunctionChecked should set the type of line junction correctly', () => {
         component.currentTool = lineService;
         const expectedJunction = false;
         (component.currentTool as LineService).drawWithJunction = !expectedJunction;
@@ -75,12 +75,12 @@ describe('AttributesPanelComponent', () => {
         expect((component.currentTool as LineService).drawWithJunction).toBe(expectedJunction);
     });
 
-    it('should verify that a shape is active', () => {
+    it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
         expect(component.shapeIsActive()).toBe(true);
     });
 
-    it('should verify that a drawing tool is active', () => {
+    it('#drawingToolIsActive should verify that a drawing tool is active', () => {
         component.currentTool = drawingTool;
         expect(component.drawingToolIsActive()).toBe(true);
     });

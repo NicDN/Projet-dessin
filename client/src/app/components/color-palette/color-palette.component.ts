@@ -25,10 +25,10 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     selectedPosition: { x: number; y: number };
 
     ngAfterViewInit(): void {
-        this.draw();
+        this.renderPalette();
     }
 
-    draw(): void {
+    renderPalette(): void {
         if (!this.ctx) {
             this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         }
@@ -52,6 +52,10 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.ctx.fillStyle = blackGrad;
         this.ctx.fillRect(0, 0, width, height);
 
+        this.renderCircle();
+    }
+
+    renderCircle(): void {
         if (this.selectedPosition) {
             this.ctx.strokeStyle = 'white';
             this.ctx.fillStyle = 'white';
@@ -63,7 +67,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     ngOnChanges(): void {
-        this.draw();
+        this.renderPalette();
         const pos = this.selectedPosition;
         if (this.selectedPosition) {
             this.color.emit(this.getColorAtPosition(pos.x, pos.y));
@@ -88,7 +92,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
 
     handleMouseEvent(evt: MouseEvent): void {
         this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-        this.draw();
+        this.renderPalette();
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 

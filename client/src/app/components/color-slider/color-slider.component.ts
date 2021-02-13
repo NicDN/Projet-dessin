@@ -18,10 +18,10 @@ export class ColorSliderComponent implements AfterViewInit {
     selectedHeight: number;
 
     ngAfterViewInit(): void {
-        this.draw();
+        this.renderSlider();
     }
 
-    draw(): void {
+    renderSlider(): void {
         if (!this.ctx) {
             this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         }
@@ -50,6 +50,10 @@ export class ColorSliderComponent implements AfterViewInit {
         this.ctx.fill();
         this.ctx.closePath();
 
+        this.renderRectangleIcon(width, height);
+    }
+
+    private renderRectangleIcon(width: number, height: number): void {
         if (this.selectedHeight) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = 'white';
@@ -80,7 +84,7 @@ export class ColorSliderComponent implements AfterViewInit {
 
     handleMouseEvent(evt: MouseEvent): void {
         this.selectedHeight = evt.offsetY;
-        this.draw();
+        this.renderSlider();
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 
