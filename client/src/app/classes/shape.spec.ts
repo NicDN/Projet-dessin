@@ -28,8 +28,8 @@ describe('Shape', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
-    const colorStub = 'blue';
-    const opacityStub = 0.4;
+    const defaultColor = 'blue';
+    const defaultOpacity = 0.4;
     const topLeftCorner: Vec2 = { x: 0, y: 0 };
     const bottomRightCorner: Vec2 = { x: 40, y: 20 };
     const bottomLeftCorner: Vec2 = { x: 0, y: 20 };
@@ -37,8 +37,8 @@ describe('Shape', () => {
 
     beforeEach(() => {
         const colorSpy = jasmine.createSpyObj('ColorService', [], {
-            mainColor: { rgbValue: colorStub, opacity: opacityStub },
-            secondaryColor: { rgbValue: colorStub, opacity: opacityStub },
+            mainColor: { rgbValue: defaultColor, opacity: defaultOpacity },
+            secondaryColor: { rgbValue: defaultColor, opacity: defaultOpacity },
         });
         drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
@@ -58,11 +58,11 @@ describe('Shape', () => {
         shape['drawingService'].baseCtx = baseCtxStub;
         shape['drawingService'].previewCtx = previewCtxStub;
 
-        colorServiceSpy.mainColor.rgbValue = colorStub;
-        colorServiceSpy.mainColor.opacity = opacityStub;
+        colorServiceSpy.mainColor.rgbValue = defaultColor;
+        colorServiceSpy.mainColor.opacity = defaultOpacity;
 
-        colorServiceSpy.secondaryColor.rgbValue = colorStub;
-        colorServiceSpy.secondaryColor.opacity = opacityStub;
+        colorServiceSpy.secondaryColor.rgbValue = defaultColor;
+        colorServiceSpy.secondaryColor.opacity = defaultOpacity;
         mouseEvent = {
             pageX: 430,
             pageY: 27,
@@ -74,13 +74,13 @@ describe('Shape', () => {
     it('#setFillColor should change the right ctx parameters', () => {
         shape.setFillColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
         expect(drawServiceSpy.baseCtx.fillStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(opacityStub);
+        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(defaultOpacity);
     });
 
     it('#setStrokeColor should change the right ctx parameters', () => {
         shape.setStrokeColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
         expect(drawServiceSpy.baseCtx.strokeStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(opacityStub);
+        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(defaultOpacity);
     });
 
     it('#getActualEndCoords should return same end coords if not using alternate shape', () => {

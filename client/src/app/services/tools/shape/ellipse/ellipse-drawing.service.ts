@@ -26,11 +26,11 @@ export class EllipseDrawingService extends Shape {
 
         ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
-        if (this.traceType === TraceType.FilledNoBordered || this.traceType === TraceType.FilledAndBordered) {
+        if (this.traceType !== TraceType.Bordered) {
             this.setFillColor(ctx, this.colorService.mainColor);
             ctx.fill();
         }
-        if (this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered) {
+        if (this.traceType !== TraceType.FilledNoBordered) {
             this.setStrokeColor(ctx, this.colorService.secondaryColor);
             ctx.stroke();
         }

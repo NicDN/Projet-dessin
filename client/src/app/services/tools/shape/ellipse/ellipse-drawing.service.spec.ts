@@ -16,10 +16,10 @@ describe('EllipseDrawingService', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
-    const colorStub = 'blue';
-    const secondaryColorStub = 'black';
-    const opacityStub = 0.4;
-    const thicknessStub = 4;
+    const primaryColor = 'blue';
+    const secondaryColor = 'black';
+    const defaultOpacity = 1;
+    const defaultThickness = 4;
     const topLeftCorner: Vec2 = { x: 0, y: 0 };
     const bottomRightCorner: Vec2 = { x: 40, y: 20 };
     const bottomLeftCorner: Vec2 = { x: 0, y: 20 };
@@ -27,8 +27,8 @@ describe('EllipseDrawingService', () => {
 
     beforeEach(() => {
         const colorSpy = jasmine.createSpyObj('ColorService', [], {
-            mainColor: { rgbValue: colorStub, opacity: opacityStub },
-            secondaryColor: { rgbValue: colorStub, opacity: opacityStub },
+            mainColor: { rgbValue: primaryColor, opacity: defaultOpacity },
+            secondaryColor: { rgbValue: secondaryColor, opacity: defaultOpacity },
         });
         drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
@@ -44,12 +44,6 @@ describe('EllipseDrawingService', () => {
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
-
-        colorServiceSpy.mainColor.rgbValue = colorStub;
-        colorServiceSpy.mainColor.opacity = opacityStub;
-
-        colorServiceSpy.secondaryColor.rgbValue = secondaryColorStub;
-        colorServiceSpy.secondaryColor.opacity = opacityStub;
     });
 
     it('should be created', () => {
@@ -57,9 +51,9 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawServiceSpy.baseCtx, thicknessStub);
+        service.setContextParameters(drawServiceSpy.baseCtx, defaultThickness);
         expect(drawServiceSpy.baseCtx.getLineDash()).toEqual([]);
-        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(thicknessStub);
+        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(defaultThickness);
         expect(drawServiceSpy.baseCtx.lineCap).toEqual('round');
     });
 
@@ -81,7 +75,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('should adjust radiuses if ellipse has a certain border width', () => {
-        drawServiceSpy.baseCtx.lineWidth = thicknessStub;
+        drawServiceSpy.baseCtx.lineWidth = defaultThickness;
         service.traceType = TraceType.FilledAndBordered;
         const radiuses: Vec2 = { x: 20, y: 10 };
         const expectedXRadius = 18;
@@ -92,7 +86,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('should not adjust radiuses if ellipse doesnt have a border', () => {
-        drawServiceSpy.baseCtx.lineWidth = thicknessStub;
+        drawServiceSpy.baseCtx.lineWidth = defaultThickness;
         service.traceType = TraceType.FilledNoBordered;
         const radiuses: Vec2 = { x: 20, y: 10 };
         const expectedXRadius = 20;
@@ -103,7 +97,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#draw should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        service.thickness = thicknessStub;
+        service.thickness = defaultThickness;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.FilledAndBordered;
@@ -122,7 +116,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#draw without border should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        service.thickness = thicknessStub;
+        service.thickness = defaultThickness;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.FilledNoBordered;
@@ -141,7 +135,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#draw when using alternate shape should draw a circle on the canvas at the right position and using the right colours', () => {
-        service.thickness = thicknessStub;
+        service.thickness = defaultThickness;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.Bordered;
