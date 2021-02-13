@@ -6,10 +6,10 @@
 }
 
 .resizable-draggable {
-    position:absolute;
-    transform: translate(2px, 2px);
+    position: absolute;
     z-index: 1;
-    outline: 1px dashed #e51282;
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg%27%3e%3crect width='100%25' height='100%25' fill='none' stroke='black' stroke-width='0.5' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+    transform: translate(2.3px, 2.4px);
     &.active {
         outline-style: dotted;
         background-color: none;
@@ -53,4 +53,3 @@
         cursor: n-resize;
     }
 }
-

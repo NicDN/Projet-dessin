@@ -8,6 +8,10 @@ export enum MouseButton {
     Back = 3,
     Forward = 4,
 }
+// If the constants are changed, many tests in pencilService and shape will fail, go change the MouseEventCoords there too.
+const HORIZONTAL_OFFSET = 405;
+const VERTICAL_OFFSET = 2;
+
 export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
@@ -17,24 +21,29 @@ export abstract class Tool {
         this.toolName = toolName;
     }
 
-    // tslint:disable-next-line: no-empty
-    onMouseDown(event: MouseEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onMouseUp(event: MouseEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onMouseMove(event: MouseEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onMouseOut(event: MouseEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onMouseEnter(event: MouseEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onKeyDown(event: KeyboardEvent): void {}
-    // tslint:disable-next-line: no-empty
-    onKeyUp(event: KeyboardEvent): void {}
+    onMouseDown(event: MouseEvent): void {
+        return;
+    }
+    onMouseUp(event: MouseEvent): void {
+        return;
+    }
+    onMouseMove(event: MouseEvent): void {
+        return;
+    }
+    onMouseOut(event: MouseEvent): void {
+        return;
+    }
+    onMouseEnter(event: MouseEvent): void {
+        return;
+    }
+    onKeyDown(event: KeyboardEvent): void {
+        return;
+    }
+    onKeyUp(event: KeyboardEvent): void {
+        return;
+    }
 
-    // If the magic numbers are changed, a test in pencilService will fail, go change the MouseEventCoords there too.
     getPositionFromMouse(event: MouseEvent): Vec2 {
-        // AQ calculer les valeurs
-        return { x: event.pageX - 405, y: event.pageY - 2 };
+        return { x: event.pageX - HORIZONTAL_OFFSET, y: event.pageY - VERTICAL_OFFSET };
     }
 }

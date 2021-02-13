@@ -8,6 +8,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 import { HotkeyService } from './hotkey.service';
 // import SpyObj = jasmine.SpyObj;
 
+// tslint:disable: no-string-literal
 describe('HotkeyService', () => {
     let service: HotkeyService;
     let fixture: ComponentFixture<DrawingComponent>;
@@ -52,9 +53,9 @@ describe('HotkeyService', () => {
         expect(event.returnValue).toEqual(true);
     });
 
+    // tslint:disable: no-magic-numbers
     it('should call setCurrent tool from toolservice when a tool key is pressed', () => {
-        // tslint:disable-next-line: no-any no-string-literal
-        const toolServiceSpy: jasmine.Spy<any> = spyOn<any>(service['toolService'], 'setCurrentTool').and.stub();
+        const toolServiceSpy: jasmine.Spy = spyOn(service['toolService'], 'setCurrentTool').and.stub();
         const eraserKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyE', ctrlKey: false });
         const pencilKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyC', ctrlKey: false });
         const lineKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyL', ctrlKey: false });

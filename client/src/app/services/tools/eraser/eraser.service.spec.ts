@@ -14,8 +14,7 @@ describe('EraserService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     // tslint:disable-next-line: no-any
     let drawLineSpy: jasmine.Spy<any>;
-    // tslint:disable-next-line: no-any
-    let singleClickSpy: jasmine.Spy<any>;
+    let singleClickSpy: jasmine.Spy;
 
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
@@ -50,7 +49,7 @@ describe('EraserService', () => {
             buttons: 1,
         } as MouseEvent;
 
-        singleClickSpy = spyOn<any>(service, 'singleClick').and.callThrough();
+        singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
     });
 
     it('should be created', () => {
