@@ -65,7 +65,6 @@ export class DrawingComponent implements AfterViewInit {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
-        this.canDraw = true;
     }
 
     @HostListener('window:keydown', ['$event'])

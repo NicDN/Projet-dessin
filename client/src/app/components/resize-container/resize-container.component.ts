@@ -51,6 +51,7 @@ export class ResizeContainerComponent {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         this.onMouseUpContainer(event);
+        this.usingButton.emit(false);
     }
 
     onMouseDown(event: MouseEvent, status: number): void {

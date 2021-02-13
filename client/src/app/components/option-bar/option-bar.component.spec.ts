@@ -27,9 +27,13 @@ describe('OptionBarComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should handle new drawing', () => {
+    it('should handle new drawing with the right toolTipContent', () => {
         const emptyTarget = new EventTarget();
+        const notCtrlOOption = 'This is not control O option';
         const ctrlOOption = 'Créer un nouveau dessin (Ctrl+O)';
+        component.toggleActive(emptyTarget, notCtrlOOption);
+        expect(drawingServiceSpy.handleNewDrawing).not.toHaveBeenCalled();
+
         component.toggleActive(emptyTarget, ctrlOOption);
         expect(drawingServiceSpy.handleNewDrawing).toHaveBeenCalled();
     });
