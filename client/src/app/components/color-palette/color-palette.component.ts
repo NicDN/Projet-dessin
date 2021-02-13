@@ -1,6 +1,5 @@
 // Reference: https://malcoded.com/posts/angular-color-picker/
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
 @Component({
     selector: 'app-color-palette',
     templateUrl: './color-palette.component.html',
@@ -26,10 +25,10 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     selectedPosition: { x: number; y: number };
 
     ngAfterViewInit(): void {
-        this.draw();
+        this.renderPalette();
     }
 
-    draw(): void {
+    renderPalette(): void {
         if (!this.ctx) {
             this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         }
@@ -53,6 +52,10 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.ctx.fillStyle = blackGrad;
         this.ctx.fillRect(0, 0, width, height);
 
+        this.renderCircle();
+    }
+
+    renderCircle(): void {
         if (this.selectedPosition) {
             this.ctx.strokeStyle = 'white';
             this.ctx.fillStyle = 'white';
@@ -63,43 +66,43 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.hue) {
-            this.draw();
-            const pos = this.selectedPosition;
-            if (pos) {
-                this.color.emit(this.getColorAtPosition(pos.x, pos.y));
-            }
+    ngOnChanges(): void {
+        this.renderPalette();
+        const pos = this.selectedPosition;
+        if (this.selectedPosition) {
+            this.color.emit(this.getColorAtPosition(pos.x, pos.y));
         }
     }
 
     @HostListener('window:mouseup', ['$event'])
-    onMouseUp(evt: MouseEvent): void {
+    onMouseUp(): void {
         this.mousedown = false;
     }
 
     onMouseDown(evt: MouseEvent): void {
         this.mousedown = true;
-        this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-        this.draw();
-        this.color.emit(this.getColorAtPosition(evt.offsetX, evt.offsetY));
+        this.handleMouseEvent(evt);
     }
 
     onMouseMove(evt: MouseEvent): void {
         if (this.mousedown) {
-            this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
-            this.draw();
-            this.emitColor(evt.offsetX, evt.offsetY);
+            this.handleMouseEvent(evt);
         }
     }
 
+    handleMouseEvent(evt: MouseEvent): void {
+        this.selectedPosition = { x: evt.offsetX, y: evt.offsetY };
+        this.renderPalette();
+        this.emitColor(evt.offsetX, evt.offsetY);
+    }
+
     emitColor(x: number, y: number): void {
-        const rgbaColor = this.getColorAtPosition(x, y);
-        this.color.emit(rgbaColor);
+        const rgbColor = this.getColorAtPosition(x, y);
+        this.color.emit(rgbColor);
     }
 
     getColorAtPosition(x: number, y: number): string {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
-        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+        return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
     }
 }

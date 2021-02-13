@@ -25,11 +25,11 @@ export class ColorPanelComponent {
     selectedColor: Color;
     openColorPicker: boolean = false;
 
-    color: string;
+    rgbValue: string;
     hue: string;
     opacity: number;
 
-    rgbArray: string[];
+    private rgbArray: string[]; // represents R/G/B decimal values
 
     constructor(colorService: ColorService) {
         this.colorService = colorService;
@@ -38,11 +38,18 @@ export class ColorPanelComponent {
 
     selectColor(color: Color): void {
         this.selectedColor = color;
-        this.color = this.selectedColor.rgbValue;
+        this.rgbValue = this.selectedColor.rgbValue;
         this.opacity = this.selectedColor.opacity;
         this.hue = this.selectedColor.rgbValue;
 
+        this.clearInputErrors();
         this.openColorPicker = !this.openColorPicker;
+    }
+
+    clearInputErrors(): void {
+        for (const rgbInput of this.rgbInputs) {
+            rgbInput.inputError = false;
+        }
     }
 
     switchColors(): void {
@@ -52,13 +59,13 @@ export class ColorPanelComponent {
 
     updateColor(selectedColor: Color): void {
         this.updatePreviousColors(selectedColor);
-        this.colorService.updateColor(selectedColor, this.color, this.opacity);
+        this.colorService.updateColor(selectedColor, this.rgbValue, this.opacity);
         this.openColorPicker = false;
     }
 
     updatePreviousColors(selectedColor: Color): void {
-        if ((selectedColor.opacity !== this.opacity || selectedColor.opacity === this.opacity) && selectedColor.rgbValue !== this.color) {
-            this.colorService.updatePreviousColors(this.color, this.opacity);
+        if (selectedColor.rgbValue !== this.rgbValue) {
+            this.colorService.updatePreviousColors(this.rgbValue, this.opacity);
         }
     }
 
@@ -82,13 +89,9 @@ export class ColorPanelComponent {
         this.opacity = (event.value as number) / this.OPACITY_AJUSTMENT;
     }
 
-    getOpacity(): number {
-        return this.opacity * this.OPACITY_AJUSTMENT;
-    }
-
     getRGB(rgbIndex: number): string {
-        this.rgbArray = this.color
-            .substring(this.CONCATENATE_OFFSET, this.color.length - 1)
+        this.rgbArray = this.rgbValue
+            .substring(this.CONCATENATE_OFFSET, this.rgbValue.length - 1)
             .replace(/ /, '')
             .split(',');
 
@@ -97,17 +100,27 @@ export class ColorPanelComponent {
 
     applyRGBInput(input: string, rgbIndex: number): void {
         const convertedHexToNumber: number = parseInt(input, 16);
+        console.log(convertedHexToNumber);
+        if (this.inputHasErrors(input, convertedHexToNumber)) {
+            this.rgbInputs[rgbIndex].inputError = true;
+            return;
+        }
+        this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
+        this.rgbValue = `rgb(${this.rgbArray})`;
+        if (this.rgbInputs[rgbIndex].inputError) {
+            this.rgbInputs[rgbIndex].inputError = false;
+        }
+    }
 
-        if (input[0] !== '-') {
-            if (convertedHexToNumber <= this.MAX_RGB_VALUE) {
-                this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
-                this.color = `rgb(${this.rgbArray})`;
-                if (this.rgbInputs[rgbIndex].inputError) {
-                    this.rgbInputs[rgbIndex].inputError = false;
-                }
-            } else {
-                this.rgbInputs[rgbIndex].inputError = true;
+    inputHasErrors(input: string, convertedHexToNumber?: number): boolean {
+        if (input === '') {
+            return true;
+        }
+        for (const char of input) {
+            if (Number.isNaN(parseInt(char, 16))) {
+                return true;
             }
         }
+        return false;
     }
 }

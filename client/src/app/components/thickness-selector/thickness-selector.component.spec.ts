@@ -1,9 +1,10 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSliderChange } from '@angular/material/slider';
+import { By } from '@angular/platform-browser';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-
 import { ThicknessSelectorComponent } from './thickness-selector.component';
 
 describe('ThicknessSelectorComponent', () => {
@@ -14,6 +15,7 @@ describe('ThicknessSelectorComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ThicknessSelectorComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 
@@ -29,14 +31,21 @@ describe('ThicknessSelectorComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should raise updateThicknessEmitter event when updateThickness is called', () => {
+    it('change from thickness-slider should toggle #updateThickness', () => {
+        spyOn(component, 'updateThickness');
+        const thicknessSlider = fixture.debugElement.query(By.css('.thickness-slider'));
+        thicknessSlider.triggerEventHandler('change', null);
+        expect(component.updateThickness).toHaveBeenCalled();
+    });
+
+    it('should raise thickness event when #updateThickness is called', () => {
         const SLIDER_EXPECTED_VALUE = 30;
         const matSliderChange: MatSliderChange = new MatSliderChange();
-        let sliderEmmitedValue = 0;
-
         matSliderChange.value = SLIDER_EXPECTED_VALUE;
-        component.updateThicknessEmitter.subscribe((sliderValue: number) => (sliderEmmitedValue = sliderValue));
+
+        spyOn(component.thickness, 'emit');
         component.updateThickness(matSliderChange);
-        expect(sliderEmmitedValue).toBe(SLIDER_EXPECTED_VALUE);
+        expect(component.thickness.emit).toHaveBeenCalled();
+        expect(component.thickness.emit).toHaveBeenCalledWith(SLIDER_EXPECTED_VALUE);
     });
 });

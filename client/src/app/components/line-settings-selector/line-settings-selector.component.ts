@@ -9,15 +9,15 @@ import { LineService } from '@app/services/tools/drawing-tool/line/line.service'
     styleUrls: ['./line-settings-selector.component.scss'],
 })
 export class LineSettingsSelectorComponent {
-    @Output() updatedotJunctionCheckedEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() updateJunctionDiameterEmitter: EventEmitter<number> = new EventEmitter<number>();
+    @Output() junction: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() junctionDiameter: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: LineService;
 
     updateDiameter(event: MatSliderChange): void {
-        this.updateJunctionDiameterEmitter.emit(event.value as number);
+        this.junctionDiameter.emit(event.value as number);
     }
 
-    onChange(junction: MatSlideToggleChange): void {
-        this.updatedotJunctionCheckedEmitter.emit(junction.checked);
+    updateJunction(junction: MatSlideToggleChange): void {
+        this.junction.emit(junction.checked);
     }
 }

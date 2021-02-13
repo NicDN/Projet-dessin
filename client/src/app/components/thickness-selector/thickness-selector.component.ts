@@ -8,10 +8,10 @@ import { DrawingTool } from '@app/classes/drawing-tool';
     styleUrls: ['./thickness-selector.component.scss'],
 })
 export class ThicknessSelectorComponent {
-    @Output() updateThicknessEmitter: EventEmitter<number> = new EventEmitter<number>();
+    @Output() thickness: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: DrawingTool;
 
     updateThickness(event: MatSliderChange): void {
-        this.updateThicknessEmitter.emit(event.value as number);
+        this.thickness.emit(event.value as number);
     }
 }

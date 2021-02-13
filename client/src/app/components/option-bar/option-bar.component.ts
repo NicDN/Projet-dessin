@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
 enum Options {
@@ -17,9 +15,6 @@ type OptionBarSelector = {
     styleUrls: ['./option-bar.component.scss'],
 })
 export class OptionBarComponent {
-    readonly SHOW_DELAY_MS: number = 750;
-    routerLink: RouterModule;
-    showDelay: FormControl = new FormControl(this.SHOW_DELAY_MS);
     optionBarElements: { icon: string; toolTipContent: string }[] = [{ icon: 'plus', toolTipContent: 'Créer un nouveau dessin (Ctrl+O)' }];
 
     options: OptionBarSelector;
