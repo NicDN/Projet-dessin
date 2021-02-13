@@ -81,15 +81,12 @@ export class ColorSliderComponent implements AfterViewInit {
     handleMouseEvent(evt: MouseEvent): void {
         this.selectedHeight = evt.offsetY;
         this.draw();
-        console.log('x:' + evt.offsetX + ' y:' + evt.offsetY);
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 
     emitColor(x: number, y: number): void {
         const rgbaColor = this.getColorAtPosition(x, y);
         this.color.emit(rgbaColor);
-
-        console.log(rgbaColor);
     }
 
     getColorAtPosition(x: number, y: number): string {

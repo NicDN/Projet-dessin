@@ -66,7 +66,7 @@ export class PencilService extends TraceTool {
     }
 
     protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.lineJoin = ctx.lineCap = 'round';
+        ctx.lineJoin = ctx.lineCap = 'round'; 
         ctx.lineWidth = this.thickness;
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;

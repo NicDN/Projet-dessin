@@ -22,14 +22,15 @@
     </div>
     <div *ngIf="openColorPicker">
         <div class=color-wrapper>
-            <app-color-palette [hue]="hue" (color)="color = $event"></app-color-palette>
+            <app-color-palette [hue]="hue" (color)="rgbValue = $event"></app-color-palette>
             <app-color-slider (color)="hue=$event" style="margin-left:16px"></app-color-slider>
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider class="opacity-slider" #slider  min="15" [value]="getOpacity()" (input)="updateOpacity($event)"></mat-slider>
+            <mat-slider class="opacity-slider" #slider  min="15" [value]="this.opacity*this.OPACITY_AJUSTMENT" (input)="updateOpacity($event)"></mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
+        {{rgbValue}}
         <div class="input-wrapper">
             <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index=index">
                 <mat-form-field>
@@ -44,7 +45,7 @@
                 </mat-form-field>
             </form>
 
-            <span class="preview-color" [ngStyle]="{'background-color': color==undefined ? hue : color,'opacity':opacity}"></span>
+            <span class="preview-color" [ngStyle]="{'background-color': rgbValue==undefined ? hue : rgbValue,'opacity':opacity}"></span>
 
             <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
                 <fa-icon icon="check" class="check"></fa-icon>

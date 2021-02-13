@@ -42,20 +42,18 @@ describe('AttributesPanelComponent', () => {
     it('the getCurrentTool subscribed method assings current tool correctly ', async(() => {
         const expectedCurrentTool = new LineService(new DrawingService(), new ColorService());
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
-        component.getCurrentTool();
+        component.subscribe();
         fixture.detectChanges();
         expect(component.currentTool).toBe(expectedCurrentTool);
     }));
 
     it('should set the thickness correctly', () => {
-        // should I test negative case knowing that the thickness comes from a slider that is never negative?
         const EXPECTED_THICKNESS = 10;
         component.setThickness(EXPECTED_THICKNESS);
         expect((component.currentTool as DrawingTool).thickness).toBe(EXPECTED_THICKNESS);
     });
 
     it('should set the trace type correctly', () => {
-        // should i just check that the function is called ?
         component.currentTool = ellipseDrawingService;
         const expectedTraceType: TraceType = TraceType.Bordered;
         component.setTraceType(expectedTraceType);
@@ -63,7 +61,6 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('should set the line junction diameter correctly', () => {
-        // should i just check that the function is called ?
         component.currentTool = lineService;
         const EXPECTED_LINE_DIAMETER = 10;
         component.setLineJunctionDiameter(EXPECTED_LINE_DIAMETER);
@@ -81,11 +78,6 @@ describe('AttributesPanelComponent', () => {
     it('should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
         expect(component.shapeIsActive()).toBe(true);
-    });
-
-    it('should verify that a line is active', () => {
-        component.currentTool = lineService;
-        expect(component.lineIsActive()).toBe(true);
     });
 
     it('should verify that a drawing tool is active', () => {

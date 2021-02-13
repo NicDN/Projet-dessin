@@ -34,11 +34,6 @@ export class LineService extends TraceTool {
         this.minThickness = 1;
     }
 
-    setJunctionDiameter(junctionDiameter: number): void {
-        if (junctionDiameter > 0 || junctionDiameter < this.MAX_JUNCTION_DIAMETER) {
-            this.junctionDiameter = junctionDiameter;
-        }
-    }
 
     draw(event: MouseEvent): void {
         throw new Error('Method not implemented.');
