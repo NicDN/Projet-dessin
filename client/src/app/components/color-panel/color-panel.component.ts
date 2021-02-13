@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-// import { FormControl, Validators } from '@angular/forms';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
@@ -27,24 +25,33 @@ export class ColorPanelComponent {
     selectedColor: Color;
     openColorPicker: boolean = false;
 
-    color: string;
+    rgbValue: string;
     hue: string;
     opacity: number;
 
-    rgbArray: string[];
+    private rgbArray: string[]; // represents R/G/B decimal values
 
-    constructor(colorService: ColorService, public formBuilder: FormBuilder) {
+    constructor(colorService: ColorService) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
 
     selectColor(color: Color): void {
         this.selectedColor = color;
-        this.color = this.selectedColor.rgbValue;
+        this.rgbValue = this.selectedColor.rgbValue;
         this.opacity = this.selectedColor.opacity;
         this.hue = this.selectedColor.rgbValue;
 
+        this.clearInputErrors();
         this.openColorPicker = !this.openColorPicker;
+    }
+
+    clearInputErrors(): void {
+        for (const rgbInput of this.rgbInputs) {
+            if (rgbInput.inputError) {
+                rgbInput.inputError = false;
+            }
+        }
     }
 
     switchColors(): void {
@@ -53,25 +60,28 @@ export class ColorPanelComponent {
     }
 
     updateColor(selectedColor: Color): void {
-        const previousOpacity = selectedColor.opacity;
-        const prevousRGBValue = selectedColor.rgbValue;
-        this.colorService.updateColor(selectedColor, this.color, this.opacity);
-
-        if ((previousOpacity !== this.opacity || previousOpacity === this.opacity) && prevousRGBValue !== this.color) {
-            this.colorService.updatePreviousColors(this.color, this.opacity);
-        }
+        this.updatePreviousColors(selectedColor);
+        this.colorService.updateColor(selectedColor, this.rgbValue, this.opacity);
         this.openColorPicker = false;
+    }
+
+    updatePreviousColors(selectedColor: Color): void {
+        if (selectedColor.rgbValue !== this.rgbValue) {
+            this.colorService.updatePreviousColors(this.rgbValue, this.opacity);
+        }
     }
 
     setPrimaryColor(index: number): void {
         this.colorService.updateMainColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
-        if (this.openColorPicker) {
-            this.openColorPicker = false;
-        }
+        this.closeColorPicker();
     }
 
     setSecondaryColor(index: number): void {
         this.colorService.updateSecondaryColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
+        this.closeColorPicker();
+    }
+
+    closeColorPicker(): void {
         if (this.openColorPicker) {
             this.openColorPicker = false;
         }
@@ -81,13 +91,9 @@ export class ColorPanelComponent {
         this.opacity = (event.value as number) / this.OPACITY_AJUSTMENT;
     }
 
-    getOpacity(): number {
-        return this.opacity * this.OPACITY_AJUSTMENT;
-    }
-
     getRGB(rgbIndex: number): string {
-        this.rgbArray = this.color
-            .substring(this.CONCATENATE_OFFSET, this.color.length - 1)
+        this.rgbArray = this.rgbValue
+            .substring(this.CONCATENATE_OFFSET, this.rgbValue.length - 1)
             .replace(/ /, '')
             .split(',');
 
@@ -95,14 +101,28 @@ export class ColorPanelComponent {
     }
 
     applyRGBInput(input: string, rgbIndex: number): void {
-        if (Number(parseInt(input, 16) <= this.MAX_RGB_VALUE)) {
-            this.rgbArray[rgbIndex] = '' + parseInt(input, 16);
-            this.color = `rgb(${this.rgbArray})`;
-            if (this.rgbInputs[rgbIndex].inputError) {
-                this.rgbInputs[rgbIndex].inputError = false;
-            }
-        } else {
+        const convertedHexToNumber: number = parseInt(input, 16);
+        console.log(convertedHexToNumber);
+        if (this.inputHasErrors(input, convertedHexToNumber)) {
             this.rgbInputs[rgbIndex].inputError = true;
+            return;
         }
+        this.rgbArray[rgbIndex] = '' + convertedHexToNumber;
+        this.rgbValue = `rgb(${this.rgbArray})`;
+        if (this.rgbInputs[rgbIndex].inputError) {
+            this.rgbInputs[rgbIndex].inputError = false;
+        }
+    }
+
+    inputHasErrors(input: string, convertedHexToNumber?: number): boolean {
+        if (input === '') {
+            return true;
+        }
+        for (const char of input) {
+            if (Number.isNaN(parseInt(char, 16))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

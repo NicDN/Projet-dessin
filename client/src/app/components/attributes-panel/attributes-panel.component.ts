@@ -14,10 +14,12 @@ import { Subscription } from 'rxjs';
 export class AttributesPanelComponent {
     subscription: Subscription;
     currentTool: Tool;
-    thickness: number;
-    trace: number;
 
-    constructor(private toolsService: ToolsService) {
+    constructor(public toolsService: ToolsService) {
+        this.subscribe();
+    }
+
+    subscribe(): void {
         this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => (this.currentTool = currentTool));
     }
 
@@ -33,16 +35,12 @@ export class AttributesPanelComponent {
         (this.currentTool as LineService).junctionDiameter = junctionDiameter;
     }
 
-    setJunctionChecked(checked: boolean): void {
-        (this.currentTool as LineService).drawWithJunction = checked;
+    setJunctionChecked(junction: boolean): void {
+        (this.currentTool as LineService).drawWithJunction = junction;
     }
 
     shapeIsActive(): boolean {
         return this.currentTool instanceof Shape;
-    }
-
-    lineIsActive(): boolean {
-        return this.currentTool === this.toolsService.lineService;
     }
 
     drawingToolIsActive(): boolean {

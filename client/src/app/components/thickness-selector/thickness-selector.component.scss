@@ -4,13 +4,13 @@ p {
 mat-slider {
     width: 225px;
 }
-.thicknessHeader {
+.thickness-header {
     padding-top: 15px;
     padding-left: 15px;
     font-size: 16px;
     display: inline-block;
 }
-.thicknessValue{
+.thickness-value{
     display: inline-block;
     padding-top: 15px;
     padding-right: 15px;
@@ -19,9 +19,7 @@ mat-slider {
     display: flex;
     justify-content: space-between;
 }
-mat-divider{
-    border-top-color:white;
-}
+
 
 
 

@@ -16,6 +16,7 @@ export class LineService extends TraceTool {
 
     isShiftDown: boolean = false;
     readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
+    readonly MAX_JUNCTION_DIAMETER: number = 5;
 
     drawWithJunction: boolean;
     junctionDiameter: number;

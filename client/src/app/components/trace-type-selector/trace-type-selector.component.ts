@@ -6,7 +6,7 @@ import { Shape, TraceType } from '@app/classes/shape';
     styleUrls: ['./trace-type-selector.component.scss'],
 })
 export class TraceTypeSelectorComponent {
-    @Output() updateTraceTypeEmitter: EventEmitter<number> = new EventEmitter<number>();
+    @Output() traceType: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: Shape;
 
     traceTypeOptions: { iconFamily: string; icon: string; toolTipContent: string; traceType: TraceType }[] = [
@@ -15,7 +15,7 @@ export class TraceTypeSelectorComponent {
         { iconFamily: 'fas', icon: 'battery-full', toolTipContent: 'Plein avec contour', traceType: TraceType.FilledAndBordered },
     ];
 
-    setActiveTraceType(type: TraceType): void {
-        this.updateTraceTypeEmitter.emit(type);
+    setActiveTraceType(traceType: TraceType): void {
+        this.traceType.emit(traceType);
     }
 }
