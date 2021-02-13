@@ -59,6 +59,8 @@ describe('DrawingComponent', () => {
     });
 
     it('should have a default WIDTH and HEIGHT', () => {
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1000 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 600 });
         const height = component.height;
         const width = component.width;
         expect(height).toEqual(DEFAULT_HEIGHT);
