@@ -9,7 +9,7 @@ import { of } from 'rxjs';
 import { MainPageComponent } from './main-page.component';
 import SpyObj = jasmine.SpyObj;
 
-describe('MainPageComponent', () => {
+fdescribe('MainPageComponent', () => {
     let component: MainPageComponent;
     let fixture: ComponentFixture<MainPageComponent>;
     let indexServiceSpy: SpyObj<IndexService>;
@@ -23,7 +23,7 @@ describe('MainPageComponent', () => {
         hotKeyServiceSpy = jasmine.createSpyObj('HotKeyService', ['onKeyDown']);
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }]), , HttpClientModule],
+            imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }]), HttpClientModule],
             declarations: [MainPageComponent],
             providers: [
                 { provide: IndexService, useValue: indexServiceSpy },

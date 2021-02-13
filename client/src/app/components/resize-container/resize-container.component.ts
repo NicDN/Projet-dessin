@@ -73,9 +73,7 @@ export class ResizeContainerComponent {
 
     listenToNewDrawingNotifications(): void {
         this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((message) => {
-            // if (message) {
             this.newDrawingNotification();
-            // }
         });
     }
 
