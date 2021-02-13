@@ -1,6 +1,8 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
+import { EditorComponent } from '@app/components/editor/editor.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { HotkeyService } from './hotkey.service';
@@ -13,8 +15,9 @@ describe('HotkeyService', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
-            imports: [RouterTestingModule],
+            imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }])],
             providers: [DrawingService, ToolsService],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

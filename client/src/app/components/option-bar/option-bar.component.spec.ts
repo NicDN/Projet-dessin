@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { OptionBarComponent } from './option-bar.component';
@@ -14,6 +15,7 @@ describe('OptionBarComponent', () => {
         TestBed.configureTestingModule({
             declarations: [OptionBarComponent],
             providers: [{ provide: DrawingService, useValue: drawingServiceSpy }],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

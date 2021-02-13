@@ -1,11 +1,12 @@
 import { HttpClientModule } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EditorComponent } from '@app/components/editor/editor.component';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { IndexService } from '@app/services/index/index.service';
 import { of } from 'rxjs';
 import { MainPageComponent } from './main-page.component';
-
 import SpyObj = jasmine.SpyObj;
 
 describe('MainPageComponent', () => {
@@ -22,12 +23,13 @@ describe('MainPageComponent', () => {
         hotKeyServiceSpy = jasmine.createSpyObj('HotKeyService', ['onKeyDown']);
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule, HttpClientModule],
+            imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }]), , HttpClientModule],
             declarations: [MainPageComponent],
             providers: [
                 { provide: IndexService, useValue: indexServiceSpy },
                 { provide: HotkeyService, useValue: hotKeyServiceSpy },
             ],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

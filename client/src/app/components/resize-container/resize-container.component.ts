@@ -27,16 +27,11 @@ export class ResizeContainerComponent {
 
     readonly MOUSE_OFFSET: number = 5;
     status: Status = Status.NOT_RESIZING;
-
     boxSize: BoxSize;
     subscription: Subscription;
 
     constructor(private drawingService: DrawingService) {
-        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((message) => {
-            if (message) {
-                this.newDrawingNotification();
-            }
-        });
+        this.listenToNewDrawingNotifications();
     }
 
     setStatus(status: number): void {
@@ -56,7 +51,7 @@ export class ResizeContainerComponent {
 
     onMouseDown(event: MouseEvent, status: number): void {
         this.setStatus(status);
-        if (this.status !== Status.NOT_RESIZING) this.usingButton.emit(true);
+        this.usingButton.emit(true);
     }
 
     onMouseUpContainer(event: MouseEvent): void {
@@ -76,13 +71,18 @@ export class ResizeContainerComponent {
         }
     }
 
+    listenToNewDrawingNotifications(): void {
+        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((message) => {
+            // if (message) {
+            this.newDrawingNotification();
+            // }
+        });
+    }
+
     newDrawingNotification(): void {
         /* When creating a new drawing*/
-        this.width =
-            (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO > MINIMUM_WORKSPACE_SIZE
-                ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO
-                : DEFAULT_SIZE;
-        this.height = window.innerHeight * HALF_RATIO < MINIMUM_WORKSPACE_SIZE ? window.innerHeight * HALF_RATIO : DEFAULT_SIZE;
+        this.width = this.WindowWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_SIZE;
+        this.height = this.WindowHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_SIZE;
         this.boxSize = { widthBox: this.width, heightBox: this.height };
         this.notifyResize.emit(this.boxSize);
     }
@@ -101,5 +101,13 @@ export class ResizeContainerComponent {
 
     YisOverMinimum(event: MouseEvent): boolean {
         return event.pageY - this.MOUSE_OFFSET >= DEFAULT_SIZE;
+    }
+
+    WindowWidthIsOverMinimum(): boolean {
+        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE;
+    }
+
+    WindowHeightIsOverMinimum(): boolean {
+        return window.innerHeight > MINIMUM_WORKSPACE_SIZE;
     }
 }

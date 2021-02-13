@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
@@ -21,6 +22,7 @@ describe('DrawingService', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
+            schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 
