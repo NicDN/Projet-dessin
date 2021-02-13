@@ -29,9 +29,9 @@ describe('DrawingService', () => {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'checkIfCanvasEmpty').and.callThrough();
+        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'canvasIsEmpty').and.callThrough();
         drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadDrawing').and.callThrough();
-        drawingServiceSpyValidateInput = spyOn<any>(service, 'validateUserInput').and.callThrough();
+        drawingServiceSpyValidateInput = spyOn<any>(service, 'confirmReload').and.callThrough();
     });
 
     it('should be created', () => {
@@ -46,9 +46,9 @@ describe('DrawingService', () => {
     });
 
     it('should check if canvas is empty', () => {
-        expect(service.checkIfCanvasEmpty()).toEqual(true);
+        expect(service.canvasIsEmpty()).toEqual(true);
         service.baseCtx.fillRect(0, 0, 1, 1);
-        expect(service.checkIfCanvasEmpty()).toEqual(false);
+        expect(service.canvasIsEmpty()).toEqual(false);
     });
 
     it('should resize the width and height of a canvas', () => {

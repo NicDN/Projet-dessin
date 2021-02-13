@@ -1,12 +1,12 @@
-import { ToolsService } from '@app/services/tools/tools.service';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { ToolsService } from '@app/services/tools/tools.service';
 import { HotkeyService } from './hotkey.service';
 // import SpyObj = jasmine.SpyObj;
 
-fdescribe('HotkeyService', () => {
+describe('HotkeyService', () => {
     let service: HotkeyService;
     let fixture: ComponentFixture<DrawingComponent>;
 
@@ -30,19 +30,16 @@ fdescribe('HotkeyService', () => {
         // tslint:disable-next-line: no-any
         const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
         const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+
+        const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
+        service.onKeyDown(noCtrlKeyEvent);
+        expect(drawingServiceSpy).not.toHaveBeenCalled();
+
         service.onKeyDown(ctrlKeyEvent);
         expect(drawingServiceSpy).toHaveBeenCalled();
     });
 
-    it('should not call ctrl functions when the ctrl key is not pressed down', () => {
-        // tslint:disable-next-line: no-any
-        const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
-        const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
-        service.onKeyDown(noCtrlKeyEvent);
-        expect(drawingServiceSpy).not.toHaveBeenCalled();
-    });
-
-    it('ctrl key should prevent default and then should put it back to true', () => {
+    it('ctrl key should prevent default and then should put it back to true when done', () => {
         fixture = TestBed.createComponent(DrawingComponent);
         fixture.detectChanges();
         const event = jasmine.createSpyObj('KeyboardEvent', ['preventDefault'], { code: 'KeyO', ctrlKey: true });
@@ -52,7 +49,7 @@ fdescribe('HotkeyService', () => {
         expect(event.returnValue).toEqual(true);
     });
 
-    it('should call setCurrent tool from toolservice when eraser tool key is pressed', () => {
+    it('should call setCurrent tool from toolservice when a tool key is pressed', () => {
         // tslint:disable-next-line: no-any no-string-literal
         const toolServiceSpy: jasmine.Spy<any> = spyOn<any>(service['toolService'], 'setCurrentTool').and.stub();
         const eraserKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyE', ctrlKey: false });

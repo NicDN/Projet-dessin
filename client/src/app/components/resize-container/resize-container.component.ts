@@ -32,7 +32,7 @@ export class ResizeContainerComponent {
     subscription: Subscription;
 
     constructor(private drawingService: DrawingService) {
-        this.subscription = this.drawingService.getMessage().subscribe((message) => {
+        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((message) => {
             if (message) {
                 this.newDrawingNotification();
             }

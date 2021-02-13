@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
-enum ShortCuts {
+enum Shortcuts {
     NEWDRAWING = 'KeyO',
     ERASER = 'KeyE',
     PENCIL = 'KeyC',
@@ -13,7 +13,7 @@ enum ShortCuts {
 }
 
 type ShortcutManager = {
-    [key in ShortCuts]: () => void;
+    [key in Shortcuts]: () => void;
 };
 
 @Injectable({
@@ -37,9 +37,7 @@ export class HotkeyService {
     onKeyDown(event: KeyboardEvent): void {
         this.verifyCtrlKeyStatus(event);
 
-        this.shortcuts[event.code as ShortCuts]?.();
-        event.returnValue = true;
-
+        this.shortcuts[event.code as Shortcuts]?.();
         this.toolService.currentTool.onKeyDown(event);
 
         event.returnValue = true; // To accept default web shortcuts

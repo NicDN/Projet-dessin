@@ -17,7 +17,7 @@ export class DrawingService {
         this.subject.next(message);
     }
 
-    getMessage(): Observable<string> {
+    newIncomingResizeSignals(): Observable<string> {
         return this.subject.asObservable();
     }
 
@@ -26,16 +26,16 @@ export class DrawingService {
     }
 
     handleNewDrawing(): void {
-        if (!this.checkIfCanvasEmpty()) {
-            if (this.validateUserInput()) {
-                this.reloadDrawing();
-            }
-        } else {
+        if (this.canvasIsEmpty()) {
+            this.reloadDrawing();
+            return;
+        }
+        if (this.confirmReload()) {
             this.reloadDrawing();
         }
     }
 
-    validateUserInput(): boolean {
+    confirmReload(): boolean {
         return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
@@ -46,11 +46,11 @@ export class DrawingService {
     }
 
     resetCanvas(): void {
-        this.sendNotifReload('Resizing the canvas');
+        this.sendNotifReload('Reseting the canvas');
     }
 
-    checkIfCanvasEmpty(): boolean {
-        this.clearCanvas(this.previewCtx);
+    canvasIsEmpty(): boolean {
+        this.clearCanvas(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
@@ -58,11 +58,8 @@ export class DrawingService {
     onSizeChange(boxsize: BoxSize): void {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
-
         this.changeSizeOfCanvas(this.canvas, boxsize);
-
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
-
         this.clearCanvas(this.previewCtx);
     }
 
