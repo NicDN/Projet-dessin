@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { DEFAULT_SIZE, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
+import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Subscription } from 'rxjs';
 
@@ -79,8 +79,8 @@ export class ResizeContainerComponent {
 
     newDrawingNotification(): void {
         /* When creating a new drawing*/
-        this.width = this.WindowWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_SIZE;
-        this.height = this.WindowHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_SIZE;
+        this.width = this.WindowWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
+        this.height = this.WindowHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
         this.boxSize = { widthBox: this.width, heightBox: this.height };
         this.notifyResize.emit(this.boxSize);
     }
@@ -94,11 +94,11 @@ export class ResizeContainerComponent {
     }
 
     XisOverMinimum(event: MouseEvent): boolean {
-        return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_SIZE;
+        return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_WIDTH;
     }
 
     YisOverMinimum(event: MouseEvent): boolean {
-        return event.pageY - this.MOUSE_OFFSET >= DEFAULT_SIZE;
+        return event.pageY - this.MOUSE_OFFSET >= DEFAULT_HEIGHT;
     }
 
     WindowWidthIsOverMinimum(): boolean {
