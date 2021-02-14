@@ -102,7 +102,6 @@ export class ColorPanelComponent {
 
     applyRGBInput(input: string, rgbIndex: number): void {
         const convertedHexToNumber: number = parseInt(input, 16);
-        console.log(convertedHexToNumber);
         if (this.inputHasErrors(input, convertedHexToNumber)) {
             this.rgbInputs[rgbIndex].inputError = true;
             return;

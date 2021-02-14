@@ -89,7 +89,7 @@ describe('DrawingService', () => {
         fixture.detectChanges();
         // tslint:disable-next-line: no-any
         const checkNotif: jasmine.Spy<any> = spyOn<any>(resizeContainerComponent, 'newDrawingNotification');
-        service.sendNotifReload('A message');
+        service.sendNotifReload();
         expect(checkNotif).toHaveBeenCalled();
     });
 

@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DEFAULT_SIZE, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
+import { DEFAULT_WIDTH, DEFAULT_HEIGHT, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
@@ -114,7 +114,7 @@ describe('ResizeContainerComponent', () => {
         component.width = 1;
         component.height = 1;
         component.status = Status.RESIZE_DIAGONAL;
-        const mouseEventUnder250px = { pageX: DEFAULT_SIZE - SIDE_BAR_SIZE, pageY: DEFAULT_SIZE, button: 0 } as MouseEvent;
+        const mouseEventUnder250px = { pageX: DEFAULT_WIDTH - SIDE_BAR_SIZE, pageY: DEFAULT_HEIGHT, button: 0 } as MouseEvent;
         component.resize(mouseEventUnder250px);
         expect(component.width).toEqual(1);
         expect(component.height).toEqual(1);
@@ -140,10 +140,10 @@ describe('ResizeContainerComponent', () => {
     it('should receive a message from suscriber', () => {
         drawingFixture = TestBed.createComponent(DrawingComponent);
         drawingFixture.detectChanges();
-        // tslint:disable-next-line: no-any
-        const newDrawingNotificationSpy: jasmine.Spy<any> = spyOn<any>(component, 'newDrawingNotification');
+
+        const newDrawingNotificationSpy: jasmine.Spy = spyOn(component, 'newDrawingNotification');
         component.listenToNewDrawingNotifications();
-        drawingService.reloadDrawing();
+        drawingService.sendNotifReload();
         fixture.detectChanges();
         expect(newDrawingNotificationSpy).toHaveBeenCalled();
     });
@@ -155,8 +155,8 @@ describe('ResizeContainerComponent', () => {
         expect(component.WindowWidthIsOverMinimum()).toEqual(false);
         expect(component.WindowHeightIsOverMinimum()).toEqual(false);
         component.newDrawingNotification();
-        expect(component.width).toEqual(DEFAULT_SIZE);
-        expect(component.height).toEqual(DEFAULT_SIZE);
+        expect(component.width).toEqual(DEFAULT_WIDTH);
+        expect(component.height).toEqual(DEFAULT_HEIGHT);
 
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1010 });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 601 });

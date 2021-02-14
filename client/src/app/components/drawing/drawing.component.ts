@@ -1,15 +1,12 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { EraserService } from '@app/services/tools/eraser/eraser.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { Subscription } from 'rxjs';
 
-// TODO : Avoir un fichier séparé pour les constantes ?
-export const DEFAULT_SIZE = 250;
+export const DEFAULT_WIDTH = 250;
+export const DEFAULT_HEIGHT = 250;
 export const MINIMUM_WORKSPACE_SIZE = 500;
 export const SIDE_BAR_SIZE = 400;
 export const HALF_RATIO = 0.5;
@@ -21,7 +18,6 @@ export const HALF_RATIO = 0.5;
 })
 export class DrawingComponent implements AfterViewInit {
     @ViewChild('baseCanvas', { static: false }) baseCanvas: ElementRef<HTMLCanvasElement>;
-    // On utilise ce canvas pour dessiner sans affecter le dessin final
     @ViewChild('previewCanvas', { static: false }) previewCanvas: ElementRef<HTMLCanvasElement>;
 
     private baseCtx: CanvasRenderingContext2D;
@@ -30,15 +26,8 @@ export class DrawingComponent implements AfterViewInit {
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
     canDraw: boolean = true;
 
-    subscription: Subscription;
+    constructor(public drawingService: DrawingService, private toolsService: ToolsService, private hotKeyService: HotkeyService) {}
 
-    isEraser: boolean;
-
-    constructor(private drawingService: DrawingService, private toolsService: ToolsService, private hotKeyService: HotkeyService) {
-        this.subscription = this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => {
-            this.isEraser = currentTool instanceof EraserService;
-        });
-    }
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -56,9 +45,7 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw) {
-            this.toolsService.currentTool.onMouseDown(event);
-        }
+        if (this.canDraw) this.toolsService.currentTool.onMouseDown(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -83,7 +70,9 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
+        if (this.canDraw) {
+            this.toolsService.currentTool.onMouseEnter(event);
+        }
     }
 
     disableDrawing(isUsingResizeButton: boolean): void {
@@ -95,10 +84,10 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     get width(): number {
-        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_SIZE;
+        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
     }
 
     get height(): number {
-        return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_SIZE;
+        return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
     }
 }
