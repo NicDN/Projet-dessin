@@ -30,7 +30,7 @@ describe('HotkeyService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('ctrl functions should only be called when the ctrl key is pressed down', () => {
+    it('#verifyCtrlKeyStatus ctrl functions should only be called when the ctrl key is pressed down', () => {
         // tslint:disable-next-line: no-any
         const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
         const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
@@ -43,7 +43,7 @@ describe('HotkeyService', () => {
         expect(drawingServiceSpy).toHaveBeenCalled();
     });
 
-    it('ctrl key should prevent default and then should put it back to true when done', () => {
+    it('#verifyCtrlKeyStatus ctrl key should prevent default and then should put it back to true when done', () => {
         fixture = TestBed.createComponent(DrawingComponent);
         fixture.detectChanges();
         const event = jasmine.createSpyObj('KeyboardEvent', ['preventDefault'], { code: 'KeyO', ctrlKey: true });
@@ -76,5 +76,13 @@ describe('HotkeyService', () => {
 
         service.onKeyDown(rectangleeKeyboardEvent);
         expect(toolServiceSpy).toHaveBeenCalledTimes(5);
+    });
+
+    it('ctrl O should call handleNewDrawing from drawingService', () => {
+        // tslint:disable-next-line: no-any
+        const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
+        const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+        service.onKeyDown(ctrlKeyEvent);
+        expect(drawingServiceSpy).toHaveBeenCalled();
     });
 });
