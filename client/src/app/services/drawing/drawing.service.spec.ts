@@ -44,7 +44,7 @@ describe('DrawingService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('clearCanvas should clear the whole canvas', () => {
+    it('#clearCanvas should clear the whole canvas', () => {
         service.clearCanvas(service.baseCtx);
         const pixelBuffer = new Uint32Array(service.baseCtx.getImageData(0, 0, service.canvas.width, service.canvas.height).data.buffer);
         const hasColoredPixels = pixelBuffer.some((color) => color !== 0);
@@ -57,32 +57,32 @@ describe('DrawingService', () => {
         expect(service.canvasIsEmpty()).toEqual(false);
     });
 
-    it('changeSizeOfCanvas should resize the width and height of a canvas', () => {
+    it('#changeSizeOfCanvas should resize the width and height of a canvas', () => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
         service.changeSizeOfCanvas(service.canvas, boxSizeStub);
         expect(service.canvas.width).toEqual(boxSizeStub.widthBox);
         expect(service.canvas.height).toEqual(boxSizeStub.heightBox);
     });
 
-    it('reloadDrawing should clear the canvas and have default height and width', () => {
+    it('#reloadDrawing should clear the canvas and have default height and width', () => {
         const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.callThrough();
         service.reloadDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
-    it('resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
+    it('#resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
         const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.callThrough();
         service.resetCanvas();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
-    it('sendNotifReload should send a notification to the observer about the new drawing', () => {
+    it('#sendNotifReload should send a notification to the observer about the new drawing', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
         const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'newDrawingNotification');
-        service.sendNotifReload('A message');
+        service.sendNotifReload();
         expect(checkNotif).toHaveBeenCalled();
     });
 
@@ -94,7 +94,7 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
         const emptyStub = false;
         const validateStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
@@ -107,7 +107,7 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
         const emptyStub = false;
         const cancelStub = false;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
@@ -120,7 +120,7 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
     });
 
-    it('validateUserInput should return the value of the window.confirm function', () => {
+    it('#validateUserInput should return the value of the window.confirm function', () => {
         const windowConfirmSpy = spyOn(window, 'confirm');
         windowConfirmSpy.and.returnValue(true);
         expect(service.confirmReload()).toEqual(true);

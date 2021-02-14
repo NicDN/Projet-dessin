@@ -236,6 +236,12 @@ describe('ColorPanelComponent', () => {
     });
 
     it('#clearInputErrors should clear input errors correctly', () => {
+        // case 1: no errors in rgbInputs
+        component.clearInputErrors();
+        for (const rgbInput of component.rgbInputs) {
+            expect(rgbInput.inputError).toBeFalse();
+        }
+        // case 2: errors in rgbInputs
         for (const rgbInput of component.rgbInputs) {
             rgbInput.inputError = true;
         }

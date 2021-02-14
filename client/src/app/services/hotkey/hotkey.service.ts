@@ -36,10 +36,8 @@ export class HotkeyService {
 
     onKeyDown(event: KeyboardEvent): void {
         this.verifyCtrlKeyStatus(event);
-
         this.shortcuts[event.code as Shortcuts]?.();
         this.toolService.currentTool.onKeyDown(event);
-
         event.returnValue = true; // To accept default web shortcuts
     }
 
