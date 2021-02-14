@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { Observable, Subject } from 'rxjs';
-import { LineService } from './drawing-tool/line/line.service';
-import { PencilService } from './drawing-tool/pencil/pencil-service';
+import { LineService } from './line/line.service';
+import { PencilService } from './pencil/pencil-service';
 import { EraserService } from './eraser/eraser.service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';

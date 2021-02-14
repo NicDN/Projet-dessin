@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSliderChange } from '@angular/material/slider';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
+import { LineService } from '@app/services/tools/line/line.service';
 
 @Component({
     selector: 'app-line-settings-selector',
