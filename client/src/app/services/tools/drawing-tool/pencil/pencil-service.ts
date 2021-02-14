@@ -5,20 +5,16 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
-const DEFAULTTHICKNESS = 1;
 
 @Injectable({
     providedIn: 'root',
 })
 export class PencilService extends TraceTool {
-    thickness: number;
     isEraser: boolean;
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
-        this.thickness = DEFAULTTHICKNESS;
-        this.minThickness = 1;
         this.isEraser = false;
     }
 

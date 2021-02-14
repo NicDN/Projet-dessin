@@ -5,33 +5,30 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
-const DEMI_CIRCLE = 180;
+const HALF_CIRCLE = 180;
 const QUARTER_CIRCLE = 90;
 
 @Injectable({
     providedIn: 'root',
 })
 export class LineService extends TraceTool {
-    thickness: number;
-
-    isShiftDown: boolean = false;
     readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
     readonly MAX_JUNCTION_DIAMETER: number = 5;
+
+    isShiftDown: boolean = false;
+    canDoubleClick: boolean = false;
 
     drawWithJunction: boolean;
     junctionDiameter: number;
 
     pathData: Vec2[];
     mousePosition: Vec2;
-    canDoubleClick: boolean = false;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Ligne');
         this.clearPath();
         this.drawWithJunction = false;
         this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
-        this.thickness = 1;
-        this.minThickness = 1;
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -42,7 +39,6 @@ export class LineService extends TraceTool {
         if (event.button !== MouseButton.Left || !this.mouseDown) {
             return;
         }
-        const DELAY = 200;
         if (!this.canDoubleClick) {
             this.addPoint();
             this.canDoubleClick = true;
@@ -50,7 +46,7 @@ export class LineService extends TraceTool {
             this.finishLine();
         }
         this.mouseDown = false;
-
+        const DELAY = 200;
         setTimeout(() => {
             this.canDoubleClick = false;
         }, DELAY);
@@ -104,7 +100,6 @@ export class LineService extends TraceTool {
     removePoint(): void {
         const MIN_LENGTH_FOR_REMOVING_DOT = 2;
         if (this.pathData.length > MIN_LENGTH_FOR_REMOVING_DOT) {
-            // We need to remove the preview point AND the last selected point
             this.pathData.pop();
             this.pathData.pop();
             this.pathData.push(this.mousePosition);
@@ -116,20 +111,19 @@ export class LineService extends TraceTool {
         const firstPos = this.pathData[0];
         const dx = Math.abs(firstPos.x - this.mousePosition.x);
         const dy = Math.abs(firstPos.y - this.mousePosition.y);
-        // We check if we need to bind the first point to the last
+
         if (dx <= MAX_OFFSET && dy <= MAX_OFFSET) {
-            // Since a double-click push 2 times the last value, we need to pop the last 2 values
             this.pathData.pop();
             this.pathData.pop();
             this.pathData.push(this.pathData[0]);
         }
+
         this.drawLine(this.drawingService.baseCtx, this.pathData);
         this.clearPath();
         this.updatePreview();
     }
 
     updatePreview(): void {
-        // We draw on the preview canvas and we erase it between each movement of the mouse
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawLine(this.drawingService.previewCtx, this.pathData);
     }
@@ -140,7 +134,7 @@ export class LineService extends TraceTool {
         const dx = this.mousePosition.x - point.x;
         const dy = this.mousePosition.y - point.y;
         const rads = Math.atan2(dx, dy);
-        let degrees = (rads * DEMI_CIRCLE) / Math.PI;
+        let degrees = (rads * HALF_CIRCLE) / Math.PI;
 
         while (degrees < 0) degrees += FULL_CIRCLE;
         return degrees;
@@ -174,11 +168,10 @@ export class LineService extends TraceTool {
 
         const tempMousePosition: Vec2 = { x: this.mousePosition.x, y: this.mousePosition.y };
 
-        // force align the line on the closest predefined axe
         const dx = this.mousePosition.x - lastSelectedPoint.x;
 
-        const quarterAngle = Math.abs(Math.abs(angle - DEMI_CIRCLE) - QUARTER_CIRCLE);
-        const diagonalAngle = Math.abs(Math.abs(angle - DEMI_CIRCLE - FORTHY_FIVE_DEGREE) - QUARTER_CIRCLE);
+        const quarterAngle = Math.abs(Math.abs(angle - HALF_CIRCLE) - QUARTER_CIRCLE);
+        const diagonalAngle = Math.abs(Math.abs(angle - HALF_CIRCLE - FORTHY_FIVE_DEGREE) - QUARTER_CIRCLE);
 
         if (quarterAngle <= HALF_FF_DEGREE) {
             tempMousePosition.y = lastSelectedPoint.y;

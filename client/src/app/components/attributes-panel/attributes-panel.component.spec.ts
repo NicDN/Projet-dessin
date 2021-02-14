@@ -77,11 +77,11 @@ describe('AttributesPanelComponent', () => {
 
     it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
-        expect(component.shapeIsActive()).toBe(true);
+        expect(component.shapeIsActive()).toBeTrue();
     });
 
     it('#drawingToolIsActive should verify that a drawing tool is active', () => {
         component.currentTool = drawingTool;
-        expect(component.drawingToolIsActive()).toBe(true);
+        expect(component.drawingToolIsActive()).toBeTrue();
     });
 });

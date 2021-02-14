@@ -32,8 +32,8 @@ describe('ThicknessSelectorComponent', () => {
     });
 
     it('input from thickness-slider should toggle #updateThickness', () => {
-        spyOn(component, 'updateThickness');
         const thicknessSlider = fixture.debugElement.query(By.css('.thickness-slider'));
+        spyOn(component, 'updateThickness');
         thicknessSlider.triggerEventHandler('input', null);
         expect(component.updateThickness).toHaveBeenCalled();
     });

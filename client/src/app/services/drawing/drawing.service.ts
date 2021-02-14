@@ -11,13 +11,13 @@ export class DrawingService {
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
-    private subject: Subject<string> = new Subject<string>();
+    private subject: Subject<void> = new Subject<void>();
 
-    sendNotifReload(message: string): void {
-        this.subject.next(message);
+    sendNotifReload(): void {
+        this.subject.next();
     }
 
-    newIncomingResizeSignals(): Observable<string> {
+    newIncomingResizeSignals(): Observable<void> {
         return this.subject.asObservable();
     }
 
@@ -46,7 +46,7 @@ export class DrawingService {
     }
 
     resetCanvas(): void {
-        this.sendNotifReload('Reseting the canvas');
+        this.sendNotifReload();
     }
 
     canvasIsEmpty(): boolean {
