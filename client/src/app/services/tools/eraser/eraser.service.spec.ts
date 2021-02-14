@@ -14,9 +14,12 @@ describe('EraserService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let drawLineSpy: jasmine.Spy;
     let singleClickSpy: jasmine.Spy;
-
+    let imageDataBefore: ImageData;
+    let imageDataAfter: ImageData;
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
+    const mouseEventStart = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
+    const mouseEventEnd = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
@@ -34,7 +37,7 @@ describe('EraserService', () => {
 
         const drawingServiceString = 'drawingService';
         service[drawingServiceString].canvas = canvasStub;
-        service[drawingServiceString].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
+        service[drawingServiceString].baseCtx = baseCtxStub;
         service[drawingServiceString].previewCtx = previewCtxStub;
 
         mouseEvent = {
@@ -45,6 +48,11 @@ describe('EraserService', () => {
         } as MouseEvent;
 
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
+
+        imageDataBefore = baseCtxStub.getImageData(0, 0, 1, 1);
+        baseCtxStub.rect(0, 0, 1, 1);
+        baseCtxStub.fill();
+        imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
     });
 
     it('should be created', () => {
@@ -96,10 +104,6 @@ describe('EraserService', () => {
     });
 
     it('#eraseSquare should erase part off the context', () => {
-        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        baseCtxStub.rect(0, 0, 1, 1);
-        baseCtxStub.fill();
-        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
@@ -116,19 +120,13 @@ describe('EraserService', () => {
     });
 
     it('#drawLine should erase on the canvas if there is a single click', () => {
-        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        baseCtxStub.rect(0, 0, 1, 1);
-        baseCtxStub.fill();
-        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         const singleClickStub = true;
         singleClickSpy.and.returnValue(singleClickStub);
 
-        mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseDown(mouseEvent);
-        mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseUp(mouseEvent);
+        service.onMouseDown(mouseEventStart);
+        service.onMouseUp(mouseEventEnd);
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);
@@ -136,19 +134,13 @@ describe('EraserService', () => {
     });
 
     it('#drawline should erase on mouse move', () => {
-        const imageDataBefore: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        baseCtxStub.rect(0, 0, 1, 1);
-        baseCtxStub.fill();
-        const imageDataAfter: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         const singleClickStub = false;
         singleClickSpy.and.returnValue(singleClickStub);
 
-        mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseDown(mouseEvent);
-        mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseMove(mouseEvent);
+        service.onMouseDown(mouseEventStart);
+        service.onMouseMove(mouseEventEnd);
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);

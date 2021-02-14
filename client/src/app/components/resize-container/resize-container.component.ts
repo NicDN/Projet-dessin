@@ -72,40 +72,39 @@ export class ResizeContainerComponent {
     }
 
     listenToNewDrawingNotifications(): void {
-        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((message) => {
+        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe(() => {
             this.newDrawingNotification();
         });
     }
 
     newDrawingNotification(): void {
-        /* When creating a new drawing*/
-        this.width = this.WindowWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
-        this.height = this.WindowHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
+        this.width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
+        this.height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
         this.boxSize = { widthBox: this.width, heightBox: this.height };
         this.notifyResize.emit(this.boxSize);
     }
 
     updateWidthValid(event: MouseEvent): boolean {
-        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.XisOverMinimum(event);
+        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.xCoordinateisOverMinimum(event);
     }
 
     updateHeightValid(event: MouseEvent): boolean {
-        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) && this.YisOverMinimum(event);
+        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) && this.yCoordinateIsOverMinimum(event);
     }
 
-    XisOverMinimum(event: MouseEvent): boolean {
+    xCoordinateisOverMinimum(event: MouseEvent): boolean {
         return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_WIDTH;
     }
 
-    YisOverMinimum(event: MouseEvent): boolean {
+    yCoordinateIsOverMinimum(event: MouseEvent): boolean {
         return event.pageY - this.MOUSE_OFFSET >= DEFAULT_HEIGHT;
     }
 
-    WindowWidthIsOverMinimum(): boolean {
+    workspaceWidthIsOverMinimum(): boolean {
         return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE;
     }
 
-    WindowHeightIsOverMinimum(): boolean {
+    workspaceHeightIsOverMinimum(): boolean {
         return window.innerHeight > MINIMUM_WORKSPACE_SIZE;
     }
 }

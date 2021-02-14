@@ -101,7 +101,6 @@ describe('PencilService', () => {
         expect(drawLineSpy).not.toHaveBeenCalled();
     });
 
-    // Exemple de test d'intégration qui est quand même utile
     it('#should change the pixel of the canvas ', () => {
         mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
         service.onMouseDown(mouseEvent);

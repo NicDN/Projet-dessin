@@ -65,14 +65,14 @@ describe('DrawingService', () => {
     });
 
     it('#reloadDrawing should clear the canvas and have default height and width', () => {
-        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.callThrough();
+        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas');
         service.reloadDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
     it('#resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
-        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.callThrough();
+        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas');
         service.resetCanvas();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
