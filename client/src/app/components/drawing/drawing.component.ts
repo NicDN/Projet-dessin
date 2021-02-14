@@ -26,7 +26,7 @@ export class DrawingComponent implements AfterViewInit {
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
     canDraw: boolean = true;
 
-    constructor(public drawingService: DrawingService, private toolsService: ToolsService, private hotKeyService: HotkeyService) {}
+    constructor(public drawingService: DrawingService, public toolsService: ToolsService, private hotKeyService: HotkeyService) {}
 
     ngAfterViewInit(): void {
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
