@@ -12,8 +12,8 @@ describe('ResizeContainerComponent', () => {
     let drawingService: DrawingService;
     let drawingFixture: ComponentFixture<DrawingComponent>;
 
-    const OVER_MINIMUM_X_COORDINATE = 800;
-    const OVER_MINIMUM_Y_COORDINATE = 800;
+    const OVER_MINIMUM_X_COORDINATE = 1000;
+    const OVER_MINIMUM_Y_COORDINATE = 1000;
     const UNDER_MINIMUM_X_COORDINATE = 600;
     const UNDER_MINIMUM_Y_COORDINATE = 200;
     const mouseEventClick = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
@@ -107,7 +107,7 @@ describe('ResizeContainerComponent', () => {
         expect(component.status).toEqual(Status.RESIZE_VERTICAL);
     });
 
-    it('#resize resize-container should resize with the good dimensions', () => {
+    it('#resize resize-container should resize with the appropriate dimensions', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
         const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
         const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
@@ -155,8 +155,8 @@ describe('ResizeContainerComponent', () => {
         const UNDERMINIMUM_SCREEN_SIZE = 400;
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
-        expect(component.WindowWidthIsOverMinimum()).toBeFalse();
-        expect(component.WindowHeightIsOverMinimum()).toBeFalse();
+        expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
+        expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
         component.newDrawingNotification();
         expect(component.width).toEqual(MINIMUM_CANVAS_SIZE);
         expect(component.height).toEqual(MINIMUM_CANVAS_SIZE);
@@ -169,56 +169,56 @@ describe('ResizeContainerComponent', () => {
             const OVERMINIMUM_WORKSPACE_SIZE = 1000;
             Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
-            expect(component.WindowWidthIsOverMinimum()).toBeTrue();
-            expect(component.WindowHeightIsOverMinimum()).toBeTrue();
+            expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
+            expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
             component.newDrawingNotification();
             expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
             expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
         },
     );
 
-    it('#WindowWidthIsOverMinimum should resize the canvas to the minimum value if the width of the window is less than 500', () => {
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1010 });
+    it('#WindowWidthIsOverMinimum should return true if width size of workspace is over 500', () => {
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE });
         // tslint:disable-next-line: no-unused-expression
-        expect(component.WindowWidthIsOverMinimum()).toBeTrue;
+        expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
     });
 
-    it('#WindowHeightIsOverMinimum should resize the canvas to the minimum value if the width of the window is less than 500', () => {
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 601 });
+    it('#WindowHeightIsOverMinimum should return true if height size of workspace is over 500', () => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE });
         // tslint:disable-next-line: no-unused-expression
-        expect(component.WindowHeightIsOverMinimum()).toBeTrue();
+        expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
     });
 
     it('#WindowWidthIsOverMinimum should not resize the canvas to the minimum value if the width of the window is less than 500', () => {
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 600 });
-        expect(component.WindowWidthIsOverMinimum()).toBeFalse();
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDER_MINIMUM_X_COORDINATE });
+        expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
     });
 
-    it('#WindowHeightIsOverMinimum should not resize the canvas to the minimum value if the width of the window is less than 500', () => {
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: 400 });
-        expect(component.WindowHeightIsOverMinimum()).toBeFalse();
+    it('#WindowHeightIsOverMinimum should not resize the canvas to the minimum value if the height of the window is less than 500', () => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDER_MINIMUM_Y_COORDINATE });
+        expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
     });
 
     it('#XisOverMinimum X mouse coordinate under the minimum should not be allowed', () => {
         component.status = Status.RESIZE_DIAGONAL;
         const mouseEvent = { pageX: UNDER_MINIMUM_X_COORDINATE, pageY: UNDER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.XisOverMinimum(mouseEvent)).toBeFalse();
+        expect(component.xCoordinateisOverMinimum(mouseEvent)).toBeFalse();
     });
 
     it('#YisOverMinimum Y mouse coordinate under the minimum should not be allowed', () => {
         component.status = Status.RESIZE_DIAGONAL;
         const mouseEvent = { pageX: UNDER_MINIMUM_X_COORDINATE, pageY: UNDER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.YisOverMinimum(mouseEvent)).toBeFalse();
+        expect(component.yCoordinateIsOverMinimum(mouseEvent)).toBeFalse();
     });
 
     it('#XisOverMinimum X mouse coordinate over the minimum should be allowed', () => {
         const mouseEvent = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.XisOverMinimum(mouseEvent)).toBeTrue();
+        expect(component.xCoordinateisOverMinimum(mouseEvent)).toBeTrue();
     });
 
     it('#YisOverMinimum Y mouse coordinate over the minimum should be allowed', () => {
         const mouseEvent = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.YisOverMinimum(mouseEvent)).toBeTrue();
+        expect(component.yCoordinateIsOverMinimum(mouseEvent)).toBeTrue();
     });
 
     it('#UpdateWidthValid and #UpdateHeightValid should allow resize according to the status ', () => {

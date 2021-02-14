@@ -54,7 +54,6 @@ export class DrawingService {
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
-    // Last to test
     onSizeChange(boxsize: BoxSize): void {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);

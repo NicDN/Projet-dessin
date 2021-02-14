@@ -5,7 +5,6 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
-
 @Injectable({
     providedIn: 'root',
 })

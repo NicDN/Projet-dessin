@@ -12,7 +12,7 @@ describe('HotkeyService', () => {
     let service: HotkeyService;
 
     const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
-    const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+    let ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -89,6 +89,19 @@ describe('HotkeyService', () => {
         const drawingServiceSpy: jasmine.Spy = spyOn(service.drawingService, 'handleNewDrawing');
         service.onKeyDown(noCtrlKeyEvent);
         expect(drawingServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
+        const notAssignedKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
+        expect(service.onKeyDown(notAssignedKeyboardEvent)).toBeFalsy();
+    });
+
+    it('#handleCtrlO ctrl O should call handleNewDrawing from drawingService', () => {
+        // tslint:disable-next-line: no-any
+        const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
+        ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+        service.onKeyDown(ctrlKeyEvent);
+        expect(drawingServiceSpy).toHaveBeenCalled();
     });
 
     it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
