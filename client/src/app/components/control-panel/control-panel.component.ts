@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 // import { OptionsService } from '@app/services/options.service';
 
 @Component({
@@ -6,12 +6,4 @@ import { Component, OnInit } from '@angular/core';
     templateUrl: './control-panel.component.html',
     styleUrls: ['./control-panel.component.scss'],
 })
-export class ControlPanelComponent implements OnInit {
-    constructor() {
-        //
-    }
-
-    ngOnInit(): void {
-        //
-    }
-}
+export class ControlPanelComponent {}

@@ -12,12 +12,11 @@ describe('DrawingService', () => {
     let service: DrawingService;
     let canvasTestHelper: CanvasTestHelper;
     let boxSizeStub: BoxSize;
-    // tslint:disable-next-line: no-any
-    let drawingServiceSpyCheckIfEmpty: jasmine.Spy<any>;
-    // tslint:disable-next-line: no-any
-    let drawingServiceSpyReloadDrawing: jasmine.Spy<any>;
-    // tslint:disable-next-line: no-any
-    let drawingServiceSpyValidateInput: jasmine.Spy<any>;
+    let drawingServiceSpyCheckIfEmpty: jasmine.Spy;
+    let drawingServiceSpyReloadDrawing: jasmine.Spy;
+    let drawingServiceSpyValidateInput: jasmine.Spy;
+    let drawingServiceSpyChangeSizeOfCanvas: jasmine.Spy;
+    let drawingServiceSpyClearCanvas: jasmine.Spy;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -34,12 +33,11 @@ describe('DrawingService', () => {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        // tslint:disable-next-line: no-any
-        drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'canvasIsEmpty').and.callThrough();
-        // tslint:disable-next-line: no-any
-        drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadDrawing').and.callThrough();
-        // tslint:disable-next-line: no-any
-        drawingServiceSpyValidateInput = spyOn<any>(service, 'confirmReload').and.callThrough();
+        drawingServiceSpyCheckIfEmpty = spyOn(service, 'canvasIsEmpty').and.callThrough();
+        drawingServiceSpyReloadDrawing = spyOn(service, 'reloadDrawing').and.callThrough();
+        drawingServiceSpyValidateInput = spyOn(service, 'confirmReload').and.callThrough();
+        drawingServiceSpyChangeSizeOfCanvas = spyOn(service, 'changeSizeOfCanvas').and.callThrough();
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.callThrough();
     });
 
     it('should be created', () => {
@@ -67,18 +65,14 @@ describe('DrawingService', () => {
     });
 
     it('#reloadDrawing should clear the canvas and have default height and width', () => {
-        // tslint:disable-next-line: no-any
-        const drawingServiceSpyClearCanvas: jasmine.Spy<any> = spyOn<any>(service, 'clearCanvas').and.callThrough();
-        // tslint:disable-next-line: no-any
-        const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
+        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas');
         service.reloadDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
     it('#resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
-        // tslint:disable-next-line: no-any
-        const drawingServiceSpyResetCanvas: jasmine.Spy<any> = spyOn<any>(service, 'resetCanvas').and.callThrough();
+        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas');
         service.resetCanvas();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
@@ -87,8 +81,7 @@ describe('DrawingService', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
-        // tslint:disable-next-line: no-any
-        const checkNotif: jasmine.Spy<any> = spyOn<any>(resizeContainerComponent, 'newDrawingNotification');
+        const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'newDrawingNotification');
         service.sendNotifReload();
         expect(checkNotif).toHaveBeenCalled();
     });
@@ -136,12 +129,10 @@ describe('DrawingService', () => {
         expect(service.confirmReload()).toEqual(false);
     });
 
-    // it('should be identical if the canvas is enlarged', () => {
-    //     service.baseCtx.fillRect(0, 0, 1, 1);
-    //     const oldImgData = service.baseCtx.getImageData(0, 0, 1, 1);
-    //     const NEW_SIZE = 150;
-    //     service.onSizeChange({ widthBox: NEW_SIZE, heightBox: NEW_SIZE });
-    //     const newImgData = service.baseCtx.getImageData(0, 0, 1, 1);
-    //     expect(oldImgData).toEqual(newImgData);
-    // }); Not completed
+    it('onSizeChange should make the canvas size change', () => {
+        boxSizeStub = { widthBox: 1, heightBox: 1 };
+        service.onSizeChange(boxSizeStub);
+        expect(drawingServiceSpyChangeSizeOfCanvas.and.stub()).toHaveBeenCalledTimes(2);
+        expect(drawingServiceSpyClearCanvas).toHaveBeenCalled();
+    });
 });
