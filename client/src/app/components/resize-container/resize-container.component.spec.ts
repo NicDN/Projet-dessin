@@ -162,16 +162,20 @@ describe('ResizeContainerComponent', () => {
         expect(component.height).toEqual(MINIMUM_CANVAS_SIZE);
     });
 
-    it('#newDrawingNotification creating a new drawing with a screen over minimum workspace size should create a new drawing with 50% of the surface', () => {
-        const OVERMINIMUM_WORKSPACE_SIZE = 1000;
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
-        expect(component.WindowWidthIsOverMinimum()).toBeTrue();
-        expect(component.WindowHeightIsOverMinimum()).toBeTrue();
-        component.newDrawingNotification();
-        expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
-        expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
-    });
+    it(
+        '#newDrawingNotification creating a new drawing with a screen' +
+            'over minimum workspace size should create a new drawing with 50% of the surface',
+        () => {
+            const OVERMINIMUM_WORKSPACE_SIZE = 1000;
+            Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
+            Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
+            expect(component.WindowWidthIsOverMinimum()).toBeTrue();
+            expect(component.WindowHeightIsOverMinimum()).toBeTrue();
+            component.newDrawingNotification();
+            expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
+            expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
+        },
+    );
 
     it('#WindowWidthIsOverMinimum should resize the canvas to the minimum value if the width of the window is less than 500', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 1010 });

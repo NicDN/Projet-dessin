@@ -78,11 +78,16 @@ describe('HotkeyService', () => {
         expect(toolServiceSpy).toHaveBeenCalledTimes(5);
     });
 
-    it('ctrl O should call handleNewDrawing from drawingService', () => {
+    it('#handleCtrlO ctrl O should call handleNewDrawing from drawingService', () => {
         // tslint:disable-next-line: no-any
         const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
         const ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
         service.onKeyDown(ctrlKeyEvent);
         expect(drawingServiceSpy).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
+        const notAssignedKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
+        expect(service.onKeyDown(notAssignedKeyboardEvent)).toBeFalsy();
     });
 });
