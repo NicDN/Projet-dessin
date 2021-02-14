@@ -18,7 +18,7 @@ export class EraserService extends PencilService {
         this.isEraser = true;
     }
 
-    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx = this.drawingService.baseCtx;
         this.verifThickness(ctx, this.thickness);
 

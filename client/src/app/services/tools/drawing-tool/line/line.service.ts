@@ -34,10 +34,6 @@ export class LineService extends TraceTool {
         this.minThickness = 1;
     }
 
-    draw(event: MouseEvent): void {
-        throw new Error('Method not implemented.');
-    }
-
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
     }

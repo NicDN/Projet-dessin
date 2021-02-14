@@ -144,10 +144,6 @@ describe('PencilService', () => {
         expect(service.mouseDown).toEqual(false);
     });
 
-    it('draw should throw an error if the function draw is called since it is not implemented', () => {
-        expect(service.draw).toThrowError();
-    });
-
     it('should clear the canvas only if the tool is pencil service', () => {
         service.isEraser = false;
         service.clearPreviewIfNotEraser(service.isEraser);

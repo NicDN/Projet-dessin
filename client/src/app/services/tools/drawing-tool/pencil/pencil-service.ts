@@ -24,10 +24,6 @@ export class PencilService extends TraceTool {
 
     private pathData: Vec2[];
 
-    draw(event: MouseEvent): void {
-        throw new Error('Method not implemented.');
-    }
-
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
         if (this.mouseDown) {
@@ -67,7 +63,7 @@ export class PencilService extends TraceTool {
         this.everyMouseMove(event);
     }
 
-    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx.lineJoin = ctx.lineCap = 'round';
         ctx.lineWidth = this.thickness;
         let oldPointX: number = path[0].x;
