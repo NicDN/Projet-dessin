@@ -25,6 +25,10 @@ export class ToolsService {
     }
 
     setCurrentTool(tool: Tool): void {
+        if (this.currentTool === this.lineService) {
+            this.lineService.clearPath();
+            this.lineService.updatePreview();
+        }
         this.currentTool = tool;
         this.subject.next(tool);
     }

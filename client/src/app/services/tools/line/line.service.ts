@@ -36,13 +36,13 @@ export class LineService extends TraceTool {
     }
 
     onMouseUp(event: MouseEvent): void {
-        if (event.button !== MouseButton.Left || !this.mouseDown) {
+        if (!this.mouseDown) {
             return;
         }
         if (!this.canDoubleClick) {
             this.addPoint();
             this.canDoubleClick = true;
-        } else if (this.pathData.length > 1) {
+        } else if (this.pathData.length > 2) {
             this.finishLine();
         }
         this.mouseDown = false;
