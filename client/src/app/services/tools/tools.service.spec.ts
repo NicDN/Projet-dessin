@@ -3,7 +3,6 @@ import { Tool } from '@app/classes/tool';
 import { Subject } from 'rxjs';
 import { PencilService } from './pencil/pencil-service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
-
 import { ToolsService } from './tools.service';
 
 // tslint:disable: no-string-literal
@@ -30,10 +29,27 @@ describe('ToolsService', () => {
 
     it('#setCurrentTool should update the provided current tool and call its subscribers', () => {
         spyOn(service['subject'], 'next');
+        spyOn(service.lineService, 'clearPath');
+        spyOn(service.lineService, 'updatePreview');
         service.setCurrentTool(ellipseDrawingService);
         expect(service.currentTool).toBe(ellipseDrawingService);
         expect(service['subject'].next).toHaveBeenCalled();
         expect(service['subject'].next).toHaveBeenCalledWith(ellipseDrawingService);
+        expect(service.lineService.clearPath).not.toHaveBeenCalledWith();
+        expect(service.lineService.updatePreview).not.toHaveBeenCalledWith();
+    });
+
+    it('#setCurrentTool should update the provided current tool and call its subscribers and reset lineService', () => {
+        service.currentTool = service.lineService;
+        spyOn(service['subject'], 'next');
+        spyOn(service.lineService, 'clearPath');
+        spyOn(service.lineService, 'updatePreview');
+        service.setCurrentTool(ellipseDrawingService);
+        expect(service.currentTool).toBe(ellipseDrawingService);
+        expect(service['subject'].next).toHaveBeenCalled();
+        expect(service['subject'].next).toHaveBeenCalledWith(ellipseDrawingService);
+        expect(service.lineService.clearPath).toHaveBeenCalledWith();
+        expect(service.lineService.updatePreview).toHaveBeenCalledWith();
     });
 
     it('#getCurrentTool should return an observable subject', () => {
