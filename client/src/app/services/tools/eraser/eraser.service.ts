@@ -59,8 +59,7 @@ export class EraserService extends PencilService {
     }
 
     singleClick(path: Vec2[]): boolean {
-        if (path.length === 2) return true;
-        return false;
+        return path.length === 2;
     }
 
     eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {

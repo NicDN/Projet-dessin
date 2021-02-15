@@ -39,9 +39,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.canDraw) {
-            this.toolsService.currentTool.onMouseMove(event);
-        }
+        if (this.canDraw) this.toolsService.currentTool.onMouseMove(event);
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -70,9 +68,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        if (this.canDraw) {
-            this.toolsService.currentTool.onMouseEnter(event);
-        }
+        if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
     }
 
     disableDrawing(isUsingResizeButton: boolean): void {
