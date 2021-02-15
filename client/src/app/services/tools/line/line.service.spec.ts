@@ -1,4 +1,5 @@
 // tslint:disable: no-string-literal
+// tslint:disable: max-file-line-count
 
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
