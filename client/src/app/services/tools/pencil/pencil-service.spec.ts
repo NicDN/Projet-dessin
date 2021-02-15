@@ -55,7 +55,7 @@ describe('PencilService', () => {
         } as MouseEvent;
     });
 
-    it('#should be created', () => {
+    it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
@@ -125,6 +125,7 @@ describe('PencilService', () => {
         const thirdPosition = 3;
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B

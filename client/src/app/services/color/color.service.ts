@@ -22,8 +22,8 @@ export class ColorService {
     ];
 
     constructor() {
-        this.mainColor = new Color(this.previousColors[0].rgbValue, this.previousColors[0].opacity);
-        this.secondaryColor = new Color(this.previousColors[1].rgbValue, this.previousColors[1].opacity);
+        this.mainColor = { rgbValue: this.previousColors[0].rgbValue, opacity: this.previousColors[0].opacity };
+        this.secondaryColor = { rgbValue: this.previousColors[1].rgbValue, opacity: this.previousColors[1].opacity };
     }
 
     switchColors(): void {
@@ -32,26 +32,26 @@ export class ColorService {
         this.secondaryColor = tempColor;
     }
 
-    updateSecondaryColor(color: string, opacity: number): void {
-        this.secondaryColor.rgbValue = color;
-        this.secondaryColor.opacity = opacity;
+    updateSecondaryColor(color: Color): void {
+        this.secondaryColor.rgbValue = color.rgbValue;
+        this.secondaryColor.opacity = color.opacity;
     }
 
-    updateMainColor(color: string, opacity: number): void {
-        this.mainColor.rgbValue = color;
-        this.mainColor.opacity = opacity;
+    updateMainColor(color: Color): void {
+        this.mainColor.rgbValue = color.rgbValue;
+        this.mainColor.opacity = color.opacity;
     }
 
-    updatePreviousColors(color: string, opacity: number): void {
+    updatePreviousColors(color: Color): void {
         this.previousColors.pop();
-        this.previousColors.unshift(new Color(color, opacity));
+        this.previousColors.unshift({ rgbValue: color.rgbValue, opacity: color.opacity });
     }
 
-    updateColor(selectedColor: Color, color: string, opacity: number): void {
+    updateColor(selectedColor: Color, newColor: Color): void {
         if (selectedColor === this.mainColor) {
-            this.updateMainColor(color, opacity);
+            this.updateMainColor(newColor);
         } else if (selectedColor === this.secondaryColor) {
-            this.updateSecondaryColor(color, opacity);
+            this.updateSecondaryColor(newColor);
         }
     }
 }

@@ -1,9 +1,4 @@
-export class Color {
+export interface Color {
     rgbValue: string;
     opacity: number;
-
-    constructor(rgbValue: string, opacity: number) {
-        this.rgbValue = rgbValue;
-        this.opacity = opacity;
-    }
 }

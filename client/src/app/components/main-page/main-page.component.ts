@@ -13,8 +13,6 @@ import { map } from 'rxjs/operators';
 export class MainPageComponent {
     readonly title: string = 'LOG2990';
     message: BehaviorSubject<string> = new BehaviorSubject<string>('');
-    controlKeyDown: boolean = false;
-    containsDrawing: boolean = false; // temporary boolean
 
     constructor(private basicService: IndexService, private hotkeyService: HotkeyService) {}
 

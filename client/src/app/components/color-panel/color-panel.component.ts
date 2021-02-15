@@ -3,6 +3,11 @@ import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 
+interface RGBInput {
+    color: string;
+    inputError: boolean;
+}
+
 @Component({
     selector: 'app-color-panel',
     templateUrl: './color-panel.component.html',
@@ -13,7 +18,7 @@ export class ColorPanelComponent {
     readonly MAX_RGB_VALUE: number = 255;
     readonly CONCATENATE_OFFSET: number = 4;
 
-    rgbInputs: { color: string; inputError: boolean }[] = [
+    rgbInputs: RGBInput[] = [
         { color: 'Rouge', inputError: false },
         { color: 'Vert', inputError: false },
         { color: 'Bleu', inputError: false },
@@ -60,23 +65,23 @@ export class ColorPanelComponent {
 
     updateColor(selectedColor: Color): void {
         this.updatePreviousColors(selectedColor);
-        this.colorService.updateColor(selectedColor, this.rgbValue, this.opacity);
+        this.colorService.updateColor(selectedColor, { rgbValue: this.rgbValue, opacity: this.opacity });
         this.openColorPicker = false;
     }
 
     updatePreviousColors(selectedColor: Color): void {
         if (selectedColor.rgbValue !== this.rgbValue) {
-            this.colorService.updatePreviousColors(this.rgbValue, this.opacity);
+            this.colorService.updatePreviousColors({ rgbValue: this.rgbValue, opacity: this.opacity });
         }
     }
 
     setPrimaryColor(index: number): void {
-        this.colorService.updateMainColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
+        this.colorService.updateMainColor(this.colorService.previousColors[index]);
         this.closeColorPicker();
     }
 
     setSecondaryColor(index: number): void {
-        this.colorService.updateSecondaryColor(this.colorService.previousColors[index].rgbValue, this.colorService.previousColors[index].opacity);
+        this.colorService.updateSecondaryColor(this.colorService.previousColors[index]);
         this.closeColorPicker();
     }
 
