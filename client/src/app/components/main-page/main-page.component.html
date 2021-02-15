@@ -1,15 +1,8 @@
 <div class="container">
     <h1 class="header-item">Bienvenue dans PolyFills !</h1>
-
-    <!-- <div id="server-message">
-        <p>Petit message du serveur : {{ message | async }}</p>
-        <button class="button" (click)="getMessagesFromServer()">Récuper un message du serveur</button>
-        <button class="button" (click)="sendTimeToServer()">Envoyer un message au serveur</button>
-    </div> -->
-
     <div class="container">
         <button mat-raised-button color="primary" routerLink="/editor">Creer un nouveau dessin</button>
         <button mat-raised-button color="warn">Ouvrir le carrousel de dessins</button>
-        <button mat-raised-button color="accent" *ngIf="containsDrawing">Continuer un dessin</button>
+        <button mat-raised-button color="accent" disabled>Continuer un dessin</button>
     </div>
 </div>
