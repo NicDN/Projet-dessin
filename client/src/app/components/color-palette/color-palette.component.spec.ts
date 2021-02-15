@@ -26,6 +26,19 @@ describe('ColorPaletteComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('#renderPalette should not render the palette if the canvas is undefined', () => {
+        // component.canvas = fixture.debugElement.queryAll(By.css('.canvas'));
+        spyOn(component, 'renderCircle');
+        component.renderPalette();
+        expect(component.renderCircle).toHaveBeenCalled(); // non
+    });
+
+    it('#renderPalette render the palette if the canvas is not undefined', () => {
+        spyOn(component, 'renderCircle');
+        component.renderPalette();
+        expect(component.renderCircle).toHaveBeenCalled();
+    });
+
     it('#renderPalette should create a new CanvasRenderingContext2D instance if ctx is undefined', () => {
         component.renderPalette();
         expect(component['ctx']).not.toBeUndefined();

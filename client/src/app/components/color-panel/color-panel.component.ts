@@ -35,7 +35,6 @@ export class ColorPanelComponent {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
-
     selectColor(color: Color): void {
         this.selectedColor = color;
         this.rgbValue = this.selectedColor.rgbValue;
