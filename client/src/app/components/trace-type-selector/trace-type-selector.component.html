@@ -1,7 +1,9 @@
-<p>Type de tracé</p>
-<div class="trace-container" *ngFor="let trace of traceTypeOptions">
-    <button mat-button class="trace-type-button" matTooltip="{{trace.toolTipContent}}"
-        (click)="setActiveTraceType(trace.traceType)" [class.active]="tool.traceType == trace.traceType">
-        <fa-icon [icon]="[trace.iconFamily,trace.icon]"></fa-icon>
-    </button>
+<div class="container">
+    <p>Type de tracé</p>
+    <div class="trace-container" *ngFor="let trace of traceTypeOptions">
+        <button mat-button class="trace-type-button" matTooltip="{{trace.toolTipContent}}"
+            (click)="setActiveTraceType(trace.traceType)" [class.active]="tool.traceType == trace.traceType">
+            <fa-icon [icon]="[trace.iconFamily,trace.icon]"></fa-icon>
+        </button>
+    </div>
 </div>
