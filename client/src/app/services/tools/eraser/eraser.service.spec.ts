@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EraserService } from './eraser.service';
@@ -16,10 +17,13 @@ describe('EraserService', () => {
     let singleClickSpy: jasmine.Spy;
     let imageDataBefore: ImageData;
     let imageDataAfter: ImageData;
+
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
     const mouseEventStart = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
     const mouseEventEnd = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
+    const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
+    const LEFT_BUTTON_PRESSED = 1;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
@@ -41,10 +45,10 @@ describe('EraserService', () => {
         service[drawingServiceString].previewCtx = previewCtxStub;
 
         mouseEvent = {
-            pageX: 430,
-            pageY: 27,
-            button: 0,
-            buttons: 1,
+            pageX: MOUSE_POSITION.x + HORIZONTAL_OFFSET,
+            pageY: MOUSE_POSITION.y + VERTICAL_OFFSET,
+            button: MouseButton.Left,
+            buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
 
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
