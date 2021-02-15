@@ -59,14 +59,12 @@ export class PencilService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.lineWidth = this.thickness;
+        ctx.save();
+        this.setContext(ctx);
         let oldPointX: number = path[0].x;
         let oldPointY: number = path[0].y;
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-        ctx.beginPath();
 
+        ctx.beginPath();
         for (const point of path) {
             ctx.moveTo(oldPointX, oldPointY);
             ctx.strokeStyle = this.colorService.mainColor.rgbValue;
@@ -76,6 +74,14 @@ export class PencilService extends TraceTool {
             oldPointY = point.y;
         }
         ctx.stroke();
+        ctx.restore();
+    }
+
+    setContext(ctx: CanvasRenderingContext2D): void {
+        ctx.lineJoin = ctx.lineCap = 'round';
+        ctx.lineWidth = this.thickness;
+        ctx.globalAlpha = this.colorService.mainColor.opacity;
+        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
     }
 
     private clearPath(): void {

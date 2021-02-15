@@ -9,8 +9,8 @@ export enum MouseButton {
     Forward = 4,
 }
 // If the constants are changed, many tests in pencilService and shape will fail, go change the MouseEventCoords there too.
-const HORIZONTAL_OFFSET = 405;
-const VERTICAL_OFFSET = 2;
+export const HORIZONTAL_OFFSET = 405;
+export const VERTICAL_OFFSET = 2;
 
 export abstract class Tool {
     mouseDownCoord: Vec2;
