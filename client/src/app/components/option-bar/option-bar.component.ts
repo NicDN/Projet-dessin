@@ -25,7 +25,7 @@ export class OptionBarComponent {
         };
     }
 
-    toggleActive(event: EventTarget, toolTipContent: string): void {
+    toggleActive(toolTipContent: string): void {
         this.options[toolTipContent as Options]?.();
     }
 }

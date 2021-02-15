@@ -10,19 +10,17 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class EllipseDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Ellipse');
-        this.thickness = 1;
-        this.minThickness = 1;
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-
-        this.setContextParameters(ctx, this.thickness);
-        ctx.beginPath();
-
         const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
+
+        ctx.save();
+        this.setContextParameters(ctx, this.thickness);
+        ctx.beginPath();
+
         this.adjustToBorder(ctx, radiuses, begin, actualEndCoords);
 
         ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);

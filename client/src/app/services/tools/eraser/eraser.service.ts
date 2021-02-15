@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil-service';
+import { PencilService } from '@app/services/tools/pencil/pencil-service';
 
 @Injectable({
     providedIn: 'root',

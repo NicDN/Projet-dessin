@@ -4,7 +4,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
+import { LineService } from '@app/services/tools/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { of } from 'rxjs';
@@ -77,11 +77,11 @@ describe('AttributesPanelComponent', () => {
 
     it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
-        expect(component.shapeIsActive()).toBe(true);
+        expect(component.shapeIsActive()).toBeTrue();
     });
 
     it('#drawingToolIsActive should verify that a drawing tool is active', () => {
         component.currentTool = drawingTool;
-        expect(component.drawingToolIsActive()).toBe(true);
+        expect(component.drawingToolIsActive()).toBeTrue();
     });
 });

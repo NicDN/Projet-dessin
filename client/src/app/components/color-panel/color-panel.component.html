@@ -1,71 +1,51 @@
 <!--  Reference: https://malcoded.com/posts/angular-color-picker/ -->
 <div class="color-panel">
     <div class="color-container">
-        <button
-            mat-fab
+        <button mat-fab
             [ngStyle]="{ 'background-color': colorService.mainColor.rgbValue, opacity: colorService.mainColor.opacity }"
-            (click)="selectColor(colorService.mainColor)"
-            matTooltip="Couleur principale"
-            matTooltipPosition="left"
-            matTooltipShowDelay="1000"
-            class="main-color-button"
-        ></button>
+            (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left"
+            matTooltipShowDelay="1000" class="main-color-button"></button>
 
         <button mat-button (click)="switchColors()">
             <mat-icon>compare_arrows</mat-icon>
         </button>
-        <button
-            mat-mini-fab
+        <button mat-mini-fab
             [ngStyle]="{ 'background-color': colorService.secondaryColor.rgbValue, opacity: colorService.secondaryColor.opacity }"
-            (click)="selectColor(colorService.secondaryColor)"
-            matTooltip="Couleur secondaire"
-            matTooltipPosition="right"
-            matTooltipShowDelay="1000"
-            class="secondary-color-button"
-        ></button>
+            (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire"
+            matTooltipPosition="right" matTooltipShowDelay="1000" class="secondary-color-button"></button>
     </div>
     <div *ngFor="let previousColor of previousColors; let index = index" class="list-previous-color">
-        <button
-            mat-mini-fab
-            class="previous-color"
-            (click)="setPrimaryColor(index)"
+        <button mat-mini-fab class="previous-color" (click)="setPrimaryColor(index)"
             (contextmenu)="setSecondaryColor(index)"
             [ngStyle]="{ 'background-color': previousColor.rgbValue, opacity: previousColor.opacity }"
-        ></button>
+            oncontextmenu="return false;"></button>
     </div>
     <div *ngIf="openColorPicker">
         <div class="color-wrapper">
             <app-color-palette [hue]="hue" (color)="rgbValue = $event; this.clearInputErrors()"></app-color-palette>
-            <app-color-slider (color)="hue = $event; this.clearInputErrors()" style="margin-left: 16px"></app-color-slider>
+            <app-color-slider (color)="hue = $event; this.clearInputErrors()" style="margin-left: 16px">
+            </app-color-slider>
         </div>
         <div class="slider-container">
             <p class="opacity-title">Opacité</p>
-            <mat-slider
-                class="opacity-slider"
-                #slider
-                min="15"
-                [value]="this.opacity * this.OPACITY_AJUSTMENT"
-                (input)="updateOpacity($event)"
-            ></mat-slider>
+            <mat-slider class="opacity-slider" #slider min="15" [value]="this.opacity * this.OPACITY_AJUSTMENT"
+                (input)="updateOpacity($event)"></mat-slider>
             <p class="opacity-value">{{ opacity | number: '1.0-2' }}</p>
         </div>
         <div class="input-wrapper">
             <form class="rgb-form" *ngFor="let rgbInput of rgbInputs; let index = index">
                 <mat-form-field>
-                    <mat-label class="rgb-label" [ngStyle]="rgbInput.inputError && { color: 'red' }">{{ rgbInput.color }}</mat-label>
-                    <input
-                        type="text"
-                        class="rgb-input"
-                        maxlength="2"
-                        [value]="getRGB(index)"
+                    <mat-label class="rgb-label" [ngStyle]="rgbInput.inputError && { color: 'red' }">{{ rgbInput.color
+                        }}</mat-label>
+                    <input type="text" class="rgb-input" maxlength="2" [value]="getRGB(index)"
                         (input)="applyRGBInput($event.target.value, index)"
                         [ngStyle]="rgbInput.inputError && { color: 'red' }"
-                        matInput
-                    />
+                        matInput />
                 </mat-form-field>
             </form>
 
-            <span class="preview-color" [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"></span>
+            <span class="preview-color"
+                [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"></span>
             <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)">
                 <fa-icon icon="check" class="check"></fa-icon>
             </button>

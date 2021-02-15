@@ -24,21 +24,27 @@ export abstract class Tool {
     onMouseDown(event: MouseEvent): void {
         return;
     }
+
     onMouseUp(event: MouseEvent): void {
         return;
     }
+
     onMouseMove(event: MouseEvent): void {
         return;
     }
+
     onMouseOut(event: MouseEvent): void {
         return;
     }
+
     onMouseEnter(event: MouseEvent): void {
         return;
     }
+
     onKeyDown(event: KeyboardEvent): void {
         return;
     }
+
     onKeyUp(event: KeyboardEvent): void {
         return;
     }

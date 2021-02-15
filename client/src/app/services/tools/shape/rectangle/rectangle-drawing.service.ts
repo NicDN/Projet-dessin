@@ -9,18 +9,16 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class RectangleDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Rectangle');
-        this.thickness = 1;
-        this.minThickness = 1;
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-        this.setContextParameters(ctx, this.thickness);
-
-        ctx.beginPath();
         const trueEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
         const sideLengths: Vec2 = { x: trueEndCoords.x - begin.x, y: trueEndCoords.y - begin.y };
         const adjustedBeginCoords: Vec2 = { x: begin.x, y: begin.y };
+
+        ctx.save();
+        this.setContextParameters(ctx, this.thickness);
+        ctx.beginPath();
 
         this.adjustToBorder(ctx, sideLengths, adjustedBeginCoords, trueEndCoords);
         ctx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);

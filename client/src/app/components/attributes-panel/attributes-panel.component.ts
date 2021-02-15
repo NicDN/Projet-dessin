@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
+import { LineService } from '@app/services/tools/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { Subscription } from 'rxjs';
 
