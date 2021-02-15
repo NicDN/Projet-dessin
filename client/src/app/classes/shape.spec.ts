@@ -6,9 +6,9 @@ import { CanvasTestHelper } from './canvas-test-helper';
 import { Shape } from './shape';
 import { MouseButton } from './tool';
 
-export class FakeShape extends Shape {
+export class ShapeStub extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService, 'Fake');
+        super(drawingService, colorService, 'Stub');
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -18,33 +18,38 @@ export class FakeShape extends Shape {
 
 // tslint:disable: no-string-literal
 describe('Shape', () => {
-    let shape: FakeShape;
-    // let drawSpy: jasmine.Spy;
-    let drawServiceSpy: jasmine.SpyObj<DrawingService>;
-    let colorServiceSpy: jasmine.SpyObj<ColorService>;
+    let shape: Shape;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+    let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
-    const defaultColor = 'blue';
-    const defaultOpacity = 0.4;
+    const colorStub = '#0000ff';
+    const opacityStub = 0.4;
+    const mousePosition: Vec2 = { x: 25, y: 25 };
     const topLeftCorner: Vec2 = { x: 0, y: 0 };
     const bottomRightCorner: Vec2 = { x: 40, y: 20 };
     const bottomLeftCorner: Vec2 = { x: 0, y: 20 };
     const topRightCorner: Vec2 = { x: 40, y: 0 };
+    const LEFT_BUTTON_PRESSED = 1;
+    const NO_BUTTON_PRESSED = 0;
+
+    const HORIZONTAL_OFFSET = 405;
+    const VERTICAL_OFFSET = 2;
 
     beforeEach(() => {
-        const colorSpy = jasmine.createSpyObj('ColorService', [], {
-            mainColor: { rgbValue: defaultColor, opacity: defaultOpacity },
-            secondaryColor: { rgbValue: defaultColor, opacity: defaultOpacity },
+        colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
+            mainColor: { rgbValue: colorStub, opacity: opacityStub },
+            secondaryColor: { rgbValue: colorStub, opacity: opacityStub },
         });
-        drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
             providers: [
-                { provide: DrawingService, useValue: drawServiceSpy },
-                { provide: ColorService, useValue: colorSpy },
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: ColorService, useValue: colorServiceSpyObj },
             ],
         });
 
@@ -52,59 +57,50 @@ describe('Shape', () => {
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        shape = new FakeShape(drawServiceSpy, colorServiceSpy);
-        colorServiceSpy = TestBed.inject(ColorService) as jasmine.SpyObj<ColorService>;
+        shape = new ShapeStub(drawingServiceSpyObj, colorServiceSpyObj);
 
         shape['drawingService'].baseCtx = baseCtxStub;
         shape['drawingService'].previewCtx = previewCtxStub;
 
-        colorServiceSpy.mainColor.rgbValue = defaultColor;
-        colorServiceSpy.mainColor.opacity = defaultOpacity;
-
-        colorServiceSpy.secondaryColor.rgbValue = defaultColor;
-        colorServiceSpy.secondaryColor.opacity = defaultOpacity;
         mouseEvent = {
-            pageX: 430,
-            pageY: 27,
-            button: 0,
-            buttons: 1,
+            pageX: mousePosition.x + HORIZONTAL_OFFSET,
+            pageY: mousePosition.y + VERTICAL_OFFSET,
+            button: MouseButton.Left,
+            buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
     });
 
     it('#setFillColor should change the right ctx parameters', () => {
-        shape.setFillColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
-        expect(drawServiceSpy.baseCtx.fillStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(defaultOpacity);
+        shape.setFillColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
+        expect(drawingServiceSpyObj.baseCtx.fillStyle).toEqual('#0000ff');
+        expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(opacityStub);
     });
 
     it('#setStrokeColor should change the right ctx parameters', () => {
-        shape.setStrokeColor(drawServiceSpy.baseCtx, colorServiceSpy.mainColor);
-        expect(drawServiceSpy.baseCtx.strokeStyle).toEqual('#0000ff');
-        expect(drawServiceSpy.baseCtx.globalAlpha).toEqual(defaultOpacity);
+        shape.setStrokeColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
+        expect(drawingServiceSpyObj.baseCtx.strokeStyle).toEqual('#0000ff');
+        expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(opacityStub);
     });
 
     it('#getActualEndCoords should return same end coords if not using alternate shape', () => {
-        // tslint:disable-next-line: no-string-literal
         shape['alternateShape'] = false;
-        expect(shape.getActualEndCoords(topLeftCorner, bottomRightCorner)).toEqual(bottomRightCorner);
-        expect(shape.getActualEndCoords(bottomRightCorner, topLeftCorner)).toEqual(topLeftCorner);
-        expect(shape.getActualEndCoords(bottomLeftCorner, topRightCorner)).toEqual(topRightCorner);
-        expect(shape.getActualEndCoords(topRightCorner, bottomLeftCorner)).toEqual(bottomLeftCorner);
+        expect(shape.getTrueEndCoords(topLeftCorner, bottomRightCorner)).toEqual(bottomRightCorner);
+        expect(shape.getTrueEndCoords(bottomRightCorner, topLeftCorner)).toEqual(topLeftCorner);
+        expect(shape.getTrueEndCoords(bottomLeftCorner, topRightCorner)).toEqual(topRightCorner);
+        expect(shape.getTrueEndCoords(topRightCorner, bottomLeftCorner)).toEqual(bottomLeftCorner);
     });
 
     it('#getActualEndCoords should return coords of square if using alternate shape', () => {
-        // tslint:disable-next-line: no-string-literal
         shape['alternateShape'] = true;
-        expect(shape.getActualEndCoords(topLeftCorner, bottomRightCorner)).toEqual({ x: 20, y: 20 });
-        expect(shape.getActualEndCoords(bottomRightCorner, topLeftCorner)).toEqual({ x: 20, y: 0 });
-        expect(shape.getActualEndCoords(bottomLeftCorner, topRightCorner)).toEqual({ x: 20, y: 0 });
-        expect(shape.getActualEndCoords(topRightCorner, bottomLeftCorner)).toEqual({ x: 20, y: 20 });
+        expect(shape.getTrueEndCoords(topLeftCorner, bottomRightCorner)).toEqual({ x: 20, y: 20 });
+        expect(shape.getTrueEndCoords(bottomRightCorner, topLeftCorner)).toEqual({ x: 20, y: 0 });
+        expect(shape.getTrueEndCoords(bottomLeftCorner, topRightCorner)).toEqual({ x: 20, y: 0 });
+        expect(shape.getTrueEndCoords(topRightCorner, bottomLeftCorner)).toEqual({ x: 20, y: 20 });
     });
 
     it('#onMouseDown should set the begin and end coords correctly', () => {
         shape.onMouseDown(mouseEvent);
-
-        expect(shape['beginCoord']).toEqual({ x: 25, y: 25 });
+        expect(shape['beginCoord']).toEqual(mousePosition);
         expect(shape['endCoord']).toEqual(shape['beginCoord']);
     });
 
@@ -115,8 +111,8 @@ describe('Shape', () => {
 
     it('#onMouseDown should not set the mouseDown property to true if right click', () => {
         const mouseEventRClick = {
-            pageX: 430,
-            pageY: 27,
+            pageX: mousePosition.x + HORIZONTAL_OFFSET,
+            pageY: mousePosition.y + VERTICAL_OFFSET,
             button: MouseButton.Right,
         } as MouseEvent;
         shape.onMouseDown(mouseEventRClick);
@@ -140,15 +136,16 @@ describe('Shape', () => {
         shape.mouseDownCoord = { x: 0, y: 0 };
 
         shape.onMouseMove(mouseEvent);
-        expect(shape['endCoord']).toEqual({ x: 25, y: 25 });
+        expect(shape['endCoord']).toEqual(mousePosition);
     });
 
     it('#onMouseMove should set mouseDown to false if not pressing leftClick (edge case, necessary)', () => {
         shape.mouseDown = true;
         shape.mouseDownCoord = { x: 0, y: 0 };
         const mouseEventMove = {
-            pageX: 430,
-            pageY: 27,
+            pageX: mousePosition.x + HORIZONTAL_OFFSET,
+            pageY: mousePosition.y + VERTICAL_OFFSET,
+            buttons: NO_BUTTON_PRESSED,
         } as MouseEvent;
         shape.onMouseMove(mouseEventMove);
         expect(shape.mouseDown).toBeFalse();
@@ -159,7 +156,7 @@ describe('Shape', () => {
         shape.mouseDown = true;
 
         shape.onMouseUp(mouseEvent);
-        expect(drawServiceSpy.clearCanvas).toHaveBeenCalled();
+        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawSpy).toHaveBeenCalled();
     });
 
@@ -168,7 +165,7 @@ describe('Shape', () => {
         shape.mouseDown = false;
 
         shape.onMouseUp(mouseEvent);
-        expect(drawServiceSpy.clearCanvas).not.toHaveBeenCalled();
+        expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
         expect(drawSpy).not.toHaveBeenCalled();
     });
 
@@ -235,13 +232,13 @@ describe('Shape', () => {
     });
 
     it('#drawPerimeter should draw a dotted line rectangle', () => {
-        const previewStub = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'rect', 'stroke', 'beginPath']);
+        const canvasSpyObj = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'rect', 'stroke', 'beginPath', 'save', 'restore']);
 
-        shape.drawPerimeter(previewStub, topLeftCorner, bottomRightCorner);
-        expect(previewStub.beginPath).toHaveBeenCalled();
-        expect(previewStub.setLineDash).toHaveBeenCalled();
-        expect(previewStub.rect).toHaveBeenCalled();
-        expect(previewStub.stroke).toHaveBeenCalled();
+        shape.drawPerimeter(canvasSpyObj, topLeftCorner, bottomRightCorner);
+        expect(canvasSpyObj.beginPath).toHaveBeenCalled();
+        expect(canvasSpyObj.setLineDash).toHaveBeenCalled();
+        expect(canvasSpyObj.rect).toHaveBeenCalled();
+        expect(canvasSpyObj.stroke).toHaveBeenCalled();
     });
 
     it('#drawPreview should clear the canvas, draw the perimeter and draw the shape on the canvas', () => {
@@ -249,7 +246,7 @@ describe('Shape', () => {
         const drawSpy = spyOn(shape, 'draw');
         shape.drawPreview();
         expect(drawPerimeterSpy).toHaveBeenCalled();
-        expect(drawServiceSpy.clearCanvas).toHaveBeenCalledWith(previewCtxStub);
+        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalledWith(previewCtxStub);
         expect(drawSpy).toHaveBeenCalledWith(previewCtxStub, shape.mouseDownCoord, shape['endCoord']);
     });
 });
