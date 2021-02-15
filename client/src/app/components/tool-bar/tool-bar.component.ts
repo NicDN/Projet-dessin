@@ -1,13 +1,19 @@
 import { Component } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
+
+interface ToolBarElement {
+    icon: string;
+    toolTipContent: string;
+    tool: Tool;
+}
 @Component({
     selector: 'app-tool-bar',
     templateUrl: './tool-bar.component.html',
     styleUrls: ['./tool-bar.component.scss'],
 })
 export class ToolBarComponent {
-    toolBarElements: { icon: string; toolTipContent: string; tool: Tool }[] = [
+    toolBarElements: ToolBarElement[] = [
         { icon: 'pencil-alt', toolTipContent: 'Crayon (C)', tool: this.toolService.pencilService },
         { icon: 'square', toolTipContent: 'Rectangle (1)', tool: this.toolService.rectangleDrawingService },
         { icon: 'circle', toolTipContent: 'Ellipse (2)', tool: this.toolService.ellipseDrawingService },
