@@ -29,6 +29,9 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     }
 
     renderPalette(): void {
+        if (!this.canvas) {
+            return;
+        }
         if (!this.ctx) {
             this.ctx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         }
