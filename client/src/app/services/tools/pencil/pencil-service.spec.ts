@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from './pencil-service';
 
@@ -10,6 +11,10 @@ describe('PencilService', () => {
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+    let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
+
+    const PRIMARY_COLOR_STUB = 'red';
+    const OPACITY_STUB = 1;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -17,9 +22,16 @@ describe('PencilService', () => {
     let onMouseOutSpy: jasmine.Spy;
 
     beforeEach(() => {
+        colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
+            mainColor: { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB },
+        });
+
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: ColorService, useValue: colorServiceSpyObj },
+            ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -149,5 +161,14 @@ describe('PencilService', () => {
         service.isEraser = true;
         service.clearPreviewIfNotEraser(service.isEraser);
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
+    });
+
+    it('#setContext should set the context for drawing', () => {
+        service.setContext(baseCtxStub);
+        expect(baseCtxStub.lineCap).toEqual('round');
+        expect(baseCtxStub.lineJoin).toEqual('round');
+        expect(baseCtxStub.lineWidth).toEqual(service.thickness);
+        expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+        expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
     });
 });
