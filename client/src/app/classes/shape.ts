@@ -62,13 +62,16 @@ export abstract class Shape extends DrawingTool {
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        ctx.save();
         ctx.beginPath();
+
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
         ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+
         ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
         ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.restore();
     }
 
     drawPreview(): void {
@@ -77,12 +80,14 @@ export abstract class Shape extends DrawingTool {
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
     }
 
-    getActualEndCoords(begin: Vec2, end: Vec2): Vec2 {
+    getTrueEndCoords(begin: Vec2, end: Vec2): Vec2 {
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
+        const distX: number = Math.abs(end.x - begin.x);
+        const distY: number = Math.abs(end.y - begin.y);
         if (this.alternateShape) {
-            endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
-            endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(Math.abs(end.x - begin.x), Math.abs(end.y - begin.y));
+            endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(distX, distY);
+            endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(distX, distY);
         }
         return { x: endCoordX, y: endCoordY };
     }

@@ -9,52 +9,53 @@ import { RectangleDrawingService } from './rectangle-drawing.service';
 // tslint:disable: no-string-literal
 describe('RectangleDrawingService', () => {
     let service: RectangleDrawingService;
-    let colorServiceSpy: jasmine.SpyObj<ColorService>;
-    let drawServiceSpy: jasmine.SpyObj<DrawingService>;
+    let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
-    const primaryColor = 'blue';
-    const secondaryColor = 'black';
-    const defaultOpacity = 1;
-    const defaultThickness = 4;
-    let topLeftCorner: Vec2 = { x: 0, y: 0 };
-    let bottomRightCorner: Vec2 = { x: 40, y: 20 };
-    let lengths: Vec2 = { x: bottomRightCorner.x - topLeftCorner.x, y: bottomRightCorner.y - topLeftCorner.y };
-    // const bottomLeftCorner: Vec2 = { x: 0, y: 20 };
-    // const topRightCorner: Vec2 = { x: 40, y: 0 };
+    const PRIMARY_COLOR_STUB = 'blue';
+    const SECONDARY_COLOR_STUB = 'black';
+    const OPACITY_STUB = 1;
+    const THICKNESS_STUB = 4;
+    let TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
+    let BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
+    let SIDE_LENGTHS_STUB: Vec2;
+
+    const RGB_MAX = 255;
 
     beforeEach(() => {
-        const colorSpy = jasmine.createSpyObj('ColorService', [], {
-            mainColor: { rgbValue: primaryColor, opacity: defaultOpacity },
-            secondaryColor: { rgbValue: secondaryColor, opacity: defaultOpacity },
+        colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
+            mainColor: { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB },
+            secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
-        drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
 
         TestBed.configureTestingModule({
             providers: [
                 RectangleDrawingService,
-                { provide: ColorService, useValue: colorSpy },
-                { provide: DrawingService, useValue: drawServiceSpy },
+                { provide: ColorService, useValue: colorServiceSpyObj },
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
             ],
         });
-        service = TestBed.inject(RectangleDrawingService);
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
         service = TestBed.inject(RectangleDrawingService);
-        colorServiceSpy = TestBed.inject(ColorService) as jasmine.SpyObj<ColorService>;
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
 
-        topLeftCorner = { x: 0, y: 0 };
-        bottomRightCorner = { x: 40, y: 20 };
-        lengths = { x: bottomRightCorner.x - topLeftCorner.x, y: bottomRightCorner.y - topLeftCorner.y };
+        TOP_LEFT_CORNER_COORDS = { x: 0, y: 0 };
+        BOTTOM_RIGHT_CORNER_COORDS = { x: 40, y: 20 };
+        SIDE_LENGTHS_STUB = {
+            x: BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x,
+            y: BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y,
+        };
     });
 
     it('should be created', () => {
@@ -62,90 +63,86 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawServiceSpy.baseCtx, defaultThickness);
-        expect(drawServiceSpy.baseCtx.getLineDash()).toEqual([]);
-        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(defaultThickness);
-        expect(drawServiceSpy.baseCtx.lineJoin).toEqual('miter');
+        service.setContextParameters(drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
+        expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
+        expect(drawingServiceSpyObj.baseCtx.lineJoin).toEqual('miter');
     });
 
     it('#draw should draw a rectangle on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
-        colorServiceSpy.mainColor.opacity = 1;
-        colorServiceSpy.secondaryColor.opacity = 1;
+        service.thickness = THICKNESS_STUB;
         service.traceType = TraceType.FilledAndBordered;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 2, y: 10 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 0 };
-        const rgbMax = 255;
+
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#draw without border should draw a rectangle on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
-        colorServiceSpy.mainColor.opacity = 1;
-        colorServiceSpy.secondaryColor.opacity = 1;
+        service.thickness = THICKNESS_STUB;
         service.traceType = TraceType.FilledNoBordered;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 2, y: 10 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 10 };
-        const rgbMax = 255;
+
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#draw when using alternate shape should draw a square on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
-        colorServiceSpy.mainColor.opacity = 1;
-        colorServiceSpy.secondaryColor.opacity = 1;
+        service.thickness = THICKNESS_STUB;
         service.traceType = TraceType.Bordered;
         service['alternateShape'] = true;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 10, y: 2 };
         const centerPoint: Vec2 = { x: 12, y: 10 };
         const outsidePoint: Vec2 = { x: 22, y: 10 };
-        const rgbMax = 255;
+
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#adjustToWidth should adjust the begin coords and length appropriately', () => {
+    it('#adjustToBorder should adjust the begin coords and length appropriately', () => {
         const initialWidth = 50;
-        const initialCoords = { x: topLeftCorner.x, y: topLeftCorner.y };
-        const initialLengths = { x: lengths.x, y: lengths.y };
-        drawServiceSpy.previewCtx.lineWidth = initialWidth;
-        service.adjustToWidth(drawServiceSpy.previewCtx, lengths, topLeftCorner, bottomRightCorner);
-        expect(drawServiceSpy.baseCtx.lineWidth).toBeLessThan(initialWidth);
-        expect(topLeftCorner.x).toBeGreaterThan(initialCoords.x);
-        expect(topLeftCorner.y).toBeGreaterThan(initialCoords.y);
-        expect(lengths.x).toBeLessThan(initialLengths.x);
-        expect(lengths.y).toBeLessThan(initialLengths.y);
+        const initialCoords = { x: TOP_LEFT_CORNER_COORDS.x, y: TOP_LEFT_CORNER_COORDS.y };
+        const initialLengths = { x: SIDE_LENGTHS_STUB.x, y: SIDE_LENGTHS_STUB.y };
+        drawingServiceSpyObj.previewCtx.lineWidth = initialWidth;
+
+        service.adjustToBorder(drawingServiceSpyObj.previewCtx, SIDE_LENGTHS_STUB, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
+        expect(TOP_LEFT_CORNER_COORDS.x).toBeGreaterThan(initialCoords.x);
+        expect(TOP_LEFT_CORNER_COORDS.y).toBeGreaterThan(initialCoords.y);
+        expect(SIDE_LENGTHS_STUB.x).toBeLessThan(initialLengths.x);
+        expect(SIDE_LENGTHS_STUB.y).toBeLessThan(initialLengths.y);
     });
 
     it('#adjustToWidth should adjust properly if end coords and begin coords are same (edge case)', () => {
         const initialWidth = 50;
-        const initialCoords = { x: topLeftCorner.x, y: topLeftCorner.y };
+        const initialCoords = { x: TOP_LEFT_CORNER_COORDS.x, y: TOP_LEFT_CORNER_COORDS.y };
         const initialLengths = { x: 0, y: 0 };
-        drawServiceSpy.previewCtx.lineWidth = initialWidth;
-        service.adjustToWidth(drawServiceSpy.previewCtx, initialLengths, topLeftCorner, topLeftCorner);
-        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(1);
-        expect(topLeftCorner).toEqual(initialCoords);
+        drawingServiceSpyObj.previewCtx.lineWidth = initialWidth;
+
+        service.adjustToBorder(drawingServiceSpyObj.previewCtx, initialLengths, TOP_LEFT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
+        expect(TOP_LEFT_CORNER_COORDS).toEqual(initialCoords);
     });
 });

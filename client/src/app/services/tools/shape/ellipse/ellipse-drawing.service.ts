@@ -13,14 +13,15 @@ export class EllipseDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const actualEndCoords: Vec2 = this.getActualEndCoords(begin, end);
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
 
+        ctx.save();
         this.setContextParameters(ctx, this.thickness);
         ctx.beginPath();
 
-        this.adjustToWidth(ctx, radiuses, begin, actualEndCoords);
+        this.adjustToBorder(ctx, radiuses, begin, actualEndCoords);
 
         ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
@@ -32,6 +33,7 @@ export class EllipseDrawingService extends Shape {
             this.setStrokeColor(ctx, this.colorService.secondaryColor);
             ctx.stroke();
         }
+        ctx.restore();
     }
 
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
@@ -48,9 +50,8 @@ export class EllipseDrawingService extends Shape {
         return Math.abs(end - begin) / 2;
     }
 
-    adjustToWidth(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
-        const thicknessAdjustment: number =
-            this.traceType === TraceType.Bordered || this.traceType === TraceType.FilledAndBordered ? ctx.lineWidth / 2 : 0;
+    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
+        const thicknessAdjustment: number = this.traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
         radiuses.x -= thicknessAdjustment;
         radiuses.y -= thicknessAdjustment;
         if (radiuses.x <= 0) {
