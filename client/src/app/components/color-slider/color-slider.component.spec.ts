@@ -33,15 +33,15 @@ describe('ColorSliderComponent', () => {
     });
 
     it('#renderRectangleIcon should render a rectangle icon if a position is selected on the slider ', () => {
-        component.selectedHeight = DEFAULT_X;
         const EXPECTED_LINE_WIDTH = 5;
-        component['renderRectangleIcon'](1, 1);
+        component.selectedHeight = DEFAULT_X;
+        component['renderRectangleIcon'](1);
         expect(component['ctx'].lineWidth).toEqual(EXPECTED_LINE_WIDTH); // idicator that we entered the if condition to draw the rectangle
     });
 
     it('#renderRectangleIcon should not render a rectangle icon if no position is selected on the slider ', () => {
         const EXPECTED_LINE_WIDTH = 5;
-        component['renderRectangleIcon'](1, 1);
+        component['renderRectangleIcon'](1);
         expect(component['ctx'].lineWidth).not.toEqual(EXPECTED_LINE_WIDTH); // idicator that we entered the if condition to draw the rectangle
     });
 

@@ -9,8 +9,6 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class RectangleDrawingService extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Rectangle');
-        this.thickness = 1;
-        this.minThickness = 1;
     }
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         this.setContextParameters(ctx, this.thickness);

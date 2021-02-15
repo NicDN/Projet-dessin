@@ -33,7 +33,6 @@ export class HotkeyService {
             Digit2: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService),
         };
     }
-
     onKeyDown(event: KeyboardEvent): void {
         this.verifyCtrlKeyStatus(event);
         this.shortcuts[event.code as Shortcuts]?.();

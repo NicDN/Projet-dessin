@@ -52,8 +52,8 @@ describe('ColorService', () => {
     });
 
     it('#updatePreviousColors should update previous colors', () => {
+        const EXPECTED_LAST_COLOR: Color = new Color('rgb(255,128,0)', 1);
         service.updatePreviousColors(DEFAULT_COLOR.rgbValue, DEFAULT_COLOR.opacity);
-        const EXPECTED_LAST_COLOR: Color = new Color('rgb(255,128,0)', 1); // white box testing, good practice
         expect(service.previousColors[0]).toEqual(DEFAULT_COLOR);
         expect(service.previousColors[service.previousColors.length - 1].opacity).toEqual(EXPECTED_LAST_COLOR.opacity);
         expect(service.previousColors[service.previousColors.length - 1].rgbValue).toEqual(EXPECTED_LAST_COLOR.rgbValue);

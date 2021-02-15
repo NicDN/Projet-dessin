@@ -5,7 +5,7 @@ import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
+import { LineService } from '@app/services/tools/line/line.service';
 import { LineSettingsSelectorComponent } from './line-settings-selector.component';
 
 describe('LineSettingsSelectorComponent', () => {

@@ -16,19 +16,21 @@ describe('EllipseDrawingService', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
-    const primaryColor = 'blue';
-    const secondaryColor = 'black';
-    const defaultOpacity = 1;
-    const defaultThickness = 4;
-    const topLeftCorner: Vec2 = { x: 0, y: 0 };
-    const bottomRightCorner: Vec2 = { x: 40, y: 20 };
-    const bottomLeftCorner: Vec2 = { x: 0, y: 20 };
-    const topRightCorner: Vec2 = { x: 40, y: 0 };
+    const PRIMARY_COLOR = 'blue';
+    const SECONDARY_COLOR = 'black';
+
+    const DEFAULT_OPACITY = 1;
+    const DEFAULT_THICKNESS = 4;
+
+    const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
+    const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
+    const BOTTOM_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 20 };
+    const TOP_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 0 };
 
     beforeEach(() => {
         const colorSpy = jasmine.createSpyObj('ColorService', [], {
-            mainColor: { rgbValue: primaryColor, opacity: defaultOpacity },
-            secondaryColor: { rgbValue: secondaryColor, opacity: defaultOpacity },
+            mainColor: { rgbValue: PRIMARY_COLOR, opacity: DEFAULT_OPACITY },
+            secondaryColor: { rgbValue: SECONDARY_COLOR, opacity: DEFAULT_OPACITY },
         });
         drawServiceSpy = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
@@ -51,124 +53,124 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawServiceSpy.baseCtx, defaultThickness);
+        service.setContextParameters(drawServiceSpy.baseCtx, DEFAULT_THICKNESS);
         expect(drawServiceSpy.baseCtx.getLineDash()).toEqual([]);
-        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(defaultThickness);
+        expect(drawServiceSpy.baseCtx.lineWidth).toEqual(DEFAULT_THICKNESS);
         expect(drawServiceSpy.baseCtx.lineCap).toEqual('round');
     });
 
     it('#getCenterCoords should return coords of the center of the ellipse', () => {
-        expect(service.getCenterCoords(topLeftCorner, bottomRightCorner)).toEqual({ x: 20, y: 10 });
-        expect(service.getCenterCoords(bottomRightCorner, topLeftCorner)).toEqual({ x: 20, y: 10 });
-        expect(service.getCenterCoords(bottomLeftCorner, topRightCorner)).toEqual({ x: 20, y: 10 });
-        expect(service.getCenterCoords(topRightCorner, bottomLeftCorner)).toEqual({ x: 20, y: 10 });
+        expect(service.getCenterCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS)).toEqual({ x: 20, y: 10 });
+        expect(service.getCenterCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS)).toEqual({ x: 20, y: 10 });
+        expect(service.getCenterCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS)).toEqual({ x: 20, y: 10 });
+        expect(service.getCenterCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS)).toEqual({ x: 20, y: 10 });
     });
 
     it('#getRadius should return radius of the ellipse', () => {
-        service.traceType = TraceType.FilledNoBordered;
         const expectedXRadius = 20;
         const expectedYRadius = 10;
-        expect(service.getRadius(topLeftCorner.x, bottomRightCorner.x)).toEqual(expectedXRadius);
-        expect(service.getRadius(topLeftCorner.y, bottomRightCorner.y)).toEqual(expectedYRadius);
-        expect(service.getRadius(bottomRightCorner.x, topLeftCorner.x)).toEqual(expectedXRadius);
-        expect(service.getRadius(bottomRightCorner.y, topLeftCorner.y)).toEqual(expectedYRadius);
+        service.traceType = TraceType.FilledNoBordered;
+        expect(service.getRadius(TOP_LEFT_CORNER_COORDS.x, BOTTOM_RIGHT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(service.getRadius(TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+        expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
     });
 
-    it('should adjust radiuses if ellipse has a certain border width', () => {
-        drawServiceSpy.baseCtx.lineWidth = defaultThickness;
-        service.traceType = TraceType.FilledAndBordered;
-        const radiuses: Vec2 = { x: 20, y: 10 };
+    it('#adjustToWidth should adjust radiuses if ellipse has a certain border width', () => {
         const expectedXRadius = 18;
         const expectedYRadius = 8;
-        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
+        const radiuses: Vec2 = { x: 20, y: 10 };
+        drawServiceSpy.baseCtx.lineWidth = DEFAULT_THICKNESS;
+        service.traceType = TraceType.FilledAndBordered;
+        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
 
-    it('should not adjust radiuses if ellipse doesnt have a border', () => {
-        drawServiceSpy.baseCtx.lineWidth = defaultThickness;
-        service.traceType = TraceType.FilledNoBordered;
+    it('#adjustToWidth should not adjust radiuses if ellipse doesnt have a border', () => {
         const radiuses: Vec2 = { x: 20, y: 10 };
         const expectedXRadius = 20;
         const expectedYRadius = 10;
-        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, topLeftCorner, bottomRightCorner);
+        drawServiceSpy.baseCtx.lineWidth = DEFAULT_THICKNESS;
+        service.traceType = TraceType.FilledNoBordered;
+        service.adjustToWidth(drawServiceSpy.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
 
     it('#draw should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
+        service.thickness = DEFAULT_THICKNESS;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.FilledAndBordered;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawServiceSpy.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 2, y: 10 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 10 };
-        const rgbMax = 255;
+        const RGB_MAX = 255;
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#draw without border should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
+        service.thickness = DEFAULT_THICKNESS;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.FilledNoBordered;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawServiceSpy.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 2, y: 10 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 10 };
-        const rgbMax = 255;
+        const RGB_MAX = 255;
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, rgbMax, rgbMax));
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#draw when using alternate shape should draw a circle on the canvas at the right position and using the right colours', () => {
-        service.thickness = defaultThickness;
+        service.thickness = DEFAULT_THICKNESS;
         colorServiceSpy.mainColor.opacity = 1;
         colorServiceSpy.secondaryColor.opacity = 1;
         service.traceType = TraceType.Bordered;
         service['alternateShape'] = true;
-        service.draw(drawServiceSpy.baseCtx, topLeftCorner, bottomRightCorner);
+        service.draw(drawServiceSpy.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 10, y: 2 };
         const centerPoint: Vec2 = { x: 12, y: 10 };
         const outsidePoint: Vec2 = { x: 21, y: 10 };
-        const rgbMax = 255;
+        const RGB_MAX = 255;
         const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, rgbMax));
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
         const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('should adjust the width if its bigger than the box containing the ellipse', () => {
+    it('#adjustToWidth should adjust the width if its bigger than the box containing the ellipse', () => {
         const initialWidth = 50;
         const radius: Vec2 = { x: -5, y: -15 };
         drawServiceSpy.baseCtx.lineWidth = initialWidth;
-        service.adjustToWidth(drawServiceSpy.baseCtx, radius, topLeftCorner, bottomRightCorner);
+        service.adjustToWidth(drawServiceSpy.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(drawServiceSpy.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(radius.x).toBeGreaterThan(0);
         expect(radius.y).toBeGreaterThan(0);
     });
 
-    it('should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
+    it('#adjustToWidth should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
         const initialWidth = 50;
         const radius: Vec2 = { x: 0, y: 0 };
         drawServiceSpy.baseCtx.lineWidth = initialWidth;
-        service.adjustToWidth(drawServiceSpy.baseCtx, radius, bottomRightCorner, bottomRightCorner);
+        service.adjustToWidth(drawServiceSpy.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(drawServiceSpy.baseCtx.lineWidth).toEqual(1);
         expect(radius.x).toEqual(1);
         expect(radius.y).toEqual(1);

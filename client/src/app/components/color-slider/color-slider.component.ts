@@ -50,10 +50,10 @@ export class ColorSliderComponent implements AfterViewInit {
         this.ctx.fill();
         this.ctx.closePath();
 
-        this.renderRectangleIcon(width, height);
+        this.renderRectangleIcon(width);
     }
 
-    private renderRectangleIcon(width: number, height: number): void {
+    private renderRectangleIcon(width: number): void {
         if (this.selectedHeight) {
             this.ctx.beginPath();
             this.ctx.strokeStyle = 'white';

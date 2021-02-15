@@ -1,20 +1,23 @@
 
-mat-slide-toggle{
+mat-slide-toggle {
     padding-top: 16px;
     padding-bottom: 10px;
     padding-left: 16px;
     float: left;
+    display: inline-block;
 }
-mat-slider{
+mat-slider {
     width: 225px;
 }
-p{
+p {
     color: white;
     font-size: 16px;
     padding-top: 14px;
 }
-.diameter{
+.diameter {
     padding-top: 20px;
-    padding-right: 10px;
+    margin-right: 15px;
     font-size: 14px;
+    display: inline-block;
+    float: right;
 }
