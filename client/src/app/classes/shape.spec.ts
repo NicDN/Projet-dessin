@@ -4,7 +4,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CanvasTestHelper } from './canvas-test-helper';
 import { Shape } from './shape';
-import { MouseButton } from './tool';
+import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 
 export class ShapeStub extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
@@ -36,9 +36,6 @@ describe('Shape', () => {
     const TOP_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 0 };
     const LEFT_BUTTON_PRESSED = 1;
     const NO_BUTTON_PRESSED = 0;
-
-    const HORIZONTAL_OFFSET = 405;
-    const VERTICAL_OFFSET = 2;
 
     beforeEach(() => {
         colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
