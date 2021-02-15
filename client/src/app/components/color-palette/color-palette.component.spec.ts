@@ -1,11 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ColorPaletteComponent } from './color-palette.component';
+
 // tslint:disable:no-string-literal
 describe('ColorPaletteComponent', () => {
     let component: ColorPaletteComponent;
     let fixture: ComponentFixture<ColorPaletteComponent>;
+    const notLoadedComponent: ColorPaletteComponent = new ColorPaletteComponent();
+
     const DEFAULT_X = 127;
     const DEFAULT_Y = 130;
 
@@ -27,10 +29,9 @@ describe('ColorPaletteComponent', () => {
     });
 
     it('#renderPalette should not render the palette if the canvas is undefined', () => {
-        // component.canvas = fixture.debugElement.queryAll(By.css('.canvas'));
-        spyOn(component, 'renderCircle');
-        component.renderPalette();
-        expect(component.renderCircle).toHaveBeenCalled(); // non
+        spyOn(notLoadedComponent, 'renderCircle');
+        notLoadedComponent.renderPalette();
+        expect(notLoadedComponent.renderCircle).not.toHaveBeenCalled();
     });
 
     it('#renderPalette render the palette if the canvas is not undefined', () => {
