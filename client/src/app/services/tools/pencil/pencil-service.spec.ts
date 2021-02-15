@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from './pencil-service';
 
@@ -10,16 +12,29 @@ describe('PencilService', () => {
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
-
+    let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
     let onMouseOutSpy: jasmine.Spy;
 
+    const PRIMARY_COLOR_STUB = 'red';
+    const OPACITY_STUB = 1;
+    const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
+    const LEFT_BUTTON_PRESSED = 1;
+    const NO_BUTTON_PRESSED = 0;
+
     beforeEach(() => {
+        colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
+            mainColor: { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB },
+        });
+
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: ColorService, useValue: colorServiceSpyObj },
+            ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -28,16 +43,15 @@ describe('PencilService', () => {
         service = TestBed.inject(PencilService);
         drawLineSpy = spyOn(service, 'drawLine').and.callThrough();
 
-        // Configuration du spy du service
-        service['drawingService'].baseCtx = baseCtxStub; // Jasmine doesnt copy properties with underlying data
+        service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
         service.isEraser = false;
 
         mouseEvent = {
-            pageX: 430,
-            pageY: 27,
-            button: 0,
-            buttons: 1,
+            pageX: MOUSE_POSITION.x + HORIZONTAL_OFFSET,
+            pageY: MOUSE_POSITION.y + VERTICAL_OFFSET,
+            button: MouseButton.Left,
+            buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
     });
 
@@ -56,10 +70,10 @@ describe('PencilService', () => {
         expect(service.mouseDown).toEqual(true);
     });
 
-    it('#mouseDown should set mouseDown property to false on right click', () => {
+    it('#mouseDown should set mouseDown property to false on middle click', () => {
         const mouseEventRClick = {
-            offsetX: 25,
-            offsetY: 25,
+            offsetX: MOUSE_POSITION.x,
+            offsetY: MOUSE_POSITION.y,
             button: 1,
         } as MouseEvent;
         service.onMouseDown(mouseEventRClick);
@@ -109,7 +123,7 @@ describe('PencilService', () => {
 
         const expectedRedColor = 255;
         const thirdPosition = 3;
-        // Premier pixel seulement
+
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
@@ -130,10 +144,10 @@ describe('PencilService', () => {
 
     it('#onMouseEnter should set pencil service bool mouseDown to false if left click is not pressed when enterring the canvas ', () => {
         const mouseEvent2 = {
-            pageX: 430,
-            pageY: 27,
+            pageX: MOUSE_POSITION.x + HORIZONTAL_OFFSET,
+            pageY: MOUSE_POSITION.y + VERTICAL_OFFSET,
             button: 0,
-            buttons: 0,
+            buttons: NO_BUTTON_PRESSED,
         } as MouseEvent;
         service.onMouseEnter(mouseEvent2);
         expect(service.mouseDown).toEqual(false);
@@ -149,5 +163,14 @@ describe('PencilService', () => {
         service.isEraser = true;
         service.clearPreviewIfNotEraser(service.isEraser);
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
+    });
+
+    it('#setContext should set the context for drawing', () => {
+        service.setContext(baseCtxStub);
+        expect(baseCtxStub.lineCap).toEqual('round');
+        expect(baseCtxStub.lineJoin).toEqual('round');
+        expect(baseCtxStub.lineWidth).toEqual(service.thickness);
+        expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+        expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
     });
 });
