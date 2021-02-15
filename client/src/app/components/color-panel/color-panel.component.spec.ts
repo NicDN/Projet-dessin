@@ -4,13 +4,13 @@ import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
-
 import { ColorPanelComponent } from './color-panel.component';
+
 // tslint:disable:no-string-literal
 describe('ColorPanelComponent', () => {
     let component: ColorPanelComponent;
     let fixture: ComponentFixture<ColorPanelComponent>;
-    const DEFAULT_COLOR = new Color('rgb(1,2,3)', 1);
+    const DEFAULT_COLOR: Color = { rgbValue: 'rgb(1,2,3)', opacity: 1 };
     const DEFAULT_RGB_ARRAY = ['1', '2', '3'];
     let colorService: ColorService;
 

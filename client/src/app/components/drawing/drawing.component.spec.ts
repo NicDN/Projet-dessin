@@ -37,7 +37,7 @@ describe('DrawingComponent', () => {
     let onLoadCanvasHeight: number;
 
     beforeEach(async(() => {
-        boxSizeStub = new BoxSize();
+        boxSizeStub = { widthBox: 1, heightBox: 1 };
         drawingStub = new DrawingService();
         toolsServiceStub = new ToolsService(
             {} as PencilService,
@@ -98,7 +98,6 @@ describe('DrawingComponent', () => {
 
     it('#onSizeChange should call the drawingService #onSizeChange', () => {
         const onSizeChangeSpy = spyOn(drawingStub, 'onSizeChange');
-        boxSizeStub = { widthBox: 1, heightBox: 1 };
         component.onSizeChange(boxSizeStub);
         expect(onSizeChangeSpy).toHaveBeenCalled();
     });

@@ -72,13 +72,13 @@ describe('Shape', () => {
 
     it('#setFillColor should change the right ctx parameters', () => {
         shape.setFillColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
-        expect(drawingServiceSpyObj.baseCtx.fillStyle).toEqual('#0000ff');
+        expect(drawingServiceSpyObj.baseCtx.fillStyle).toEqual(COLOR_STUB);
         expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(OPACITY_STUB);
     });
 
     it('#setStrokeColor should change the right ctx parameters', () => {
         shape.setStrokeColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
-        expect(drawingServiceSpyObj.baseCtx.strokeStyle).toEqual('#0000ff');
+        expect(drawingServiceSpyObj.baseCtx.strokeStyle).toEqual(COLOR_STUB);
         expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(OPACITY_STUB);
     });
 
