@@ -26,6 +26,7 @@ export class DrawingService {
     }
 
     handleNewDrawing(): void {
+        // debugger;
         if (this.canvasIsEmpty()) {
             this.reloadDrawing();
             return;

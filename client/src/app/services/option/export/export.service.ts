@@ -3,4 +3,4 @@ import { Injectable } from '@angular/core';
 @Injectable({
     providedIn: 'root',
 })
-export class ExportService {}
+export class ExportService extends Option {}
