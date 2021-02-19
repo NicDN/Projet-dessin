@@ -45,7 +45,7 @@ describe('DrawingComponent', () => {
         toolsServiceStub = new ToolsService(
             {} as PencilService,
             {} as EllipseDrawingService,
-            {} as RectangleDrawingService, 
+            {} as RectangleDrawingService,
             {} as PolygonService,
             {} as LineService,
             {} as EraserService,
