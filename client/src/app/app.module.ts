@@ -29,10 +29,10 @@ import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SprayCanSettingsSelectorComponent } from './components/spray-can-settings-selector/spray-can-settings-selector.component';
 import { ThicknessSelectorComponent } from './components/thickness-selector/thickness-selector.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { TraceTypeSelectorComponent } from './components/trace-type-selector/trace-type-selector.component';
-import { SprayCanSettingsSelectorComponent } from './components/spray-can-settings-selector/spray-can-settings-selector.component';
 
 @NgModule({
     declarations: [

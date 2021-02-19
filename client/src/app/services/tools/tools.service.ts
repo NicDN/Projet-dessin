@@ -20,7 +20,7 @@ export class ToolsService {
         public pencilService: PencilService,
         public ellipseDrawingService: EllipseDrawingService,
         public rectangleDrawingService: RectangleDrawingService,
-        public polygonService:PolygonService,
+        public polygonService: PolygonService,
         public lineService: LineService,
         public eraserService: EraserService,
         public sprayCanService: SprayCanService,
