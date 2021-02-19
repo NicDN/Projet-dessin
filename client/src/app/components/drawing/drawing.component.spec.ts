@@ -6,10 +6,13 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
+import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LineService } from '@app/services/tools/line/line.service';
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
+import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from './drawing.component';
 
@@ -42,9 +45,12 @@ describe('DrawingComponent', () => {
         toolsServiceStub = new ToolsService(
             {} as PencilService,
             {} as EllipseDrawingService,
-            {} as RectangleDrawingService,
+            {} as RectangleDrawingService, 
+            {} as PolygonService,
             {} as LineService,
             {} as EraserService,
+            {} as SprayCanService,
+            {} as EyeDropperService,
         );
         hotkeyStub = new HotkeyService(router, drawingStub, toolsServiceStub);
         TestBed.configureTestingModule({
