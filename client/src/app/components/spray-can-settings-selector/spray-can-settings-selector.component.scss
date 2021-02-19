@@ -1,0 +1,17 @@
+
+mat-slider {
+   width: 225px;
+}
+p {
+    color: white;
+    display: inline-block;
+    padding: 15px;
+    font-size: 16px;
+}
+.divider {
+    display: flex;
+    justify-content: space-between;
+}
+mat-divider{
+    border-top-color:gray;
+}

@@ -15,10 +15,13 @@ interface ToolBarElement {
 export class ToolBarComponent {
     toolBarElements: ToolBarElement[] = [
         { icon: 'pencil-alt', toolTipContent: 'Crayon (C)', tool: this.toolService.pencilService },
+        { icon: 'eraser', toolTipContent: 'Efface (E)', tool: this.toolService.eraserService },
         { icon: 'square', toolTipContent: 'Rectangle (1)', tool: this.toolService.rectangleDrawingService },
         { icon: 'circle', toolTipContent: 'Ellipse (2)', tool: this.toolService.ellipseDrawingService },
+        { icon: 'draw-polygon', toolTipContent: 'Polygone (3)', tool: this.toolService.polygonService },
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
-        { icon: 'eraser', toolTipContent: 'Efface (E)', tool: this.toolService.eraserService },
+        { icon: 'spray-can', toolTipContent: 'Aérosol (A)', tool: this.toolService.sprayCanService },
+        { icon: 'eye-dropper', toolTipContent: 'Pipette (I)', tool: this.toolService.eyeDropperService },
     ];
     constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);

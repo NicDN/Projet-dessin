@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
+import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { Observable, Subject } from 'rxjs';
 import { EraserService } from './eraser/eraser.service';
 import { LineService } from './line/line.service';
 import { PencilService } from './pencil/pencil-service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
+import { PolygonService } from './shape/polygon/polygon.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -18,8 +20,11 @@ export class ToolsService {
         public pencilService: PencilService,
         public ellipseDrawingService: EllipseDrawingService,
         public rectangleDrawingService: RectangleDrawingService,
+        public polygonService:PolygonService,
         public lineService: LineService,
         public eraserService: EraserService,
+        public sprayCanService: SprayCanService,
+        public eyeDropperService: EyeDropperService,
     ) {
         this.currentTool = pencilService;
     }

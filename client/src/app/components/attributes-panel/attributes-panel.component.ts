@@ -46,4 +46,5 @@ export class AttributesPanelComponent {
     drawingToolIsActive(): boolean {
         return this.currentTool instanceof DrawingTool;
     }
+
 }

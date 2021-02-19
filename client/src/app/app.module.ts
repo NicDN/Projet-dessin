@@ -32,6 +32,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ThicknessSelectorComponent } from './components/thickness-selector/thickness-selector.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { TraceTypeSelectorComponent } from './components/trace-type-selector/trace-type-selector.component';
+import { SprayCanSettingsSelectorComponent } from './components/spray-can-settings-selector/spray-can-settings-selector.component';
 
 @NgModule({
     declarations: [
@@ -51,6 +52,7 @@ import { TraceTypeSelectorComponent } from './components/trace-type-selector/tra
         LineSettingsSelectorComponent,
         ColorSliderComponent,
         ColorPaletteComponent,
+        SprayCanSettingsSelectorComponent,
     ],
     imports: [
         BrowserModule,
