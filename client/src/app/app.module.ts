@@ -33,6 +33,7 @@ import { SprayCanSettingsSelectorComponent } from './components/spray-can-settin
 import { ThicknessSelectorComponent } from './components/thickness-selector/thickness-selector.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { TraceTypeSelectorComponent } from './components/trace-type-selector/trace-type-selector.component';
+import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 
 @NgModule({
     declarations: [
@@ -53,6 +54,7 @@ import { TraceTypeSelectorComponent } from './components/trace-type-selector/tra
         ColorSliderComponent,
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
+        UndoRedoComponent,
     ],
     imports: [
         BrowserModule,

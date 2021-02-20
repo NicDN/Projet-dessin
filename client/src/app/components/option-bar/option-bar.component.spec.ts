@@ -29,14 +29,14 @@ describe('OptionBarComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('#toggleActive should handle new drawing with the right toolTipContent', () => {
-        const notCtrlOOption = 'This is not control O option';
-        const ctrlOOption = 'Créer un nouveau dessin (Ctrl+O)';
+    // it('#toggleActive should handle new drawing with the right toolTipContent', () => {
+    //     const notCtrlOOption = 'This is not control O option';
+    //     const ctrlOOption = 'Créer un nouveau dessin (Ctrl+O)';
 
-        component.toggleActive(notCtrlOOption);
-        expect(drawingServiceSpy.handleNewDrawing).not.toHaveBeenCalled();
+    //     component.toggleActive(notCtrlOOption);
+    //     expect(drawingServiceSpy.handleNewDrawing).not.toHaveBeenCalled();
 
-        component.toggleActive(ctrlOOption);
-        expect(drawingServiceSpy.handleNewDrawing).toHaveBeenCalled();
-    });
+    //     component.toggleActive(ctrlOOption);
+    //     expect(drawingServiceSpy.handleNewDrawing).toHaveBeenCalled();
+    // });
 });

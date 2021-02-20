@@ -19,7 +19,12 @@
     </div>
 
     <div *ngIf="this.currentTool===this.toolsService.sprayCanService">
-        <app-spray-can-settings-selector ></app-spray-can-settings-selector>
+        <app-spray-can-settings-selector></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
+    <div class="undo-redo">
+        <mat-divider></mat-divider>
+        <app-undo-redo></app-undo-redo>
+    </div>
+
 </mat-drawer-content>
