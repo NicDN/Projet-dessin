@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SaveDialogComponent } from './save-dialog.component';
+import { CardDrawingTemplateComponent } from './card-drawing-template.component';
 
-describe('SaveDialogComponent', () => {
-    let component: SaveDialogComponent;
-    let fixture: ComponentFixture<SaveDialogComponent>;
+describe('CardDrawingTemplateComponent', () => {
+    let component: CardDrawingTemplateComponent;
+    let fixture: ComponentFixture<CardDrawingTemplateComponent>;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [SaveDialogComponent],
+            declarations: [CardDrawingTemplateComponent],
         }).compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(SaveDialogComponent);
+        fixture = TestBed.createComponent(CardDrawingTemplateComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
