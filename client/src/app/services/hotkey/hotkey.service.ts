@@ -8,8 +8,11 @@ enum Shortcuts {
     ERASER = 'KeyE',
     PENCIL = 'KeyC',
     LINE = 'KeyL',
+    SPRAY_CAN = 'KeyA',
+    EYE_DROPPER = 'KeyI',
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
+    POLYGON = 'Digit3',
 }
 
 type ShortcutManager = {
@@ -26,11 +29,14 @@ export class HotkeyService {
     constructor(public router: Router, public drawingService: DrawingService, private toolService: ToolsService) {
         this.shortcuts = {
             KeyO: () => this.handleCtrlO(),
+            KeyA: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
+            KeyI: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService),
             KeyE: () => this.toolService.setCurrentTool(this.toolService.eraserService),
             KeyL: () => this.toolService.setCurrentTool(this.toolService.lineService),
             KeyC: () => this.toolService.setCurrentTool(this.toolService.pencilService),
             Digit1: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService),
             Digit2: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService),
+            Digit3: () => this.toolService.setCurrentTool(this.toolService.polygonService),
         };
     }
     onKeyDown(event: KeyboardEvent): void {

@@ -1,8 +1,9 @@
 <div>
     <div class="divider">
         <p class="thickness-header">Épaisseur du trait</p>
-        <p class="thickness-value">{{tool.thickness }} px</p>
+        <p class="thickness-value">{{tool.thickness }} pixels</p>
     </div>
     <mat-slider class="thickness-slider" [min]="tool.minThickness" max="50" tickInterval="1"
-        (input)="updateThickness($event)" [value]="tool.thickness"></mat-slider>
+        (input)="updateThickness($event)" [value]="tool.thickness" >
+    </mat-slider>
 </div>

@@ -1,14 +1,12 @@
 <mat-drawer-content class="attributes-panel-container">
     <h2 class="tool-name-header">{{currentTool.toolName}}</h2>
     <app-color-panel></app-color-panel>
-
+    <mat-divider></mat-divider>
     <div *ngIf="drawingToolIsActive()">
-        <mat-divider></mat-divider>
         <app-thickness-selector [tool]="currentTool" (thickness)="setThickness($event)"></app-thickness-selector>
         <mat-divider></mat-divider>
     </div>
     <div *ngIf="shapeIsActive()">
-        <mat-divider></mat-divider>
         <app-trace-type-selector [tool]="currentTool" (traceType)="setTraceType($event)"></app-trace-type-selector>
         <mat-divider></mat-divider>
     </div>
@@ -19,4 +17,14 @@
             (junctionDiameter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
         <mat-divider></mat-divider>
     </div>
+
+    <div *ngIf="this.currentTool===this.toolsService.sprayCanService">
+        <app-spray-can-settings-selector></app-spray-can-settings-selector>
+        <mat-divider></mat-divider>
+    </div>
+    <div class="undo-redo">
+        <mat-divider></mat-divider>
+        <app-undo-redo></app-undo-redo>
+    </div>
+
 </mat-drawer-content>
