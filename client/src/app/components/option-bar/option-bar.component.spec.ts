@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { OptionBarComponent } from './option-bar.component';
 import SpyObj = jasmine.SpyObj;
@@ -14,7 +15,10 @@ describe('OptionBarComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [OptionBarComponent],
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpy }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpy },
+                { provide: MatDialog, useValue: {} },
+            ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
