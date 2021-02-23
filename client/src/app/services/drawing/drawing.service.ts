@@ -42,10 +42,7 @@ export class DrawingService {
     reloadDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        this.baseCtx.save();
-        this.baseCtx.fillStyle = 'white';
-        this.baseCtx.fillRect(0,0, this.canvas.width, this.canvas.height);
-        this.baseCtx.restore();
+        this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
     }
 
@@ -62,8 +59,15 @@ export class DrawingService {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
-        this.baseCtx.drawImage(this.previewCanvas, 0, 0);
+        this.fillWithWhite(this.baseCtx);
+
         this.clearCanvas(this.previewCtx);
+    }
+
+    fillWithWhite(context: CanvasRenderingContext2D): void {
+        this.baseCtx.fillStyle = 'white';
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        context.drawImage(this.previewCanvas, 0, 0);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
