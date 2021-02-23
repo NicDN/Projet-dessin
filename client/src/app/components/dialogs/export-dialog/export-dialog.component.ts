@@ -15,9 +15,9 @@ const BLUE_GREY_RATIO = 0.11;
 })
 export class ExportDialogComponent implements AfterViewInit {
     @ViewChild('filterCanvas', { static: false }) filterCanvas: ElementRef<HTMLCanvasElement>;
+    filters: string[] = ['Aucun filtre', 'Noir et blanc', 'Filtre2', 'Filtre3', 'Filtre4', 'Filtre5'];
 
     selectedFilter: string = 'Aucun filtre';
-    filters: string[] = ['Aucun filtre', 'Noir et blanc', 'Filtre2', 'Filtre3', 'Filtre4', 'Filtre5'];
     private filterCanvasCtx: CanvasRenderingContext2D;
 
     constructor(
@@ -35,15 +35,15 @@ export class ExportDialogComponent implements AfterViewInit {
     changeFilter(): void {
         // VERY TEMPORARY, should use type in or smthg similar instead of if and else
         if (this.selectedFilter === 'Noir et blanc') {
-            this.grayScale(this.filterCanvasCtx, this.filterCanvas.nativeElement);
+            this.grayScale();
         } else {
-            this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+            this.changeBackToNoFilter();
         }
     }
 
-    grayScale(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
+    grayScale(): void {
         // Reference https://www.htmlgoodies.com/html5/javascript/display-images-in-black-and-white-using-the-html5-canvas.html
-        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const imgData = this.filterCanvasCtx.getImageData(0, 0, this.filterCanvas.nativeElement.width, this.filterCanvas.nativeElement.height);
         const pixels = imgData.data;
         const numberOfPixels = pixels.length;
         for (let i = 0; i < numberOfPixels; i += NEXT_PIXEL) {
@@ -54,7 +54,11 @@ export class ExportDialogComponent implements AfterViewInit {
             // pixels[i+3]              is alpha
         }
         // redraw the image in black & white
-        context.putImageData(imgData, 0, 0);
+        this.filterCanvasCtx.putImageData(imgData, 0, 0);
+    }
+
+    changeBackToNoFilter(): void {
+        this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
     }
 
     exportCanvas(fileName: string, fileFormat: string): void {
