@@ -33,6 +33,7 @@ export class DrawingService {
         if (this.confirmReload()) {
             this.reloadDrawing();
         }
+        this.clearCanvas(this.previewCtx);
     }
 
     confirmReload(): boolean {

@@ -22,9 +22,34 @@ export class ExportDialogComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit(): void {
+        this.filterCanvas.nativeElement.style.border = '2px solid black';
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
         this.filterCanvas.nativeElement = this.drawingService.canvas;
+    }
+
+    changeFilter(): void {
+        // VERY TEMPORARY, should use type in or smthg similar instead of if and else
+        if (this.selectedFilter === 'Noir et blanc') {
+            this.grayScale(this.filterCanvasCtx, this.filterCanvas.nativeElement);
+        } else {
+            this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        }
+    }
+
+    grayScale(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+        // Reference 
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imgData.data;
+        for (var i = 0, n = pixels.length; i < n; i += 4) {
+            const grayscale = pixels[i] * 0.3 + pixels[i + 1] * 0.59 + pixels[i + 2] * 0.11;
+            pixels[i] = grayscale; // red
+            pixels[i + 1] = grayscale; // green
+            pixels[i + 2] = grayscale; // blue
+            //pixels[i+3]              is alpha
+        }
+        //redraw the image in black & white
+        context.putImageData(imgData, 0, 0);
     }
 
     exportCanvas(fileName: string, fileFormat: string): void {
