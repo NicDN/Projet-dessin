@@ -51,7 +51,7 @@ export class DrawingService {
     }
 
     canvasIsEmpty(): boolean {
-        this.clearCanvas(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
+        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
@@ -65,7 +65,7 @@ export class DrawingService {
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {
-        this.baseCtx.fillStyle = 'white';
+        context.fillStyle = 'white';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
         context.drawImage(this.previewCanvas, 0, 0);
     }

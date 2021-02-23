@@ -86,7 +86,10 @@ export class HotkeyService {
     }
 
     handleCtrlO(): void {
-        this.router.navigate(['editor']);
-        this.drawingService.handleNewDrawing();
+        if (this.router.url === '/home') {
+            this.router.navigate(['editor']);
+        } else {
+            this.drawingService.handleNewDrawing();
+        }
     }
 }
