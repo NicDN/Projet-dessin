@@ -25,7 +25,6 @@ export class ExportDialogComponent implements AfterViewInit {
         this.filterCanvas.nativeElement.style.border = '2px solid black';
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
-        this.filterCanvas.nativeElement = this.drawingService.canvas;
     }
 
     changeFilter(): void {
@@ -38,7 +37,7 @@ export class ExportDialogComponent implements AfterViewInit {
     }
 
     grayScale(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
-        // Reference 
+        // Reference https://www.htmlgoodies.com/html5/javascript/display-images-in-black-and-white-using-the-html5-canvas.html
         const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
         for (var i = 0, n = pixels.length; i < n; i += 4) {
