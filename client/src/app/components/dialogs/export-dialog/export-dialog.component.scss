@@ -10,13 +10,13 @@
     text-align: center;
 }
 .preview-filter {
-    // border-color: black;
-    // border-radius: 3px;
-    // border-style: solid;
+    border-color: black;
+    border-radius: 3px;
+    border-style: solid;
     background-color: grey;
     width: auto;
     height: 520px;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 mat-button-toggle-group {
