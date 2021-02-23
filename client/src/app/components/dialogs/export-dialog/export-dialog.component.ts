@@ -22,21 +22,13 @@ export class ExportDialogComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit(): void {
-        this.filterCanvas.nativeElement = this.drawingService.canvas;
+        // this.filterCanvas.nativeElement = this.drawingService.canvas;
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.filterCanvasCtx = this.drawingService.baseCtx;
-        this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        // this.filterCanvasCtx = this.drawingService.baseCtx;
+        this.filterCanvasCtx.drawImage(this.drawingService.canvas, -100, -100);
+        // this.filterCanvasCtx.scale(9, 3);
         this.filterCanvasCtx.fillRect(0, 0, 2, 2);
     }
-
-    // applyFilter(filter: string): void {
-    //     this.filterCanvasCtx.save();
-    // }
-
-    // drawRectangleTmp(): void {
-    //     console.log('Hello THere');
-    //     this.filterCanvasCtx.fillRect(0, 0, 2, 2);
-    // }
 
     exportCanvas(fileName: string, fileFormat: string): void {
         this.exportService.exportCanvas(fileName, fileFormat, this.filterCanvas);

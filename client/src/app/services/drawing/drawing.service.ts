@@ -42,6 +42,10 @@ export class DrawingService {
     reloadDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
+        this.baseCtx.save();
+        this.baseCtx.fillStyle = 'white';
+        this.baseCtx.fillRect(0,0, this.canvas.width, this.canvas.height);
+        this.baseCtx.restore();
         this.resetCanvas();
     }
 
