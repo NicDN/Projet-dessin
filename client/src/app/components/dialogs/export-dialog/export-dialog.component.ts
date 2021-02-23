@@ -25,7 +25,6 @@ export class ExportDialogComponent implements AfterViewInit {
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
         this.filterCanvas.nativeElement = this.drawingService.canvas;
-        this.filterCanvasCtx.fillRect(0, 0, 2, 2);
     }
 
     exportCanvas(fileName: string, fileFormat: string): void {
