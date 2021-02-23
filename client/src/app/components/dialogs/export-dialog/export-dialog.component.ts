@@ -2,6 +2,12 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ExportService } from '@app/services/option/export/export.service';
+
+const NEXT_PIXEL = 4;
+const RED_GREY_RATIO = 0.3;
+const GREEN_GREY_RATIO = 0.59;
+const BLUE_GREY_RATIO = 0.11;
+
 @Component({
     selector: 'app-export-dialog',
     templateUrl: './export-dialog.component.html',
@@ -10,9 +16,8 @@ import { ExportService } from '@app/services/option/export/export.service';
 export class ExportDialogComponent implements AfterViewInit {
     @ViewChild('filterCanvas', { static: false }) filterCanvas: ElementRef<HTMLCanvasElement>;
 
-    filters: string[] = ['Aucun filtre', 'Noir et blanc', 'Filtre2', 'Filtre3', 'Filtre4', 'Filtre5'];
     selectedFilter: string = 'Aucun filtre';
-
+    filters: string[] = ['Aucun filtre', 'Noir et blanc', 'Filtre2', 'Filtre3', 'Filtre4', 'Filtre5'];
     private filterCanvasCtx: CanvasRenderingContext2D;
 
     constructor(
@@ -36,18 +41,19 @@ export class ExportDialogComponent implements AfterViewInit {
         }
     }
 
-    grayScale(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+    grayScale(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement): void {
         // Reference https://www.htmlgoodies.com/html5/javascript/display-images-in-black-and-white-using-the-html5-canvas.html
         const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
         const pixels = imgData.data;
-        for (var i = 0, n = pixels.length; i < n; i += 4) {
-            const grayscale = pixels[i] * 0.3 + pixels[i + 1] * 0.59 + pixels[i + 2] * 0.11;
+        const numberOfPixels = pixels.length;
+        for (let i = 0; i < numberOfPixels; i += NEXT_PIXEL) {
+            const grayscale = pixels[i] * RED_GREY_RATIO + pixels[i + 1] * GREEN_GREY_RATIO + pixels[i + 2] * BLUE_GREY_RATIO;
             pixels[i] = grayscale; // red
             pixels[i + 1] = grayscale; // green
             pixels[i + 2] = grayscale; // blue
-            //pixels[i+3]              is alpha
+            // pixels[i+3]              is alpha
         }
-        //redraw the image in black & white
+        // redraw the image in black & white
         context.putImageData(imgData, 0, 0);
     }
 
