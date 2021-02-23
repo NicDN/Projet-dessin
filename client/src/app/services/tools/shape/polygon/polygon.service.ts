@@ -8,6 +8,9 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class PolygonService extends Shape {
+    numberOfSides: number = 1;
+    minNumberOfSides: number = 3;
+
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         throw new Error('Method not implemented.');
     }

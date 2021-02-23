@@ -34,6 +34,7 @@ import { ThicknessSelectorComponent } from './components/thickness-selector/thic
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { TraceTypeSelectorComponent } from './components/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
+import { PolygonSidesSelectorComponent } from './polygon-sides-selector/polygon-sides-selector.component';
 
 @NgModule({
     declarations: [
@@ -55,6 +56,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
+        PolygonSidesSelectorComponent,
     ],
     imports: [
         BrowserModule,

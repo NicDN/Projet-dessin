@@ -1,0 +1,15 @@
+<div>
+    <div class="divider">
+        <p class="sides-header">Nombre de côtés</p>
+        <p class="sides-value">{{ polygon.numberOfSides }} côtés</p>
+    </div>
+    <mat-slider
+        class="sides-slider"
+        [min]="polygon.minNumberOfSides"
+        max="12"
+        tickInterval="1"
+        (input)="updateNumberOfSides($event)"
+        [value]="polygon.numberOfSides"
+    >
+    </mat-slider>
+</div>
