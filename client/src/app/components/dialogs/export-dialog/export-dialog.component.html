@@ -23,8 +23,8 @@
     </div>
 
     <div class="preview-filter">
-        <canvas id="tmp" #filterCanvas [style.width.px]="this.drawingService.canvas.width+4"
-            [style.height.px]="this.drawingService.canvas.height+4"></canvas>
+        <canvas id="tmp" #filterCanvas [attr.width]="this.drawingService.canvas.width+4"
+            [attr.height]="this.drawingService.canvas.height+4"></canvas>
     </div>
 
     <div class="bottom-div">

@@ -23,12 +23,8 @@ export class ExportDialogComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        // this.filterCanvasCtx = this.drawingService.baseCtx;
-        // this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
-        // this.filterCanvasCtx.scale(0.5, 0.5);
-        let image = this.drawingService.baseCtx.getImageData(0, 0, this.drawingService.canvas.width, this.drawingService.canvas.height);
-        this.filterCanvasCtx.putImageData(image, 0, 0);
-        this.filterCanvas.nativeElement = this.drawingService.canvas; // Careful
+        this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        this.filterCanvas.nativeElement = this.drawingService.canvas;
         this.filterCanvasCtx.fillRect(0, 0, 2, 2);
     }
 
