@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { Subscription } from 'rxjs';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -34,6 +35,10 @@ type ShortcutManager = {
 export class HotkeyService {
     shortCutManager: ShortcutManager;
 
+    listenToKeyEvents: boolean = true;
+
+    subscription: Subscription;
+
     constructor(
         public router: Router,
         public drawingService: DrawingService,
@@ -56,16 +61,27 @@ export class HotkeyService {
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
         };
+
+        this.observeDialogService();
+    }
+
+    observeDialogService(): void {
+        this.subscription = this.dialogService.listenToKeyEvents().subscribe((value) => {
+            this.listenToKeyEvents = value;
+        });
     }
 
     onKeyDown(event: KeyboardEvent): void {
+        if (!this.listenToKeyEvents) {
+            return;
+        }
         if (event.ctrlKey) {
             event.preventDefault();
             this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
-        this.toolService.currentTool.onKeyDown(event);
+        this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
         event.returnValue = true; // To accept default web shortCutManager
     }
 

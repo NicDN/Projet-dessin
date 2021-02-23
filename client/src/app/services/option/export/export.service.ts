@@ -1,14 +1,20 @@
-import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ExportDialogComponent } from '@app/components/dialogs/export-dialog/export-dialog.component';
-
+import { ElementRef, Injectable } from '@angular/core';
 @Injectable({
     providedIn: 'root',
 })
 export class ExportService {
-    constructor(private dialog: MatDialog) {}
+    exportCanvas(fileName: string, fileFormat: string, filterCanvas: ElementRef<HTMLCanvasElement>): void {
+        const exportLink = document.createElement('a');
 
-    openDialog(): void {
-        this.dialog.open(ExportDialogComponent);
+        if (fileName === '') {
+            fileName = 'Sans titre';
+        }
+        exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
+
+        filterCanvas.nativeElement.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            exportLink.setAttribute('href', url);
+            exportLink.click();
+        });
     }
 }
