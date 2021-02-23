@@ -104,9 +104,9 @@ export class ExportDialogComponent implements AfterViewInit {
         const pixels = imgData.data;
         const numberOfPixels = pixels.length;
         for (let i = 0; i < numberOfPixels; i += NEXT_PIXEL) {
-            let oldR = pixels[i];
-            let oldG = pixels[i + 1];
-            let oldB = pixels[i + 2];
+            const oldR = pixels[i];
+            const oldG = pixels[i + 1];
+            const oldB = pixels[i + 2];
             pixels[i] = oldG;
             pixels[i + 1] = oldB;
             pixels[i + 2] = oldR;
@@ -115,6 +115,7 @@ export class ExportDialogComponent implements AfterViewInit {
     }
 
     blurFilter(): void {
+        this.resetWithNotFilter();
         this.filterCanvas.nativeElement.style.filter = 'blur(2px)';
     }
 
