@@ -1,9 +1,13 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { FilterService } from '@app/services/filter/filter.service';
+
 @Injectable({
     providedIn: 'root',
 })
 export class ExportService {
-    exportCanvas(fileName: string, fileFormat: string, filterCanvas: ElementRef<HTMLCanvasElement>): void {
+    constructor(private filterService: FilterService) {}
+
+    exportCanvas(fileName: string, fileFormat: string): void {
         const exportLink = document.createElement('a');
 
         if (fileName === '') {
@@ -11,7 +15,7 @@ export class ExportService {
         }
         exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
 
-        filterCanvas.nativeElement.toBlob((blob) => {
+        this.filterService.canvas.nativeElement.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
             exportLink.setAttribute('href', url);
             exportLink.click();

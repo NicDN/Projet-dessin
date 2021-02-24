@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { CarouselDialogComponent } from '@app/components/dialogs/carousel-dialog/carousel-dialog.component';
 import { ExportDialogComponent } from '@app/components/dialogs/export-dialog/export-dialog.component';
 import { SaveDialogComponent } from '@app/components/dialogs/save-dialog/save-dialog.component';
 import { Observable, Subject } from 'rxjs';
@@ -24,7 +25,7 @@ export class DialogService {
     openDialog(dialogType: DialogType): void {
         switch (dialogType) {
             case DialogType.Carousel: {
-                this.dialogRef = this.dialog.open(ExportDialogComponent);
+                this.dialogRef = this.dialog.open(CarouselDialogComponent);
                 break;
             }
             case DialogType.Save: {

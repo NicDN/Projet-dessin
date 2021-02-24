@@ -7,8 +7,8 @@
 
         <mat-form-field class="filter-selector">
             <mat-label>Sélectionez un filtre</mat-label>
-            <mat-select #filter [(value)]="selectedFilter" >
-                <mat-option *ngFor="let filter of filters" [value]="filter" (click)="changeFilter()"> {{filter}}</mat-option>
+            <mat-select #filter [(value)]="this.filters[0].name" >
+                <mat-option *ngFor="let filter of filters" [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
             </mat-select>
         </mat-form-field>
 
@@ -23,7 +23,7 @@
     </div>
 
     <div class="preview-filter">
-        <canvas #filterCanvas [style.height.px]="520" [style.width.px]="850" [attr.width]="this.drawingService.canvas.width"
+        <canvas #canvas [style.height.px]="520" [style.width.px]="850" [attr.width]="this.drawingService.canvas.width"
             [attr.height]="this.drawingService.canvas.height"></canvas>
     </div>
 
