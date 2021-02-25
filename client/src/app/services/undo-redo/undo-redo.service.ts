@@ -9,7 +9,7 @@ export class UndoRedoService {
     redoList = [];
     constructor(private drawingService: DrawingService) {}
 
-    //Une action devrait contenir son type (si c'est drawing, resizing ou selecting)
+    // Une action devrait contenir son type (si c'est drawing, resizing ou selecting)
 
     // Two stacks
 
@@ -28,8 +28,11 @@ export class UndoRedoService {
 
 /*
   Random 
-    resize : .push('resize', boxSize){
-      
-    }
+    resize : .push('resize', oldBoxSize);
+
+    undo: 
+      if(is resize){
+        action.drawingService.onSizeChange()
+      }
   }
 */
