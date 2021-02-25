@@ -20,10 +20,10 @@ export class ExportDialogComponent implements AfterViewInit {
     filters: Filter[] = [
         { filterType: FilterType.NoFilter, name: 'Aucun filtre' },
         { filterType: FilterType.GrayScale, name: 'Noir et blanc' },
-        { filterType: FilterType.Blur, name: 'Embrouillé' },
+        { filterType: FilterType.Saturate, name: 'Saturé' },
         { filterType: FilterType.InvertColor, name: 'Couleur inverses' },
-        { filterType: FilterType.RedGreenBlue, name: 'Rouge Vert Bleu' },
-        { filterType: FilterType.Brightness, name: 'Éclairé' },
+        { filterType: FilterType.Blur, name: 'Embrouillé' },
+        { filterType: FilterType.Sepia, name: 'Sepia' },
     ];
 
     private canvasCtx: CanvasRenderingContext2D;

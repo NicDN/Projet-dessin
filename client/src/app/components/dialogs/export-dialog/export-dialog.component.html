@@ -7,7 +7,7 @@
 
         <mat-form-field class="filter-selector">
             <mat-label>Sélectionez un filtre</mat-label>
-            <mat-select #filter [(value)]="this.filters[0].name" >
+            <mat-select #filter  >
                 <mat-option *ngFor="let filter of filters" [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
             </mat-select>
         </mat-form-field>
