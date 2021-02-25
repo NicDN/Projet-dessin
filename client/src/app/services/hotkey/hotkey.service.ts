@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { SaveService } from '@app/services/option/save/save.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 enum Shortcuts {
@@ -10,6 +11,7 @@ enum Shortcuts {
     LINE = 'KeyL',
     SPRAY_CAN = 'KeyA',
     EYE_DROPPER = 'KeyI',
+    SAVE = 'KeyS',
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
@@ -26,9 +28,10 @@ export class HotkeyService {
     shortcuts: ShortcutManager;
     ctrlKeyPressed: boolean = false;
 
-    constructor(public router: Router, public drawingService: DrawingService, private toolService: ToolsService) {
+    constructor(public router: Router, public drawingService: DrawingService, private toolService: ToolsService, public saveService: SaveService) {
         this.shortcuts = {
             KeyO: () => this.handleCtrlO(),
+            KeyS: () => this.handleCtrlS(),
             KeyA: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
             KeyI: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService),
             KeyE: () => this.toolService.setCurrentTool(this.toolService.eraserService),
@@ -57,5 +60,10 @@ export class HotkeyService {
         if (!this.ctrlKeyPressed) return;
         this.router.navigate(['editor']);
         this.drawingService.handleNewDrawing();
+    }
+
+    handleCtrlS(): void {
+        if (!this.ctrlKeyPressed) return;
+        this.saveService.showMessage();
     }
 }
