@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { ResizeAction } from '@app/classes/resize-action';
+import { ResizeCommand } from '@app/classes/commands/resize-action';
 import { Observable, Subject } from 'rxjs';
+import {AbstractCommand} from '@app/classes/commands/abstract-command';
 // import { DrawingService } from '@app/services/drawing/drawing.service';
 
 @Injectable({
@@ -9,14 +10,15 @@ import { Observable, Subject } from 'rxjs';
 })
 export class UndoRedoService {
     // To be changed to Action later on
-    actionList: ResizeAction[];
-    redoList: ResizeAction[];
+    commandList: AbstractCommand[];
+    undoneList: AbstractCommand[];
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
 
     constructor(/*private drawingService: DrawingService*/) {
         // TBD
-        this.actionList = [];
+        this.commandList = [];
+        this.undoneList = [];
     }
 
     sendNotifResize(boxSize: BoxSize): void {
@@ -28,17 +30,17 @@ export class UndoRedoService {
     }
 
     // Will be generic
-    addActionResize(resizeAction: ResizeAction): void {
-        this.redoList = []; // New action means we can't redo
-        this.actionList.push(resizeAction);
+    addActionResize(command: AbstractCommand): void {
+        this.undoneList = []; // New action means we can't redo
+        this.commandList.push(command);
     }
 
     // To be generic and we'll check the id first
     undo(): void {
         // if (this.actionList.length !== 0) {
-        const undoAction = this.actionList.pop();
+        const undoAction = this.commandList.pop();
         if (undoAction != undefined) {
-            this.redoList.push(undoAction);
+            this.undoneList.push(undoAction);
             if (undoAction.id === 'resize') {
                 this.sendNotifResize(undoAction?.oldBoxSize);
             }
@@ -50,17 +52,17 @@ export class UndoRedoService {
 
     // SAME CODE AS UNDO, WILL FIX LATER !!!!!!!
     // fix solution : just add a boolean to see if its a resize or undo under the same function
-    redo(): void {
-        if (this.redoList.length !== 0) {
-            const redoAction = this.redoList.pop();
-            if (redoAction != undefined) {
-                this.actionList.push(redoAction);
-                if (redoAction.id === 'resize') {
-                    this.sendNotifResize(redoAction?.oldBoxSize);
-                }
-            }
-        }
-    }
+    // redo(): void {
+    //     if (this.redoList.length !== 0) {
+    //         const redoAction = this.redoList.pop();
+    //         if (redoAction != undefined) {
+    //             this.actionList.push(redoAction);
+    //             if (redoAction.id === 'resize') {
+    //                 this.sendNotifResize(redoAction?.oldBoxSize);
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 // Une action devrait contenir son type (si c'est drawing, resizing ou selecting)

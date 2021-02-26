@@ -1,4 +1,4 @@
-import { BoxSize } from '../box-size';
+import { BoxSize } from '@app/classes/box-size';
 
 export interface ResizeCommand {
     id: string;

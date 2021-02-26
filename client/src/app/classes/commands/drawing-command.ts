@@ -1,6 +1,6 @@
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { AbstractCommand } from './abstract-command';
-class DrawingCommand{
+class DrawingCommand {
     /*
         We'll need:
         Thickness
@@ -8,11 +8,10 @@ class DrawingCommand{
         ColorSecondary?
         Composite ( destination out par exemple )
     */
-    constructor(/* tous les paramtres*/){
-        // 
+    constructor(/* tous les paramtres*/) {
+        //
     }
     execute(): void {
         // Execute drawLine
     }
-
-};
+}
