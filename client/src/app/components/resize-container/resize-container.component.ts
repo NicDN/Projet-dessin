@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -17,7 +17,7 @@ export const enum Status {
     templateUrl: './resize-container.component.html',
     styleUrls: ['./resize-container.component.scss'],
 })
-export class ResizeContainerComponent {
+export class ResizeContainerComponent implements AfterViewInit {
     @Input() width: number;
     @Input() height: number;
 
@@ -29,6 +29,8 @@ export class ResizeContainerComponent {
     readonly MOUSE_OFFSET: number = 5;
 
     status: Status = Status.NOT_RESIZING;
+    oldBoxSize: BoxSize;
+    currentBoxSize: BoxSize;
     boxSize: BoxSize;
     subscription: Subscription;
     undoRedoSubscription: Subscription;
@@ -36,6 +38,11 @@ export class ResizeContainerComponent {
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToNewDrawingNotifications();
         this.listenToNewUndoRedoNotifications();
+    }
+
+    ngAfterViewInit(): void {
+        this.oldBoxSize = { widthBox: this.width, heightBox: this.height };
+        console.log(this.oldBoxSize);
     }
 
     setStatus(status: number): void {
@@ -60,9 +67,8 @@ export class ResizeContainerComponent {
 
     onMouseUpContainer(event: MouseEvent): void {
         if (this.status !== Status.NOT_RESIZING) {
-            this.boxSize = { widthBox: this.width, heightBox: this.height };
-            this.addActionToUndoList(this.boxSize);
-            this.notifyResize.emit(this.boxSize);
+            // this.addActionToUndoList(this.oldBoxSize);
+            this.resizeCanvas(this.currentBoxSize.widthBox, this.currentBoxSize.heightBox, true);
         }
         this.setStatus(Status.NOT_RESIZING);
     }
@@ -74,6 +80,7 @@ export class ResizeContainerComponent {
         if (this.updateHeightValid(event)) {
             this.height = event.pageY - this.MOUSE_OFFSET;
         }
+        this.currentBoxSize = { widthBox: this.width, heightBox: this.height };
     }
 
     // ==================================================
@@ -89,9 +96,9 @@ export class ResizeContainerComponent {
     }
 
     undoRedoResizeNotification(boxSize: BoxSize): void {
-        this.width = boxSize.widthBox;
-        this.height = boxSize.heightBox;
-        this.notifyResize.emit(boxSize);
+        const width = boxSize.widthBox;
+        const height = boxSize.heightBox;
+        this.resizeCanvas(width, height, false);
     }
     // ===================================================
 
@@ -102,9 +109,20 @@ export class ResizeContainerComponent {
     }
 
     newDrawingNotification(): void {
-        this.width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
-        this.height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
-        this.boxSize = { widthBox: this.width, heightBox: this.height };
+        const width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
+        const height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
+        this.resizeCanvas(width, height, false);
+    }
+
+    resizeCanvas(newWidth: number, newHeight: number, updateUndoRedo: boolean): void {
+        if (updateUndoRedo) {
+            this.addActionToUndoList(this.oldBoxSize);
+        }
+
+        this.oldBoxSize = { widthBox: newWidth, heightBox: newHeight };
+        this.width = newWidth;
+        this.height = newHeight;
+        this.boxSize = { widthBox: newWidth, heightBox: newHeight };
         this.notifyResize.emit(this.boxSize);
     }
 
