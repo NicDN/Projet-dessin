@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
@@ -23,6 +24,7 @@ enum shortCutManager {
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
+    UNDO_REDO = 'KeyZ',
 }
 
 type ShortcutManager = {
@@ -44,6 +46,7 @@ export class HotkeyService {
         public drawingService: DrawingService,
         private toolService: ToolsService,
         private dialogService: DialogService,
+        private undoRedoService: UndoRedoService,
     ) {
         this.shortCutManager = {
             KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
@@ -60,6 +63,7 @@ export class HotkeyService {
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
+            KeyZ: { action: () => this.undoRedoService.undo(), actionCtrl: () => this.undoRedoService.redo() },
         };
 
         this.observeDialogService();

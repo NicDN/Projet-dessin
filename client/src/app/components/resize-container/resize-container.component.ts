@@ -2,6 +2,7 @@ import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewC
 import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 
 export const enum Status {
@@ -26,12 +27,15 @@ export class ResizeContainerComponent {
     @ViewChild('box') box: ElementRef;
 
     readonly MOUSE_OFFSET: number = 5;
+
     status: Status = Status.NOT_RESIZING;
     boxSize: BoxSize;
     subscription: Subscription;
+    undoRedoSubscription: Subscription;
 
-    constructor(private drawingService: DrawingService) {
+    constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToNewDrawingNotifications();
+        this.listenToNewUndoRedoNotifications();
     }
 
     setStatus(status: number): void {
@@ -57,6 +61,7 @@ export class ResizeContainerComponent {
     onMouseUpContainer(event: MouseEvent): void {
         if (this.status !== Status.NOT_RESIZING) {
             this.boxSize = { widthBox: this.width, heightBox: this.height };
+            this.addActionToUndoList(this.boxSize);
             this.notifyResize.emit(this.boxSize);
         }
         this.setStatus(Status.NOT_RESIZING);
@@ -70,6 +75,25 @@ export class ResizeContainerComponent {
             this.height = event.pageY - this.MOUSE_OFFSET;
         }
     }
+
+    // ==================================================
+    addActionToUndoList(boxSize: BoxSize): void {
+        const resizeAction = { id: 'resize', oldBoxSize: boxSize };
+        this.undoRedoService.addActionResize(resizeAction);
+    }
+
+    listenToNewUndoRedoNotifications(): void {
+        this.undoRedoSubscription = this.undoRedoService.newIncomingUndoRedoResizeSignals().subscribe((boxSize) => {
+            this.undoRedoResizeNotification(boxSize);
+        });
+    }
+
+    undoRedoResizeNotification(boxSize: BoxSize): void {
+        this.width = boxSize.widthBox;
+        this.height = boxSize.heightBox;
+        this.notifyResize.emit(boxSize);
+    }
+    // ===================================================
 
     listenToNewDrawingNotifications(): void {
         this.subscription = this.drawingService.newIncomingResizeSignals().subscribe(() => {
