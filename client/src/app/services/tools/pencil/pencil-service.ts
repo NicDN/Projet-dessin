@@ -59,6 +59,9 @@ export class PencilService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        // 1 Instancie pencilCmd
+        // 2 pencilCmd.execute().
+        // 3. undoRedoService.push(pencilCmd);
         ctx.save();
         this.setContext(ctx);
         let oldPointX: number = path[0].x;

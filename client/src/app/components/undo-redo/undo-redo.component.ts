@@ -7,5 +7,5 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     styleUrls: ['./undo-redo.component.scss'],
 })
 export class UndoRedoComponent {
-    constructor(public undoRedoService: UndoRedoService){}
+    constructor(public undoRedoService: UndoRedoService) {}
 }

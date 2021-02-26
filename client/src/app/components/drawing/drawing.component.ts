@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { BoxSize } from '@app/classes/box-size';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -75,10 +74,6 @@ export class DrawingComponent implements AfterViewInit {
 
     disableDrawing(isUsingResizeButton: boolean): void {
         this.canDraw = !isUsingResizeButton;
-    }
-
-    onSizeChange(boxsize: BoxSize): void {
-        this.drawingService.onSizeChange(boxsize);
     }
 
     get width(): number {

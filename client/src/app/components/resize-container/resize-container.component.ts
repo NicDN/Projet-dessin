@@ -21,7 +21,6 @@ export class ResizeContainerComponent implements AfterViewInit {
     @Input() width: number;
     @Input() height: number;
 
-    @Output() notifyResize: EventEmitter<BoxSize> = new EventEmitter();
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
 
     @ViewChild('box') box: ElementRef;
@@ -83,6 +82,7 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.currentBoxSize = { widthBox: this.width, heightBox: this.height };
     }
 
+
     // ==================================================
     addActionToUndoList(boxSize: BoxSize): void {
         const resizeAction = { id: 'resize', oldBoxSize: boxSize };
@@ -100,6 +100,18 @@ export class ResizeContainerComponent implements AfterViewInit {
         const height = boxSize.heightBox;
         this.resizeCanvas(width, height, false);
     }
+    resizeCanvas(newWidth: number, newHeight: number, updateUndoRedo: boolean): void {
+        if (updateUndoRedo) {
+            this.addActionToUndoList(this.oldBoxSize);
+        }
+
+        this.oldBoxSize = { widthBox: newWidth, heightBox: newHeight };
+        this.width = newWidth;
+        this.height = newHeight;
+        this.boxSize = { widthBox: newWidth, heightBox: newHeight };
+        this.drawingService.onSizeChange(this.boxSize);
+        // this.notifyResize.emit(this.boxSize);
+    }
     // ===================================================
 
     listenToNewDrawingNotifications(): void {
@@ -112,18 +124,6 @@ export class ResizeContainerComponent implements AfterViewInit {
         const width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
         const height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
         this.resizeCanvas(width, height, false);
-    }
-
-    resizeCanvas(newWidth: number, newHeight: number, updateUndoRedo: boolean): void {
-        if (updateUndoRedo) {
-            this.addActionToUndoList(this.oldBoxSize);
-        }
-
-        this.oldBoxSize = { widthBox: newWidth, heightBox: newHeight };
-        this.width = newWidth;
-        this.height = newHeight;
-        this.boxSize = { widthBox: newWidth, heightBox: newHeight };
-        this.notifyResize.emit(this.boxSize);
     }
 
     updateWidthValid(event: MouseEvent): boolean {

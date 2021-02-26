@@ -37,7 +37,6 @@ export class UndoRedoService {
     undo(): void {
         // if (this.actionList.length !== 0) {
         const undoAction = this.actionList.pop();
-        console.log(undoAction);
         if (undoAction != undefined) {
             this.redoList.push(undoAction);
             if (undoAction.id === 'resize') {
