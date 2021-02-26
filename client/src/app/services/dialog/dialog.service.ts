@@ -11,6 +11,8 @@ export enum DialogType {
     Export,
 }
 
+// type dialogRef= CarouselDialogComponent |
+
 @Injectable({
     providedIn: 'root',
 })
@@ -19,7 +21,7 @@ export class DialogService {
 
     constructor(private dialog: MatDialog) {}
 
-    // tslint:disable-next-line: no-any
+    // tslint:disable-next-line: no-any TODO: remove any ?
     dialogRef: MatDialogRef<any, any>;
 
     openDialog(dialogType: DialogType): void {

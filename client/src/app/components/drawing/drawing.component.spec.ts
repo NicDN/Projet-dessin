@@ -1,19 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+
 import { BoxSize } from '@app/classes/box-size';
 import { ColorService } from '@app/services/color/color.service';
-import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { EraserService } from '@app/services/tools/eraser/eraser.service';
-import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
-import { LineService } from '@app/services/tools/line/line.service';
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
-import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
-import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from './drawing.component';
 
@@ -26,44 +18,36 @@ const UNDER_MINIMUM_WIDTH = 600;
 const UNDER_MINIMUM_HEIGHT = 400;
 
 // tslint:disable: no-string-literal
-describe('DrawingComponent', () => {
+fdescribe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
 
     // tslint:disable-next-line: prefer-const
-    let router: Router;
-    let hotkeyStub: HotkeyService;
-    let drawingStub: DrawingService;
-    // tslint:disable-next-line: prefer-const
-    let dialogServiceStub: DialogService;
-    let toolsServiceStub: ToolsService;
     let colorServiceStub: ColorService;
+    let drawingStub: DrawingService;
     let boxSizeStub: BoxSize;
     let onLoadCanvasWidth: number;
     let onLoadCanvasHeight: number;
 
+    let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
+    let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
+    // let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
+
     beforeEach(async(() => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
         drawingStub = new DrawingService();
-        toolsServiceStub = new ToolsService(
-            {} as PencilService,
-            {} as EllipseDrawingService,
-            {} as RectangleDrawingService,
-            {} as PolygonService,
-            {} as LineService,
-            {} as EraserService,
-            {} as SprayCanService,
-            {} as EyeDropperService,
-        );
-        hotkeyStub = new HotkeyService(router, drawingStub, toolsServiceStub, dialogServiceStub);
+
+        toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
+        hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
+        // drawingServiceSpy=jasmine.cr
+
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
             providers: [
-                { provide: ToolsService, useValue: toolsServiceStub },
+                { provide: ToolsService, useValue: toolsServiceSpy },
                 { provide: DrawingService, useValue: drawingStub },
-                { provide: HotkeyService, useValue: hotkeyStub },
+                { provide: HotkeyService, useValue: hotKeyServiceSpy },
                 { provide: ColorService, useValue: colorServiceStub },
-                { provide: DialogService, useValue: dialogServiceStub },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -72,13 +56,13 @@ describe('DrawingComponent', () => {
     beforeEach(() => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_WIDTH });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_HEIGHT });
+
         fixture = TestBed.createComponent(DrawingComponent);
         component = fixture.componentInstance;
-        toolsServiceStub = TestBed.inject(ToolsService);
+
         colorServiceStub = TestBed.inject(ColorService);
-        hotkeyStub = TestBed.inject(HotkeyService);
         drawingStub = TestBed.inject(DrawingService);
-        toolsServiceStub.currentTool = new PencilService(drawingStub, colorServiceStub);
+        toolsServiceSpy.currentTool = new PencilService(drawingStub, colorServiceStub);
 
         fixture.detectChanges();
     });
@@ -114,7 +98,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseMove should call the current tool's #onMouseMove when receiving a mouse move event if canDraw flag is true", () => {
         component.canDraw = true;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseMove');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseMove');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -122,7 +106,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseMove should not call the current tool's #onMouseMove when receiving a mouse move event if canDraw flag is false", () => {
         component.canDraw = false;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseMove');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseMove');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
@@ -130,7 +114,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is true ", () => {
         component.canDraw = true;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseDown');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -138,7 +122,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseDown should not call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is false ", () => {
         component.canDraw = false;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseDown');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
@@ -146,7 +130,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseUp should call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
         component.canDraw = true;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseUp');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseUp');
         component.onMouseUp(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -154,27 +138,25 @@ describe('DrawingComponent', () => {
 
     it("#onMouseUp should not call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
         component.canDraw = false;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseUp');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseUp');
         component.onMouseUp(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
     it('#onKeyDown should call tools service #onKeyDown of hotKeyService', () => {
-        const hotKeyServiceOnHotKeyDown = spyOn(hotkeyStub, 'onKeyDown');
         component.onKeyDown(keyBoardEvent);
-        expect(hotKeyServiceOnHotKeyDown).toHaveBeenCalled();
+        expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
     });
 
-    it('#onKeyUp should call tools service #onKeyDown of hotKeyService', () => {
-        const hotKeyServiceOnHotKeyUp = spyOn(toolsServiceStub.currentTool, 'onKeyUp');
+    it("#onKeyUp should call tools service's #onKeyUp", () => {
         component.onKeyUp(keyBoardEvent);
-        expect(hotKeyServiceOnHotKeyUp).toHaveBeenCalled();
+        expect(toolsServiceSpy.onKeyUp).toHaveBeenCalled();
     });
 
     it("#onMouseOut should call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is true ", () => {
         component.canDraw = true;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseOut');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
         component.onMouseOut(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -182,7 +164,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseOut should not call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is false ", () => {
         component.canDraw = false;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseOut');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
         component.onMouseOut(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
@@ -190,7 +172,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {
         component.canDraw = true;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseEnter');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseEnter');
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -198,7 +180,7 @@ describe('DrawingComponent', () => {
 
     it("#onMouseEnter should not call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is false", () => {
         component.canDraw = false;
-        const mouseEventSpy = spyOn(toolsServiceStub.currentTool, 'onMouseEnter');
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseEnter');
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
