@@ -1,11 +1,11 @@
+import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command';
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 export const DEFAULT_WIDTH = 250;
 export const DEFAULT_HEIGHT = 250;

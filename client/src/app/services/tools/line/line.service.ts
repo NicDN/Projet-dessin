@@ -1,5 +1,5 @@
-import { LineCommand } from './../../../classes/commands/line-command';
 import { Injectable } from '@angular/core';
+import { LineCommand } from '@app/classes/commands/line-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -162,7 +162,7 @@ export class LineService extends TraceTool {
             this.colorService.mainColor.opacity,
             this.drawWithJunction,
             this.junctionDiameter,
-        )
+        );
         lineCommand.execute();
         // ctx.globalAlpha = this.colorService.mainColor.opacity;
         // ctx.strokeStyle = this.colorService.mainColor.rgbValue;

@@ -1,10 +1,10 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
+import { EllipseCommand } from '@app/classes/commands/ellipse-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { EllipseCommand } from '@app/classes/commands/ellipse-command';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Injectable({
     providedIn: 'root',

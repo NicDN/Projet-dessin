@@ -12,7 +12,7 @@ export class PolygonService extends Shape {
         throw new Error('Method not implemented.');
     }
 
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2){
+    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         throw new Error('Method not implemented');
     }
 

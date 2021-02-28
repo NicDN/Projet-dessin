@@ -1,6 +1,6 @@
-import { DrawingService } from '@app/services/drawing/drawing.service';
-import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { BoxSize } from '@app/classes/box-size';
+import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 
 export class ResizeCommand extends AbstractCommand {
     resizeBoxSize: BoxSize;

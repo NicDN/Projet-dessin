@@ -1,7 +1,6 @@
 import { Vec2 } from '@app/classes/vec2';
 import { AbstractCommand } from './abstract-command';
 export class DrawingCommand extends AbstractCommand {
-
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;

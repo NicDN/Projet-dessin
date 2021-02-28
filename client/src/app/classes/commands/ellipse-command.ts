@@ -1,7 +1,7 @@
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { Color } from '@app/classes/color';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
+import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { AbstractCommand } from './abstract-command';
 
 export class EllipseCommand extends AbstractCommand {
@@ -66,4 +66,3 @@ export class EllipseCommand extends AbstractCommand {
         this.drawingContext.restore();
     }
 }
-

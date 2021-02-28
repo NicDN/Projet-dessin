@@ -1,9 +1,10 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
+import { EraserCommand } from '@app/classes/commands/erasing-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Injectable({
     providedIn: 'root',
@@ -18,32 +19,55 @@ export class EraserService extends PencilService {
         this.toolName = 'Efface';
         this.isEraser = true;
     }
+    sendCommandAction(): void {
+        const erraserCommand: EraserCommand = new EraserCommand(
+            this.drawingService.baseCtx,
+            this.pathData,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this.drawingService,
+            this,
+        );
+        erraserCommand.execute();
+        this.undoRedoService.addCommand(erraserCommand);
+    }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx = this.drawingService.baseCtx;
-        this.verifThickness(ctx, this.thickness);
+        const erraserCommand: EraserCommand = new EraserCommand(
+            ctx,
+            path,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this.drawingService,
+            this,
+        );
+        erraserCommand.execute();
+        // ctx = this.drawingService.baseCtx;
+        // this.verifThickness(ctx, this.thickness);
 
-        if (this.singleClick(path)) {
-            this.eraseSquare(ctx, { x: path[0].x, y: path[0].y });
-            return;
-        }
+        // if (this.singleClick(path)) {
+        //     this.eraseSquare(ctx, { x: path[0].x, y: path[0].y });
+        //     return;
+        // }
 
-        let oldPointX: number = path[0].x;
-        let oldPointY: number = path[0].y;
+        // let oldPointX: number = path[0].x;
+        // let oldPointY: number = path[0].y;
 
-        for (const point of path) {
-            const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
-            const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+        // for (const point of path) {
+        //     const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+        //     const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
 
-            for (let i = 0; i < dist; i += 1) {
-                const xValue = oldPointX + Math.sin(angle) * i;
-                const yValue = oldPointY + Math.cos(angle) * i;
-                this.eraseSquare(ctx, { x: xValue, y: yValue });
-            }
+        //     for (let i = 0; i < dist; i += 1) {
+        //         const xValue = oldPointX + Math.sin(angle) * i;
+        //         const yValue = oldPointY + Math.cos(angle) * i;
+        //         this.eraseSquare(ctx, { x: xValue, y: yValue });
+        //     }
 
-            oldPointX = point.x;
-            oldPointY = point.y;
-        }
+        //     oldPointX = point.x;
+        //     oldPointY = point.y;
+        // }
     }
 
     distanceBetween(point1: Vec2, point2: Vec2): number {

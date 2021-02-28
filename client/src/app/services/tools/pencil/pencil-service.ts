@@ -11,14 +11,14 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 })
 export class PencilService extends TraceTool {
     isEraser: boolean;
-    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, protected undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
         this.isEraser = false;
     }
 
-    private pathData: Vec2[];
+    protected pathData: Vec2[];
 
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
@@ -43,6 +43,7 @@ export class PencilService extends TraceTool {
     }
 
     sendCommandAction(): void {
+        if (this.isEraser) return;
         const drawingCommand: DrawingCommand = new DrawingCommand(
             this.drawingService.baseCtx,
             this.pathData,

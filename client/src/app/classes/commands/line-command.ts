@@ -1,7 +1,6 @@
 import { Vec2 } from '@app/classes/vec2';
 import { AbstractCommand } from './abstract-command';
 export class LineCommand extends AbstractCommand {
-
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;
@@ -10,7 +9,15 @@ export class LineCommand extends AbstractCommand {
     drawWithJunction: boolean;
     junctionDiameter: number;
 
-    constructor(ctx: CanvasRenderingContext2D, path: Vec2[], thickness: number, color: string, globalAlpha: number, drawWithJunction: boolean, junctionDiameter: number) {
+    constructor(
+        ctx: CanvasRenderingContext2D,
+        path: Vec2[],
+        thickness: number,
+        color: string,
+        globalAlpha: number,
+        drawWithJunction: boolean,
+        junctionDiameter: number,
+    ) {
         super();
         this.drawingContext = ctx;
         this.drawingPath = path;

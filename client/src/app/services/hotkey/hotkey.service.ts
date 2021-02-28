@@ -1,9 +1,9 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 
 interface ShortcutFunctions {
