@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
@@ -9,7 +10,7 @@ import { EllipseCommand } from '@app/classes/commands/ellipse-command';
     providedIn: 'root',
 })
 export class EllipseDrawingService extends Shape {
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ellipse');
     }
 
@@ -25,6 +26,21 @@ export class EllipseDrawingService extends Shape {
             this,
         );
         ellipseCommand.execute();
+    }
+
+    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const ellipseCommand: EllipseCommand = new EllipseCommand(
+            ctx,
+            begin,
+            end,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.secondaryColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this,
+        );
+        ellipseCommand.execute();
+        this.undoRedoService.addCommand(ellipseCommand);
     }
 
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {

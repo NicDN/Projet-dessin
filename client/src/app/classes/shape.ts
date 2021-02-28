@@ -1,3 +1,4 @@
+import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -35,7 +36,8 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.executeShapeCommand(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            // this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -103,4 +105,5 @@ export abstract class Shape extends DrawingTool {
     }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

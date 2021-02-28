@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { RectangleCommand } from '@app/classes/commands/rectangle-command';
 import { Shape, TraceType } from '@app/classes/shape';
@@ -8,7 +9,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class RectangleDrawingService extends Shape {
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Rectangle');
     }
 
@@ -24,6 +25,21 @@ export class RectangleDrawingService extends Shape {
             this,
         );
         rectangleCommad.execute();
+    }
+
+    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const rectangleCommad: RectangleCommand = new RectangleCommand(
+            ctx,
+            begin,
+            end,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.secondaryColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this,
+        );
+        rectangleCommad.execute();
+        this.undoRedoService.addCommand(rectangleCommad);
     }
 
     adjustToBorder(ctx: CanvasRenderingContext2D, sideLengths: Vec2, begin: Vec2, end: Vec2): void {

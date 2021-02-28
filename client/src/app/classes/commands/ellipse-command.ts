@@ -35,6 +35,7 @@ export class EllipseCommand extends AbstractCommand {
         this.drawingGlobalAlpha = globalAlpha;
         this.ellipseDrawingService = ellipseDrawingService;
     }
+
     execute(): void {
         const actualEndCoords: Vec2 = this.ellipseDrawingService.getTrueEndCoords(this.begin, this.end);
         const center: Vec2 = this.ellipseDrawingService.getCenterCoords(this.begin, actualEndCoords);
@@ -66,31 +67,3 @@ export class EllipseCommand extends AbstractCommand {
     }
 }
 
-/*
-
-
-const trueEndCoords: Vec2 = this.ellipseDrawingService.getTrueEndCoords(this.begin, this.end);
-        const sideLengths: Vec2 = { x: trueEndCoords.x - this.begin.x, y: trueEndCoords.y - this.begin.y };
-        const adjustedBeginCoords: Vec2 = { x: this.begin.x, y: this.begin.y };
-
-        this.drawingContext.save();
-        this.ellipseDrawingService.setContextParameters(this.drawingContext, this.drawingThickness);
-        this.drawingContext.beginPath();
-
-        this.ellipseDrawingService.adjustToBorder(this.drawingContext, sideLengths, adjustedBeginCoords, trueEndCoords);
-        this.drawingContext.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
-
-        const mainColor: Color = { rgbValue: this.mainColor, opacity: this.drawingGlobalAlpha };
-        const secondaryColor: Color = { rgbValue: this.secondaryColor, opacity: 1 };
-
-        if (this.ellipseDrawingService.traceType !== TraceType.Bordered) {
-            this.ellipseDrawingService.setFillColor(this.drawingContext, mainColor);
-            this.drawingContext.fill();
-        }
-        if (this.ellipseDrawingService.traceType !== TraceType.FilledNoBordered) {
-            this.ellipseDrawingService.setStrokeColor(this.drawingContext, secondaryColor);
-            this.drawingContext.stroke();
-        }
-        this.drawingContext.restore();
-
-*/
