@@ -1,4 +1,6 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
+import { RectangleCommand } from '@app/classes/commands/rectangle-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -12,26 +14,17 @@ export class RectangleDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const trueEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
-        const sideLengths: Vec2 = { x: trueEndCoords.x - begin.x, y: trueEndCoords.y - begin.y };
-        const adjustedBeginCoords: Vec2 = { x: begin.x, y: begin.y };
-
-        ctx.save();
-        this.setContextParameters(ctx, this.thickness);
-        ctx.beginPath();
-
-        this.adjustToBorder(ctx, sideLengths, adjustedBeginCoords, trueEndCoords);
-        ctx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
-
-        if (this.traceType !== TraceType.Bordered) {
-            this.setFillColor(ctx, this.colorService.mainColor);
-            ctx.fill();
-        }
-        if (this.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(ctx, this.colorService.secondaryColor);
-            ctx.stroke();
-        }
-        ctx.restore();
+        const rectangleCommad: RectangleCommand = new RectangleCommand(
+            ctx,
+            begin,
+            end,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.secondaryColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this,
+        );
+        rectangleCommad.execute();
     }
 
     adjustToBorder(ctx: CanvasRenderingContext2D, sideLengths: Vec2, begin: Vec2, end: Vec2): void {
