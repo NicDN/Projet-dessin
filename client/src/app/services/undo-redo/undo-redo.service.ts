@@ -29,66 +29,23 @@ export class UndoRedoService {
         return this.subject.asObservable();
     }
 
-    // Will be generic
-    addActionResize(command: AbstractCommand): void {
+    // Will be generic: it is now : )
+    addCommand(command: AbstractCommand): void {
         this.undoneList = []; // New action means we can't redo
         this.commandList.push(command);
     }
 
-    // To be generic and we'll check the id first
     undo(): void {
-        // if (this.actionList.length !== 0) {
-        const undoAction = this.commandList.pop();
-        if (undoAction != undefined) {
-            // this.undoneList.push(undoAction);
-            // if (undoAction.id === 'resize') {
-            //     this.sendNotifResize(undoAction?.oldBoxSize);
-            // }
-            undoAction.execute();
+        this.sendToRedoStack();
+        for (let i = this.commandList.length; i > 0; i--) {
+            this.commandList[i]?.execute();
         }
-        // } else {
-        //     console.log('There are no actions !');
-        // }
     }
 
-    // SAME CODE AS UNDO, WILL FIX LATER !!!!!!!
-    // fix solution : just add a boolean to see if its a resize or undo under the same function
-    // redo(): void {
-    //     if (this.redoList.length !== 0) {
-    //         const redoAction = this.redoList.pop();
-    //         if (redoAction != undefined) {
-    //             this.actionList.push(redoAction);
-    //             if (redoAction.id === 'resize') {
-    //                 this.sendNotifResize(redoAction?.oldBoxSize);
-    //             }
-    //         }
-    //     }
-    // }
+    sendToRedoStack(): void {
+        const undoAction = this.commandList.pop();
+        if (undoAction != undefined) {
+            this.undoneList.push(undoAction);
+        }
+    }
 }
-
-// Une action devrait contenir son type (si c'est drawing, resizing ou selecting)
-
-// Two stacks
-
-// Action stack, where the actions are stacked
-
-// Redo stack, where we can store the redo actions. To be deleted when there's a new action coming in.
-
-// Different type of actions: resize container actions and tool actions, select action
-
-// To store resize contianer actions all that's needed is the drawing service. ( width the boxsize )
-
-// To store tools actions: TBD
-
-// To store select actions: TBD ( et aussi pour resize la selection ) ( et storer quand on deplace la selection )
-
-/*
-  Random 
-    resize : .push('resize', oldBoxSize);
-
-    undo: 
-      if(is resize){
-        action.drawingService.onSizeChange()
-      }
-  }
-*/

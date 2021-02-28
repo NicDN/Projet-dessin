@@ -4,7 +4,7 @@ import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-
+import { DrawingCommand } from '@app/classes/commands/drawing-command';
 @Injectable({
     providedIn: 'root',
 })
@@ -59,33 +59,42 @@ export class PencilService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        const drawingCommand: DrawingCommand = new DrawingCommand(
+            ctx,
+            path,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+        );
+        drawingCommand.execute();
+
         // 1 Instancie pencilCmd
         // 2 pencilCmd.execute().
         // 3. undoRedoService.push(pencilCmd);
-        ctx.save();
-        this.setContext(ctx);
-        let oldPointX: number = path[0].x;
-        let oldPointY: number = path[0].y;
 
-        ctx.beginPath();
-        for (const point of path) {
-            ctx.moveTo(oldPointX, oldPointY);
-            ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-            ctx.lineTo(point.x, point.y);
+        // ctx.save();
+        // this.setContext(ctx);
+        // let oldPointX: number = path[0].x;
+        // let oldPointY: number = path[0].y;
 
-            oldPointX = point.x;
-            oldPointY = point.y;
-        }
-        ctx.stroke();
-        ctx.restore();
+        // ctx.beginPath();
+        // for (const point of path) {
+        //     ctx.moveTo(oldPointX, oldPointY);
+        //     ctx.lineTo(point.x, point.y);
+
+        //     oldPointX = point.x;
+        //     oldPointY = point.y;
+        // }
+        // ctx.stroke();
+        // ctx.restore();
     }
 
-    setContext(ctx: CanvasRenderingContext2D): void {
-        ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.lineWidth = this.thickness;
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-    }
+    // setContext(ctx: CanvasRenderingContext2D): void {
+    //     ctx.lineJoin = ctx.lineCap = 'round';
+    //     ctx.lineWidth = this.thickness;
+    //     ctx.globalAlpha = this.colorService.mainColor.opacity;
+    //     ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+    // }
 
     private clearPath(): void {
         this.pathData = [];
