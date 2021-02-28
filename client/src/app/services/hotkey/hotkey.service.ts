@@ -64,7 +64,7 @@ export class HotkeyService {
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
-            KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
+            KeyZ: { action: () => this.undoRedoService.undo(), actionCtrl: () => this.undoRedoService.redo() },
         };
 
         this.observeDialogService();

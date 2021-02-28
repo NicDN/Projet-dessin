@@ -24,6 +24,7 @@ export class EllipseDrawingService extends Shape {
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
             this,
+            this.alternateShape,
         );
         ellipseCommand.execute();
     }
@@ -38,6 +39,7 @@ export class EllipseDrawingService extends Shape {
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
             this,
+            this.alternateShape,
         );
         ellipseCommand.execute();
         this.undoRedoService.addCommand(ellipseCommand);

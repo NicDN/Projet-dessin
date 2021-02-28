@@ -23,6 +23,7 @@ export class RectangleDrawingService extends Shape {
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
             this,
+            this.alternateShape,
         );
         rectangleCommad.execute();
     }
@@ -37,6 +38,7 @@ export class RectangleDrawingService extends Shape {
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
             this,
+            this.alternateShape,
         );
         rectangleCommad.execute();
         this.undoRedoService.addCommand(rectangleCommad);

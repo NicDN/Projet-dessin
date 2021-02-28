@@ -70,8 +70,8 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     onMouseDown(event: MouseEvent): void {
         if (this.canDraw) {
             this.undoRedoService.disableUndoRedo();
-            this.toolsService.currentTool.onMouseDown(event)
-        };
+            this.toolsService.currentTool.onMouseDown(event);
+        }
     }
 
     @HostListener('window:mouseup', ['$event'])

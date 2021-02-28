@@ -1,5 +1,4 @@
 import { Vec2 } from '@app/classes/vec2';
-import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
 import { AbstractCommand } from './abstract-command';
 export class EraserCommand extends AbstractCommand {
@@ -8,30 +7,15 @@ export class EraserCommand extends AbstractCommand {
     drawingThickness: number;
     drawingColor: string;
     drawingGlobalAlpha: number;
-    drawingService: DrawingService;
-    eraserService: EraserService;
 
-    constructor(
-        ctx: CanvasRenderingContext2D,
-        path: Vec2[],
-        thickness: number,
-        color: string,
-        globalAlpha: number,
-        drawingService: DrawingService,
-        eraserService: EraserService,
-    ) {
+    constructor(ctx: CanvasRenderingContext2D, path: Vec2[], thickness: number, private eraserService: EraserService) {
         super();
         this.drawingContext = ctx;
         this.drawingPath = path;
         this.drawingThickness = thickness;
-        this.drawingColor = color;
-        this.drawingGlobalAlpha = globalAlpha;
-        this.drawingService = drawingService;
-        this.eraserService = eraserService;
     }
     execute(): void {
         // Execute drawLine
-        this.drawingContext = this.drawingService.baseCtx;
         this.eraserService.verifThickness(this.drawingContext, this.drawingThickness);
 
         if (this.eraserService.singleClick(this.drawingPath)) {
@@ -44,8 +28,9 @@ export class EraserCommand extends AbstractCommand {
 
         for (const point of this.drawingPath) {
             const dist = this.eraserService.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
-            const angle = this.eraserService.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
-
+            console.log(dist);
+            const angle = this.eraserService.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+            console.log(angle);
             for (let i = 0; i < dist; i += 1) {
                 const xValue = oldPointX + Math.sin(angle) * i;
                 const yValue = oldPointY + Math.cos(angle) * i;

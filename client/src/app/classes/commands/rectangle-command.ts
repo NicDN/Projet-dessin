@@ -13,6 +13,7 @@ export class RectangleCommand extends AbstractCommand {
     secondaryColor: string;
     drawingGlobalAlpha: number;
     rectangleDrawingService: RectangleDrawingService;
+    isAlternateShape: boolean;
 
     constructor(
         ctx: CanvasRenderingContext2D,
@@ -23,6 +24,7 @@ export class RectangleCommand extends AbstractCommand {
         secondaryColor: string,
         globalAlpha: number,
         rectangleDrawingService: RectangleDrawingService,
+        isAlternateShape: boolean,
     ) {
         super();
         this.drawingContext = ctx;
@@ -33,8 +35,10 @@ export class RectangleCommand extends AbstractCommand {
         this.secondaryColor = secondaryColor;
         this.drawingGlobalAlpha = globalAlpha;
         this.rectangleDrawingService = rectangleDrawingService;
+        this.isAlternateShape = isAlternateShape;
     }
     execute(): void {
+        this.rectangleDrawingService.alternateShape = this.isAlternateShape;
         const trueEndCoords: Vec2 = this.rectangleDrawingService.getTrueEndCoords(this.begin, this.end);
         const sideLengths: Vec2 = { x: trueEndCoords.x - this.begin.x, y: trueEndCoords.y - this.begin.y };
         const adjustedBeginCoords: Vec2 = { x: this.begin.x, y: this.begin.y };

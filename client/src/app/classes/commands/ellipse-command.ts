@@ -1,3 +1,4 @@
+import { EraserCommand } from '@app/classes/commands/erasing-command';
 import { Color } from '@app/classes/color';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
@@ -14,6 +15,7 @@ export class EllipseCommand extends AbstractCommand {
     secondaryColor: string;
     drawingGlobalAlpha: number;
     ellipseDrawingService: EllipseDrawingService;
+    isAlternateShape: boolean;
 
     constructor(
         ctx: CanvasRenderingContext2D,
@@ -24,6 +26,7 @@ export class EllipseCommand extends AbstractCommand {
         secondaryColor: string,
         globalAlpha: number,
         ellipseDrawingService: EllipseDrawingService,
+        isAlternateShape: boolean,
     ) {
         super();
         this.drawingContext = ctx;
@@ -34,9 +37,11 @@ export class EllipseCommand extends AbstractCommand {
         this.secondaryColor = secondaryColor;
         this.drawingGlobalAlpha = globalAlpha;
         this.ellipseDrawingService = ellipseDrawingService;
+        this.isAlternateShape = isAlternateShape;
     }
 
     execute(): void {
+        this.ellipseDrawingService.alternateShape = this.isAlternateShape;
         const actualEndCoords: Vec2 = this.ellipseDrawingService.getTrueEndCoords(this.begin, this.end);
         const center: Vec2 = this.ellipseDrawingService.getCenterCoords(this.begin, actualEndCoords);
         const radiuses: Vec2 = {

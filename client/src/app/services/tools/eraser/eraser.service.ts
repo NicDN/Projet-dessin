@@ -20,29 +20,13 @@ export class EraserService extends PencilService {
         this.isEraser = true;
     }
     sendCommandAction(): void {
-        const erraserCommand: EraserCommand = new EraserCommand(
-            this.drawingService.baseCtx,
-            this.pathData,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.drawingService,
-            this,
-        );
+        const erraserCommand: EraserCommand = new EraserCommand(this.drawingService.baseCtx, this.pathData, this.thickness, this);
         erraserCommand.execute();
         this.undoRedoService.addCommand(erraserCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const erraserCommand: EraserCommand = new EraserCommand(
-            ctx,
-            path,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.drawingService,
-            this,
-        );
+        const erraserCommand: EraserCommand = new EraserCommand(this.drawingService.baseCtx, path, this.thickness, this);
         erraserCommand.execute();
         // ctx = this.drawingService.baseCtx;
         // this.verifThickness(ctx, this.thickness);
