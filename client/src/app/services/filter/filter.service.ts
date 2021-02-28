@@ -27,7 +27,11 @@ export class FilterService {
     constructor(private drawingService: DrawingService, private exportService: ExportService) {}
 
     filters: Filter[] = [
-        { filterType: FilterType.NoFilter, name: 'Aucun filtre', property: 'blur(0px) contrast(1) sepia(0) saturate(1) brightness(1) invert(0)' },
+        {
+            filterType: FilterType.NoFilter,
+            name: 'Aucun filtre',
+            property: 'none',
+        },
         { filterType: FilterType.GrayScale, name: 'Noir et blanc', property: 'grayscale(1)' },
         { filterType: FilterType.Sepia, name: 'Sepia', property: 'sepia(1)' },
         { filterType: FilterType.InvertColor, name: 'Inversion des couleurs', property: 'invert(1)' },
@@ -36,18 +40,19 @@ export class FilterService {
     ];
 
     applyFilter(filterType: FilterType, canvas: HTMLCanvasElement): void {
-        this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this.resetWithNotFilter();
         this.canvasCtx.filter = this.filters[filterType].property;
         this.canvasCtx.drawImage(this.canvas, 0, 0);
 
+        this.canvas = canvas;
         this.exportService.canvasToExport = this.canvas;
     }
 
-    resetWithNotFilter(): void {
-        this.canvasCtx.filter = 'blur(0px) contrast(1) sepia(0) saturate(1) brightness(1) invert(0)';
+    private resetWithNotFilter(): void {
+        this.canvasCtx.filter = this.filters[FilterType.NoFilter].property;
         this.canvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        this.canvas = this.drawingService.canvas;
     }
 }

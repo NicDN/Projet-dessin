@@ -18,7 +18,7 @@ const UNDER_MINIMUM_WIDTH = 600;
 const UNDER_MINIMUM_HEIGHT = 400;
 
 // tslint:disable: no-string-literal
-fdescribe('DrawingComponent', () => {
+describe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
 
@@ -31,7 +31,6 @@ fdescribe('DrawingComponent', () => {
 
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
-    // let drawingServiceSpy: jasmine.SpyObj<DrawingService>;
 
     beforeEach(async(() => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
@@ -39,7 +38,6 @@ fdescribe('DrawingComponent', () => {
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
-        // drawingServiceSpy=jasmine.cr
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -144,7 +142,7 @@ fdescribe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it('#onKeyDown should call tools service #onKeyDown of hotKeyService', () => {
+    it('#onKeyDown should call #onKeyDown of hotKeyService', () => {
         component.onKeyDown(keyBoardEvent);
         expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
     });
