@@ -28,30 +28,6 @@ export class EraserService extends PencilService {
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         const erraserCommand: EraserCommand = new EraserCommand(this.drawingService.baseCtx, path, this.thickness, this);
         erraserCommand.execute();
-        // ctx = this.drawingService.baseCtx;
-        // this.verifThickness(ctx, this.thickness);
-
-        // if (this.singleClick(path)) {
-        //     this.eraseSquare(ctx, { x: path[0].x, y: path[0].y });
-        //     return;
-        // }
-
-        // let oldPointX: number = path[0].x;
-        // let oldPointY: number = path[0].y;
-
-        // for (const point of path) {
-        //     const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
-        //     const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
-
-        //     for (let i = 0; i < dist; i += 1) {
-        //         const xValue = oldPointX + Math.sin(angle) * i;
-        //         const yValue = oldPointY + Math.cos(angle) * i;
-        //         this.eraseSquare(ctx, { x: xValue, y: yValue });
-        //     }
-
-        //     oldPointX = point.x;
-        //     oldPointY = point.y;
-        // }
     }
 
     distanceBetween(point1: Vec2, point2: Vec2): number {

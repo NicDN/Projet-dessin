@@ -1,4 +1,3 @@
-import { EraserCommand } from '@app/classes/commands/erasing-command';
 import { Color } from '@app/classes/color';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
