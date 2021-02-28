@@ -1,1 +1,34 @@
-<p>export-dialog works!</p>
+<div class="export-container">
+    <h2 mat-dialog-title>Exporter le dessin</h2>
+    <div>
+        <mat-form-field class="file-name">
+            <input matInput #fileName placeholder="Nom du fichier">
+        </mat-form-field>
+
+        <mat-form-field class="filter-selector">
+            <mat-label>Sélectionez un filtre</mat-label>
+            <mat-select #filter>
+                <mat-option class="filter-mat-option" *ngFor="let filter of this.filterService.filters"
+                    [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <mat-button-toggle-group #fileFormat="matButtonToggleGroup">
+            <mat-button-toggle checked="true" value="png">PNG</mat-button-toggle>
+            <mat-button-toggle value="jpeg">JPG</mat-button-toggle>
+        </mat-button-toggle-group>
+
+    </div>
+
+    <div class="preview-filter">
+        <canvas #canvas [style.height.px]="510" [style.width.px]="850" [attr.width]="this.drawingService.canvas.width"
+            [attr.height]="this.drawingService.canvas.height"></canvas>
+    </div>
+
+    <div class="bottom-div">
+        <button mat-flat-button color="primary" class="export-canvas-btn"
+            (click)="exportCanvas(fileName.value,fileFormat.value)">Exporter</button>
+        <button mat-flat-button color="primary" class="cancel-btn" (click)=" this.dialogRef.close();">Annuler</button>
+    </div>
+
+</div>
