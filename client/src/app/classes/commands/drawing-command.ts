@@ -1,19 +1,12 @@
 import { Vec2 } from '@app/classes/vec2';
 import { AbstractCommand } from './abstract-command';
 export class DrawingCommand extends AbstractCommand {
-    /*
-        We'll need:
-        Thickness
-        ColorPrimary
-        ColorSecondary?
-        Composite ( destination out par exemple )
-    */
+
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;
     drawingColor: string;
     drawingGlobalAlpha: number;
-    // drawingLineType: string;
 
     constructor(ctx: CanvasRenderingContext2D, path: Vec2[], thickness: number, color: string, globalAlpha: number) {
         super();
@@ -22,7 +15,6 @@ export class DrawingCommand extends AbstractCommand {
         this.drawingThickness = thickness;
         this.drawingColor = color;
         this.drawingGlobalAlpha = globalAlpha;
-        // this.drawingLineType = lineType;
     }
     execute(): void {
         // Execute drawLine
