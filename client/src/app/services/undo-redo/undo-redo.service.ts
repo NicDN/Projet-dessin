@@ -7,10 +7,19 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class UndoRedoService {
     commandList: AbstractCommand[];
     undoneList: AbstractCommand[];
+    canUndoRedo: boolean = true;
 
     constructor(private drawingService: DrawingService) {
         this.commandList = [];
         this.undoneList = [];
+    }
+
+    disableUndoRedo(): void {
+        this.canUndoRedo = false;
+    }
+
+    enableUndoRedo(): void {
+        this.canUndoRedo = true;
     }
 
     addCommand(command: AbstractCommand): void {
@@ -19,6 +28,7 @@ export class UndoRedoService {
     }
 
     undo(): void {
+        if (!this.canUndoRedo) return;
         if (this.commandList.length <= 1) return;
 
         const undoAction = this.commandList.pop();
@@ -29,6 +39,7 @@ export class UndoRedoService {
     }
 
     redo(): void {
+        if (!this.canUndoRedo) return;
         if (this.undoneList.length !== 0) {
             const redoAction = this.undoneList.pop();
             if (redoAction != undefined) {
