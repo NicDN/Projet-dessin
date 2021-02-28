@@ -1,3 +1,4 @@
+import { ResizeCommand } from '@app/classes/commands/resize-command';
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, AfterViewInit } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
@@ -36,7 +37,6 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToNewDrawingNotifications();
-        this.listenToNewUndoRedoNotifications();
     }
 
     ngAfterViewInit(): void {
@@ -66,8 +66,9 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     onMouseUpContainer(event: MouseEvent): void {
         if (this.status !== Status.NOT_RESIZING) {
-            // this.addActionToUndoList(this.oldBoxSize);
-            this.resizeCanvas(this.currentBoxSize.widthBox, this.currentBoxSize.heightBox, true);
+            const resizeCommand: ResizeCommand = new ResizeCommand(this.currentBoxSize, this.drawingService);
+            this.undoRedoService.addCommand(resizeCommand);
+            resizeCommand.execute();
         }
         this.setStatus(Status.NOT_RESIZING);
     }
@@ -82,49 +83,31 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.currentBoxSize = { widthBox: this.width, heightBox: this.height };
     }
 
-
-    // ==================================================
-    addActionToUndoList(boxSize: BoxSize): void {
-        // const resizeAction = { id: 'resize', oldBoxSize: boxSize };
-        // this.undoRedoService.addActionResize(resizeAction);
-    }
-
-    listenToNewUndoRedoNotifications(): void {
-        this.undoRedoSubscription = this.undoRedoService.newIncomingUndoRedoResizeSignals().subscribe((boxSize) => {
-            this.undoRedoResizeNotification(boxSize);
-        });
-    }
-
-    undoRedoResizeNotification(boxSize: BoxSize): void {
-        const width = boxSize.widthBox;
-        const height = boxSize.heightBox;
-        this.resizeCanvas(width, height, false);
-    }
-    resizeCanvas(newWidth: number, newHeight: number, updateUndoRedo: boolean): void {
-        // Ceci doit etre le execute
-        if (updateUndoRedo) {
-            this.addActionToUndoList(this.oldBoxSize);
-        }
-
+    resizeCanvas(newWidth: number, newHeight: number): void {
         this.oldBoxSize = { widthBox: newWidth, heightBox: newHeight };
         this.width = newWidth;
         this.height = newHeight;
         this.boxSize = { widthBox: newWidth, heightBox: newHeight };
         this.drawingService.onSizeChange(this.boxSize);
-        // this.notifyResize.emit(this.boxSize);
     }
-    // ===================================================
 
     listenToNewDrawingNotifications(): void {
-        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe(() => {
-            this.newDrawingNotification();
+        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
+            this.resizeNotification(boxSize);
         });
     }
 
-    newDrawingNotification(): void {
-        const width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
-        const height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
-        this.resizeCanvas(width, height, false);
+    resizeNotification(boxSize: BoxSize): void {
+        let width: number;
+        let height: number;
+        if (boxSize === undefined) {
+            width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
+            height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
+        } else {
+            width = boxSize.widthBox;
+            height = boxSize.heightBox;
+        }
+        this.resizeCanvas(width, height);
     }
 
     updateWidthValid(event: MouseEvent): boolean {

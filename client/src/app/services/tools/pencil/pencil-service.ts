@@ -1,4 +1,3 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { DrawingCommand } from '@app/classes/commands/drawing-command';
 import { MouseButton } from '@app/classes/tool';
@@ -6,6 +5,7 @@ import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 @Injectable({
     providedIn: 'root',
 })
@@ -74,6 +74,10 @@ export class PencilService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        // 1 Instancie pencilCmd
+        // 2 pencilCmd.execute().
+        // 3. undoRedoService.push(pencilCmd);
+
         const drawingCommand: DrawingCommand = new DrawingCommand(
             ctx,
             path,
@@ -82,34 +86,7 @@ export class PencilService extends TraceTool {
             this.colorService.mainColor.opacity,
         );
         drawingCommand.execute();
-
-        // 1 Instancie pencilCmd
-        // 2 pencilCmd.execute().
-        // 3. undoRedoService.push(pencilCmd);
-
-        // ctx.save();
-        // this.setContext(ctx);
-        // let oldPointX: number = path[0].x;
-        // let oldPointY: number = path[0].y;
-
-        // ctx.beginPath();
-        // for (const point of path) {
-        //     ctx.moveTo(oldPointX, oldPointY);
-        //     ctx.lineTo(point.x, point.y);
-
-        //     oldPointX = point.x;
-        //     oldPointY = point.y;
-        // }
-        // ctx.stroke();
-        // ctx.restore();
     }
-
-    // setContext(ctx: CanvasRenderingContext2D): void {
-    //     ctx.lineJoin = ctx.lineCap = 'round';
-    //     ctx.lineWidth = this.thickness;
-    //     ctx.globalAlpha = this.colorService.mainColor.opacity;
-    //     ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-    // }
 
     private clearPath(): void {
         this.pathData = [];

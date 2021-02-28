@@ -146,7 +146,7 @@ describe('ResizeContainerComponent', () => {
         drawingFixture.detectChanges();
         const newDrawingNotificationSpy: jasmine.Spy = spyOn(component, 'newDrawingNotification');
         component.listenToNewDrawingNotifications();
-        drawingService.sendNotifReload();
+        drawingService.sendNotifToResize();
         fixture.detectChanges();
         expect(newDrawingNotificationSpy).toHaveBeenCalled();
     });
@@ -158,7 +158,7 @@ describe('ResizeContainerComponent', () => {
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
         expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
-        component.newDrawingNotification();
+        component.resizeNotification();
         expect(component.width).toEqual(MINIMUM_CANVAS_SIZE);
         expect(component.height).toEqual(MINIMUM_CANVAS_SIZE);
     });
@@ -172,7 +172,7 @@ describe('ResizeContainerComponent', () => {
             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
             expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
             expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
-            component.newDrawingNotification();
+            component.resizeNotification();
             expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
             expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
         },

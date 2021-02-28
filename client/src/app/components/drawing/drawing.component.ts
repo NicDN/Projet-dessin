@@ -1,4 +1,7 @@
-import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { BoxSize } from '@app/classes/box-size';
+import { ResizeCommand } from '@app/classes/commands/resize-command';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -15,7 +18,7 @@ export const HALF_RATIO = 0.5;
     templateUrl: './drawing.component.html',
     styleUrls: ['./drawing.component.scss'],
 })
-export class DrawingComponent implements AfterViewInit {
+export class DrawingComponent implements AfterViewInit, AfterContentInit {
     @ViewChild('baseCanvas', { static: false }) baseCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('previewCanvas', { static: false }) previewCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -28,10 +31,14 @@ export class DrawingComponent implements AfterViewInit {
     canvasWidth: number;
     canvasHeight: number;
 
-    constructor(public drawingService: DrawingService, public toolsService: ToolsService, private hotKeyService: HotkeyService) {}
+    constructor(
+        public drawingService: DrawingService,
+        public toolsService: ToolsService,
+        private hotKeyService: HotkeyService,
+        private undoRedoService: UndoRedoService,
+    ) {}
 
     ngAfterViewInit(): void {
-        this.setCanvasDimensions();
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.baseCtx = this.baseCtx;
@@ -42,9 +49,17 @@ export class DrawingComponent implements AfterViewInit {
         this.drawingService.fillWithWhite(this.baseCtx);
     }
 
+    ngAfterContentInit(): void {
+        this.setCanvasDimensions();
+    }
+
     setCanvasDimensions(): void {
         this.canvasWidth = window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
         this.canvasHeight = window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
+        const onLoadBoxSize: BoxSize = { widthBox: this.canvasWidth, heightBox: this.canvasHeight };
+
+        const onLoadActionResize: ResizeCommand = new ResizeCommand(onLoadBoxSize, this.drawingService);
+        this.undoRedoService.addCommand(onLoadActionResize);
     }
 
     @HostListener('window:mousemove', ['$event'])
@@ -84,12 +99,4 @@ export class DrawingComponent implements AfterViewInit {
     disableDrawing(isUsingResizeButton: boolean): void {
         this.canDraw = !isUsingResizeButton;
     }
-
-    // get width(): number {
-    //     return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
-    // }
-
-    // get height(): number {
-    //     return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
-    // }
 }
