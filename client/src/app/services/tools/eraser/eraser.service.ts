@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -10,8 +11,8 @@ import { PencilService } from '@app/services/tools/pencil/pencil-service';
 export class EraserService extends PencilService {
     readonly MINTHICKNESS: number = 5;
 
-    constructor(drawingService: DrawingService, colorService: ColorService) {
-        super(drawingService, colorService);
+    constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
+        super(drawingService, colorService, undoRedoService);
         this.thickness = this.MINTHICKNESS;
         this.minThickness = this.MINTHICKNESS;
         this.toolName = 'Efface';

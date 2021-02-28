@@ -1,3 +1,4 @@
+import { LineCommand } from './../../../classes/commands/line-command';
 import { Injectable } from '@angular/core';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
@@ -141,22 +142,32 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.beginPath();
+        const lineCommand: LineCommand = new LineCommand(
+            ctx,
+            path,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this.drawWithJunction,
+            this.junctionDiameter,
+        )
+        lineCommand.execute();
+        // ctx.globalAlpha = this.colorService.mainColor.opacity;
+        // ctx.strokeStyle = this.colorService.mainColor.rgbValue;
+        // ctx.fillStyle = this.colorService.mainColor.rgbValue;
+        // ctx.lineJoin = ctx.lineCap = 'round';
+        // ctx.beginPath();
 
-        for (const point of path) {
-            ctx.lineWidth = this.thickness;
-            ctx.lineTo(point.x, point.y);
-            if (this.drawWithJunction) {
-                const circle = new Path2D();
-                circle.arc(point.x, point.y, this.junctionDiameter, 0, 2 * Math.PI);
-                ctx.fill(circle);
-            }
-        }
-        ctx.stroke();
+        // for (const point of path) {
+        //     ctx.lineWidth = this.thickness;
+        //     ctx.lineTo(point.x, point.y);
+        //     if (this.drawWithJunction) {
+        //         const circle = new Path2D();
+        //         circle.arc(point.x, point.y, this.junctionDiameter, 0, 2 * Math.PI);
+        //         ctx.fill(circle);
+        //     }
+        // }
+        // ctx.stroke();
     }
 
     lockLine(): void {

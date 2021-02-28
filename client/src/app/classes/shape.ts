@@ -1,4 +1,3 @@
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
