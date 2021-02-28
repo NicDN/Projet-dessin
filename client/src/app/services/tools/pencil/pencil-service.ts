@@ -1,16 +1,17 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
+import { DrawingCommand } from '@app/classes/commands/drawing-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingCommand } from '@app/classes/commands/drawing-command';
 @Injectable({
     providedIn: 'root',
 })
 export class PencilService extends TraceTool {
     isEraser: boolean;
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
@@ -32,11 +33,25 @@ export class PencilService extends TraceTool {
         if (this.mouseDown) {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
-            this.drawLine(this.drawingService.baseCtx, this.pathData);
+
+            this.sendCommandAction();
+
             this.clearPreviewIfNotEraser(this.isEraser);
         }
         this.mouseDown = false;
         this.clearPath();
+    }
+
+    sendCommandAction(): void {
+        const drawingCommand: DrawingCommand = new DrawingCommand(
+            this.drawingService.baseCtx,
+            this.pathData,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+        );
+        drawingCommand.execute();
+        this.undoRedoService.addCommand(drawingCommand);
     }
 
     clearPreviewIfNotEraser(isEraser: boolean): void {
