@@ -15,6 +15,7 @@ export class EllipseCommand extends AbstractCommand {
     drawingGlobalAlpha: number;
     ellipseDrawingService: EllipseDrawingService;
     isAlternateShape: boolean;
+    traceType: TraceType;
 
     constructor(
         ctx: CanvasRenderingContext2D,
@@ -26,6 +27,7 @@ export class EllipseCommand extends AbstractCommand {
         globalAlpha: number,
         ellipseDrawingService: EllipseDrawingService,
         isAlternateShape: boolean,
+        traceType: TraceType,
     ) {
         super();
         this.drawingContext = ctx;
@@ -37,6 +39,7 @@ export class EllipseCommand extends AbstractCommand {
         this.drawingGlobalAlpha = globalAlpha;
         this.ellipseDrawingService = ellipseDrawingService;
         this.isAlternateShape = isAlternateShape;
+        this.traceType = traceType;
     }
 
     execute(): void {
@@ -59,11 +62,11 @@ export class EllipseCommand extends AbstractCommand {
         const mainColor: Color = { rgbValue: this.mainColor, opacity: this.drawingGlobalAlpha };
         const secondaryColor: Color = { rgbValue: this.secondaryColor, opacity: 1 };
 
-        if (this.ellipseDrawingService.traceType !== TraceType.Bordered) {
+        if (this.traceType !== TraceType.Bordered) {
             this.ellipseDrawingService.setFillColor(this.drawingContext, mainColor);
             this.drawingContext.fill();
         }
-        if (this.ellipseDrawingService.traceType !== TraceType.FilledNoBordered) {
+        if (this.traceType !== TraceType.FilledNoBordered) {
             this.ellipseDrawingService.setStrokeColor(this.drawingContext, secondaryColor);
             this.drawingContext.stroke();
         }

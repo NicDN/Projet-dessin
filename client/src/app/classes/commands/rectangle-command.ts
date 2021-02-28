@@ -14,6 +14,7 @@ export class RectangleCommand extends AbstractCommand {
     drawingGlobalAlpha: number;
     rectangleDrawingService: RectangleDrawingService;
     isAlternateShape: boolean;
+    traceType: TraceType;
 
     constructor(
         ctx: CanvasRenderingContext2D,
@@ -25,6 +26,7 @@ export class RectangleCommand extends AbstractCommand {
         globalAlpha: number,
         rectangleDrawingService: RectangleDrawingService,
         isAlternateShape: boolean,
+        traceType: TraceType,
     ) {
         super();
         this.drawingContext = ctx;
@@ -36,6 +38,7 @@ export class RectangleCommand extends AbstractCommand {
         this.drawingGlobalAlpha = globalAlpha;
         this.rectangleDrawingService = rectangleDrawingService;
         this.isAlternateShape = isAlternateShape;
+        this.traceType = traceType;
     }
     execute(): void {
         this.rectangleDrawingService.alternateShape = this.isAlternateShape;
@@ -53,11 +56,11 @@ export class RectangleCommand extends AbstractCommand {
         const mainColor: Color = { rgbValue: this.mainColor, opacity: this.drawingGlobalAlpha };
         const secondaryColor: Color = { rgbValue: this.secondaryColor, opacity: 1 };
 
-        if (this.rectangleDrawingService.traceType !== TraceType.Bordered) {
+        if (this.traceType !== TraceType.Bordered) {
             this.rectangleDrawingService.setFillColor(this.drawingContext, mainColor);
             this.drawingContext.fill();
         }
-        if (this.rectangleDrawingService.traceType !== TraceType.FilledNoBordered) {
+        if (this.traceType !== TraceType.FilledNoBordered) {
             this.rectangleDrawingService.setStrokeColor(this.drawingContext, secondaryColor);
             this.drawingContext.stroke();
         }
