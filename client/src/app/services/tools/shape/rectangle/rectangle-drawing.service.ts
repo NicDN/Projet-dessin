@@ -1,4 +1,3 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Injectable } from '@angular/core';
 import { RectangleCommand } from '@app/classes/commands/rectangle-command';
 import { Shape, TraceType } from '@app/classes/shape';
