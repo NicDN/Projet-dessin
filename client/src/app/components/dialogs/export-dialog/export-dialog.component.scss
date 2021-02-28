@@ -2,8 +2,7 @@
     width: 850px;
     height: 675px;
     position: relative;
-    overflow: auto;
-  
+    overflow-y: auto;
 }
 
 .bottom-div {
@@ -18,6 +17,7 @@
     width: auto;
     height: 510px;
     overflow: hidden;
+    overflow-y: visible;
 }
 
 mat-button-toggle-group {
@@ -41,11 +41,3 @@ mat-button-toggle-group {
 .export-canvas-btn {
     margin-right: 10px;
 }
-
-.active {
-    background-color: #e51282;
-}
-
-
-
-

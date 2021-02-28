@@ -18,10 +18,9 @@ type Dialog = CarouselDialogComponent | ExportDialogComponent | SaveDialogCompon
 })
 export class DialogService {
     private subject: Subject<boolean> = new Subject<boolean>();
+    private dialogRef: MatDialogRef<Dialog>;
 
     constructor(private dialog: MatDialog) {}
-
-    dialogRef: MatDialogRef<Dialog>;
 
     openDialog(dialogType: DialogType): void {
         switch (dialogType) {

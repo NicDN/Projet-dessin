@@ -43,6 +43,7 @@ describe('FilterService', () => {
         spyOn(service['canvasCtx'], 'drawImage');
         service.applyFilter(FILTER_TYPE, canvasToFilter);
 
+        expect(service['canvasCtx']).toBe(canvasToFilter.getContext('2d') as CanvasRenderingContext2D);
         expect(service['resetWithNotFilter']).toHaveBeenCalled();
         expect(service['canvasCtx'].filter).toBe(service.filters[FILTER_TYPE].property);
         expect(service['canvasCtx'].drawImage).toHaveBeenCalled();
@@ -50,7 +51,7 @@ describe('FilterService', () => {
     });
 
     it('#resetWithNotFilter should remove a filter fromc canvas', () => {
-        const RESET_FILTER = 'blur(0px) contrast(1) sepia(0) saturate(1) brightness(1) invert(0)';
+        const RESET_FILTER = 'none';
         spyOn(service['canvasCtx'], 'drawImage');
         service['resetWithNotFilter']();
         expect(service['canvasCtx'].filter).toBe(RESET_FILTER);
