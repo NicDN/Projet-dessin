@@ -5,6 +5,7 @@ import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 const HALF_CIRCLE = 180;
 const QUARTER_CIRCLE = 90;
@@ -25,7 +26,7 @@ export class LineService extends TraceTool {
     pathData: Vec2[];
     mousePosition: Vec2;
 
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
         this.clearPath();
         this.drawWithJunction = false;
@@ -119,7 +120,18 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        this.drawLine(this.drawingService.baseCtx, this.pathData);
+        // this.drawLine(this.drawingService.baseCtx, this.pathData);
+        const lineCommand: LineCommand = new LineCommand(
+            this.drawingService.baseCtx,
+            this.pathData,
+            this.thickness,
+            this.colorService.mainColor.rgbValue,
+            this.colorService.mainColor.opacity,
+            this.drawWithJunction,
+            this.junctionDiameter,
+        );
+        lineCommand.execute();
+        this.undoRedoService.addCommand(lineCommand);
         this.clearPath();
         this.updatePreview();
     }
