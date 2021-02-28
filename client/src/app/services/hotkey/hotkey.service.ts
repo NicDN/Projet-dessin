@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 interface ShortcutFunctions {
     action?: () => void;
     actionCtrl?: () => void;
+    actionCtrlShift?: () => void;
 }
 
 enum shortCutManager {
@@ -63,7 +64,7 @@ export class HotkeyService {
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
-            KeyZ: { action: () => this.undoRedoService.undo(), actionCtrl: () => this.undoRedoService.redo() },
+            KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
         };
 
         this.observeDialogService();
@@ -81,7 +82,11 @@ export class HotkeyService {
         }
         if (event.ctrlKey) {
             event.preventDefault();
-            this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+            if (event.shiftKey) {
+                this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.();
+            } else {
+                this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+            }
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
