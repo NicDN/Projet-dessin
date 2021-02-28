@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { ResizeCommand } from '@app/classes/commands/resize-action';
+import { AbstractCommand } from '@app/classes/commands/abstract-command';
+// import { ResizeCommand } from '@app/classes/commands/resize-command';
 import { Observable, Subject } from 'rxjs';
-import {AbstractCommand} from '@app/classes/commands/abstract-command';
 // import { DrawingService } from '@app/services/drawing/drawing.service';
 
 @Injectable({
@@ -40,10 +40,11 @@ export class UndoRedoService {
         // if (this.actionList.length !== 0) {
         const undoAction = this.commandList.pop();
         if (undoAction != undefined) {
-            this.undoneList.push(undoAction);
-            if (undoAction.id === 'resize') {
-                this.sendNotifResize(undoAction?.oldBoxSize);
-            }
+            // this.undoneList.push(undoAction);
+            // if (undoAction.id === 'resize') {
+            //     this.sendNotifResize(undoAction?.oldBoxSize);
+            // }
+            undoAction.execute();
         }
         // } else {
         //     console.log('There are no actions !');

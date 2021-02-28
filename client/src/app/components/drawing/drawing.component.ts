@@ -24,10 +24,13 @@ export class DrawingComponent implements AfterViewInit {
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
     canDraw: boolean = true;
+    canvasWidth: number;
+    canvasHeight: number;
 
     constructor(public drawingService: DrawingService, public toolsService: ToolsService, private hotKeyService: HotkeyService) {}
 
     ngAfterViewInit(): void {
+        this.setCanvasDimensions();
         this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.baseCtx = this.baseCtx;
@@ -36,6 +39,11 @@ export class DrawingComponent implements AfterViewInit {
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
 
         this.drawingService.fillWithWhite(this.baseCtx);
+    }
+
+    setCanvasDimensions(): void {
+        this.canvasWidth = window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
+        this.canvasHeight = window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
     }
 
     @HostListener('window:mousemove', ['$event'])
@@ -76,11 +84,11 @@ export class DrawingComponent implements AfterViewInit {
         this.canDraw = !isUsingResizeButton;
     }
 
-    get width(): number {
-        return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
-    }
+    // get width(): number {
+    //     return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
+    // }
 
-    get height(): number {
-        return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
-    }
+    // get height(): number {
+    //     return window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
+    // }
 }

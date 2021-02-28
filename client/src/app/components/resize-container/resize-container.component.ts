@@ -85,8 +85,8 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     // ==================================================
     addActionToUndoList(boxSize: BoxSize): void {
-        const resizeAction = { id: 'resize', oldBoxSize: boxSize };
-        this.undoRedoService.addActionResize(resizeAction);
+        // const resizeAction = { id: 'resize', oldBoxSize: boxSize };
+        // this.undoRedoService.addActionResize(resizeAction);
     }
 
     listenToNewUndoRedoNotifications(): void {
@@ -101,6 +101,7 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.resizeCanvas(width, height, false);
     }
     resizeCanvas(newWidth: number, newHeight: number, updateUndoRedo: boolean): void {
+        // Ceci doit etre le execute
         if (updateUndoRedo) {
             this.addActionToUndoList(this.oldBoxSize);
         }
