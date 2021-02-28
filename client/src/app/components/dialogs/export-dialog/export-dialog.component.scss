@@ -1,22 +1,23 @@
 .export-container {
     width: 850px;
-    height: 700px;
+    height: 675px;
     position: relative;
+    overflow-y: auto;
 }
 
 .bottom-div {
     position: absolute;
     bottom: 0;
-    text-align: center;
 }
 .preview-filter {
     border-color: black;
     border-radius: 3px;
     border-style: solid;
-    background-color: grey;
+    background-color: white;
     width: auto;
-    height: 520px;
+    height: 510px;
     overflow: hidden;
+    overflow-y: visible;
 }
 
 mat-button-toggle-group {
@@ -35,4 +36,8 @@ mat-button-toggle-group {
 
 .imgur-div {
     margin-bottom: 15px;
+}
+
+.export-canvas-btn {
+    margin-right: 10px;
 }

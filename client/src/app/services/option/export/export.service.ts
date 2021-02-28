@@ -1,20 +1,23 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
+
 @Injectable({
     providedIn: 'root',
 })
 export class ExportService {
-    exportCanvas(fileName: string, fileFormat: string, filterCanvas: ElementRef<HTMLCanvasElement>): void {
-        const exportLink = document.createElement('a');
+    canvasToExport: HTMLCanvasElement;
+    private downloadFormat: string;
+    private exportLink: HTMLAnchorElement;
 
-        if (fileName === '') {
-            fileName = 'Sans titre';
-        }
-        exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
-
-        filterCanvas.nativeElement.toBlob((blob) => {
+    exportCanvas(fileName: string, fileFormat: string): void {
+        this.exportLink = document.createElement('a');
+        // tslint:disable-next-line: no-unused-expression
+        fileName ? '' : (fileName = 'Sans titre');
+        this.exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
+        this.downloadFormat = `image/${fileFormat}`;
+        this.canvasToExport.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
-            exportLink.setAttribute('href', url);
-            exportLink.click();
-        });
+            this.exportLink.setAttribute('href', url);
+            this.exportLink.click();
+        }, this.downloadFormat);
     }
 }

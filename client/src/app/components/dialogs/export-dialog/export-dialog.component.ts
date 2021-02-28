@@ -1,32 +1,27 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
 
-const NEXT_PIXEL = 4;
-const RED_GREY_RATIO = 0.3;
-const GREEN_GREY_RATIO = 0.59;
-const BLUE_GREY_RATIO = 0.11;
-
 @Component({
-    selector: 'app-export-dialog',
     templateUrl: './export-dialog.component.html',
     styleUrls: ['./export-dialog.component.scss'],
 })
 export class ExportDialogComponent implements AfterViewInit {
-    @ViewChild('filterCanvas', { static: false }) filterCanvas: ElementRef<HTMLCanvasElement>;
-    filters: string[] = ['Aucun filtre', 'Noir et blanc', 'Filtre2', 'Filtre3', 'Filtre4', 'Filtre5'];
+    @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement>;
 
-    selectedFilter: string = 'Aucun filtre';
-    private filterCanvasCtx: CanvasRenderingContext2D;
+    private canvasCtx: CanvasRenderingContext2D;
 
     constructor(
         public drawingService: DrawingService,
         private exportService: ExportService,
-        private dialogRef: MatDialogRef<ExportDialogComponent>,
+        public dialogRef: MatDialogRef<ExportDialogComponent>,
+        public filterService: FilterService,
     ) {}
 
     ngAfterViewInit(): void {
+<<<<<<< HEAD
         this.filterCanvasCtx = this.filterCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
     }
@@ -81,54 +76,19 @@ export class ExportDialogComponent implements AfterViewInit {
             pixels[i + 2] += adjustement;
         }
         this.filterCanvasCtx.putImageData(imgData, 0, 0);
+=======
+        this.canvasCtx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.canvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        this.exportService.canvasToExport = this.canvas.nativeElement;
+>>>>>>> master
     }
 
-    invertingColorFilter(): void {
-        this.resetWithNotFilter();
-        const imgData = this.filterCanvasCtx.getImageData(0, 0, this.filterCanvas.nativeElement.width, this.filterCanvas.nativeElement.height);
-        const pixels = imgData.data;
-        const numberOfPixels = pixels.length;
-        const maxValue = 255;
-        for (let i = 0; i < numberOfPixels; i += NEXT_PIXEL) {
-            pixels[i] = maxValue - pixels[i];
-            pixels[i + 1] = maxValue - pixels[i + 1];
-            pixels[i + 2] = maxValue - pixels[i + 2];
-        }
-        this.filterCanvasCtx.putImageData(imgData, 0, 0);
-    }
-
-    redGreenBlueFilter(): void {
-        this.resetWithNotFilter();
-        const imgData = this.filterCanvasCtx.getImageData(0, 0, this.filterCanvas.nativeElement.width, this.filterCanvas.nativeElement.height);
-        const pixels = imgData.data;
-        const numberOfPixels = pixels.length;
-        for (let i = 0; i < numberOfPixels; i += NEXT_PIXEL) {
-            const oldR = pixels[i];
-            const oldG = pixels[i + 1];
-            const oldB = pixels[i + 2];
-            pixels[i] = oldG;
-            pixels[i + 1] = oldB;
-            pixels[i + 2] = oldR;
-        }
-        this.filterCanvasCtx.putImageData(imgData, 0, 0);
-    }
-
-    blurFilter(): void {
-        this.resetWithNotFilter();
-        this.filterCanvas.nativeElement.style.filter = 'blur(2px)';
-    }
-
-    resetWithNotFilter(): void {
-        this.filterCanvas.nativeElement.style.filter = 'blur(0px)';
-        this.filterCanvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+    applyFilter(filterType: FilterType): void {
+        this.filterService.applyFilter(filterType, this.canvas.nativeElement);
     }
 
     exportCanvas(fileName: string, fileFormat: string): void {
-        this.exportService.exportCanvas(fileName, fileFormat, this.filterCanvas);
-        this.closeDialog();
-    }
-
-    closeDialog(): void {
+        this.exportService.exportCanvas(fileName, fileFormat);
         this.dialogRef.close();
     }
 }
