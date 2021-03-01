@@ -131,16 +131,5 @@ export class IndexController {
         this.router.get('/all', (req: Request, res: Response, next: NextFunction) => {
             res.json(this.indexService.getAllMessages());
         });
-
-        this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
-            const formData: FormData = req.body;
-            this.indexService.storeData(formData);
-            res.sendStatus(HTTP_STATUS_CREATED);
-        });
-
-        this.router.get('/download', (req: Request, res: Response, next: NextFunction) => {
-            // Send the request to the service and send the response
-            res.json(this.indexService.getData());
-        });
     }
 }

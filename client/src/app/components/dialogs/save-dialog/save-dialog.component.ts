@@ -1,38 +1,34 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { Message } from '@common/communication/message';
+import { FilterService } from '@app/services/filter/filter.service';
+import { SaveService } from '@app/services/option/save/save.service';
 
 @Component({
     selector: 'app-save-dialog',
     templateUrl: './save-dialog.component.html',
     styleUrls: ['./save-dialog.component.scss'],
 })
-export class SaveDialogComponent implements OnInit {
-    SERVER_URL = 'http://localhost:3000/api/index/upload';
-    uploadForm: FormGroup;
-    message: Message = { body: 'Hello', title: 'World' };
+export class SaveDialogComponent implements AfterViewInit {
+    @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement>;
 
-    constructor(private drawingService: DrawingService, private formBuilder: FormBuilder, private httpClient: HttpClient) {}
+    private canvasCtx: CanvasRenderingContext2D;
 
-    ngOnInit() {
-        this.uploadForm = this.formBuilder.group({
-            profile: [''],
-        });
-        this.uploadForm.get('profile')?.setValue(this.drawingService.canvas);
+    constructor(
+        public drawingService: DrawingService,
+        private saveService: SaveService,
+        public filterService: FilterService,
+        public dialogRef: MatDialogRef<SaveDialogComponent>,
+    ) {}
 
-        this.onSubmit();
+    ngAfterViewInit(): void {
+        this.canvasCtx = this.canvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.canvasCtx.drawImage(this.drawingService.canvas, 0, 0);
+        this.saveService.canvasToPost = this.canvas.nativeElement;
     }
 
-    onSubmit() {
-        const formData = new FormData();
-        formData.append('drawing', this.uploadForm.get('profile')?.value);
-        formData.append('suckMyAss', 'pls suck my ass');
-
-        this.httpClient.post<void>(this.SERVER_URL, formData).subscribe(
-            (res) => console.log(res),
-            (err) => console.log(err),
-        );
+    postCanvas(fileName: string, fileFormat: string): void {
+        this.saveService.postCanvas(fileName, fileFormat);
+        this.dialogRef.close();
     }
 }
