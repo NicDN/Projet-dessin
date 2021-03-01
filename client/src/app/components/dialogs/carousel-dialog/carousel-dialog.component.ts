@@ -12,7 +12,7 @@ export class CarouselDialogComponent implements OnInit {
     drawings: DrawingForm[];
 
     drawingsMock: DrawingForm[] = [
-        { id: 1, name: 'dessin1', tag: ['beau', 'bon', 'pas cher'] },
+        // new FormData([id: 2, name: 'dessin2', tag: ['beau', 'bon', 'pas cher']]);
         { id: 2, name: 'dessin2', tag: ['beau', 'bon', 'pas cher'] },
         { id: 3, name: 'dessin3', tag: ['bon', 'pas cher'] },
         { id: 4, name: 'dessin4', tag: ['beau', 'pas cher'] },
