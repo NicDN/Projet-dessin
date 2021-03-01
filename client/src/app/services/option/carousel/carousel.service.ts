@@ -20,9 +20,10 @@ export class CarouselService {
     deleteDrawingFromServer(id: number): Observable<{}> {
         const url = `${this.BASE_URL}/delete/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
+
+        // TODO: DELETE request should be followed by a GET request, in client or server ?
     }
 
-    // TODO: not sure what this is about
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return (error: Error): Observable<T> => {
             return of(result as T);

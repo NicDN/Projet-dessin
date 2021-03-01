@@ -8,6 +8,12 @@
     align-items: center;
     justify-content: space-evenly;
 }
+
+.cards-list-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
 #arrow {
     ::ng-deep .mat-icon {
         height: 48px !important;

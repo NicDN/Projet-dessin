@@ -4,11 +4,11 @@
     <mat-card-title>{{drawingForm.name}}</mat-card-title>
     <mat-card-title>
       <mat-chip-list>
-        <mat-chip>{{drawingForm.tag}}</mat-chip>
+        <mat-chip *ngFor="let tag of drawingForm.tag">{{tag}}</mat-chip>
       </mat-chip-list>
     </mat-card-title>
   </mat-card-header>
   <mat-card-actions>
-    <button mat-button (click)="this.deleteDrawing(1)">Supprimer</button>
+    <button mat-stroked-button (click)="this.deleteDrawing(1)">Supprimer</button>
   </mat-card-actions>
 </mat-card>
