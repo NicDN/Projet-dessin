@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 
-import { CarouselService } from './carousel.service';
+import { DialogService } from './dialog.service';
 
-describe('CarouselService', () => {
-    let service: CarouselService;
+describe('DialogService', () => {
+    let service: DialogService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: MatDialog, useValue: {} }],
         });
-        service = TestBed.inject(CarouselService);
+        service = TestBed.inject(DialogService);
     });
 
     it('should be created', () => {

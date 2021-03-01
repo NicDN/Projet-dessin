@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { BoxSize } from '@app/classes/box-size';
 import { ColorService } from '@app/services/color/color.service';
+import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
@@ -33,6 +34,8 @@ describe('DrawingComponent', () => {
     let router: Router;
     let hotkeyStub: HotkeyService;
     let drawingStub: DrawingService;
+    // tslint:disable-next-line: prefer-const
+    let dialogServiceStub: DialogService;
     let toolsServiceStub: ToolsService;
     let colorServiceStub: ColorService;
     let boxSizeStub: BoxSize;
@@ -52,7 +55,7 @@ describe('DrawingComponent', () => {
             {} as SprayCanService,
             {} as EyeDropperService,
         );
-        hotkeyStub = new HotkeyService(router, drawingStub, toolsServiceStub);
+        hotkeyStub = new HotkeyService(router, drawingStub, toolsServiceStub, dialogServiceStub);
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
             providers: [
@@ -60,6 +63,7 @@ describe('DrawingComponent', () => {
                 { provide: DrawingService, useValue: drawingStub },
                 { provide: HotkeyService, useValue: hotkeyStub },
                 { provide: ColorService, useValue: colorServiceStub },
+                { provide: DialogService, useValue: dialogServiceStub },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();

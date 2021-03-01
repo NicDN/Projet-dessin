@@ -7,8 +7,11 @@ import { DateService } from './date.service';
 @injectable()
 export class IndexService {
     clientMessages: Message[];
+    formDatas: FormData[];
+
     constructor(@inject(TYPES.DateService) private dateService: DateService) {
         this.clientMessages = [];
+        this.formDatas = [];
     }
 
     about(): Message {
@@ -45,5 +48,13 @@ export class IndexService {
 
     getAllMessages(): Message[] {
         return this.clientMessages;
+    }
+
+    storeData(formData: FormData): void {
+        this.formDatas.push(formData);
+    }
+
+    getData(): FormData {
+        return this.formDatas[0];
     }
 }
