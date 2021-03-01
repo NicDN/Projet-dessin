@@ -1,14 +1,31 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { CarouselDialogComponent } from '@app/components/dialogs/carousel-dialog/carousel-dialog.component';
+import { DrawingForm } from '@common/communication/drawingForm';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CarouselService {
-    constructor(private dialog: MatDialog) {}
+    private readonly BASE_URL: string = 'http://localhost:3000/api/index';
 
-    openDialog(): void {
-        this.dialog.open(CarouselDialogComponent);
+    constructor(private http: HttpClient) {}
+
+    requestDrawingsFromServer(): Observable<DrawingForm[]> {
+        return this.http.get<DrawingForm[]>(this.BASE_URL).pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
+    }
+
+    // How to make a drawing have a id ?
+    deleteDrawingFromServer(id: number): Observable<{}> {
+        const url = `${this.BASE_URL}/delete/${id}`;
+        return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
+    }
+
+    // TODO: not sure what this is about
+    private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
+        return (error: Error): Observable<T> => {
+            return of(result as T);
+        };
     }
 }

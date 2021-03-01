@@ -25,7 +25,11 @@ export class DialogService {
     openDialog(dialogType: DialogType): void {
         switch (dialogType) {
             case DialogType.Carousel: {
-                this.dialogRef = this.dialog.open(CarouselDialogComponent);
+                this.dialogRef = this.dialog.open(CarouselDialogComponent, {
+                    // to override default width of angular material dialog TODO: AQ: Accepted ?
+                    width: '1400px',
+                    maxWidth: '100vw',
+                });
                 break;
             }
             case DialogType.Save: {
