@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -93,6 +94,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         MatSelectModule,
         MatCheckboxModule,
         MatButtonToggleModule,
+        MatChipsModule,
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],

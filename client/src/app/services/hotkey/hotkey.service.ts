@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { Subscription } from 'rxjs';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -33,11 +32,8 @@ type ShortcutManager = {
     providedIn: 'root',
 })
 export class HotkeyService {
-    shortCutManager: ShortcutManager;
-
-    listenToKeyEvents: boolean = true;
-
-    subscription: Subscription;
+    private shortCutManager: ShortcutManager;
+    private listenToKeyEvents: boolean = true;
 
     constructor(
         public router: Router,
@@ -45,6 +41,11 @@ export class HotkeyService {
         private toolService: ToolsService,
         private dialogService: DialogService,
     ) {
+        this.initializeShorcutManager();
+        this.observeDialogService();
+    }
+
+    initializeShorcutManager(): void {
         this.shortCutManager = {
             KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
             KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
@@ -61,13 +62,11 @@ export class HotkeyService {
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
         };
-
-        this.observeDialogService();
     }
 
     observeDialogService(): void {
-        this.subscription = this.dialogService.listenToKeyEvents().subscribe((value) => {
-            this.listenToKeyEvents = value;
+        this.dialogService.listenToKeyEvents().subscribe((listenToKeyEvents) => {
+            this.listenToKeyEvents = listenToKeyEvents;
         });
     }
 
@@ -86,10 +85,6 @@ export class HotkeyService {
     }
 
     handleCtrlO(): void {
-        if (this.router.url !== '/editor') {
-            this.router.navigate(['editor']);
-        } else {
-            this.drawingService.handleNewDrawing();
-        }
+        this.router.url ? this.drawingService.handleNewDrawing() : this.router.navigate(['editor']);
     }
 }

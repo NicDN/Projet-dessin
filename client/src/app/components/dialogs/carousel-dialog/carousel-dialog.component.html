@@ -1,14 +1,19 @@
-<div>
+<div class="carousel-container">
     <h2 mat-dialog-title>Carrousel de dessins</h2>
     <div class="cards-container">
-        <mat-spinner></mat-spinner>
-        <button id="arrow" mat-icon-button class="before">
-            <mat-icon>navigate_before</mat-icon>
-        </button>
-        <button id="arrow" mat-icon-button class="next">
-            <mat-icon>navigate_next</mat-icon>
-        </button>
-        <app-card-drawing-template></app-card-drawing-template>  
+        <mat-spinner *ngIf="!this.drawings"></mat-spinner>
+        <div *ngIf="this.drawings" class="cards-list-container">
+            <button id="arrow" mat-icon-button class="before" (click)="this.backwardDrawings()">
+                <mat-icon>navigate_before</mat-icon>
+            </button>
+            <div>
+                <app-card-drawing-template *ngFor="let drawing of this.getSlicedDrawings()" [drawingForm]="drawing">
+                </app-card-drawing-template>
+            </div>
+            <button id="arrow" mat-icon-button class="next" (click)="this.forwardDrawings()">
+                <mat-icon>navigate_next</mat-icon>
+            </button>
+        </div>
     </div>
     <form>
         <mat-form-field>
@@ -18,4 +23,5 @@
             </button>
         </mat-form-field>
     </form>
+    <button mat-flat-button color="primary" class="close-btn" (click)=" this.dialogRef.close();">Fermer</button>
 </div>
