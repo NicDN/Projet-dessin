@@ -28,10 +28,7 @@ export class LineCommand extends AbstractCommand {
         this.junctionDiameter = junctionDiameter;
     }
     execute(): void {
-        this.drawingContext.globalAlpha = this.drawingGlobalAlpha;
-        this.drawingContext.strokeStyle = this.drawingColor;
-        this.drawingContext.fillStyle = this.drawingColor;
-        this.drawingContext.lineJoin = this.drawingContext.lineCap = 'round';
+        this.setContext(this.drawingContext);
         this.drawingContext.beginPath();
 
         for (const point of this.drawingPath) {
@@ -44,5 +41,12 @@ export class LineCommand extends AbstractCommand {
             }
         }
         this.drawingContext.stroke();
+    }
+
+    private setContext(ctx: CanvasRenderingContext2D): void {
+        ctx.globalAlpha = this.drawingGlobalAlpha;
+        ctx.strokeStyle = this.drawingColor;
+        ctx.fillStyle = this.drawingColor;
+        ctx.lineJoin = this.drawingContext.lineCap = 'round';
     }
 }

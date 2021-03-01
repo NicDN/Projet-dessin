@@ -7,6 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { AttributesPanelComponent } from './attributes-panel.component';
 
@@ -17,8 +18,12 @@ describe('AttributesPanelComponent', () => {
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService());
-    const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(new DrawingService(), new ColorService());
+    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(
+        new DrawingService(),
+        new ColorService(),
+        new UndoRedoService(new DrawingService()),
+    );
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -40,7 +45,7 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#subscribe assings current tool correctly ', async(() => {
-        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService());
+        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         component.subscribe();
         fixture.detectChanges();

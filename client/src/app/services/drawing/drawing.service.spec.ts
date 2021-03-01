@@ -81,7 +81,7 @@ describe('DrawingService', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
-        const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'newDrawingNotification');
+        const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'resizeNotification');
         service.sendNotifToResize();
         expect(checkNotif).toHaveBeenCalled();
     });

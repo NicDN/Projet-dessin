@@ -7,7 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 export class UndoRedoService {
     commandList: AbstractCommand[];
     undoneList: AbstractCommand[];
-    canUndoRedo: boolean = true;
+    private canUndoRedo: boolean = true;
 
     constructor(private drawingService: DrawingService) {
         this.commandList = [];

@@ -14,6 +14,9 @@ export class ShapeStub extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         return;
     }
+    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        return;
+    }
 }
 
 // tslint:disable: no-string-literal
@@ -149,7 +152,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseUp should draw on base context and clear preview context', () => {
-        const drawSpy = spyOn(shape, 'draw');
+        const drawSpy = spyOn(shape, 'executeShapeCommand');
         shape.mouseDown = true;
 
         shape.onMouseUp(mouseEvent);
@@ -158,7 +161,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseUp should not draw on base context nor clear preview context if mouseDown is not true (edge case, necessary)', () => {
-        const drawSpy = spyOn(shape, 'draw');
+        const drawSpy = spyOn(shape, 'executeShapeCommand');
         shape.mouseDown = false;
 
         shape.onMouseUp(mouseEvent);

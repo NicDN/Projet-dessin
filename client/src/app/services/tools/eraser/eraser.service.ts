@@ -38,17 +38,12 @@ export class EraserService extends PencilService {
         return Math.atan2(point2.x - point1.x, point2.y - point1.y);
     }
 
-    verifThickness(ctx: CanvasRenderingContext2D, thickness: number): void {
-        if (thickness < this.MINTHICKNESS) thickness = this.MINTHICKNESS;
-        ctx.lineWidth = thickness;
-    }
-
     singleClick(path: Vec2[]): boolean {
         return path.length === 2;
     }
 
-    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {
-        ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
+    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
+        ctx.clearRect(point.x - Math.floor(thickness / 2), point.y - Math.floor(thickness / 2), thickness, thickness);
 
         // If we want to draw in white:
         // ctx.fillStyle = 'white';

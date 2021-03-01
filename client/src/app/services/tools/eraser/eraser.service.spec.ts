@@ -79,16 +79,6 @@ describe('EraserService', () => {
         expect(service.angleBetween(point1, point2)).toEqual(expectedValue);
     });
 
-    it('#verifThickness should set and check the eraser writing thickness on the canvas', () => {
-        const thicknessStubValue = 10;
-        service.verifThickness(baseCtxStub, thicknessStubValue);
-        expect(baseCtxStub.lineWidth).toEqual(thicknessStubValue);
-
-        const underMinThickness = 2;
-        service.verifThickness(baseCtxStub, underMinThickness);
-        expect(baseCtxStub.lineWidth).toEqual(service.MINTHICKNESS);
-    });
-
     it('#singleClick should return if there is a single click', () => {
         const path1 = [
             { x: 0, y: 0 },
@@ -116,7 +106,7 @@ describe('EraserService', () => {
     it('#eraseSquare should erase part off the context', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 }, service.thickness);
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });
@@ -130,6 +120,7 @@ describe('EraserService', () => {
     });
 
     it('#drawLine should erase on the canvas if there is a single click', () => {
+        spyOn(service, 'sendCommandAction');
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         const singleClickStub = true;
@@ -139,8 +130,8 @@ describe('EraserService', () => {
         service.onMouseUp(mouseEventEnd);
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+        expect(service.sendCommandAction).toHaveBeenCalled();
         expect(imageData).toEqual(imageDataBefore);
-        expect(drawLineSpy).toHaveBeenCalled();
     });
 
     it('#drawline should erase on mouse move', () => {

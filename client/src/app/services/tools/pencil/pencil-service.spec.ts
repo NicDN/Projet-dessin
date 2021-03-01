@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
@@ -13,6 +14,7 @@ describe('PencilService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
@@ -30,10 +32,12 @@ describe('PencilService', () => {
         });
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'sendCommandAction']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -80,21 +84,23 @@ describe('PencilService', () => {
         expect(service.mouseDown).toEqual(false);
     });
 
-    it('#onMouseUp should call drawLine if mouse was already down', () => {
+    it('#onMouseUp should send action to the undoRedoService', () => {
+        spyOn(service, 'sendCommandAction');
         service.mouseDownCoord = { x: 0, y: 0 };
         service.mouseDown = true;
         drawLineSpy.and.stub();
         service.onMouseUp(mouseEvent);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
-        expect(drawLineSpy).toHaveBeenCalled();
+        expect(service.sendCommandAction).toHaveBeenCalled();
     });
 
     it('#onMouseUp should not call drawLine if mouse was not already down', () => {
+        spyOn(service, 'sendCommandAction');
         service.mouseDown = false;
         service.mouseDownCoord = { x: 0, y: 0 };
 
         service.onMouseUp(mouseEvent);
-        expect(drawLineSpy).not.toHaveBeenCalled();
+        expect(service.sendCommandAction).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should call drawLine if mouse was already down', () => {
@@ -166,12 +172,13 @@ describe('PencilService', () => {
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
     });
 
-    it('#setContext should set the context for drawing', () => {
-        service.setContext(baseCtxStub);
-        expect(baseCtxStub.lineCap).toEqual('round');
-        expect(baseCtxStub.lineJoin).toEqual('round');
-        expect(baseCtxStub.lineWidth).toEqual(service.thickness);
-        expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
-        expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
-    });
+    // Moved to command
+    // it('#setContext should set the context for drawing', () => {
+    //     service.setContext(baseCtxStub);
+    //     expect(baseCtxStub.lineCap).toEqual('round');
+    //     expect(baseCtxStub.lineJoin).toEqual('round');
+    //     expect(baseCtxStub.lineWidth).toEqual(service.thickness);
+    //     expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+    //     expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
+    // });
 });

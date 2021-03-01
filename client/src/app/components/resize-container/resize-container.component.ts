@@ -41,7 +41,6 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.oldBoxSize = { widthBox: this.width, heightBox: this.height };
-        console.log(this.oldBoxSize);
     }
 
     setStatus(status: number): void {

@@ -16,10 +16,8 @@ export class EraserCommand extends AbstractCommand {
     }
     execute(): void {
         // Execute drawLine
-        this.eraserService.verifThickness(this.drawingContext, this.drawingThickness);
-
         if (this.eraserService.singleClick(this.drawingPath)) {
-            this.eraserService.eraseSquare(this.drawingContext, { x: this.drawingPath[0].x, y: this.drawingPath[0].y });
+            this.eraserService.eraseSquare(this.drawingContext, { x: this.drawingPath[0].x, y: this.drawingPath[0].y }, this.drawingThickness);
             return;
         }
 
@@ -34,7 +32,7 @@ export class EraserCommand extends AbstractCommand {
             for (let i = 0; i < dist; i += 1) {
                 const xValue = oldPointX + Math.sin(angle) * i;
                 const yValue = oldPointY + Math.cos(angle) * i;
-                this.eraserService.eraseSquare(this.drawingContext, { x: xValue, y: yValue });
+                this.eraserService.eraseSquare(this.drawingContext, { x: xValue, y: yValue }, this.drawingThickness);
             }
 
             oldPointX = point.x;
