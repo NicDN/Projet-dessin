@@ -1,4 +1,5 @@
 import { TYPES } from '@app/types';
+import { DrawingForm } from '@common/communication/drawingForm';
 import { Message } from '@common/communication/message';
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
@@ -29,8 +30,8 @@ export class DatabaseController {
         });
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
-            const formData: FormData = req.body;
-            this.databaseService.storeData(formData);
+            const drawingForm: DrawingForm = req.body;
+            this.databaseService.storeData(drawingForm);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 
