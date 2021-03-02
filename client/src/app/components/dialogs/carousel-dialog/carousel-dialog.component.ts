@@ -21,13 +21,13 @@ export class CarouselDialogComponent implements OnInit {
     noDrawingError: boolean = true;
 
     drawingsMock: DrawingForm[] = [
-        { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
-        { id: 2, name: 'dessin2', tag: ['bon', 'pas cher'] },
-        { id: 3, name: 'dessin3', tag: ['bon', 'pas cher'] },
-        { id: 4, name: 'dessin4', tag: ['beau', 'pas cher'] },
-        { id: 5, name: 'dessin5', tag: ['beau', 'bon', 'pas cher'] },
-        { id: 7, name: 'dessin7', tag: ['beau', 'pas cher'] },
-        { id: 8, name: 'dessin8', tag: ['beau', 'bon'] },
+        // { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
+        // { id: 2, name: 'dessin2', tag: ['bon', 'pas cher'] },
+        // { id: 3, name: 'dessin3', tag: ['bon', 'pas cher'] },
+        // { id: 4, name: 'dessin4', tag: ['beau', 'pas cher'] },
+        // { id: 5, name: 'dessin5', tag: ['beau', 'bon', 'pas cher'] },
+        // { id: 7, name: 'dessin7', tag: ['beau', 'pas cher'] },
+        // { id: 8, name: 'dessin8', tag: ['beau', 'bon'] },
     ];
 
     private startIndex: number = 0;
@@ -42,7 +42,7 @@ export class CarouselDialogComponent implements OnInit {
         this.carouselService.requestDrawingsFromServer().subscribe(
             (drawingForms) => {
                 this.noDrawingError = false;
-                this.drawings = this.drawingsMock; // should be drawingForms
+                this.drawings = drawingForms;
             },
             (err) => {
                 this.noDrawingError = true;

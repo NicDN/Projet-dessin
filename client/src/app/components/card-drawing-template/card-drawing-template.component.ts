@@ -13,7 +13,7 @@ export class CardDrawingTemplateComponent {
     drawingSrc: string;
 
     constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {
-        // this.convertBlobToSrc();
+        this.convertBlobToSrc();
     }
 
     setToCurrentDrawing(): void {
@@ -39,11 +39,10 @@ export class CardDrawingTemplateComponent {
         this.openSnackBar(feedBackMessage, 'Fermer');
     }
 
-    // TODO: should work when a blob will be passed to formData
-    // convertBlobToSrc(): void {
-    //     const formData: FormData = this.drawingForm.drawing;
-    //     this.drawingSrc = URL.createObjectURL(formData.get('drawing')); // formData.get returns a blob
-    // }
+    convertBlobToSrc(): void {
+        const formData: FormData = this.drawingForm.drawing;
+        this.drawingSrc = URL.createObjectURL(formData.get('drawing'));
+    }
 
     openSnackBar(message: string, action: string): void {
         this.snackBar.open(message, action, {
