@@ -42,7 +42,7 @@ export class CarouselDialogComponent implements OnInit {
         this.carouselService.requestDrawingsFromServer().subscribe(
             (drawingForms) => {
                 this.noDrawingError = false;
-                this.drawings = drawingForms;
+                this.drawings = this.drawingsMock;
             },
             (err) => {
                 this.noDrawingError = true;
