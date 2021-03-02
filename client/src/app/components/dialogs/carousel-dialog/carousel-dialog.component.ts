@@ -80,7 +80,7 @@ export class CarouselDialogComponent implements OnInit {
         }
     }
 
-    searchWithNewTag(event: MatChipInputEvent): void {
+    addTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
 
