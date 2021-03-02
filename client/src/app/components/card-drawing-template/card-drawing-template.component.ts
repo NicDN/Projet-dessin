@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
@@ -8,11 +8,13 @@ import { DrawingForm } from '@common/communication/drawingForm';
     templateUrl: './card-drawing-template.component.html',
     styleUrls: ['./card-drawing-template.component.scss'],
 })
-export class CardDrawingTemplateComponent {
+export class CardDrawingTemplateComponent implements AfterViewInit {
     @Input() drawingForm: DrawingForm;
     drawingSrc: string;
 
-    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {
+    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {}
+
+    ngAfterViewInit(): void {
         this.convertBlobToSrc();
     }
 

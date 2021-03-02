@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
     providedIn: 'root',
 })
 export class CarouselService {
-    private readonly BASE_URL: string = 'http://localhost:3000/api/index';
+    private readonly BASE_URL: string = 'http://localhost:3000/api/database';
 
     constructor(private http: HttpClient) {}
 

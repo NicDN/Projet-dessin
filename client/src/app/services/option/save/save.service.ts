@@ -25,19 +25,22 @@ export class SaveService {
     }
 
     async postCanvas(fileName: string, fileFormat: string): Promise<void> {
-        const formData = new FormData();
+        // tslint:disable-next-line: prefer-const
+        let formData = new FormData();
         // tslint:disable-next-line: no-unused-expression
         fileName ? '' : (fileName = 'Sans titre');
         this.downloadFormat = `image/${fileFormat}`;
         this.canvasToPost.toBlob((blob) => {
             // tslint:disable-next-line: no-non-null-assertion
-            formData.append('drawing', blob!);
+            formData.append('drawing', blob!, 'youpidou.png');
+            formData.append('default', 'test');
             const drawingForm: DrawingForm = {
                 id: 0,
-                name: 'bruh',
+                name: fileName,
                 tag: [],
                 drawing: formData,
             };
+            debugger;
             this.post(drawingForm).subscribe();
         }, this.downloadFormat);
     }

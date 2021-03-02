@@ -1,6 +1,5 @@
 import { TYPES } from '@app/types';
 import { DrawingForm } from '@common/communication/drawingForm';
-import { Message } from '@common/communication/message';
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
 import { DatabaseService } from '../services/database.service';
@@ -20,12 +19,10 @@ export class DatabaseController {
 
         // TODO: use async ?
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            // Send the request to the service and send the response
-            const time: Message = await this.databaseService.helloWorld();
-            res.json(time);
+            res.json(this.databaseService.getData());
         });
 
-        this.router.delete('/api/index/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
             // this.databaseService
             //     .deleteCourse(req.params.id)
             //     .then(() => {
@@ -42,10 +39,6 @@ export class DatabaseController {
             const drawingForm: DrawingForm = req.body;
             this.databaseService.storeData(drawingForm);
             res.sendStatus(HTTP_STATUS_CREATED);
-        });
-
-        this.router.get('/download', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.databaseService.getData());
         });
     }
 }
