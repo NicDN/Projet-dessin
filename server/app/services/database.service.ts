@@ -1,15 +1,21 @@
 import { TYPES } from '@app/types';
+import { DrawingForm } from '@common/communication/drawingForm';
 import { Message } from '@common/communication/message';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';
 import { DateService } from './date.service';
 
+interface DrawingData {
+    id: number;
+    drawing: FormData;
+}
+
 @injectable()
 export class DatabaseService {
-    formDatas: FormData[];
+    drawingsData: DrawingData[];
 
     constructor(@inject(TYPES.DateService) private dateService: DateService) {
-        this.formDatas = [];
+        this.drawingsData = [];
     }
 
     async helloWorld(): Promise<Message> {
@@ -38,22 +44,12 @@ export class DatabaseService {
         };
     }
 
-    storeData(formData: FormData): void {
-        // tslint:disable-next-line: prefer-const
-        let blob = formData.get('drawing');
-        let fileName = formData.get('name');
-        // tslint:disable-next-line: prefer-const
-        let exportLink: HTMLAnchorElement = document.createElement('a');
-
-        // tslint:disable-next-line: no-unused-expression
-        fileName ? '' : (fileName = 'Sans titre');
-        exportLink.setAttribute('download', `${fileName}.png`);
-        const url = URL.createObjectURL(blob);
-        exportLink.setAttribute('href', url);
-        exportLink.click();
+    storeData(drawingForm: DrawingForm): void {
+        const data: DrawingData = { id: drawingForm.id, drawing: drawingForm.drawing };
+        this.drawingsData.push(data);
     }
 
-    getData(): FormData {
-        return this.formDatas[0];
+    getData(): DrawingData {
+        return this.drawingsData[0];
     }
 }
