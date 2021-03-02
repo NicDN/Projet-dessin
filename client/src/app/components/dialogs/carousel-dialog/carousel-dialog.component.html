@@ -1,0 +1,21 @@
+<div>
+    <h2 mat-dialog-title>Carrousel de dessins</h2>
+    <div class="cards-container">
+        <mat-spinner></mat-spinner>
+        <button id="arrow" mat-icon-button class="before">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
+        <button id="arrow" mat-icon-button class="next">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
+        <app-card-drawing-template></app-card-drawing-template>  
+    </div>
+    <form>
+        <mat-form-field>
+            <input matInput placeholder="Filtrer avec étiquettes">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </form>
+</div>

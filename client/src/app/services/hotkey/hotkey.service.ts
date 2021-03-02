@@ -1,9 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { Subscription } from 'rxjs';
 
-enum Shortcuts {
+interface ShortcutFunctions {
+    action?: () => void;
+    actionCtrl?: () => void;
+}
+
+enum shortCutManager {
+    SAVE = 'KeyS',
+    CAROUSEL = 'KeyG',
+    EXPORT = 'KeyE',
     NEWDRAWING = 'KeyO',
     ERASER = 'KeyE',
     PENCIL = 'KeyC',
@@ -16,46 +26,70 @@ enum Shortcuts {
 }
 
 type ShortcutManager = {
-    [key in Shortcuts]: () => void;
+    [key in shortCutManager]: ShortcutFunctions;
 };
 
 @Injectable({
     providedIn: 'root',
 })
 export class HotkeyService {
-    shortcuts: ShortcutManager;
-    ctrlKeyPressed: boolean = false;
+    shortCutManager: ShortcutManager;
 
-    constructor(public router: Router, public drawingService: DrawingService, private toolService: ToolsService) {
-        this.shortcuts = {
-            KeyO: () => this.handleCtrlO(),
-            KeyA: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
-            KeyI: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService),
-            KeyE: () => this.toolService.setCurrentTool(this.toolService.eraserService),
-            KeyL: () => this.toolService.setCurrentTool(this.toolService.lineService),
-            KeyC: () => this.toolService.setCurrentTool(this.toolService.pencilService),
-            Digit1: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService),
-            Digit2: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService),
-            Digit3: () => this.toolService.setCurrentTool(this.toolService.polygonService),
+    listenToKeyEvents: boolean = true;
+
+    subscription: Subscription;
+
+    constructor(
+        public router: Router,
+        public drawingService: DrawingService,
+        private toolService: ToolsService,
+        private dialogService: DialogService,
+    ) {
+        this.shortCutManager = {
+            KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
+            KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
+            KeyO: { actionCtrl: () => this.handleCtrlO() },
+            KeyA: { action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService) },
+            KeyI: { action: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService) },
+            KeyE: {
+                action: () => this.toolService.setCurrentTool(this.toolService.eraserService),
+                actionCtrl: () => this.dialogService.openDialog(DialogType.Export),
+            },
+            KeyL: { action: () => this.toolService.setCurrentTool(this.toolService.lineService) },
+            KeyC: { action: () => this.toolService.setCurrentTool(this.toolService.pencilService) },
+            Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
+            Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
+            Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
         };
-    }
-    onKeyDown(event: KeyboardEvent): void {
-        this.verifyCtrlKeyStatus(event);
-        this.shortcuts[event.code as Shortcuts]?.();
-        this.toolService.currentTool.onKeyDown(event);
-        event.returnValue = true; // To accept default web shortcuts
+
+        this.observeDialogService();
     }
 
-    verifyCtrlKeyStatus(event: KeyboardEvent): void {
-        this.ctrlKeyPressed = event.ctrlKey;
-        if (!event.ctrlKey) return;
-        event.preventDefault();
-        this.ctrlKeyPressed = true;
+    observeDialogService(): void {
+        this.subscription = this.dialogService.listenToKeyEvents().subscribe((value) => {
+            this.listenToKeyEvents = value;
+        });
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        if (!this.listenToKeyEvents) {
+            return;
+        }
+        if (event.ctrlKey) {
+            event.preventDefault();
+            this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+        } else {
+            this.shortCutManager[event.code as shortCutManager]?.action?.();
+        }
+        this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
+        event.returnValue = true; // To accept default web shortCutManager
     }
 
     handleCtrlO(): void {
-        if (!this.ctrlKeyPressed) return;
-        this.router.navigate(['editor']);
-        this.drawingService.handleNewDrawing();
+        if (this.router.url !== '/editor') {
+            this.router.navigate(['editor']);
+        } else {
+            this.drawingService.handleNewDrawing();
+        }
     }
 }

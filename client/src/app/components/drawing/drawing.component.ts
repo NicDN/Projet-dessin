@@ -24,6 +24,7 @@ export class DrawingComponent implements AfterViewInit {
     private previewCtx: CanvasRenderingContext2D;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
+
     canDraw: boolean = true;
 
     constructor(public drawingService: DrawingService, public toolsService: ToolsService, private hotKeyService: HotkeyService) {}
@@ -35,6 +36,8 @@ export class DrawingComponent implements AfterViewInit {
         this.drawingService.previewCtx = this.previewCtx;
         this.drawingService.canvas = this.baseCanvas.nativeElement;
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
+
+        this.drawingService.fillWithWhite(this.baseCtx);
     }
 
     @HostListener('window:mousemove', ['$event'])
