@@ -6,6 +6,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -45,7 +47,6 @@ import { SprayCanSettingsSelectorComponent } from './components/tool-settings/sp
 import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
-
 @NgModule({
     declarations: [
         AppComponent,
@@ -95,6 +96,8 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         MatCheckboxModule,
         MatButtonToggleModule,
         MatChipsModule,
+        MatRippleModule,
+        MatSnackBarModule,
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],

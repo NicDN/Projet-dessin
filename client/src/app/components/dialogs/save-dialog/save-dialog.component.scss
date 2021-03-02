@@ -1,0 +1,43 @@
+.save-container {
+    width: 850px;
+    height: 675px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.bottom-div {
+    position: absolute;
+    bottom: 0;
+}
+.preview-filter {
+    border-color: black;
+    border-radius: 3px;
+    border-style: solid;
+    background-color: white;
+    width: auto;
+    height: 510px;
+    overflow: hidden;
+    overflow-y: visible;
+}
+
+mat-button-toggle-group {
+    float: right;
+}
+
+.filter-selector {
+    position: relative;
+    left: 5%;
+    width: 250px;
+}
+
+.file-name {
+    width: 400px;
+}
+
+.imgur-div {
+    margin-bottom: 15px;
+}
+
+.save-canvas-btn {
+    margin-right: 10px;
+}

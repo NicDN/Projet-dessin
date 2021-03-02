@@ -7,6 +7,7 @@ import { DateService } from './date.service';
 @injectable()
 export class IndexService {
     clientMessages: Message[];
+
     constructor(@inject(TYPES.DateService) private dateService: DateService) {
         this.clientMessages = [];
     }

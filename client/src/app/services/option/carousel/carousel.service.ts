@@ -16,12 +16,9 @@ export class CarouselService {
         return this.http.get<DrawingForm[]>(this.BASE_URL).pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
     }
 
-    // How to make a drawing have a id ?
     deleteDrawingFromServer(id: number): Observable<{}> {
         const url = `${this.BASE_URL}/delete/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
-
-        // TODO: DELETE request should be followed by a GET request, in client or server ?
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

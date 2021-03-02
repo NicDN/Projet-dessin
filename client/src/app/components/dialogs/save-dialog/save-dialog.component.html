@@ -1,1 +1,28 @@
-<p>save-dialog works!</p>
+<div class="save-container">
+    <h2 mat-dialog-title>Exporter le dessin</h2>
+    <div>
+        <mat-form-field class="file-name">
+            <input matInput #fileName placeholder="Nom du fichier" />
+        </mat-form-field>
+
+        <mat-button-toggle-group #fileFormat="matButtonToggleGroup">
+            <mat-button-toggle checked="true" value="png">PNG</mat-button-toggle>
+            <mat-button-toggle value="jpeg">JPG</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+
+    <div class="preview-filter">
+        <canvas
+            #canvas
+            [style.height.px]="510"
+            [style.width.px]="850"
+            [attr.width]="this.drawingService.canvas.width"
+            [attr.height]="this.drawingService.canvas.height"
+        ></canvas>
+    </div>
+
+    <div class="bottom-div">
+        <button mat-flat-button color="primary" class="save-canvas-btn" (click)="postCanvas(fileName.value, fileFormat.value)">Sauvegarder</button>
+        <button mat-flat-button color="primary" class="cancel-btn" (click)="this.dialogRef.close()">Annuler</button>
+    </div>
+</div>

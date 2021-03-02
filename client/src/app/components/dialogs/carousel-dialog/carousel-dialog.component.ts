@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
+// import { DrawingForm } from '@common/communication/drawingForm';
 @Component({
     selector: 'app-carousel-dialog',
     templateUrl: './carousel-dialog.component.html',
@@ -12,8 +13,8 @@ export class CarouselDialogComponent implements OnInit {
     drawings: DrawingForm[];
 
     drawingsMock: DrawingForm[] = [
-        // new FormData([id: 2, name: 'dessin2', tag: ['beau', 'bon', 'pas cher']]);
-        { id: 2, name: 'dessin2', tag: ['beau', 'bon', 'pas cher'] },
+        { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
+        { id: 2, name: 'dessin2', tag: ['bon', 'pas cher'] },
         { id: 3, name: 'dessin3', tag: ['bon', 'pas cher'] },
         { id: 4, name: 'dessin4', tag: ['beau', 'pas cher'] },
         { id: 5, name: 'dessin5', tag: ['beau', 'bon', 'pas cher'] },
@@ -21,8 +22,7 @@ export class CarouselDialogComponent implements OnInit {
         { id: 8, name: 'dessin8', tag: ['beau', 'bon'] },
     ];
 
-    startIndex: number = 0;
-    offsetIndex: number = this.DRAWINGS_MAX_COUNT;
+    private startIndex: number = 0;
 
     constructor(public carouselService: CarouselService, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
 
@@ -31,11 +31,18 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     requestDrawings(): void {
-        this.carouselService.requestDrawingsFromServer().subscribe((drawingForms) => {
-            this.drawings = this.drawingsMock; // should be drawingForms
-        });
+        this.carouselService.requestDrawingsFromServer().subscribe(
+            (drawingForms) => {
+                this.drawings = this.drawingsMock; // should be drawingForms
+            },
+            (err) => {
+                console.log(err);
+                // mat error si filtrage par etiquette ne trouve rien
+            },
+        );
     }
 
+    // TODO: Goes in service ?
     // TODO: works but needs refactoring
     getSlicedDrawings(): DrawingForm[] {
         let tempArr: DrawingForm[] = [];
