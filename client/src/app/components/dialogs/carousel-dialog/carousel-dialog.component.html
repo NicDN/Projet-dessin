@@ -15,13 +15,28 @@
             </button>
         </div>
     </div>
-    <form>
         <mat-form-field>
-            <input matInput placeholder="Filtrer avec étiquettes">
-            <button mat-button matSuffix mat-icon-button aria-label="Clear">
+            <mat-label>Filtrer avec étiquettes</mat-label>
+            <mat-chip-list #chipList>
+                <mat-chip *ngFor="let tag of searchedTags" selectable="true" removable="true"
+                    (removed)="this.removeTag(tag)">{{tag}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+            </mat-chip-list>
+
+
+            <input  
+                            [matChipInputFor]="chipList"  
+                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                            matChipInputAddOnBlur="true"
+                            (matChipInputTokenEnd)="this.searchWithNewTag($event)">
+
+
+            <!-- <button mat-button matSuffix mat-icon-button aria-label="Clear">
                 <mat-icon>close</mat-icon>
-            </button>
+            </button> -->
+
+
         </mat-form-field>
-    </form>
     <button mat-flat-button color="primary" class="close-btn" (click)=" this.dialogRef.close();">Fermer</button>
 </div>

@@ -1,4 +1,6 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, HostListener, OnInit } from '@angular/core';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
@@ -9,8 +11,12 @@ import { DrawingForm } from '@common/communication/drawingForm';
     styleUrls: ['./carousel-dialog.component.scss'],
 })
 export class CarouselDialogComponent implements OnInit {
+    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+
     readonly DRAWINGS_MAX_COUNT: number = 3;
     drawings: DrawingForm[];
+
+    searchedTags: string[] = ['beau', 'bon', 'sexy'];
 
     drawingsMock: DrawingForm[] = [
         { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
@@ -65,6 +71,28 @@ export class CarouselDialogComponent implements OnInit {
 
     backwardDrawings(): void {
         this.startIndex === 0 ? (this.startIndex = this.drawings.length - 1) : this.startIndex--;
+    }
+
+    removeTag(tag: string): void {
+        const index = this.searchedTags.indexOf(tag);
+        if (index >= 0) {
+            this.searchedTags.splice(index, 1);
+        }
+    }
+
+    searchWithNewTag(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+
+        // add tag to searchedTags array
+        if ((value || '').trim()) {
+            this.searchedTags.push(value);
+        }
+
+        // Reset the input value
+        if (input) {
+            input.value = '';
+        }
     }
 
     @HostListener('window:keydown', ['$event'])
