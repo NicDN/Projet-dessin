@@ -16,7 +16,9 @@ export class CarouselDialogComponent implements OnInit {
     readonly DRAWINGS_MAX_COUNT: number = 3;
     drawings: DrawingForm[];
 
-    searchedTags: string[] = ['beau', 'bon', 'sexy'];
+    searchedTags: string[] = [];
+
+    noDrawingError: boolean = true;
 
     drawingsMock: DrawingForm[] = [
         { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
@@ -39,11 +41,12 @@ export class CarouselDialogComponent implements OnInit {
     requestDrawings(): void {
         this.carouselService.requestDrawingsFromServer().subscribe(
             (drawingForms) => {
+                this.noDrawingError = false;
                 this.drawings = this.drawingsMock; // should be drawingForms
             },
             (err) => {
+                this.noDrawingError = true;
                 console.log(err);
-                // mat error si filtrage par etiquette ne trouve rien
             },
         );
     }
@@ -88,7 +91,6 @@ export class CarouselDialogComponent implements OnInit {
         if ((value || '').trim()) {
             this.searchedTags.push(value);
         }
-
         // Reset the input value
         if (input) {
             input.value = '';
