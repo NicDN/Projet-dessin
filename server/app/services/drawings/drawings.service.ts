@@ -17,7 +17,7 @@ export class DrawingsService {
     storeData(drawingForm: DrawingForm): void {
         this.drawingsData.push(drawingForm);
         this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
-        this.readFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id); // unused expression
+        console.log(this.drawingsData.length);
     }
 
     // temp
@@ -60,15 +60,16 @@ export class DrawingsService {
         });
     }
 
-    private async readFile(name: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            fs.readFile(name, (err, data) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                resolve(data.toString());
-            });
-        });
-    }
+    // legit (commented function)
+    // private async readFile(name: string): Promise<string> {
+    //     return new Promise((resolve, reject) => {
+    //         fs.readFile(name, (err, data) => {
+    //             if (err) {
+    //                 reject(err);
+    //                 return;
+    //             }
+    //             resolve(data.toString());
+    //         });
+    //     });
+    // }
 }

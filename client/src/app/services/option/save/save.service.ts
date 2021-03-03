@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { DrawingForm } from '@common/communication/drawingForm';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -11,7 +12,7 @@ export class SaveService {
     private readonly BASE_URL: string = 'http://localhost:3000/api/database';
     canvasToPost: HTMLCanvasElement;
 
-    constructor(private httpClient: HttpClient) {}
+    constructor(private httpClient: HttpClient, private drawingService: DrawingService) {}
 
     post(drawingForm: DrawingForm): Observable<void> {
         return this.httpClient.post<void>(this.BASE_URL + '/upload', drawingForm).pipe(catchError(this.handleError<void>('post')));
@@ -23,16 +24,14 @@ export class SaveService {
         };
     }
 
-    async postCanvas(fileName: string, fileFormat: string): Promise<void> {
+    async postCanvas(fileName: string, tags: string[]): Promise<void> {
         // tslint:disable-next-line: no-unused-expression
-        fileName ? '' : (fileName = 'Sans titre'); // to change, user must enter a name
         const drawingForm: DrawingForm = {
-            id: '0',
+            id: '3',
             name: fileName,
-            tag: ['beau', 'bon', 'sexy'],
-            drawingData: this.canvasToPost.toDataURL(`image/${fileFormat}`),
+            tags,
+            drawingData: this.drawingService.canvas.toDataURL(),
         };
-
         this.post(drawingForm).subscribe();
     }
 }
