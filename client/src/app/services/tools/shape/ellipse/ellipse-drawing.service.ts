@@ -1,6 +1,5 @@
-import { EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
 import { Injectable } from '@angular/core';
-import { EllipseCommand } from '@app/classes/commands/ellipse-command/ellipse-command';
+import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
