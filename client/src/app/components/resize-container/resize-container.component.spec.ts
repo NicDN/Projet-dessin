@@ -2,15 +2,16 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
-// tslint:disable: no-any
+// tslint:disable: no-any no-string-literal
 describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
-    let drawingService: jasmine.SpyObj<DrawingService>;
 
     const OVER_MINIMUM_X_COORDINATE = 1000;
     const OVER_MINIMUM_Y_COORDINATE = 1000;
@@ -21,7 +22,7 @@ describe('ResizeContainerComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
-            providers: [DrawingService, { provide: MatDialog, useValue: {} }],
+            providers: [UndoRedoService, DrawingService, { provide: MatDialog, useValue: {} }],
             imports: [RouterTestingModule],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -75,17 +76,9 @@ describe('ResizeContainerComponent', () => {
         expect(calledOnMouseUpContainerFunction).toHaveBeenCalled();
     });
 
-    // it('#onMouseUpContainer should send a notify input if the status is NOT_RESIZING', () => {
-    //     drawingFixture = TestBed.createComponent(DrawingComponent);
-    //     component.setStatus(Status.RESIZE_DIAGONAL);
-    //     const emitResizeNewDrawing: jasmine.Spy = spyOn(component.notifyResize, 'emit');
-    //     component.onMouseUpContainer(mouseEventClick);
-    //     expect(emitResizeNewDrawing).toHaveBeenCalled();
-    // });
-
     it('#onMouseUpContainer should put the status back to NOT_RESIZING', () => {
         component.setStatus(Status.NOT_RESIZING);
-        component.onMouseUpContainer(mouseEventClick);
+        component.onMouseUpContainer();
         expect(component.status).toEqual(Status.NOT_RESIZING);
     });
 
@@ -136,31 +129,43 @@ describe('ResizeContainerComponent', () => {
         expect(calledResizeFunction).not.toHaveBeenCalled();
     });
 
-    it('#listenToNewDrawingNotifications should receive a message from suscriber', () => {
+    it('#resizeCanvas should resize the canvas surface', () => {
+        spyOn(component['drawingService'], 'onSizeChange');
+        const boxSize = { widthBox: 1, heightBox: 1 };
+        component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
+        expect(component.width).toEqual(boxSize.widthBox);
+        expect(component.height).toEqual(boxSize.heightBox);
+    });
 
+    it('#listenToResizeNotifications should receive a message from suscriber', () => {
+        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const newDrawingNotificationSpy: jasmine.Spy = spyOn(component, 'resizeNotification');
-        component.listenToNewDrawingNotifications();
-        component.resizeNotification(component.boxSize);
+        component.listenToResizeNotifications();
+        const boxSize: BoxSize = { widthBox: 1, heightBox: 1 };
+        component['drawingService'].sendNotifToResize(boxSize);
         fixture.detectChanges();
         expect(newDrawingNotificationSpy).toHaveBeenCalled();
     });
 
-    it('#newDrawingNotification creating new drawing should resize to minimum size if under minimum workspace size ', () => {
+    it('#resizeNotification creating new drawing should resize to minimum size if under minimum workspace size ', () => {
         const MINIMUM_CANVAS_SIZE = 250;
         const UNDERMINIMUM_SCREEN_SIZE = 400;
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
         expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
+        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
+
         // const boxSizeTmp = { widthBox: 10, heightBox: 10 };
         // drawingService.sendNotifToResize(boxSizeTmp);
-        drawingService.sendNotifToResize();
+        const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        component.resizeNotification(boxSize);
         expect(component.width).toEqual(MINIMUM_CANVAS_SIZE);
         expect(component.height).toEqual(MINIMUM_CANVAS_SIZE);
     });
 
     it(
-        '#newDrawingNotification creating a new drawing with a screen' +
+        '#resizeNotification creating a new drawing with a screen' +
             'over minimum workspace size should create a new drawing with 50% of the surface',
         () => {
             const OVERMINIMUM_WORKSPACE_SIZE = 1000;
@@ -168,12 +173,31 @@ describe('ResizeContainerComponent', () => {
             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
             expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
             expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
-            // const boxSizeTmp = { widthBox: 10, heightBox: 10 };
-            drawingService.sendNotifToResize();
+            spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
+            const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+            component.setStatus(Status.RESIZE_DIAGONAL);
+            component.resizeNotification(boxSize);
+
             expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
             expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
         },
     );
+
+    it('#onMouseUp container should send a a command to undo-redo service', () => {
+        component.setStatus(Status.RESIZE_DIAGONAL);
+        component.currentBoxSize = { widthBox: 1, heightBox: 1 };
+        const addCommandSpy = spyOn(component['undoRedoService'], 'addCommand').and.returnValue();
+        component.onMouseUpContainer();
+        expect(addCommandSpy).toHaveBeenCalled();
+    });
+
+    it('#resizeNotification should resize the canvas to the boxsize dimensions if it is above the minumum workspace size', () => {
+        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
+        const boxSize: BoxSize = { widthBox: OVER_MINIMUM_X_COORDINATE, heightBox: OVER_MINIMUM_Y_COORDINATE };
+        component.resizeNotification(boxSize);
+        expect(component.width).toEqual(boxSize.widthBox);
+        expect(component.height).toEqual(boxSize.heightBox);
+    });
 
     it('#WindowWidthIsOverMinimum should return true if width size of workspace is over 500', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE });

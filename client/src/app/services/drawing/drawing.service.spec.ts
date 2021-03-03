@@ -82,7 +82,8 @@ describe('DrawingService', () => {
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
         const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'resizeNotification');
-        service.sendNotifToResize();
+        const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        service.sendNotifToResize(boxSize);
         expect(checkNotif).toHaveBeenCalled();
     });
 

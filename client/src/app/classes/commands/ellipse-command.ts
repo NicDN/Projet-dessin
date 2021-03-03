@@ -13,11 +13,11 @@ export class EllipseCommand extends AbstractCommand {
     mainColor: string;
     secondaryColor: string;
     drawingGlobalAlpha: number;
-    ellipseDrawingService: EllipseDrawingService;
     isAlternateShape: boolean;
     traceType: TraceType;
 
     constructor(
+        private ellipseDrawingService: EllipseDrawingService,
         ctx: CanvasRenderingContext2D,
         begin: Vec2,
         end: Vec2,
@@ -25,7 +25,6 @@ export class EllipseCommand extends AbstractCommand {
         mainColor: string,
         secondaryColor: string,
         globalAlpha: number,
-        ellipseDrawingService: EllipseDrawingService,
         isAlternateShape: boolean,
         traceType: TraceType,
     ) {
@@ -37,7 +36,6 @@ export class EllipseCommand extends AbstractCommand {
         this.mainColor = mainColor;
         this.secondaryColor = secondaryColor;
         this.drawingGlobalAlpha = globalAlpha;
-        this.ellipseDrawingService = ellipseDrawingService;
         this.isAlternateShape = isAlternateShape;
         this.traceType = traceType;
     }

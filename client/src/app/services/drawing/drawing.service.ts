@@ -13,7 +13,7 @@ export class DrawingService {
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
 
-    sendNotifToResize(boxSize?: BoxSize): void {
+    sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
     }
 
@@ -48,7 +48,8 @@ export class DrawingService {
     }
 
     resetCanvas(): void {
-        this.sendNotifToResize();
+        const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        this.sendNotifToResize(boxSize);
     }
 
     canvasIsEmpty(): boolean {

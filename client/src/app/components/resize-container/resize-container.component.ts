@@ -36,7 +36,7 @@ export class ResizeContainerComponent implements AfterViewInit {
     undoRedoSubscription: Subscription;
 
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
-        this.listenToNewDrawingNotifications();
+        this.listenToResizeNotifications();
     }
 
     ngAfterViewInit(): void {
@@ -54,7 +54,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        this.onMouseUpContainer(event);
+        this.onMouseUpContainer();
         this.usingButton.emit(false);
     }
 
@@ -63,7 +63,7 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.usingButton.emit(true);
     }
 
-    onMouseUpContainer(event: MouseEvent): void {
+    onMouseUpContainer(): void {
         if (this.status !== Status.NOT_RESIZING) {
             const resizeCommand: ResizeCommand = new ResizeCommand(this.currentBoxSize, this.drawingService);
             this.undoRedoService.addCommand(resizeCommand);
@@ -90,7 +90,7 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.drawingService.onSizeChange(this.boxSize);
     }
 
-    listenToNewDrawingNotifications(): void {
+    listenToResizeNotifications(): void {
         this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
             this.resizeNotification(boxSize);
         });
@@ -99,7 +99,7 @@ export class ResizeContainerComponent implements AfterViewInit {
     resizeNotification(boxSize: BoxSize): void {
         let width: number;
         let height: number;
-        if (boxSize === undefined) {
+        if (boxSize.widthBox < 0 || boxSize.heightBox < 0) {
             width = this.workspaceWidthIsOverMinimum() ? (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO : DEFAULT_WIDTH;
             height = this.workspaceHeightIsOverMinimum() ? window.innerHeight * HALF_RATIO : DEFAULT_HEIGHT;
         } else {

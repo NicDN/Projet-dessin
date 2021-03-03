@@ -16,6 +16,7 @@ export class EllipseDrawingService extends Shape {
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const ellipseCommand: EllipseCommand = new EllipseCommand(
+            this,
             ctx,
             begin,
             end,
@@ -23,7 +24,6 @@ export class EllipseDrawingService extends Shape {
             this.colorService.mainColor.rgbValue,
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
-            this,
             this.alternateShape,
             this.traceType,
         );
@@ -32,6 +32,7 @@ export class EllipseDrawingService extends Shape {
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const ellipseCommand: EllipseCommand = new EllipseCommand(
+            this,
             ctx,
             begin,
             end,
@@ -39,7 +40,6 @@ export class EllipseDrawingService extends Shape {
             this.colorService.mainColor.rgbValue,
             this.colorService.secondaryColor.rgbValue,
             this.colorService.mainColor.opacity,
-            this,
             this.alternateShape,
             this.traceType,
         );
