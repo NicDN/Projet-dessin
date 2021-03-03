@@ -7,9 +7,9 @@ import { ExportService } from './export.service';
 describe('ExportService', () => {
     let service: ExportService;
     const canvasMock = document.createElement('canvas');
-    // const PNG_FILE_FORMAT = 'png';
-    // const JPEG_FILE_FORMAT = 'jpeg';
-    // const FILE_NAME = 'test';
+    const PNG_FILE_FORMAT = 'png';
+    const JPEG_FILE_FORMAT = 'jpeg';
+    const FILE_NAME = 'test';
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -23,26 +23,26 @@ describe('ExportService', () => {
         expect(service).toBeTruthy();
     });
 
-    // it('#exportCanvas should export canvas to jpeg if jpeg format is provided by the user', () => {
-    //     spyOn(service.canvasToExport, 'toBlob');
-    //     service.exportCanvas(FILE_NAME, JPEG_FILE_FORMAT);
-    //     expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + JPEG_FILE_FORMAT);
-    //     expect(service['downloadFormat']).toBe('image/jpeg');
-    //     expect(service.canvasToExport.toBlob).toHaveBeenCalled();
-    // });
+    it('#exportCanvas should export canvas to jpeg if jpeg format is provided by the user', () => {
+        spyOn(service.canvasToExport, 'toBlob');
+        service.exportCanvas(FILE_NAME, JPEG_FILE_FORMAT);
+        expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + JPEG_FILE_FORMAT);
+        expect(service['downloadFormat']).toBe('image/jpeg');
+        expect(service.canvasToExport.toBlob).toHaveBeenCalled();
+    });
 
-    // it('#exportCanvas should export canvas to png if png format is provided by the user', () => {
-    //     spyOn(service.canvasToExport, 'toBlob');
-    //     service.exportCanvas(FILE_NAME, PNG_FILE_FORMAT);
-    //     expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + PNG_FILE_FORMAT);
-    //     expect(service['downloadFormat']).toBe('image/png');
-    //     expect(service.canvasToExport.toBlob).toHaveBeenCalled();
-    // });
+    it('#exportCanvas should export canvas to png if png format is provided by the user', () => {
+        spyOn(service.canvasToExport, 'toBlob');
+        service.exportCanvas(FILE_NAME, PNG_FILE_FORMAT);
+        expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + PNG_FILE_FORMAT);
+        expect(service['downloadFormat']).toBe('image/png');
+        expect(service.canvasToExport.toBlob).toHaveBeenCalled();
+    });
 
-    // it('#exportCanvas should set the file name to the default name if a file name is not provided', () => {
-    //     const DEFAULT_FILE_NAME = 'Sans titre';
-    //     const NOT_PROVIDED_FILE_NAME = '';
-    //     service.exportCanvas(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
-    //     expect(service['exportLink'].getAttribute('download')).toBe(DEFAULT_FILE_NAME + '.' + PNG_FILE_FORMAT);
-    // });
+    it('#exportCanvas should set the file name to the default name if a file name is not provided', () => {
+        const DEFAULT_FILE_NAME = 'Sans titre';
+        const NOT_PROVIDED_FILE_NAME = '';
+        service.exportCanvas(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
+        expect(service['exportLink'].getAttribute('download')).toBe(DEFAULT_FILE_NAME + '.' + PNG_FILE_FORMAT);
+    });
 });
