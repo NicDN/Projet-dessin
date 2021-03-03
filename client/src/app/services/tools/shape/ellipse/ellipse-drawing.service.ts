@@ -25,6 +25,33 @@ export class EllipseDrawingService extends Shape {
         this.undoRedoService.addCommand(ellipseCommand);
     }
 
+    drawEllipse(ellipsePropreties: EllipsePropreties): void {
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(ellipsePropreties.beginCoords, ellipsePropreties.endCoords);
+        const center: Vec2 = this.getCenterCoords(ellipsePropreties.beginCoords, actualEndCoords);
+        const radiuses: Vec2 = {
+            x: this.getRadius(ellipsePropreties.beginCoords.x, actualEndCoords.x),
+            y: this.getRadius(ellipsePropreties.beginCoords.y, actualEndCoords.y),
+        };
+
+        ellipsePropreties.drawingContext.save();
+        this.setContextParameters(ellipsePropreties.drawingContext, ellipsePropreties.drawingThickness);
+        ellipsePropreties.drawingContext.beginPath();
+
+        this.adjustToBorder(ellipsePropreties.drawingContext, radiuses, ellipsePropreties.beginCoords, actualEndCoords);
+
+        ellipsePropreties.drawingContext.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
+
+        if (ellipsePropreties.traceType !== TraceType.Bordered) {
+            this.setFillColor(ellipsePropreties.drawingContext, ellipsePropreties.mainColor);
+            ellipsePropreties.drawingContext.fill();
+        }
+        if (ellipsePropreties.traceType !== TraceType.FilledNoBordered) {
+            this.setStrokeColor(ellipsePropreties.drawingContext, ellipsePropreties.secondaryColor);
+            ellipsePropreties.drawingContext.stroke();
+        }
+        ellipsePropreties.drawingContext.restore();
+    }
+
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): EllipsePropreties {
         return {
             drawingContext: ctx,

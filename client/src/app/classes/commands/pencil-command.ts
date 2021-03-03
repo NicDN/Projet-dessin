@@ -1,5 +1,6 @@
 import { Color } from '@app/classes/color';
 import { Vec2 } from '@app/classes/vec2';
+import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { AbstractCommand } from './abstract-command';
 
 export interface PencilPropreties {
@@ -10,25 +11,13 @@ export interface PencilPropreties {
 }
 
 export class PencilCommand extends AbstractCommand {
-    constructor(private pencilPropreties: PencilPropreties) {
+    constructor(private pencilService: PencilService, private pencilPropreties: PencilPropreties) {
         super();
     }
     execute(): void {
-        // Execute drawLine
         this.pencilPropreties.drawingContext.save();
         this.setContext(this.pencilPropreties.drawingContext);
-        let oldPointX: number = this.pencilPropreties.drawingPath[0].x;
-        let oldPointY: number = this.pencilPropreties.drawingPath[0].y;
-
-        this.pencilPropreties.drawingContext.beginPath();
-        for (const point of this.pencilPropreties.drawingPath) {
-            this.pencilPropreties.drawingContext.moveTo(oldPointX, oldPointY);
-            this.pencilPropreties.drawingContext.lineTo(point.x, point.y);
-
-            oldPointX = point.x;
-            oldPointY = point.y;
-        }
-        this.pencilPropreties.drawingContext.stroke();
+        this.pencilService.executeDrawLine(this.pencilPropreties);
         this.pencilPropreties.drawingContext.restore();
     }
     private setContext(ctx: CanvasRenderingContext2D): void {

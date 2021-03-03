@@ -63,14 +63,29 @@ export class PencilService extends TraceTool {
 
     sendCommandAction(): void {
         if (this.isEraser) return;
-        const drawingCommand: PencilCommand = new PencilCommand(this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
+        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
         drawingCommand.execute();
         this.undoRedoService.addCommand(drawingCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const drawingCommand: PencilCommand = new PencilCommand(this.loadUpPropreties(ctx, path));
+        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(ctx, path));
         drawingCommand.execute();
+    }
+
+    executeDrawLine(pencilPropreties: PencilPropreties): void {
+        let oldPointX: number = pencilPropreties.drawingPath[0].x;
+        let oldPointY: number = pencilPropreties.drawingPath[0].y;
+
+        pencilPropreties.drawingContext.beginPath();
+        for (const point of pencilPropreties.drawingPath) {
+            pencilPropreties.drawingContext.moveTo(oldPointX, oldPointY);
+            pencilPropreties.drawingContext.lineTo(point.x, point.y);
+
+            oldPointX = point.x;
+            oldPointY = point.y;
+        }
+        pencilPropreties.drawingContext.stroke();
     }
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): PencilPropreties {
