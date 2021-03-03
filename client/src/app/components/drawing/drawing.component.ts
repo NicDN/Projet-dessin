@@ -76,7 +76,9 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        this.undoRedoService.enableUndoRedo();
+        if (this.toolsService.currentTool instanceof ToolsService) {
+            this.undoRedoService.enableUndoRedo();
+        }
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
     }
 

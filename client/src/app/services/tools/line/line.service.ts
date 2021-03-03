@@ -120,12 +120,15 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        // this.drawLine(this.drawingService.baseCtx, this.pathData);
         const lineCommand: LineCommand = new LineCommand(this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
         lineCommand.execute();
+
         this.undoRedoService.addCommand(lineCommand);
         this.clearPath();
         this.updatePreview();
+
+        this.undoRedoService.enableUndoRedo();
+
     }
 
     updatePreview(): void {
@@ -155,7 +158,7 @@ export class LineService extends TraceTool {
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,
-            drawingColor:{rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+            drawingColor: { rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
             drawWithJunction: this.drawWithJunction,
             junctionDiameter: this.junctionDiameter,
         };
