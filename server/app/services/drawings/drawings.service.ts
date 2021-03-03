@@ -16,7 +16,8 @@ export class DrawingsService {
     // temp
     storeData(drawingForm: DrawingForm): void {
         this.drawingsData.push(drawingForm);
-        this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.name, drawingForm.drawingData);
+        this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
+        this.readFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id); // unused expression
     }
 
     // temp
@@ -54,29 +55,20 @@ export class DrawingsService {
                     return;
                 }
                 resolve();
-                console.log('dessin sauvegarder');
+                console.log('dessin sauvegardé dans le dossier drawingsData');
             });
         });
     }
 
-    // writeFile = async (path: string, data: string) => {
-    //     let filehandle = null;
-
-    //     try {
-    //         filehandle = await fs.promises.open(path, 'w');
-    //         // Write to file
-    //         await filehandle.writeFile(data);
-    //     } finally {
-    //         if (filehandle) {
-    //             // Close the file if it is opened.
-    //             await filehandle.close();
-    //         }
-    //     }
-    //     // // The readFileSync() method reads
-    //     // // the contents of the file and
-    //     // // returns the buffer form of the data
-    //     // const buff = fs.readFileSync(path);
-    //     // const content = buff.toString();
-    //     // console.log(`\nContents of the file :\n${content}`);
-    // };
+    private async readFile(name: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            fs.readFile(name, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(data.toString());
+            });
+        });
+    }
 }
