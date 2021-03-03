@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 
 import { ResizeContainerComponent, Status } from './resize-container.component';
 // tslint:disable: no-any no-string-literal
-describe('ResizeContainerComponent', () => {
+fdescribe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -143,37 +143,32 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('#resizeCanvas should resize the canvas surface', () => {
-        // spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const boxSize = { widthBox: 1, heightBox: 1 };
         component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
         expect(component.width).toEqual(boxSize.widthBox);
         expect(component.height).toEqual(boxSize.heightBox);
-        expect(drawingServiceSpyObj.onSizeChange).toHaveBeenCalled();
+        expect(drawingServiceSpyObj.onSizeChange).toHaveBeenCalledWith(boxSize);
     });
 
     it('#listenToResizeNotifications should receive a message from suscriber', () => {
-        // spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const newDrawingNotificationSpy: jasmine.Spy = spyOn(component, 'resizeNotification');
         component.listenToResizeNotifications();
         const boxSize: BoxSize = { widthBox: 1, heightBox: 1 };
-        // component['drawingService'].sendNotifToResize(boxSize);
         drawingServiceSpyObj.sendNotifToResize(boxSize);
-        fixture.detectChanges();
-        expect(newDrawingNotificationSpy).toHaveBeenCalled();
+        expect(newDrawingNotificationSpy).toHaveBeenCalledWith(boxSize);
     });
 
     it('#resizeNotification creating new drawing should resize to minimum size if under minimum workspace size ', () => {
-        const MINIMUM_CANVAS_SIZE = 250;
+        // const MINIMUM_CANVAS_SIZE = 250;
         const UNDERMINIMUM_SCREEN_SIZE = 400;
+        const resizeCanvasSpy = spyOn(component, 'resizeCanvas');
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
-        expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
-        expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
 
         const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        const expectedBoxSize = { widthBox: DEFAULT_WIDTH, heightBox: DEFAULT_HEIGHT };
         component.resizeNotification(boxSize);
-        expect(component.width).toEqual(MINIMUM_CANVAS_SIZE);
-        expect(component.height).toEqual(MINIMUM_CANVAS_SIZE);
+        expect(resizeCanvasSpy).toHaveBeenCalledWith(expectedBoxSize.widthBox, expectedBoxSize.heightBox);
     });
 
     it(
@@ -183,15 +178,16 @@ describe('ResizeContainerComponent', () => {
             const OVERMINIMUM_WORKSPACE_SIZE = 1000;
             Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
-            expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
-            expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
 
+            const resizeCanvasSpy = spyOn(component, 'resizeCanvas');
             const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+            const expectedBoxSize: BoxSize = {
+                widthBox: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO,
+                heightBox: window.innerHeight * HALF_RATIO,
+            };
             component.setStatus(Status.RESIZE_DIAGONAL);
             component.resizeNotification(boxSize);
-
-            expect(component.width).toEqual((window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO);
-            expect(component.height).toEqual(window.innerHeight * HALF_RATIO);
+            expect(resizeCanvasSpy).toHaveBeenCalledWith(expectedBoxSize.widthBox, expectedBoxSize.heightBox);
         },
     );
 
@@ -200,13 +196,6 @@ describe('ResizeContainerComponent', () => {
         component.currentBoxSize = { widthBox: 1, heightBox: 1 };
         component.onMouseUpContainer();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-    });
-
-    it('#resizeNotification should resize the canvas to the boxsize dimensions if it is above the minumum workspace size', () => {
-        const boxSize: BoxSize = { widthBox: OVER_MINIMUM_X_COORDINATE, heightBox: OVER_MINIMUM_Y_COORDINATE };
-        component.resizeNotification(boxSize);
-        expect(component.width).toEqual(boxSize.widthBox);
-        expect(component.height).toEqual(boxSize.heightBox);
     });
 
     it('#WindowWidthIsOverMinimum should return true if width size of workspace is over 500', () => {
