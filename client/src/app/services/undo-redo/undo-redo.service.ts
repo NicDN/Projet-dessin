@@ -34,8 +34,8 @@ export class UndoRedoService {
         const undoAction = this.commandList.pop();
         if (undoAction != undefined) {
             this.undoneList.push(undoAction);
+            this.executeAllCommands();
         }
-        this.executeAllCommands();
     }
 
     redo(): void {
