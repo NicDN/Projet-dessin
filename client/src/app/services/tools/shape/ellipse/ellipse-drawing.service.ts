@@ -1,5 +1,6 @@
+import { EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
 import { Injectable } from '@angular/core';
-import { EllipseCommand } from '@app/classes/commands/ellipse-command';
+import { EllipseCommand } from '@app/classes/commands/ellipse-command/ellipse-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -15,36 +16,28 @@ export class EllipseDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(
-            this,
-            ctx,
-            begin,
-            end,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.secondaryColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.alternateShape,
-            this.traceType,
-        );
+        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
         ellipseCommand.execute();
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(
-            this,
-            ctx,
-            begin,
-            end,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.secondaryColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.alternateShape,
-            this.traceType,
-        );
+        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
         ellipseCommand.execute();
         this.undoRedoService.addCommand(ellipseCommand);
+    }
+
+    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): EllipsePropreties {
+        return {
+            drawingContext: ctx,
+            beginCoords: begin,
+            endCoords: end,
+            drawingThickness: this.thickness,
+            mainColor: this.colorService.mainColor.rgbValue,
+            secondaryColor: this.colorService.secondaryColor.rgbValue,
+            drawingGlobalAlpha: this.colorService.mainColor.opacity,
+            isAlternateShape: this.alternateShape,
+            traceType: this.traceType,
+        };
     }
 
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {

@@ -1,3 +1,4 @@
+import { RectanglePropreties } from '@app/classes/commands/rectangle-command';
 import { Injectable } from '@angular/core';
 import { RectangleCommand } from '@app/classes/commands/rectangle-command';
 import { Shape, TraceType } from '@app/classes/shape';
@@ -14,36 +15,28 @@ export class RectangleDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommad: RectangleCommand = new RectangleCommand(
-            ctx,
-            begin,
-            end,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.secondaryColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this,
-            this.alternateShape,
-            this.traceType,
-        );
+        const rectangleCommad: RectangleCommand = new RectangleCommand(this, this.loadUpPropreties(ctx, begin, end));
         rectangleCommad.execute();
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommad: RectangleCommand = new RectangleCommand(
-            ctx,
-            begin,
-            end,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.secondaryColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this,
-            this.alternateShape,
-            this.traceType,
-        );
+        const rectangleCommad: RectangleCommand = new RectangleCommand(this, this.loadUpPropreties(ctx, begin, end));
         rectangleCommad.execute();
         this.undoRedoService.addCommand(rectangleCommad);
+    }
+
+    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): RectanglePropreties {
+        return {
+            drawingCtx: ctx,
+            beginCoords: begin,
+            endCoords: end,
+            drawingThickness: this.thickness,
+            mainColor: this.colorService.mainColor.rgbValue,
+            secondaryColor: this.colorService.secondaryColor.rgbValue,
+            drawingGlobalAlpha: this.colorService.mainColor.opacity,
+            isAlternateShape: this.alternateShape,
+            traceType: this.traceType,
+        };
     }
 
     adjustToBorder(ctx: CanvasRenderingContext2D, sideLengths: Vec2, begin: Vec2, end: Vec2): void {
