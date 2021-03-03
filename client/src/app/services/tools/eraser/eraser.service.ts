@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EraserCommand } from '@app/classes/commands/erasing-command';
+import { EraserCommand, EraserPropreties } from '@app/classes/commands/erasing-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -20,14 +20,24 @@ export class EraserService extends PencilService {
         this.isEraser = true;
     }
     sendCommandAction(): void {
-        const erraserCommand: EraserCommand = new EraserCommand(this.drawingService.baseCtx, this.pathData, this.thickness, this);
+        const erraserCommand: EraserCommand = new EraserCommand(this, this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData));
         erraserCommand.execute();
         this.undoRedoService.addCommand(erraserCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const erraserCommand: EraserCommand = new EraserCommand(this.drawingService.baseCtx, path, this.thickness, this);
+        const erraserCommand: EraserCommand = new EraserCommand(this, this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData));
         erraserCommand.execute();
+    }
+
+    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): EraserPropreties {
+        return {
+            drawingContext: ctx,
+            drawingPath: path,
+            drawingThickness: this.thickness,
+            drawingColor: this.colorService.mainColor.rgbValue,
+            drawingGlobalAlpha: this.colorService.mainColor.opacity,
+        };
     }
 
     distanceBetween(point1: Vec2, point2: Vec2): number {

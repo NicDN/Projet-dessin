@@ -1,52 +1,40 @@
 import { Vec2 } from '@app/classes/vec2';
+import { Color } from '../color';
 import { AbstractCommand } from './abstract-command';
-export class LineCommand extends AbstractCommand {
+
+export interface LinePropreties {
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;
-    drawingColor: string;
-    drawingGlobalAlpha: number;
+    drawingColor: Color;
     drawWithJunction: boolean;
     junctionDiameter: number;
+}
 
-    constructor(
-        ctx: CanvasRenderingContext2D,
-        path: Vec2[],
-        thickness: number,
-        color: string,
-        globalAlpha: number,
-        drawWithJunction: boolean,
-        junctionDiameter: number,
-    ) {
+export class LineCommand extends AbstractCommand {
+    constructor(private linePropreties: LinePropreties) {
         super();
-        this.drawingContext = ctx;
-        this.drawingPath = path;
-        this.drawingThickness = thickness;
-        this.drawingColor = color;
-        this.drawingGlobalAlpha = globalAlpha;
-        this.drawWithJunction = drawWithJunction;
-        this.junctionDiameter = junctionDiameter;
     }
     execute(): void {
-        this.setContext(this.drawingContext);
-        this.drawingContext.beginPath();
+        this.setContext(this.linePropreties.drawingContext);
+        this.linePropreties.drawingContext.beginPath();
 
-        for (const point of this.drawingPath) {
-            this.drawingContext.lineWidth = this.drawingThickness;
-            this.drawingContext.lineTo(point.x, point.y);
-            if (this.drawWithJunction) {
+        for (const point of this.linePropreties.drawingPath) {
+            this.linePropreties.drawingContext.lineWidth = this.linePropreties.drawingThickness;
+            this.linePropreties.drawingContext.lineTo(point.x, point.y);
+            if (this.linePropreties.drawWithJunction) {
                 const circle = new Path2D();
-                circle.arc(point.x, point.y, this.junctionDiameter, 0, 2 * Math.PI);
-                this.drawingContext.fill(circle);
+                circle.arc(point.x, point.y, this.linePropreties.junctionDiameter, 0, 2 * Math.PI);
+                this.linePropreties.drawingContext.fill(circle);
             }
         }
-        this.drawingContext.stroke();
+        this.linePropreties.drawingContext.stroke();
     }
 
     private setContext(ctx: CanvasRenderingContext2D): void {
-        ctx.globalAlpha = this.drawingGlobalAlpha;
-        ctx.strokeStyle = this.drawingColor;
-        ctx.fillStyle = this.drawingColor;
-        ctx.lineJoin = this.drawingContext.lineCap = 'round';
+        ctx.globalAlpha = this.linePropreties.drawingColor.opacity;
+        ctx.strokeStyle = this.linePropreties.drawingColor.rgbValue;
+        ctx.fillStyle = this.linePropreties.drawingColor.rgbValue;
+        ctx.lineJoin = this.linePropreties.drawingContext.lineCap = 'round';
     }
 }

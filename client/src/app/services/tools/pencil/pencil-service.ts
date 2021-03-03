@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DrawingCommand } from '@app/classes/commands/drawing-command';
+import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -42,19 +42,6 @@ export class PencilService extends TraceTool {
         this.clearPath();
     }
 
-    sendCommandAction(): void {
-        if (this.isEraser) return;
-        const drawingCommand: DrawingCommand = new DrawingCommand(
-            this.drawingService.baseCtx,
-            this.pathData,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-        );
-        drawingCommand.execute();
-        this.undoRedoService.addCommand(drawingCommand);
-    }
-
     clearPreviewIfNotEraser(isEraser: boolean): void {
         if (!isEraser) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -74,19 +61,25 @@ export class PencilService extends TraceTool {
         this.everyMouseMove(event);
     }
 
-    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        // 1 Instancie pencilCmd
-        // 2 pencilCmd.execute().
-        // 3. undoRedoService.push(pencilCmd);
-
-        const drawingCommand: DrawingCommand = new DrawingCommand(
-            ctx,
-            path,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-        );
+    sendCommandAction(): void {
+        if (this.isEraser) return;
+        const drawingCommand: PencilCommand = new PencilCommand(this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
         drawingCommand.execute();
+        this.undoRedoService.addCommand(drawingCommand);
+    }
+
+    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        const drawingCommand: PencilCommand = new PencilCommand(this.loadUpPropreties(ctx, path));
+        drawingCommand.execute();
+    }
+
+    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): PencilPropreties {
+        return {
+            drawingContext: ctx,
+            drawingPath: path,
+            drawingThickness: this.thickness,
+            drawingColor: { rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+        };
     }
 
     private clearPath(): void {

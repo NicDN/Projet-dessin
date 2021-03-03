@@ -9,9 +9,8 @@ export interface RectanglePropreties {
     beginCoords: Vec2;
     endCoords: Vec2;
     drawingThickness: number;
-    mainColor: string;
-    secondaryColor: string;
-    drawingGlobalAlpha: number;
+    mainColor: Color;
+    secondaryColor: Color;
     isAlternateShape: boolean;
     traceType: number;
 }
@@ -39,15 +38,15 @@ export class RectangleCommand extends AbstractCommand {
         this.rectangleDrawingService.adjustToBorder(this.rectanglePropreties.drawingCtx, sideLengths, adjustedBeginCoords, trueEndCoords);
         this.rectanglePropreties.drawingCtx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
 
-        const mainColor: Color = { rgbValue: this.rectanglePropreties.mainColor, opacity: this.rectanglePropreties.drawingGlobalAlpha };
-        const secondaryColor: Color = { rgbValue: this.rectanglePropreties.secondaryColor, opacity: this.rectanglePropreties.drawingGlobalAlpha };
+        // const mainColor: Color = { rgbValue: this.rectanglePropreties.mainColor, opacity: this.rectanglePropreties.drawingGlobalAlpha };
+        // const secondaryColor: Color = { rgbValue: this.rectanglePropreties.secondaryColor, opacity: this.rectanglePropreties.drawingGlobalAlpha };
 
         if (this.rectanglePropreties.traceType !== TraceType.Bordered) {
-            this.rectangleDrawingService.setFillColor(this.rectanglePropreties.drawingCtx, mainColor);
+            this.rectangleDrawingService.setFillColor(this.rectanglePropreties.drawingCtx, this.rectanglePropreties.mainColor);
             this.rectanglePropreties.drawingCtx.fill();
         }
         if (this.rectanglePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.rectangleDrawingService.setStrokeColor(this.rectanglePropreties.drawingCtx, secondaryColor);
+            this.rectangleDrawingService.setStrokeColor(this.rectanglePropreties.drawingCtx, this.rectanglePropreties.secondaryColor);
             this.rectanglePropreties.drawingCtx.stroke();
         }
         this.rectanglePropreties.drawingCtx.restore();

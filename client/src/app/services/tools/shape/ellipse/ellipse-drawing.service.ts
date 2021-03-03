@@ -32,9 +32,8 @@ export class EllipseDrawingService extends Shape {
             beginCoords: begin,
             endCoords: end,
             drawingThickness: this.thickness,
-            mainColor: this.colorService.mainColor.rgbValue,
-            secondaryColor: this.colorService.secondaryColor.rgbValue,
-            drawingGlobalAlpha: this.colorService.mainColor.opacity,
+            mainColor: { rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+            secondaryColor: { rgbValue: this.colorService.secondaryColor.rgbValue, opacity: this.colorService.secondaryColor.opacity },
             isAlternateShape: this.alternateShape,
             traceType: this.traceType,
         };

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LineCommand } from '@app/classes/commands/line-command';
+import { LineCommand, LinePropreties } from '@app/classes/commands/line-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -121,15 +121,7 @@ export class LineService extends TraceTool {
         }
 
         // this.drawLine(this.drawingService.baseCtx, this.pathData);
-        const lineCommand: LineCommand = new LineCommand(
-            this.drawingService.baseCtx,
-            this.pathData,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.drawWithJunction,
-            this.junctionDiameter,
-        );
+        const lineCommand: LineCommand = new LineCommand(this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
         lineCommand.execute();
         this.undoRedoService.addCommand(lineCommand);
         this.clearPath();
@@ -154,16 +146,19 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const lineCommand: LineCommand = new LineCommand(
-            ctx,
-            path,
-            this.thickness,
-            this.colorService.mainColor.rgbValue,
-            this.colorService.mainColor.opacity,
-            this.drawWithJunction,
-            this.junctionDiameter,
-        );
+        const lineCommand: LineCommand = new LineCommand(this.loadUpProprities(ctx, path));
         lineCommand.execute();
+    }
+
+    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): LinePropreties {
+        return {
+            drawingContext: ctx,
+            drawingPath: path,
+            drawingThickness: this.thickness,
+            drawingColor:{rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+            drawWithJunction: this.drawWithJunction,
+            junctionDiameter: this.junctionDiameter,
+        };
     }
 
     lockLine(): void {
