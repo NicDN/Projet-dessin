@@ -15,7 +15,7 @@ export abstract class Shape extends DrawingTool {
     private endCoord: Vec2;
 
     traceType: TraceType;
-    public alternateShape: boolean;
+    alternateShape: boolean;
     readonly dashSize: number = 5;
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {

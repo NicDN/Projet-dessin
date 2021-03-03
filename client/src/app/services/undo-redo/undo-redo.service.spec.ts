@@ -12,7 +12,7 @@ class TestCommand extends AbstractCommand {
 }
 
 // tslint:disable: no-string-literal
-fdescribe('UndoRedoService', () => {
+describe('UndoRedoService', () => {
     let service: UndoRedoService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
