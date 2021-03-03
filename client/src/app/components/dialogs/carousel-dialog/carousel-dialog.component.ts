@@ -42,7 +42,8 @@ export class CarouselDialogComponent implements OnInit {
         this.carouselService.requestDrawingsFromServer().subscribe(
             (drawingForms) => {
                 this.noDrawingError = false;
-                this.drawings = this.drawingsMock;
+                // this.drawings = this.drawingsMock;
+                this.drawings = drawingForms;
             },
             (err) => {
                 this.noDrawingError = true;
@@ -51,8 +52,6 @@ export class CarouselDialogComponent implements OnInit {
         );
     }
 
-    // TODO: Goes in service ?
-    // TODO: works but needs refactoring
     getSlicedDrawings(): DrawingForm[] {
         let tempArr: DrawingForm[] = [];
         if (this.startIndex === this.drawings.length - 1) {

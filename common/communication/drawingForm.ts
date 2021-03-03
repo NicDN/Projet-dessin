@@ -1,6 +1,7 @@
 export interface DrawingForm {
-    id: number;
+    id: string;
     name: string;
     tag: string[];
-    drawing: FormData; 
+    // drawing: FormData;
+    drawingData: string;
 }

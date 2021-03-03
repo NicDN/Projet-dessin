@@ -6,8 +6,8 @@ import { inject, injectable } from 'inversify';
 import * as logger from 'morgan';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
-import { DatabaseController } from './controllers/database.controller';
 import { DateController } from './controllers/date.controller';
+import { DrawingsController } from './controllers/drawings/drawings.controller';
 import { IndexController } from './controllers/index.controller';
 import { TYPES } from './types';
 
@@ -20,7 +20,7 @@ export class Application {
     constructor(
         @inject(TYPES.IndexController) private indexController: IndexController,
         @inject(TYPES.DateController) private dateController: DateController,
-        @inject(TYPES.DatabaseController) private databaseController: DatabaseController,
+        @inject(TYPES.DrawingsController) private databaseController: DrawingsController,
     ) {
         this.app = express();
 

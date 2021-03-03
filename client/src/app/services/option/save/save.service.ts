@@ -10,7 +10,6 @@ import { catchError } from 'rxjs/operators';
 export class SaveService {
     private readonly BASE_URL: string = 'http://localhost:3000/api/database';
     canvasToPost: HTMLCanvasElement;
-    private downloadFormat: string;
 
     constructor(private httpClient: HttpClient) {}
 
@@ -25,20 +24,15 @@ export class SaveService {
     }
 
     async postCanvas(fileName: string, fileFormat: string): Promise<void> {
-        const formData = new FormData();
         // tslint:disable-next-line: no-unused-expression
-        fileName ? '' : (fileName = 'Sans titre');
-        this.downloadFormat = `image/${fileFormat}`;
-        this.canvasToPost.toBlob((blob) => {
-            // tslint:disable-next-line: no-non-null-assertion
-            formData.append('drawing', blob!);
-            const drawingForm: DrawingForm = {
-                id: 0,
-                name: 'bruh',
-                tag: [],
-                drawing: formData,
-            };
-            this.post(drawingForm).subscribe();
-        }, this.downloadFormat);
+        fileName ? '' : (fileName = 'Sans titre'); // to change, user must enter a name
+        const drawingForm: DrawingForm = {
+            id: '0',
+            name: fileName,
+            tag: ['beau', 'bon', 'sexy'],
+            drawingData: this.canvasToPost.toDataURL(`image/${fileFormat}`),
+        };
+
+        this.post(drawingForm).subscribe();
     }
 }

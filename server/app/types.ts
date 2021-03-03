@@ -3,8 +3,10 @@ export const TYPES = {
     Application: Symbol('Application'),
     IndexController: Symbol('IndexController'),
     DateController: Symbol('DateController'),
-    DatabaseController: Symbol('DatabaseController'),
     IndexService: Symbol('IndexService'),
     DateService: Symbol('DateService'),
+
+    DrawingsController: Symbol('DrawingsController'),
+    DrawingsService: Symbol('DrawingsService'),
     DatabaseService: Symbol('DatabaseService'),
 };

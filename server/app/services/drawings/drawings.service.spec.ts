@@ -1,9 +1,9 @@
 import { TYPES } from '@app/types';
 import { Message } from '@common/communication/message';
 import { expect } from 'chai';
-import { Stubbed, testingContainer } from '../../test/test-utils';
-import { DateService } from './date.service';
-import { IndexService } from './index.service';
+import { Stubbed, testingContainer } from '../../../test/test-utils';
+import { DateService } from '../date.service';
+import { IndexService } from '../index.service';
 
 describe('Index service', () => {
     let indexService: IndexService;

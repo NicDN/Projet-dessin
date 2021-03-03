@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
     providedIn: 'root',
 })
 export class CarouselService {
-    private readonly BASE_URL: string = 'http://localhost:3000/api/index';
+    private readonly BASE_URL: string = 'http://localhost:3000/api/database';
 
     constructor(private http: HttpClient) {}
 
@@ -16,7 +16,7 @@ export class CarouselService {
         return this.http.get<DrawingForm[]>(this.BASE_URL).pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
     }
 
-    deleteDrawingFromServer(id: number): Observable<{}> {
+    deleteDrawingFromServer(id: string): Observable<{}> {
         const url = `${this.BASE_URL}/delete/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
     }

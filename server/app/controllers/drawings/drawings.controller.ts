@@ -1,31 +1,27 @@
+import { DrawingsService } from '@app/services/drawings/drawings.service';
 import { TYPES } from '@app/types';
 import { DrawingForm } from '@common/communication/drawingForm';
-import { Message } from '@common/communication/message';
 import { NextFunction, Request, Response, Router } from 'express';
 import { inject, injectable } from 'inversify';
-import { DatabaseService } from '../services/database.service';
 
 const HTTP_STATUS_CREATED = 201;
 
 @injectable()
-export class DatabaseController {
+export class DrawingsController {
     router: Router;
 
-    constructor(@inject(TYPES.DatabaseService) private databaseService: DatabaseService) {
+    constructor(@inject(TYPES.DrawingsService) private drawingsService: DrawingsService) {
         this.configureRouter();
     }
 
     private configureRouter(): void {
         this.router = Router();
 
-        // TODO: use async ?
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            // Send the request to the service and send the response
-            const time: Message = await this.databaseService.helloWorld();
-            res.json(time);
+            res.json(this.drawingsService.getData());
         });
 
-        this.router.delete('/api/index/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
             // this.databaseService
             //     .deleteCourse(req.params.id)
             //     .then(() => {
@@ -40,12 +36,8 @@ export class DatabaseController {
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
             const drawingForm: DrawingForm = req.body;
-            this.databaseService.storeData(drawingForm);
+            this.drawingsService.storeData(drawingForm);
             res.sendStatus(HTTP_STATUS_CREATED);
-        });
-
-        this.router.get('/download', (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.databaseService.getData());
         });
     }
 }

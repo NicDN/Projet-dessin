@@ -10,11 +10,8 @@ import { DrawingForm } from '@common/communication/drawingForm';
 })
 export class CardDrawingTemplateComponent {
     @Input() drawingForm: DrawingForm;
-    drawingSrc: string;
 
-    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {
-        this.convertBlobToSrc();
-    }
+    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {}
 
     setToCurrentDrawing(): void {
         // if (!this.drawingForm.drawing) {
@@ -24,7 +21,7 @@ export class CardDrawingTemplateComponent {
         // Need antoine for opening the drawing
     }
 
-    deleteDrawing(id: number): void {
+    deleteDrawing(id: string): void {
         let feedBackMessage = '';
         this.carouselService.deleteDrawingFromServer(id).subscribe(
             () => {
@@ -37,11 +34,6 @@ export class CardDrawingTemplateComponent {
             },
         );
         this.openSnackBar(feedBackMessage, 'Fermer');
-    }
-
-    convertBlobToSrc(): void {
-        const formData: FormData = this.drawingForm.drawing;
-        this.drawingSrc = URL.createObjectURL(formData.get('drawing'));
     }
 
     openSnackBar(message: string, action: string): void {
