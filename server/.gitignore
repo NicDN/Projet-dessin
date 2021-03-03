@@ -25,5 +25,4 @@ npm-debug.log
 !tsconfig.json
 !package-lock.json
 
-# drawingsData directory
-drawingsData/
+
