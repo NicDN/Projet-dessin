@@ -11,7 +11,7 @@ export class DrawingService {
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
-    private subject: Subject<BoxSize> = new Subject<BoxSize>();
+    subject: Subject<BoxSize> = new Subject<BoxSize>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);

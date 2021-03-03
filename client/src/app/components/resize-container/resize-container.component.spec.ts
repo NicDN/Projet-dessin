@@ -6,12 +6,17 @@ import { BoxSize } from '@app/classes/box-size';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { ResizeContainerComponent, Status } from './resize-container.component';
+import { of } from 'rxjs';
+// import 'rxjs/add/observable/of';
 
+import { ResizeContainerComponent, Status } from './resize-container.component';
 // tslint:disable: no-any no-string-literal
 describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    const boxSizeStub: BoxSize = { widthBox: 1, heightBox: 1 };
 
     const OVER_MINIMUM_X_COORDINATE = 1000;
     const OVER_MINIMUM_Y_COORDINATE = 1000;
@@ -20,9 +25,17 @@ describe('ResizeContainerComponent', () => {
     const mouseEventClick = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
 
     beforeEach(async(() => {
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['onSizeChange', 'newIncomingResizeSignals', 'sendNotifToResize']);
+        drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
+
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
-            providers: [UndoRedoService, DrawingService, { provide: MatDialog, useValue: {} }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: MatDialog, useValue: {} },
+            ],
             imports: [RouterTestingModule],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -130,19 +143,21 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('#resizeCanvas should resize the canvas surface', () => {
-        spyOn(component['drawingService'], 'onSizeChange');
+        // spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const boxSize = { widthBox: 1, heightBox: 1 };
         component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
         expect(component.width).toEqual(boxSize.widthBox);
         expect(component.height).toEqual(boxSize.heightBox);
+        expect(drawingServiceSpyObj.onSizeChange).toHaveBeenCalled();
     });
 
     it('#listenToResizeNotifications should receive a message from suscriber', () => {
-        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
+        // spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const newDrawingNotificationSpy: jasmine.Spy = spyOn(component, 'resizeNotification');
         component.listenToResizeNotifications();
         const boxSize: BoxSize = { widthBox: 1, heightBox: 1 };
-        component['drawingService'].sendNotifToResize(boxSize);
+        // component['drawingService'].sendNotifToResize(boxSize);
+        drawingServiceSpyObj.sendNotifToResize(boxSize);
         fixture.detectChanges();
         expect(newDrawingNotificationSpy).toHaveBeenCalled();
     });
@@ -154,10 +169,7 @@ describe('ResizeContainerComponent', () => {
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
         expect(component.workspaceWidthIsOverMinimum()).toBeFalse();
         expect(component.workspaceHeightIsOverMinimum()).toBeFalse();
-        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
 
-        // const boxSizeTmp = { widthBox: 10, heightBox: 10 };
-        // drawingService.sendNotifToResize(boxSizeTmp);
         const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
         component.resizeNotification(boxSize);
         expect(component.width).toEqual(MINIMUM_CANVAS_SIZE);
@@ -173,7 +185,7 @@ describe('ResizeContainerComponent', () => {
             Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVERMINIMUM_WORKSPACE_SIZE });
             expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
             expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
-            spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
+
             const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
             component.setStatus(Status.RESIZE_DIAGONAL);
             component.resizeNotification(boxSize);
@@ -186,13 +198,11 @@ describe('ResizeContainerComponent', () => {
     it('#onMouseUp container should send a a command to undo-redo service', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
         component.currentBoxSize = { widthBox: 1, heightBox: 1 };
-        const addCommandSpy = spyOn(component['undoRedoService'], 'addCommand').and.returnValue();
         component.onMouseUpContainer();
-        expect(addCommandSpy).toHaveBeenCalled();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
     });
 
     it('#resizeNotification should resize the canvas to the boxsize dimensions if it is above the minumum workspace size', () => {
-        spyOn(component['drawingService'], 'onSizeChange').and.returnValue();
         const boxSize: BoxSize = { widthBox: OVER_MINIMUM_X_COORDINATE, heightBox: OVER_MINIMUM_Y_COORDINATE };
         component.resizeNotification(boxSize);
         expect(component.width).toEqual(boxSize.widthBox);
@@ -201,13 +211,11 @@ describe('ResizeContainerComponent', () => {
 
     it('#WindowWidthIsOverMinimum should return true if width size of workspace is over 500', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE });
-        // tslint:disable-next-line: no-unused-expression
         expect(component.workspaceWidthIsOverMinimum()).toBeTrue();
     });
 
     it('#WindowHeightIsOverMinimum should return true if height size of workspace is over 500', () => {
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE });
-        // tslint:disable-next-line: no-unused-expression
         expect(component.workspaceHeightIsOverMinimum()).toBeTrue();
     });
 

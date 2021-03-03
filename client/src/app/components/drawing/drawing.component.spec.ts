@@ -35,7 +35,6 @@ describe('DrawingComponent', () => {
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
 
     beforeEach(async(() => {
-        // boxSizeStub = { widthBox: 1, heightBox: 1 };
         drawingStub = new DrawingService();
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
