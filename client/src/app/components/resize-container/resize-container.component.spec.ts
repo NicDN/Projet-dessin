@@ -7,7 +7,6 @@ import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '@app/c
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-// import 'rxjs/add/observable/of';
 
 import { ResizeContainerComponent, Status } from './resize-container.component';
 // tslint:disable: no-any no-string-literal
@@ -61,7 +60,7 @@ describe('ResizeContainerComponent', () => {
 
     it('#onMouseMove should call resize when status is something else than NOT_RESIZING', () => {
         component.status = Status.RESIZE_DIAGONAL;
-        const mouseEventSpy = spyOn(component, 'resize');
+        const mouseEventSpy = spyOn(component, 'resizeContainer');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
@@ -69,7 +68,7 @@ describe('ResizeContainerComponent', () => {
 
     it('#onMouseMove should not call resize when status is something else than NOT_RESIZING', () => {
         component.status = Status.NOT_RESIZING;
-        const mouseEventSpy = spyOn(component, 'resize');
+        const mouseEventSpy = spyOn(component, 'resizeContainer');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
@@ -113,7 +112,7 @@ describe('ResizeContainerComponent', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
         const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
         const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
-        component.resize(mouseEventClick);
+        component.resizeContainer(mouseEventClick);
         expect(component.width).toEqual(EXPECTED_WIDTH);
         expect(component.height).toEqual(EXPECTED_HEIGHT);
     });
@@ -123,20 +122,20 @@ describe('ResizeContainerComponent', () => {
         component.height = 1;
         component.status = Status.RESIZE_DIAGONAL;
         const mouseEventUnder250px = { pageX: DEFAULT_WIDTH - SIDE_BAR_SIZE, pageY: DEFAULT_HEIGHT, button: 0 } as MouseEvent;
-        component.resize(mouseEventUnder250px);
+        component.resizeContainer(mouseEventUnder250px);
         expect(component.width).toEqual(1);
         expect(component.height).toEqual(1);
     });
 
     it('#resize should resize when status is something else than NOT_RESIZING', () => {
-        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resize');
+        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resizeContainer');
         component.status = Status.RESIZE_DIAGONAL;
         window.dispatchEvent(new MouseEvent('mousemove'));
         expect(calledResizeFunction).toHaveBeenCalled();
     });
 
     it('#resize should not resize when status is NOT_RESIZING', () => {
-        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resize');
+        const calledResizeFunction: jasmine.Spy = spyOn(component, 'resizeContainer');
         component.status = Status.NOT_RESIZING;
         window.dispatchEvent(new MouseEvent('mousemove'));
         expect(calledResizeFunction).not.toHaveBeenCalled();
@@ -220,7 +219,7 @@ describe('ResizeContainerComponent', () => {
     it('#XisOverMinimum X mouse coordinate under the minimum should not be allowed', () => {
         component.status = Status.RESIZE_DIAGONAL;
         const mouseEvent = { pageX: UNDER_MINIMUM_X_COORDINATE, pageY: UNDER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.xCoordinateisOverMinimum(mouseEvent)).toBeFalse();
+        expect(component.xCoordinateIsOverMinimum(mouseEvent)).toBeFalse();
     });
 
     it('#YisOverMinimum Y mouse coordinate under the minimum should not be allowed', () => {
@@ -231,7 +230,7 @@ describe('ResizeContainerComponent', () => {
 
     it('#XisOverMinimum X mouse coordinate over the minimum should be allowed', () => {
         const mouseEvent = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-        expect(component.xCoordinateisOverMinimum(mouseEvent)).toBeTrue();
+        expect(component.xCoordinateIsOverMinimum(mouseEvent)).toBeTrue();
     });
 
     it('#YisOverMinimum Y mouse coordinate over the minimum should be allowed', () => {
@@ -241,19 +240,19 @@ describe('ResizeContainerComponent', () => {
 
     it('#UpdateWidthValid and #UpdateHeightValid should allow resize according to the status ', () => {
         component.status = Status.NOT_RESIZING;
-        expect(component.updateWidthValid(mouseEventClick)).toBeFalse();
-        expect(component.updateHeightValid(mouseEventClick)).toBeFalse();
+        expect(component.isValidWidth(mouseEventClick)).toBeFalse();
+        expect(component.isValidHeight(mouseEventClick)).toBeFalse();
 
         component.status = Status.RESIZE_DIAGONAL;
-        expect(component.updateWidthValid(mouseEventClick)).toBeTrue();
-        expect(component.updateHeightValid(mouseEventClick)).toBeTrue();
+        expect(component.isValidWidth(mouseEventClick)).toBeTrue();
+        expect(component.isValidHeight(mouseEventClick)).toBeTrue();
 
         component.status = Status.RESIZE_HORIZONTAL;
-        expect(component.updateWidthValid(mouseEventClick)).toBeTrue();
-        expect(component.updateHeightValid(mouseEventClick)).toBeFalse();
+        expect(component.isValidWidth(mouseEventClick)).toBeTrue();
+        expect(component.isValidHeight(mouseEventClick)).toBeFalse();
 
         component.status = Status.RESIZE_VERTICAL;
-        expect(component.updateWidthValid(mouseEventClick)).toBeFalse();
-        expect(component.updateHeightValid(mouseEventClick)).toBeTrue();
+        expect(component.isValidWidth(mouseEventClick)).toBeFalse();
+        expect(component.isValidHeight(mouseEventClick)).toBeTrue();
     });
 });

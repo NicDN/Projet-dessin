@@ -1,3 +1,4 @@
+import { LineService } from './../../services/tools/line/line.service';
 import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
@@ -76,7 +77,7 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
 
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
-        if (this.toolsService.currentTool instanceof ToolsService) {
+        if (!(this.toolsService.currentTool instanceof LineService)) {
             this.undoRedoService.enableUndoRedo();
         }
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);

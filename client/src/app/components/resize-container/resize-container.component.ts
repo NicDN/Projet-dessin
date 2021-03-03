@@ -49,7 +49,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.status !== Status.NOT_RESIZING) this.resize(event);
+        if (this.status !== Status.NOT_RESIZING) this.resizeContainer(event);
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -72,11 +72,11 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.setStatus(Status.NOT_RESIZING);
     }
 
-    resize(event: MouseEvent): void {
-        if (this.updateWidthValid(event)) {
+    resizeContainer(event: MouseEvent): void {
+        if (this.isValidWidth(event)) {
             this.width = event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET;
         }
-        if (this.updateHeightValid(event)) {
+        if (this.isValidHeight(event)) {
             this.height = event.pageY - this.MOUSE_OFFSET;
         }
         this.currentBoxSize = { widthBox: this.width, heightBox: this.height };
@@ -109,15 +109,15 @@ export class ResizeContainerComponent implements AfterViewInit {
         this.resizeCanvas(width, height);
     }
 
-    updateWidthValid(event: MouseEvent): boolean {
-        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.xCoordinateisOverMinimum(event);
+    isValidWidth(event: MouseEvent): boolean {
+        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.xCoordinateIsOverMinimum(event);
     }
 
-    updateHeightValid(event: MouseEvent): boolean {
+    isValidHeight(event: MouseEvent): boolean {
         return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) && this.yCoordinateIsOverMinimum(event);
     }
 
-    xCoordinateisOverMinimum(event: MouseEvent): boolean {
+    xCoordinateIsOverMinimum(event: MouseEvent): boolean {
         return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_WIDTH;
     }
 

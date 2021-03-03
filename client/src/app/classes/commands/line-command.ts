@@ -1,5 +1,5 @@
+import { Color } from '@app/classes/color';
 import { Vec2 } from '@app/classes/vec2';
-import { Color } from '../color';
 import { AbstractCommand } from './abstract-command';
 
 export interface LinePropreties {

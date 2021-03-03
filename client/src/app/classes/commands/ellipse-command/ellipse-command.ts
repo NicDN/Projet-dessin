@@ -1,8 +1,8 @@
 import { Color } from '@app/classes/color';
+import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
-import { AbstractCommand } from '@app/classes/commands/abstract-command';
 
 export interface EllipsePropreties {
     drawingContext: CanvasRenderingContext2D;
