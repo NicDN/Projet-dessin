@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 
 import { ResizeContainerComponent, Status } from './resize-container.component';
 // tslint:disable: no-any no-string-literal
-fdescribe('ResizeContainerComponent', () => {
+describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -159,7 +159,6 @@ fdescribe('ResizeContainerComponent', () => {
     });
 
     it('#resizeNotification creating new drawing should resize to minimum size if under minimum workspace size ', () => {
-        // const MINIMUM_CANVAS_SIZE = 250;
         const UNDERMINIMUM_SCREEN_SIZE = 400;
         const resizeCanvasSpy = spyOn(component, 'resizeCanvas');
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDERMINIMUM_SCREEN_SIZE });
