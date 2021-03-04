@@ -18,16 +18,16 @@ export class DrawingsController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getData([]).then((forms) => {
-                res.json(forms);
-            });
-        });
-
-        this.router.get('/tags', async (req: Request, res: Response, next: NextFunction) => {
             this.drawingsService.getData(req.body).then((forms) => {
                 res.json(forms);
             });
         });
+
+        // this.router.get('/tags', async (req: Request, res: Response, next: NextFunction) => {
+        //     this.drawingsService.getData(req.body).then((forms) => {
+        //         res.json(forms);
+        //     });
+        // });
 
         this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
             // this.databaseService
