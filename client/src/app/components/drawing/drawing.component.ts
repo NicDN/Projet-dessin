@@ -1,10 +1,10 @@
-import { LineService } from '@app/services/tools/line/line.service';
 import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { LineService } from '@app/services/tools/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 

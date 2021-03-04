@@ -1,12 +1,12 @@
-import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { RectangleCommand, RectanglePropreties } from '@app/classes/commands/rectangle-command/rectangle-command';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { Vec2 } from '@app/classes/vec2';
-import { TraceType } from '@app/classes/shape';
 import { Color } from '@app/classes/color';
+import { RectangleCommand, RectanglePropreties } from '@app/classes/commands/rectangle-command/rectangle-command';
+import { TraceType } from '@app/classes/shape';
+import { Vec2 } from '@app/classes/vec2';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 
-fdescribe('ellipse-command', () => {
+describe('rectangle-command', () => {
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let rectangleCommand: RectangleCommand;
     let rectanglePropreties: RectanglePropreties;
@@ -43,7 +43,7 @@ fdescribe('ellipse-command', () => {
         rectangleCommand = new RectangleCommand(rectangleDrawingServiceSpyObj, rectanglePropreties);
     });
 
-    it('#execute should call the draw function from ellipse', () => {
+    it('#execute should call the draw function from rectangle', () => {
         rectangleCommand.execute();
         expect(rectangleDrawingServiceSpyObj.drawRectangle).toHaveBeenCalledWith(rectanglePropreties);
     });

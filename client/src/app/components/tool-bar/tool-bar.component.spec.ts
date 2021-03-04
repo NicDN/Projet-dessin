@@ -12,7 +12,7 @@ import { ToolBarComponent } from './tool-bar.component';
 describe('ToolBarComponent', () => {
     let component: ToolBarComponent;
     let fixture: ComponentFixture<ToolBarComponent>;
-    const tool: Tool = new PencilService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService));
+    const tool: Tool = new PencilService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
     let toolsService: ToolsService;
 
     beforeEach(async(() => {

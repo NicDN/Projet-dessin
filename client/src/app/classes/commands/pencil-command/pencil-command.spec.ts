@@ -1,11 +1,11 @@
-import { PencilService } from '@app/services/tools/pencil/pencil-service';
-import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command/pencil-command';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { Vec2 } from '@app/classes/vec2';
 import { Color } from '@app/classes/color';
+import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command/pencil-command';
+import { Vec2 } from '@app/classes/vec2';
+import { PencilService } from '@app/services/tools/pencil/pencil-service';
 
-fdescribe('eraser-command', () => {
+describe('pencil-command', () => {
     let pencilServiceSpyObj: jasmine.SpyObj<PencilService>;
     let pencilCommand: PencilCommand;
     let pencilPropreties: PencilPropreties;
@@ -36,7 +36,7 @@ fdescribe('eraser-command', () => {
         pencilCommand = new PencilCommand(pencilServiceSpyObj, pencilPropreties);
     });
 
-    it('#execute should call the erase function from eraser', () => {
+    it('#execute should call the pencil function from pencil', () => {
         pencilCommand.execute();
         expect(pencilServiceSpyObj.executeDrawLine).toHaveBeenCalledWith(pencilPropreties);
     });

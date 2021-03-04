@@ -1,12 +1,12 @@
-import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { Vec2 } from '@app/classes/vec2';
-import { TraceType } from '@app/classes/shape';
 import { Color } from '@app/classes/color';
+import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
+import { TraceType } from '@app/classes/shape';
+import { Vec2 } from '@app/classes/vec2';
+import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 
-fdescribe('ellipse-command', () => {
+describe('ellipse-command', () => {
     let ellipseDrawingServiceSpyObj: jasmine.SpyObj<EllipseDrawingService>;
     let ellipseCommand: EllipseCommand;
     let ellipsePropreties: EllipsePropreties;

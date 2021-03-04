@@ -1,11 +1,11 @@
-import { EraserPropreties } from '@app/classes/commands/erasing-command/erasing-command';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { EraserPropreties } from '@app/classes/commands/erasing-command/erasing-command';
 import { Vec2 } from '@app/classes/vec2';
 import { EraserService } from '@app/services/tools/eraser/eraser.service';
 import { EraserCommand } from './erasing-command';
 
-fdescribe('eraser-command', () => {
+describe('eraser-command', () => {
     let erasingServiceSpyObj: jasmine.SpyObj<EraserService>;
     let eraserCommand: EraserCommand;
     let eraserPropreties: EraserPropreties;

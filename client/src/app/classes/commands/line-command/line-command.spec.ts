@@ -5,7 +5,7 @@ import { LineCommand, LinePropreties } from '@app/classes/commands/line-command/
 import { Vec2 } from '@app/classes/vec2';
 import { LineService } from '@app/services/tools/line/line.service';
 
-fdescribe('line-command', () => {
+describe('line-command', () => {
     let lineServiceSpyObj: jasmine.SpyObj<LineService>;
     let lineCommand: LineCommand;
     let linePropreties: LinePropreties;
@@ -40,7 +40,7 @@ fdescribe('line-command', () => {
         lineCommand = new LineCommand(lineServiceSpyObj, linePropreties);
     });
 
-    it('#execute should call the draw function from ellipse', () => {
+    it('#execute should call the draw function from line', () => {
         lineCommand.execute();
         expect(lineServiceSpyObj.drawLineExecute).toHaveBeenCalledWith(linePropreties);
     });
