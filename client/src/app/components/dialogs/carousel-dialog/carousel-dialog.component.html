@@ -27,7 +27,7 @@
                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
                 (matChipInputTokenEnd)="this.addTag($event)">
         </mat-chip-list>
-        <mat-error *ngIf="this.noDrawingError">Aucun dessin trouvé</mat-error>
+        <!-- <mat-error *ngIf="this.noDrawingError">Aucun dessin trouvé</mat-error> -->
 
         <button mat-button matSuffix mat-icon-button aria-label="Clear">
             <mat-icon>close</mat-icon>

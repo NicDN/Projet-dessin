@@ -7,24 +7,26 @@ import 'reflect-metadata';
 export class DrawingsService {
     private readonly DRAWINGS_DIRECTORY: string = 'drawingsData';
 
-    drawingsData: DrawingForm[];
-
-    constructor() {
-        this.drawingsData = [];
-    }
-
-    // temp
     storeData(drawingForm: DrawingForm): void {
-        this.drawingsData.push(drawingForm);
         this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
-        console.log(this.drawingsData.length);
     }
 
-    // temp
-    getData(): DrawingForm[] {
-        return this.drawingsData;
-    }
+    async getData(tags: string[]): Promise<DrawingForm[]> {
+        // TODO: aller récupérer les ids de mongoDB
+        if (tags.length === 0) {
+            // TODO
+        }
+        const imagesIds: string[] = ['1', '2', '3', '4'];
+        const drawingForms: DrawingForm[] = [];
 
+        for (const id of imagesIds) {
+            await this.readFile(`${this.DRAWINGS_DIRECTORY}/` + id).then((image) => {
+                const form: DrawingForm = { id, name: id, tags: [], drawingData: image };
+                drawingForms.push(form);
+            });
+        }
+        return drawingForms;
+    }
     // TODO: those functions will be used to communicate with the database service
 
     // async addDrawing(drawingForm: DrawingForm): Promise<void> {
@@ -61,15 +63,15 @@ export class DrawingsService {
     }
 
     // legit (commented function)
-    // private async readFile(name: string): Promise<string> {
-    //     return new Promise((resolve, reject) => {
-    //         fs.readFile(name, (err, data) => {
-    //             if (err) {
-    //                 reject(err);
-    //                 return;
-    //             }
-    //             resolve(data.toString());
-    //         });
-    //     });
-    // }
+    private async readFile(name: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            fs.readFile(name, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(data.toString());
+            });
+        });
+    }
 }

@@ -12,8 +12,9 @@ export class CarouselService {
 
     constructor(private http: HttpClient) {}
 
-    requestDrawingsFromServer(): Observable<DrawingForm[]> {
+    requestDrawingsFromServer(searchedTags: string[]): Observable<DrawingForm[]> {
         return this.http.get<DrawingForm[]>(this.BASE_URL).pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
+        // TODO: when adding array to get, it gives error.
     }
 
     deleteDrawingFromServer(id: string): Observable<{}> {
