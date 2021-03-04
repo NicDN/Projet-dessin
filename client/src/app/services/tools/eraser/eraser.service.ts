@@ -30,6 +30,34 @@ export class EraserService extends PencilService {
         erraserCommand.execute();
     }
 
+    executeErase(eraserPropreties: EraserPropreties): void {
+        if (this.singleClick(eraserPropreties.drawingPath)) {
+            this.eraseSquare(
+                eraserPropreties.drawingContext,
+                { x: eraserPropreties.drawingPath[0].x, y: eraserPropreties.drawingPath[0].y },
+                eraserPropreties.drawingThickness,
+            );
+            return;
+        }
+
+        let oldPointX: number = eraserPropreties.drawingPath[0].x;
+        let oldPointY: number = eraserPropreties.drawingPath[0].y;
+
+        for (const point of eraserPropreties.drawingPath) {
+            const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+
+            const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
+
+            for (let i = 0; i < dist; i += 1) {
+                const xValue = oldPointX + Math.sin(angle) * i;
+                const yValue = oldPointY + Math.cos(angle) * i;
+                this.eraseSquare(eraserPropreties.drawingContext, { x: xValue, y: yValue }, eraserPropreties.drawingThickness);
+            }
+            oldPointX = point.x;
+            oldPointY = point.y;
+        }
+    }
+
     loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): EraserPropreties {
         return {
             drawingContext: ctx,

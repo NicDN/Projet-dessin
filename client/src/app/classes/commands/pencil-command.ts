@@ -15,15 +15,6 @@ export class PencilCommand extends AbstractCommand {
         super();
     }
     execute(): void {
-        this.pencilPropreties.drawingContext.save();
-        this.setContext(this.pencilPropreties.drawingContext);
         this.pencilService.executeDrawLine(this.pencilPropreties);
-        this.pencilPropreties.drawingContext.restore();
-    }
-    private setContext(ctx: CanvasRenderingContext2D): void {
-        ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.lineWidth = this.pencilPropreties.drawingThickness;
-        ctx.globalAlpha = this.pencilPropreties.drawingColor.opacity;
-        ctx.strokeStyle = this.pencilPropreties.drawingColor.rgbValue;
     }
 }

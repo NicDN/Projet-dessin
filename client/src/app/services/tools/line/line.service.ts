@@ -120,7 +120,7 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        const lineCommand: LineCommand = new LineCommand(this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
+        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
         lineCommand.execute();
 
         this.undoRedoService.addCommand(lineCommand);
@@ -128,7 +128,6 @@ export class LineService extends TraceTool {
         this.updatePreview();
 
         this.undoRedoService.enableUndoRedo();
-
     }
 
     updatePreview(): void {
@@ -149,8 +148,31 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const lineCommand: LineCommand = new LineCommand(this.loadUpProprities(ctx, path));
+        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(ctx, path));
         lineCommand.execute();
+    }
+
+    drawLineExecute(linePropreties: LinePropreties): void {
+        this.setContext(linePropreties.drawingContext, linePropreties);
+        linePropreties.drawingContext.beginPath();
+
+        for (const point of linePropreties.drawingPath) {
+            linePropreties.drawingContext.lineWidth = linePropreties.drawingThickness;
+            linePropreties.drawingContext.lineTo(point.x, point.y);
+            if (linePropreties.drawWithJunction) {
+                const circle = new Path2D();
+                circle.arc(point.x, point.y, linePropreties.junctionDiameter, 0, 2 * Math.PI);
+                linePropreties.drawingContext.fill(circle);
+            }
+        }
+        linePropreties.drawingContext.stroke();
+    }
+
+    private setContext(ctx: CanvasRenderingContext2D, linePropreties: LinePropreties): void {
+        ctx.globalAlpha = linePropreties.drawingColor.opacity;
+        ctx.strokeStyle = linePropreties.drawingColor.rgbValue;
+        ctx.fillStyle = linePropreties.drawingColor.rgbValue;
+        ctx.lineJoin = linePropreties.drawingContext.lineCap = 'round';
     }
 
     loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): LinePropreties {

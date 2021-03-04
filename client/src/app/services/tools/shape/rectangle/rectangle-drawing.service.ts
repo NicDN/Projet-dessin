@@ -18,6 +18,32 @@ export class RectangleDrawingService extends Shape {
         rectangleCommad.execute();
     }
 
+    drawRectangle(rectanglePropreties: RectanglePropreties): void {
+        const trueEndCoords: Vec2 = this.getTrueEndCoords(rectanglePropreties.beginCoords, rectanglePropreties.endCoords);
+        const sideLengths: Vec2 = {
+            x: trueEndCoords.x - rectanglePropreties.beginCoords.x,
+            y: trueEndCoords.y - rectanglePropreties.beginCoords.y,
+        };
+        const adjustedBeginCoords: Vec2 = { x: rectanglePropreties.beginCoords.x, y: rectanglePropreties.beginCoords.y };
+
+        rectanglePropreties.drawingCtx.save();
+        this.setContextParameters(rectanglePropreties.drawingCtx, rectanglePropreties.drawingThickness);
+        rectanglePropreties.drawingCtx.beginPath();
+
+        this.adjustToBorder(rectanglePropreties.drawingCtx, sideLengths, adjustedBeginCoords, trueEndCoords);
+        rectanglePropreties.drawingCtx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
+
+        if (rectanglePropreties.traceType !== TraceType.Bordered) {
+            this.setFillColor(rectanglePropreties.drawingCtx, rectanglePropreties.mainColor);
+            rectanglePropreties.drawingCtx.fill();
+        }
+        if (rectanglePropreties.traceType !== TraceType.FilledNoBordered) {
+            this.setStrokeColor(rectanglePropreties.drawingCtx, rectanglePropreties.secondaryColor);
+            rectanglePropreties.drawingCtx.stroke();
+        }
+        rectanglePropreties.drawingCtx.restore();
+    }
+
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const rectangleCommad: RectangleCommand = new RectangleCommand(this, this.loadUpPropreties(ctx, begin, end));
         rectangleCommad.execute();

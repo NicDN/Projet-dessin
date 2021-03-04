@@ -74,6 +74,8 @@ export class PencilService extends TraceTool {
     }
 
     executeDrawLine(pencilPropreties: PencilPropreties): void {
+        this.setContext(pencilPropreties.drawingContext, pencilPropreties);
+        pencilPropreties.drawingContext.save();
         let oldPointX: number = pencilPropreties.drawingPath[0].x;
         let oldPointY: number = pencilPropreties.drawingPath[0].y;
 
@@ -86,6 +88,14 @@ export class PencilService extends TraceTool {
             oldPointY = point.y;
         }
         pencilPropreties.drawingContext.stroke();
+        pencilPropreties.drawingContext.restore();
+    }
+
+    private setContext(ctx: CanvasRenderingContext2D, pencilPropreties: PencilPropreties): void {
+        ctx.lineJoin = ctx.lineCap = 'round';
+        ctx.lineWidth = pencilPropreties.drawingThickness;
+        ctx.globalAlpha = pencilPropreties.drawingColor.opacity;
+        ctx.strokeStyle = pencilPropreties.drawingColor.rgbValue;
     }
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): PencilPropreties {

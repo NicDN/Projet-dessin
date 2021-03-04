@@ -1,5 +1,6 @@
 import { Color } from '@app/classes/color';
 import { Vec2 } from '@app/classes/vec2';
+import { LineService } from '@app/services/tools/line/line.service';
 import { AbstractCommand } from './abstract-command';
 
 export interface LinePropreties {
@@ -12,29 +13,10 @@ export interface LinePropreties {
 }
 
 export class LineCommand extends AbstractCommand {
-    constructor(private linePropreties: LinePropreties) {
+    constructor(private lineService: LineService, private linePropreties: LinePropreties) {
         super();
     }
     execute(): void {
-        this.setContext(this.linePropreties.drawingContext);
-        this.linePropreties.drawingContext.beginPath();
-
-        for (const point of this.linePropreties.drawingPath) {
-            this.linePropreties.drawingContext.lineWidth = this.linePropreties.drawingThickness;
-            this.linePropreties.drawingContext.lineTo(point.x, point.y);
-            if (this.linePropreties.drawWithJunction) {
-                const circle = new Path2D();
-                circle.arc(point.x, point.y, this.linePropreties.junctionDiameter, 0, 2 * Math.PI);
-                this.linePropreties.drawingContext.fill(circle);
-            }
-        }
-        this.linePropreties.drawingContext.stroke();
-    }
-
-    private setContext(ctx: CanvasRenderingContext2D): void {
-        ctx.globalAlpha = this.linePropreties.drawingColor.opacity;
-        ctx.strokeStyle = this.linePropreties.drawingColor.rgbValue;
-        ctx.fillStyle = this.linePropreties.drawingColor.rgbValue;
-        ctx.lineJoin = this.linePropreties.drawingContext.lineCap = 'round';
+        this.lineService.drawLineExecute(this.linePropreties);
     }
 }
