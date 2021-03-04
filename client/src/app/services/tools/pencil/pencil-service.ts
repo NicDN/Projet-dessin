@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command';
+import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command/pencil-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';

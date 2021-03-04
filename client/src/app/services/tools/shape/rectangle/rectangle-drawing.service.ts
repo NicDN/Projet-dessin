@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RectangleCommand, RectanglePropreties } from '@app/classes/commands/rectangle-command';
+import { RectangleCommand, RectanglePropreties } from '@app/classes/commands/rectangle-command/rectangle-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';

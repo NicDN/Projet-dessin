@@ -1,5 +1,5 @@
-import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { RectangleCommand, RectanglePropreties } from '@app/classes/commands/rectangle-command/rectangle-command';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Vec2 } from '@app/classes/vec2';
@@ -7,9 +7,9 @@ import { TraceType } from '@app/classes/shape';
 import { Color } from '@app/classes/color';
 
 fdescribe('ellipse-command', () => {
-    let ellipseDrawingServiceSpyObj: jasmine.SpyObj<EllipseDrawingService>;
-    let ellipseCommand: EllipseCommand;
-    let ellipsePropreties: EllipsePropreties;
+    let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
+    let rectangleCommand: RectangleCommand;
+    let rectanglePropreties: RectanglePropreties;
     let canvasStub: CanvasTestHelper;
     let canvasStubCtx: CanvasRenderingContext2D;
 
@@ -22,16 +22,16 @@ fdescribe('ellipse-command', () => {
     const TRACE_TYPE = TraceType.Bordered;
 
     beforeEach(() => {
-        ellipseDrawingServiceSpyObj = jasmine.createSpyObj(EllipseDrawingService, ['drawEllipse']);
+        rectangleDrawingServiceSpyObj = jasmine.createSpyObj(RectangleDrawingService, ['drawRectangle']);
         TestBed.configureTestingModule({
-            providers: [{ provide: EllipseDrawingService, useValue: ellipseDrawingServiceSpyObj }],
+            providers: [{ provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj }],
         });
 
         canvasStub = TestBed.inject(CanvasTestHelper);
         canvasStubCtx = canvasStub.canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        ellipsePropreties = {
-            drawingContext: canvasStubCtx,
+        rectanglePropreties = {
+            drawingCtx: canvasStubCtx,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
             drawingThickness: THICKNESS,
@@ -40,11 +40,11 @@ fdescribe('ellipse-command', () => {
             isAlternateShape: IS_ALTERNATE_SHAPE,
             traceType: TRACE_TYPE,
         };
-        ellipseCommand = new EllipseCommand(ellipseDrawingServiceSpyObj, ellipsePropreties);
+        rectangleCommand = new RectangleCommand(rectangleDrawingServiceSpyObj, rectanglePropreties);
     });
 
     it('#execute should call the draw function from ellipse', () => {
-        ellipseCommand.execute();
-        expect(ellipseDrawingServiceSpyObj.drawEllipse).toHaveBeenCalledWith(ellipsePropreties);
+        rectangleCommand.execute();
+        expect(rectangleDrawingServiceSpyObj.drawRectangle).toHaveBeenCalledWith(rectanglePropreties);
     });
 });

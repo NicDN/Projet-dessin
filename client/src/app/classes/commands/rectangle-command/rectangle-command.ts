@@ -1,7 +1,7 @@
 import { Color } from '@app/classes/color';
 import { Vec2 } from '@app/classes/vec2';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { AbstractCommand } from './abstract-command';
+import { AbstractCommand } from '../abstract-command';
 
 export interface RectanglePropreties {
     drawingCtx: CanvasRenderingContext2D;

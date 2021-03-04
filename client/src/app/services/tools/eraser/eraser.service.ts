@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EraserCommand, EraserPropreties } from '@app/classes/commands/erasing-command';
+import { EraserCommand, EraserPropreties } from '@app/classes/commands/erasing-command/erasing-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -63,8 +63,6 @@ export class EraserService extends PencilService {
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,
-            drawingColor: this.colorService.mainColor.rgbValue,
-            drawingGlobalAlpha: this.colorService.mainColor.opacity,
         };
     }
 

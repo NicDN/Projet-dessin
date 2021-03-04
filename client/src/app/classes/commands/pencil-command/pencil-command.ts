@@ -1,7 +1,7 @@
 import { Color } from '@app/classes/color';
+import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { Vec2 } from '@app/classes/vec2';
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
-import { AbstractCommand } from './abstract-command';
 
 export interface PencilPropreties {
     drawingContext: CanvasRenderingContext2D;

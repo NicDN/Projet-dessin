@@ -1,4 +1,4 @@
-import { LineService } from './../../services/tools/line/line.service';
+import { LineService } from '@app/services/tools/line/line.service';
 import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';

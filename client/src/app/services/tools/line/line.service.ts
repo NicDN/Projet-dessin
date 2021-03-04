@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LineCommand, LinePropreties } from '@app/classes/commands/line-command';
+import { LineCommand, LinePropreties } from '@app/classes/commands/line-command/line-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -120,7 +120,7 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
+        const lineCommand: LineCommand = new LineCommand(this,this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
         lineCommand.execute();
 
         this.undoRedoService.addCommand(lineCommand);
@@ -128,6 +128,7 @@ export class LineService extends TraceTool {
         this.updatePreview();
 
         this.undoRedoService.enableUndoRedo();
+
     }
 
     updatePreview(): void {
