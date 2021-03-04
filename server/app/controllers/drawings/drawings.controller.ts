@@ -39,7 +39,6 @@ export class DrawingsController {
             //         res.status(Httpstatus.NOT_FOUND).send(error.message);
             //     });
             // console.log(req.params.id);
-            console.log('allo');
         });
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
