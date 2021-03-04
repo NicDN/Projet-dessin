@@ -120,17 +120,12 @@ describe('EraserService', () => {
     });
 
     it('#drawLine should erase on the canvas if there is a single click', () => {
-        spyOn(service, 'sendCommandAction');
         expect(imageDataBefore).not.toEqual(imageDataAfter);
-
-        const singleClickStub = true;
-        singleClickSpy.and.returnValue(singleClickStub);
 
         service.onMouseDown(mouseEventStart);
         service.onMouseUp(mouseEventEnd);
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
-        expect(service.sendCommandAction).toHaveBeenCalled();
         expect(imageData).toEqual(imageDataBefore);
     });
 
