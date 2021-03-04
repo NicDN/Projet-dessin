@@ -14,7 +14,13 @@ export class SaveService {
 
     constructor(private httpClient: HttpClient, private drawingService: DrawingService) {}
 
-    post(drawingForm: DrawingForm): Observable<void> {
+    post(fileName: string, tags: string[]): Observable<void> {
+        const drawingForm: DrawingForm = {
+            id: '-1',
+            name: fileName,
+            tags: tags,
+            drawingData: this.drawingService.canvas.toDataURL(),
+        };
         return this.httpClient.post<void>(this.BASE_URL + '/upload', drawingForm).pipe(catchError(this.handleError<void>('post')));
     }
 
@@ -24,14 +30,14 @@ export class SaveService {
         };
     }
 
-    async postCanvas(fileName: string, tags: string[]): Promise<void> {
-        // tslint:disable-next-line: no-unused-expression
-        const drawingForm: DrawingForm = {
-            id: '3',
-            name: fileName,
-            tags,
-            drawingData: this.drawingService.canvas.toDataURL(),
-        };
-        this.post(drawingForm).subscribe();
-    }
+    // async postCanvas(fileName: string, tags: string[]): Promise<void> {
+    //     // tslint:disable-next-line: no-unused-expression
+    //     // const drawingForm: DrawingForm = {
+    //     //     id: '-1',
+    //     //     name: fileName,
+    //     //     tags: tags,
+    //     //     drawingData: this.drawingService.canvas.toDataURL(),
+    //     // };
+    //     this.post(drawingForm).subscribe();
+    // }
 }

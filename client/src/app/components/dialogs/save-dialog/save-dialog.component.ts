@@ -29,9 +29,14 @@ export class SaveDialogComponent {
     ) {}
 
     postCanvas(fileName: string): void {
-        this.saveService.postCanvas(fileName, this.tags).finally(() => {
-            this.savingState = false;
-        });
+        this.saveService.post(fileName, this.tags).subscribe(
+            () => {
+                this.savingState = false;
+            },
+            () => {
+                console.log('connection impossible');
+            },
+        );
         this.dialogRef.close();
     }
 
