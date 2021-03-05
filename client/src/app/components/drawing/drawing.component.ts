@@ -23,14 +23,11 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     @ViewChild('baseCanvas', { static: false }) baseCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('previewCanvas', { static: false }) previewCanvas: ElementRef<HTMLCanvasElement>;
 
-    private baseCtx: CanvasRenderingContext2D;
-    private previewCtx: CanvasRenderingContext2D;
-
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
-    canDraw: boolean = true;
-    canvasWidth: number;
-    canvasHeight: number;
+    private canDraw: boolean = true;
+    private canvasWidth: number;
+    private canvasHeight: number;
 
     constructor(
         public drawingService: DrawingService,
@@ -40,14 +37,11 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     ) {}
 
     ngAfterViewInit(): void {
-        this.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.drawingService.baseCtx = this.baseCtx;
-        this.drawingService.previewCtx = this.previewCtx;
+        this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;;
+        this.drawingService.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.canvas = this.baseCanvas.nativeElement;
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
-
-        this.drawingService.fillWithWhite(this.baseCtx);
+        this.drawingService.fillWithWhite(this.drawingService.baseCtx);
     }
 
     ngAfterContentInit(): void {

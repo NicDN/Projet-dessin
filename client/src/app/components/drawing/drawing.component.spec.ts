@@ -73,10 +73,8 @@ describe('DrawingComponent', () => {
 
     it('#ngAfterViewInit should set the base context and preview context correctly', () => {
         component.ngAfterViewInit();
-        expect(component['baseCtx']).toBe(component.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
-        expect(component['previewCtx']).toBe(component.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
-        expect(component.drawingService.baseCtx).toBe(component['baseCtx']);
-        expect(component.drawingService.previewCtx).toBe(component['previewCtx']);
+        expect(component['drawingService'].baseCtx).toBe(component.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
+        expect(component['drawingService'].previewCtx).toBe(component.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
         expect(component.drawingService.canvas).toBe(component.baseCanvas.nativeElement);
         expect(component.drawingService.previewCanvas).toBe(component.previewCanvas.nativeElement);
     });
@@ -84,21 +82,14 @@ describe('DrawingComponent', () => {
     it('#disableDrawing Should disable drawing if the resize button is being used', () => {
         const isUsingResizeButtonStub = true;
         component.disableDrawing(isUsingResizeButtonStub);
-        expect(component.canDraw).toEqual(false);
+        expect(component['canDraw']).toEqual(false);
 
         component.disableDrawing(!isUsingResizeButtonStub);
-        expect(component.canDraw).toBeTrue();
+        expect(component['canDraw']).toBeTrue();
     });
 
-    // Resize component now handles this
-    // it('#onSizeChange should call the drawingService #onSizeChange', () => {
-    //     const onSizeChangeSpy = spyOn(drawingStub, 'onSizeChange');
-    //     component.onSizeChange(boxSizeStub);
-    //     expect(onSizeChangeSpy).toHaveBeenCalled();
-    // });
-
     it("#onMouseMove should call the current tool's #onMouseMove when receiving a mouse move event if canDraw flag is true", () => {
-        component.canDraw = true;
+        component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseMove');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -106,7 +97,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseMove should not call the current tool's #onMouseMove when receiving a mouse move event if canDraw flag is false", () => {
-        component.canDraw = false;
+        component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseMove');
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
@@ -114,7 +105,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is true ", () => {
-        component.canDraw = true;
+        component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -122,7 +113,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseDown should not call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is false ", () => {
-        component.canDraw = false;
+        component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
@@ -130,7 +121,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseUp should call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
-        component.canDraw = true;
+        component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseUp');
         component.onMouseUp(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -138,7 +129,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseUp should not call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
-        component.canDraw = false;
+        component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseUp');
         component.onMouseUp(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
@@ -156,7 +147,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseOut should call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is true ", () => {
-        component.canDraw = true;
+        component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
         component.onMouseOut(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -164,7 +155,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseOut should not call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is false ", () => {
-        component.canDraw = false;
+        component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
         component.onMouseOut(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
@@ -172,7 +163,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {
-        component.canDraw = true;
+        component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseEnter');
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -180,7 +171,7 @@ describe('DrawingComponent', () => {
     });
 
     it("#onMouseEnter should not call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is false", () => {
-        component.canDraw = false;
+        component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseEnter');
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
@@ -190,22 +181,26 @@ describe('DrawingComponent', () => {
     it('#setDimensions should return default canvas width if workspace size is under the minimum workspace size allowed', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDER_MINIMUM_WIDTH });
         component.setCanvasDimensions();
-        expect(component.canvasWidth).toEqual(DEFAULT_WIDTH);
+        expect(component['canvasWidth']).toEqual(DEFAULT_WIDTH);
     });
 
     it('#setDimensions should return default canvas height if workspace size is under the minimum workspace size allowed', () => {
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDER_MINIMUM_HEIGHT });
         component.setCanvasDimensions();
-        expect(component.canvasHeight).toEqual(DEFAULT_HEIGHT);
+        expect(component['canvasHeight']).toEqual(DEFAULT_HEIGHT);
     });
 
-    it('#getWidth should return the loaded canvas width if workspace size is above the minimum workspace size allowed', () => {
+    it('#setDimensions should return the loaded canvas width if workspace size is above the minimum workspace size allowed', () => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_WIDTH });
         onLoadCanvasWidth = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
-        expect(component.canvasWidth).toEqual(onLoadCanvasWidth);
+        component.setCanvasDimensions();
+        expect(component['canvasWidth']).toEqual(onLoadCanvasWidth);
     });
 
-    it('#getHeight should return the loaded canvas height if workspace size is above the minimum workspace size allowed', () => {
+    it('#setDimensions should return the loaded canvas height if workspace size is above the minimum workspace size allowed', () => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_HEIGHT });
         onLoadCanvasHeight = window.innerHeight * HALF_RATIO;
-        expect(component.canvasHeight).toEqual(onLoadCanvasHeight);
+        component.setCanvasDimensions();
+        expect(component['canvasHeight']).toEqual(onLoadCanvasHeight);
     });
 });
