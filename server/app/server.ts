@@ -1,6 +1,7 @@
 import * as http from 'http';
 import { inject, injectable } from 'inversify';
 import { Application } from './app';
+import { DatabaseService } from './services/database/database.service';
 import { TYPES } from './types';
 
 @injectable()
@@ -9,9 +10,20 @@ export class Server {
     private readonly baseDix: number = 10;
     private server: http.Server;
 
-    constructor(@inject(TYPES.Application) private application: Application) {}
+    constructor(
+        @inject(TYPES.Application) private application: Application,
+        @inject(TYPES.DatabaseService) private databaseService: DatabaseService,
+    ) {}
 
-    init(): void {
+    async init(): Promise<void> {
+        try {
+            await this.databaseService.start();
+            console.log('Database connection successful !');
+        } catch {
+            console.error('Database connection failed !');
+            process.exit(1);
+        }
+
         this.application.app.set('port', this.appPort);
 
         this.server = http.createServer(this.application.app);
