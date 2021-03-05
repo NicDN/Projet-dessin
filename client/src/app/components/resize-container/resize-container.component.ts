@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
@@ -18,7 +18,7 @@ export const enum Status {
     templateUrl: './resize-container.component.html',
     styleUrls: ['./resize-container.component.scss'],
 })
-export class ResizeContainerComponent implements AfterViewInit {
+export class ResizeContainerComponent {
     @Input() width: number;
     @Input() height: number;
 
@@ -29,18 +29,10 @@ export class ResizeContainerComponent implements AfterViewInit {
     readonly MOUSE_OFFSET: number = 5;
 
     status: Status = Status.NOT_RESIZING;
-    oldBoxSize: BoxSize;
-    currentBoxSize: BoxSize;
-    boxSize: BoxSize;
     subscription: Subscription;
-    undoRedoSubscription: Subscription;
 
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToResizeNotifications();
-    }
-
-    ngAfterViewInit(): void {
-        this.oldBoxSize = { widthBox: this.width, heightBox: this.height };
     }
 
     setStatus(status: number): void {
@@ -65,7 +57,7 @@ export class ResizeContainerComponent implements AfterViewInit {
 
     onMouseUpContainer(): void {
         if (this.status !== Status.NOT_RESIZING) {
-            const resizeCommand: ResizeCommand = new ResizeCommand(this.currentBoxSize, this.drawingService);
+            const resizeCommand: ResizeCommand = new ResizeCommand({ widthBox: this.width, heightBox: this.height }, this.drawingService);
             this.undoRedoService.addCommand(resizeCommand);
             resizeCommand.execute();
         }
@@ -79,15 +71,13 @@ export class ResizeContainerComponent implements AfterViewInit {
         if (this.isValidHeight(event)) {
             this.height = event.pageY - this.MOUSE_OFFSET;
         }
-        this.currentBoxSize = { widthBox: this.width, heightBox: this.height };
     }
 
     resizeCanvas(newWidth: number, newHeight: number): void {
-        this.oldBoxSize = { widthBox: newWidth, heightBox: newHeight };
         this.width = newWidth;
         this.height = newHeight;
-        this.boxSize = { widthBox: newWidth, heightBox: newHeight };
-        this.drawingService.onSizeChange(this.boxSize);
+        const resizeBoxSize = { widthBox: newWidth, heightBox: newHeight };
+        this.drawingService.onSizeChange(resizeBoxSize);
     }
 
     listenToResizeNotifications(): void {

@@ -142,6 +142,8 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('#resizeCanvas should resize the canvas surface', () => {
+        component.width = 10;
+        component.height = 10;
         const boxSize = { widthBox: 1, heightBox: 1 };
         component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
         expect(component.width).toEqual(boxSize.widthBox);
@@ -191,7 +193,6 @@ describe('ResizeContainerComponent', () => {
 
     it('#onMouseUp container should send a a command to undo-redo service', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
-        component.currentBoxSize = { widthBox: 1, heightBox: 1 };
         component.onMouseUpContainer();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
     });

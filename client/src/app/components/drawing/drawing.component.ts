@@ -26,8 +26,8 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
     private canDraw: boolean = true;
-    private canvasWidth: number;
-    private canvasHeight: number;
+    canvasWidth: number;
+    canvasHeight: number;
 
     constructor(
         public drawingService: DrawingService,
