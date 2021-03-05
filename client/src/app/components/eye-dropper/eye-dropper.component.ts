@@ -10,6 +10,10 @@ import { Subscription } from 'rxjs';
 })
 export class EyeDropperComponent implements AfterViewInit {
     @ViewChild('eyeDropperCanvas', { static: false }) eyeDropperCanvasRef: ElementRef<HTMLCanvasElement>;
+
+    readonly previewCanvasSize: number = 20;
+    readonly canvasRealSize: number = 250;
+
     subscription: Subscription;
     private eyeDropperCanvas: HTMLCanvasElement;
     private eyeDropperCtx: CanvasRenderingContext2D;
@@ -42,12 +46,22 @@ export class EyeDropperComponent implements AfterViewInit {
     }
 
     buildImage(): void {
-        this.eyeDropperCtx.save();
-        this.eyeDropperCtx.beginPath();
-        this.eyeDropperCtx.arc(0, 0, 5, 0, Math.PI * 2, true);
-        this.eyeDropperCtx.closePath();
-        this.eyeDropperCtx.clip();
-        const image = this.eyeDropperCtx.getImageData(0, 0, 250, 250);
+        const image = this.eyeDropperCtx.getImageData(0, 0, this.canvasRealSize, this.canvasRealSize);
         this.eyeDropperCtx.putImageData(image, 0, 0);
+    }
+
+    getPreviewColor(event: MouseEvent): void {
+        // Needs this because the coordinates of the zoomed canvas are incorrect
+        const zoomedX = (this.previewCanvasSize * event.offsetX) / this.canvasRealSize; 
+        const zoomedY = (this.previewCanvasSize * event.offsetY) / this.canvasRealSize;
+        const newColor = this.eyeDropperCtx.getImageData(zoomedX, zoomedY, 1, 1);
+
+        const red = newColor.data[0];
+        const green = newColor.data[1];
+        const blue = newColor.data[2];
+        const alpha = newColor.data[3];
+
+        const updateColor = { rgbValue: 'rgb(' + red + ',' + green + ',' + blue + ')', opacity: alpha };
+        this.colorSerivce.updateColor(this.colorSerivce.mainColor, updateColor);
     }
 }
