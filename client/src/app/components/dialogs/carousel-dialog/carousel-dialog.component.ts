@@ -29,7 +29,9 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     requestDrawings(): void {
-        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe();
+        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe((drawings) => {
+            this.drawings = drawings;
+        });
     }
 
     getSlicedDrawings(): DrawingForm[] {
