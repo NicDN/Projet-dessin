@@ -2,7 +2,7 @@
     <h2 class="tool-name-header">{{currentTool.toolName}}</h2>
     <app-color-panel></app-color-panel>
     <mat-divider></mat-divider>
-    <div *ngIf="drawingToolIsActive()">
+    <div *ngIf="needsTraceThickness()">
         <app-thickness-selector [tool]="currentTool" (thickness)="setThickness($event)"></app-thickness-selector>
         <mat-divider></mat-divider>
     </div>
@@ -19,7 +19,7 @@
     </div>
 
     <div *ngIf="this.currentTool===this.toolsService.sprayCanService">
-        <app-spray-can-settings-selector></app-spray-can-settings-selector>
+        <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
     <div class="undo-redo">

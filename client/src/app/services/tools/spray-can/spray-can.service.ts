@@ -9,10 +9,14 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class SprayCanService extends TraceTool {
+    readonly MIN_DROPLETS_DIAMETER: number = 3;
+    readonly MIN_SPRAY_DIAMETER: number = 15;
+    readonly MIN_EMISSION_RATE: number = 10;
+
     readonly ONESECMS: number = 1000;
-    private emissionRate: number;
-    private sprayDiameter: number;
-    private dropletsDiameter: number;
+    emissionRate: number;
+    sprayDiameter: number;
+    dropletsDiameter: number;
     private timer: number;
     private cleanPathData: Vec2[];
     private pathData: Vec2[];
@@ -21,9 +25,9 @@ export class SprayCanService extends TraceTool {
         super(drawingService, colorService, 'Aérosol');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
-        this.dropletsDiameter = 10;
-        this.sprayDiameter = 70;
-        this.emissionRate = 50;
+        this.dropletsDiameter = this.MIN_DROPLETS_DIAMETER;
+        this.sprayDiameter = this.MIN_SPRAY_DIAMETER;
+        this.emissionRate = this.MIN_EMISSION_RATE;
     }
 
     private clearPath(): void {

@@ -3,6 +3,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/line/line.service';
+import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { Subscription } from 'rxjs';
 
@@ -43,7 +44,10 @@ export class AttributesPanelComponent {
         return this.currentTool instanceof Shape;
     }
 
-    drawingToolIsActive(): boolean {
+    needsTraceThickness(): boolean {
+        if (this.currentTool instanceof SprayCanService) {
+            return false;
+        }
         return this.currentTool instanceof DrawingTool;
     }
 }
