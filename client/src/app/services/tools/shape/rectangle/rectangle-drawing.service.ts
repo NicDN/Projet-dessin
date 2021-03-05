@@ -30,7 +30,7 @@ export class RectangleDrawingService extends Shape {
         this.setContextParameters(rectanglePropreties.drawingCtx, rectanglePropreties.drawingThickness);
         rectanglePropreties.drawingCtx.beginPath();
 
-        this.adjustToBorder(rectanglePropreties.drawingCtx, sideLengths, adjustedBeginCoords, trueEndCoords);
+        this.adjustToBorder(rectanglePropreties.drawingCtx, sideLengths, adjustedBeginCoords, trueEndCoords, rectanglePropreties.traceType);
         rectanglePropreties.drawingCtx.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
 
         if (rectanglePropreties.traceType !== TraceType.Bordered) {
@@ -63,8 +63,8 @@ export class RectangleDrawingService extends Shape {
         };
     }
 
-    adjustToBorder(ctx: CanvasRenderingContext2D, sideLengths: Vec2, begin: Vec2, end: Vec2): void {
-        if (this.traceType === TraceType.FilledNoBordered) {
+    adjustToBorder(ctx: CanvasRenderingContext2D, sideLengths: Vec2, begin: Vec2, end: Vec2, traceType: TraceType): void {
+        if (traceType === TraceType.FilledNoBordered) {
             return;
         }
         if (Math.abs(sideLengths.x) <= ctx.lineWidth) {

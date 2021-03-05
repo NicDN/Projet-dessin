@@ -89,7 +89,7 @@ describe('EllipseDrawingService', () => {
         drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
         service.traceType = TraceType.FilledAndBordered;
 
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, service.traceType);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -101,7 +101,7 @@ describe('EllipseDrawingService', () => {
         drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
         service.traceType = TraceType.FilledNoBordered;
 
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, service.traceType);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -163,7 +163,7 @@ describe('EllipseDrawingService', () => {
         const radius: Vec2 = { x: -5, y: -15 };
         drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
 
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.Bordered);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(radius.x).toBeGreaterThan(0);
         expect(radius.y).toBeGreaterThan(0);
@@ -174,7 +174,7 @@ describe('EllipseDrawingService', () => {
         const radius: Vec2 = { x: 0, y: 0 };
         drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
 
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.Bordered);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
         expect(radius.x).toEqual(1);
         expect(radius.y).toEqual(1);

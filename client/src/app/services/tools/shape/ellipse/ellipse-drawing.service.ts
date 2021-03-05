@@ -37,7 +37,7 @@ export class EllipseDrawingService extends Shape {
         this.setContextParameters(ellipsePropreties.drawingContext, ellipsePropreties.drawingThickness);
         ellipsePropreties.drawingContext.beginPath();
 
-        this.adjustToBorder(ellipsePropreties.drawingContext, radiuses, ellipsePropreties.beginCoords, actualEndCoords);
+        this.adjustToBorder(ellipsePropreties.drawingContext, radiuses, ellipsePropreties.beginCoords, actualEndCoords, ellipsePropreties.traceType);
 
         ellipsePropreties.drawingContext.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
@@ -79,8 +79,8 @@ export class EllipseDrawingService extends Shape {
         return Math.abs(end - begin) / 2;
     }
 
-    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
-        const thicknessAdjustment: number = this.traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
+    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: TraceType): void {
+        const thicknessAdjustment: number = traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
         radiuses.x -= thicknessAdjustment;
         radiuses.y -= thicknessAdjustment;
         if (radiuses.x <= 0) {
