@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DrawingForm } from '@common/communication/drawingForm';
 import { Observable, of } from 'rxjs';
@@ -13,8 +13,11 @@ export class CarouselService {
     constructor(private http: HttpClient) {}
 
     requestDrawingsFromServer(searchedTags: string[]): Observable<DrawingForm[]> {
-        return this.http.get<DrawingForm[]>(this.BASE_URL).pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
-        // TODO: when adding array to get, it gives error.
+        let params = new HttpParams();
+        params = params.append('tags', JSON.stringify(searchedTags));
+        return this.http
+            .get<DrawingForm[]>(this.BASE_URL, { params })
+            .pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
     }
 
     deleteDrawingFromServer(id: string): Observable<{}> {
