@@ -1,8 +1,9 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FilterService } from '@app/services/filter/filter.service';
 import { SaveService } from '@app/services/option/save/save.service';
@@ -12,27 +13,42 @@ import { SaveService } from '@app/services/option/save/save.service';
     styleUrls: ['./save-dialog.component.scss'],
 })
 export class SaveDialogComponent {
+    readonly TAG_MAX_LENGTH: number = 10;
+    readonly TAG_MIN_LENGTH: number = 2;
+
+    @ViewChild('chipList') chipList: ElementRef;
+
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
     tags: string[] = [];
-    savingState: boolean = false;
+    // savingState: boolean = false; // boolean to be used while saving
 
-    formGroup: FormGroup = new FormGroup({
-        fileNameFormControl: new FormControl('', Validators.required),
-        tagFormControl: new FormControl(''),
-    });
+    fileNameFormControl: FormControl = new FormControl('', Validators.required);
+    tagFormControl: FormControl = new FormControl('', [
+        Validators.maxLength(this.TAG_MAX_LENGTH),
+        Validators.minLength(this.TAG_MIN_LENGTH),
+        Validators.pattern('[a-zA-Z ]*'),
+    ]);
 
     constructor(
         public drawingService: DrawingService,
         private saveService: SaveService,
         public filterService: FilterService,
         public dialogRef: MatDialogRef<SaveDialogComponent>,
+        private snackBar: MatSnackBar,
     ) {}
 
-    postCanvas(fileName: string): void {
-        this.saveService.postCanvas(fileName, this.tags).finally(() => {
-            this.savingState = false;
-        });
-        this.dialogRef.close();
+    postDrawing(fileName: string): void {
+        this.saveService.postDrawing(fileName, this.tags).subscribe(
+            () => {
+                // how to remove this callback and others are called ?
+            },
+            () => {
+                this.openSnackBar('Impossible de sauvegarder le dessin.', 'Fermer');
+            },
+            () => {
+                this.openSnackBar('Le dessin a été sauvegardé avec succès.', 'Fermer');
+            },
+        );
     }
 
     removeTag(tag: string): void {
@@ -43,6 +59,10 @@ export class SaveDialogComponent {
     }
 
     addTag(event: MatChipInputEvent): void {
+        if (this.tagFormControl.invalid) {
+            return;
+        }
+
         const input = event.input;
         const value = event.value;
 
@@ -58,5 +78,11 @@ export class SaveDialogComponent {
 
     clearTags(): void {
         this.tags = [];
+    }
+
+    openSnackBar(message: string, action: string): void {
+        this.snackBar.open(message, action, {
+            duration: 5000,
+        });
     }
 }

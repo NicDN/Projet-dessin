@@ -20,16 +20,6 @@ export class CarouselDialogComponent implements OnInit {
 
     noDrawingError: boolean = true;
 
-    drawingsMock: DrawingForm[] = [
-        // { id: 1, name: 'dessin1', tag: ['bon', 'pas cher'] },
-        // { id: 2, name: 'dessin2', tag: ['bon', 'pas cher'] },
-        // { id: 3, name: 'dessin3', tag: ['bon', 'pas cher'] },
-        // { id: 4, name: 'dessin4', tag: ['beau', 'pas cher'] },
-        // { id: 5, name: 'dessin5', tag: ['beau', 'bon', 'pas cher'] },
-        // { id: 7, name: 'dessin7', tag: ['beau', 'pas cher'] },
-        // { id: 8, name: 'dessin8', tag: ['beau', 'bon'] },
-    ];
-
     private startIndex: number = 0;
 
     constructor(public carouselService: CarouselService, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
@@ -39,17 +29,9 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     requestDrawings(): void {
-        this.carouselService.requestDrawingsFromServer().subscribe(
-            (drawingForms) => {
-                this.noDrawingError = false;
-                // this.drawings = this.drawingsMock;
-                this.drawings = drawingForms;
-            },
-            (err) => {
-                this.noDrawingError = true;
-                console.log(err);
-            },
-        );
+        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe((drawings) => {
+            this.drawings = drawings;
+        });
     }
 
     getSlicedDrawings(): DrawingForm[] {
@@ -80,6 +62,8 @@ export class CarouselDialogComponent implements OnInit {
         if (index >= 0) {
             this.searchedTags.splice(index, 1);
         }
+
+        this.requestDrawings();
     }
 
     addTag(event: MatChipInputEvent): void {
@@ -94,6 +78,8 @@ export class CarouselDialogComponent implements OnInit {
         if (input) {
             input.value = '';
         }
+
+        this.requestDrawings();
     }
 
     @HostListener('window:keydown', ['$event'])

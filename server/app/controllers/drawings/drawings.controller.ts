@@ -18,8 +18,16 @@ export class DrawingsController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            res.json(this.drawingsService.getData());
+            this.drawingsService.getData(req.body).then((forms) => {
+                res.json(forms);
+            });
         });
+
+        // this.router.get('/tags', async (req: Request, res: Response, next: NextFunction) => {
+        //     this.drawingsService.getData(req.body).then((forms) => {
+        //         res.json(forms);
+        //     });
+        // });
 
         this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
             // this.databaseService
@@ -31,7 +39,6 @@ export class DrawingsController {
             //         res.status(Httpstatus.NOT_FOUND).send(error.message);
             //     });
             // console.log(req.params.id);
-            console.log('allo');
         });
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
