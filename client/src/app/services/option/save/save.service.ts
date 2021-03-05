@@ -17,7 +17,7 @@ export class SaveService {
 
     postDrawing(fileName: string, tags: string[]): Observable<void> {
         const drawingForm: DrawingForm = {
-            id: '-1',
+            id: '4',
             name: fileName,
             tags,
             drawingData: this.drawingService.canvas.toDataURL(),
