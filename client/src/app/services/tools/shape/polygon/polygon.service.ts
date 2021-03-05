@@ -16,19 +16,9 @@ export class PolygonService extends Shape {
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         this.alternateShape = true;
-        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
-        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
-        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
-        const angle: number = (2 * Math.PI) / this.numberOfSides;
 
         ctx.save();
-        this.setContextParameters(ctx, this.thickness);
-        ctx.beginPath();
-        ctx.moveTo(center.x + radiuses.x, center.y);
-        this.adjustToBorder(ctx, radiuses, begin, actualEndCoords);
-        for (let i = 1; i <= this.numberOfSides; i++) {
-            ctx.lineTo(center.x + radiuses.x * Math.cos(i * angle), center.y + radiuses.y * Math.sin(i * angle));
-        }
+        this.drawPolygon(ctx, begin, end);
 
         if (this.traceType !== TraceType.Bordered) {
             this.setFillColor(ctx, this.colorService.mainColor);
@@ -42,6 +32,20 @@ export class PolygonService extends Shape {
         ctx.restore();
     }
 
+    drawPolygon(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
+        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
+        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
+        const angle: number = (2 * Math.PI) / this.numberOfSides;
+
+        this.setContextParameters(ctx, this.thickness);
+        ctx.beginPath();
+        this.adjustToBorder(ctx, radiuses, begin, actualEndCoords);
+        for (let i = 0; i <= this.numberOfSides; i++) {
+            ctx.lineTo(center.x - radiuses.x * Math.sin(i * angle), center.y - radiuses.y * Math.cos(i * angle));
+        }
+    }
+
     getCenterCoords(begin: Vec2, end: Vec2): Vec2 {
         return { x: (end.x + begin.x) / 2, y: (end.y + begin.y) / 2 };
     }
@@ -53,7 +57,8 @@ export class PolygonService extends Shape {
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
-        ctx.lineCap = 'butt';
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -67,7 +72,7 @@ export class PolygonService extends Shape {
         ctx.strokeStyle = 'black';
         ctx.setLineDash([this.dashSize * 2, this.dashSize]);
 
-        ctx.arc(center.x, center.y, radiuses.y, 0, 2 * Math.PI);
+        ctx.arc(center.x, center.y, radiuses.x, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.restore();
     }
