@@ -24,7 +24,7 @@ export class EyeDropperService extends Tool {
         return this.subject.asObservable();
     }
 
-    onMouseUp(event: MouseEvent): void {
+    onMouseDown(event: MouseEvent): void {
         this.getImageData(this.getPositionFromMouse(event));
     }
 

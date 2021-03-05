@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -21,7 +22,7 @@ describe('ResizeContainerComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent, DrawingComponent],
-            providers: [DrawingService],
+            providers: [DrawingService, { provide: MatDialog, useValue: {} }],
             imports: [RouterTestingModule],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
