@@ -22,6 +22,9 @@
         <app-spray-can-settings-selector></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
+    <div *ngIf="this.currentTool===this.toolsService.eyeDropperService">
+        <app-eye-dropper></app-eye-dropper>
+    </div>
     <div class="undo-redo">
         <mat-divider></mat-divider>
         <app-undo-redo></app-undo-redo>

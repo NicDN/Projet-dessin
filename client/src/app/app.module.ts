@@ -24,6 +24,7 @@ import { ColorSliderComponent } from './components/color-slider/color-slider.com
 import { ControlPanelComponent } from './components/control-panel/control-panel.component';
 import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
+import { EyeDropperComponent } from './components/eye-dropper/eye-dropper.component';
 import { LineSettingsSelectorComponent } from './components/line-settings-selector/line-settings-selector.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
@@ -55,6 +56,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
+        EyeDropperComponent,
     ],
     imports: [
         BrowserModule,

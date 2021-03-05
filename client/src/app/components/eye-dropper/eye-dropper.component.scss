@@ -1,0 +1,16 @@
+#eye-dropper-canvas{
+    z-index: 2;
+    position: relative;
+    width: 250px;
+    height: 250px;
+}
+
+#eye-dropper-canvas-container{
+    margin-left: 40px;
+    position:absolute;
+    width: 250px;
+    height: 250px;
+    border: solid;
+    border-color: black;
+    border-radius: 2px;;
+}
