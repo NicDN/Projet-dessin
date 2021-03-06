@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class EyeDropperComponent implements AfterViewInit {
     @ViewChild('eyeDropperCanvas', { static: false }) eyeDropperCanvasRef: ElementRef<HTMLCanvasElement>;
+    @ViewChild('gridCanvas', { static: false }) gridCanvasRef: ElementRef<HTMLCanvasElement>;
 
     readonly previewCanvasSize: number = 20;
     readonly canvasRealSize: number = 250;
@@ -17,6 +18,7 @@ export class EyeDropperComponent implements AfterViewInit {
     subscription: Subscription;
     private eyeDropperCanvas: HTMLCanvasElement;
     private eyeDropperCtx: CanvasRenderingContext2D;
+    private gridCtx: CanvasRenderingContext2D;
     constructor(private eyeDropperService: EyeDropperService, private colorSerivce: ColorService) {
         this.subscription = this.eyeDropperService.newIncomingColor().subscribe(() => {
             this.newColorNotification();
@@ -26,6 +28,8 @@ export class EyeDropperComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.eyeDropperCanvas = this.eyeDropperCanvasRef.nativeElement;
         this.eyeDropperCtx = this.eyeDropperCanvas.getContext('2d') as CanvasRenderingContext2D;
+        this.gridCtx = this.gridCanvasRef.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.drawGrid();
     }
 
     newColorNotification(): void {
@@ -52,7 +56,7 @@ export class EyeDropperComponent implements AfterViewInit {
 
     getPreviewColor(event: MouseEvent): void {
         // Needs this because the coordinates of the zoomed canvas are incorrect
-        const zoomedX = (this.previewCanvasSize * event.offsetX) / this.canvasRealSize; 
+        const zoomedX = (this.previewCanvasSize * event.offsetX) / this.canvasRealSize;
         const zoomedY = (this.previewCanvasSize * event.offsetY) / this.canvasRealSize;
         const newColor = this.eyeDropperCtx.getImageData(zoomedX, zoomedY, 1, 1);
 
@@ -63,5 +67,18 @@ export class EyeDropperComponent implements AfterViewInit {
 
         const updateColor = { rgbValue: 'rgb(' + red + ',' + green + ',' + blue + ')', opacity: alpha };
         this.colorSerivce.updateColor(this.colorSerivce.mainColor, updateColor);
+    }
+
+    drawGrid(): void {
+        const half = 0.5;
+        const tmpDimension = 10;
+        this.gridCtx.lineWidth = 1;
+        this.gridCtx.strokeStyle = 'black';
+        this.gridCtx.globalAlpha = half;
+        for (let x = 0; x < this.canvasRealSize; x += tmpDimension) {
+            for (let y = 0; y < this.canvasRealSize; y += tmpDimension) {
+                this.gridCtx.strokeRect(x, y, tmpDimension, tmpDimension);
+            }
+        }
     }
 }
