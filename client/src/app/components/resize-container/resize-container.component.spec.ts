@@ -109,6 +109,9 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('#resize resize-container should resize with the appropriate dimensions', () => {
+        const MIDDLE = 1100;
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: MIDDLE });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: MIDDLE });
         component.setStatus(Status.RESIZE_DIAGONAL);
         const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
         const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
@@ -239,7 +242,30 @@ describe('ResizeContainerComponent', () => {
         expect(component.yCoordinateIsOverMinimum(mouseEvent)).toBeTrue();
     });
 
+    it('#yCoordinateIsUnderMaximum should return false if mouse position is over window height', () =>{
+        // const mouseEvent = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
+    })
+
+    it('#xCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', ()=>{
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE*2 });
+        expect(component.xCoordinateIsUnderMaximum(mouseEventClick)).toBeTrue();
+
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE/2 });
+        expect(component.xCoordinateIsUnderMaximum(mouseEventClick)).toBeFalse();
+    })
+
+    it('#yCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', ()=>{
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE*2 });
+        expect(component.yCoordinateIsUnderMaximum(mouseEventClick)).toBeTrue();
+
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE/2 });
+        expect(component.yCoordinateIsUnderMaximum(mouseEventClick)).toBeFalse();
+    })
+
     it('#UpdateWidthValid and #UpdateHeightValid should allow resize according to the status ', () => {
+        const MIDDLE = 1100;
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: MIDDLE });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: MIDDLE });
         component.status = Status.NOT_RESIZING;
         expect(component.isValidWidth(mouseEventClick)).toBeFalse();
         expect(component.isValidHeight(mouseEventClick)).toBeFalse();

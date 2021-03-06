@@ -100,11 +100,19 @@ export class ResizeContainerComponent {
     }
 
     isValidWidth(event: MouseEvent): boolean {
-        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) && this.xCoordinateIsOverMinimum(event);
+        return (
+            (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) &&
+            this.xCoordinateIsOverMinimum(event) &&
+            this.xCoordinateIsUnderMaximum(event)
+        );
     }
 
     isValidHeight(event: MouseEvent): boolean {
-        return (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) && this.yCoordinateIsOverMinimum(event);
+        return (
+            (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) &&
+            this.yCoordinateIsOverMinimum(event) &&
+            this.yCoordinateIsUnderMaximum(event)
+        );
     }
 
     xCoordinateIsOverMinimum(event: MouseEvent): boolean {
@@ -113,6 +121,16 @@ export class ResizeContainerComponent {
 
     yCoordinateIsOverMinimum(event: MouseEvent): boolean {
         return event.pageY - this.MOUSE_OFFSET >= DEFAULT_HEIGHT;
+    }
+
+    xCoordinateIsUnderMaximum(event: MouseEvent): boolean {
+        const offSetFactor = 2.5;
+        return event.pageX + offSetFactor * this.MOUSE_OFFSET < window.innerWidth;
+    }
+
+    yCoordinateIsUnderMaximum(event: MouseEvent): boolean {
+        const offSetFactor = 2.5;
+        return event.pageY + offSetFactor * this.MOUSE_OFFSET < window.innerHeight;
     }
 
     workspaceWidthIsOverMinimum(): boolean {
