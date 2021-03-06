@@ -8,8 +8,6 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class PolygonService extends Shape {
-    numberOfSides: number = 3;
-    minNumberOfSides: number = 3;
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Polygone');
     }

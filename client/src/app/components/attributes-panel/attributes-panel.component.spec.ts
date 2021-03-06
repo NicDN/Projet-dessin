@@ -6,6 +6,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
+import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { of } from 'rxjs';
 import { AttributesPanelComponent } from './attributes-panel.component';
@@ -19,6 +20,7 @@ describe('AttributesPanelComponent', () => {
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
     const lineService: LineService = new LineService(new DrawingService(), new ColorService());
     const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(new DrawingService(), new ColorService());
+    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService());
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -75,9 +77,21 @@ describe('AttributesPanelComponent', () => {
         expect((component.currentTool as LineService).drawWithJunction).toBe(expectedJunction);
     });
 
+    it('#setNumberOfSides should set the number of sides of a polygon correctly', () => {
+        component.currentTool = polygonService;
+        const expectedNumberOfSides: number = 3;
+        component.setNumberOfSides(expectedNumberOfSides);
+        expect((component.currentTool as Shape).numberOfSides).toBe(expectedNumberOfSides);
+    });
+
     it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
         expect(component.shapeIsActive()).toBeTrue();
+    });
+
+    it('#polygonIsActive should verify if the Polygon shape is active', () => {
+        component.currentTool = polygonService;
+        expect(component.polygonIsActive()).toBeTrue();
     });
 
     it('#drawingToolIsActive should verify that a drawing tool is active', () => {

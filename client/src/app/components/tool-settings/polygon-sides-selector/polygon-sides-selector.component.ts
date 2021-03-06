@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
-import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
+import { Shape } from '@app/classes/shape';
 
 @Component({
     selector: 'app-polygon-sides-selector',
@@ -9,7 +9,7 @@ import { PolygonService } from '@app/services/tools/shape/polygon/polygon.servic
 })
 export class PolygonSidesSelectorComponent {
     @Output() numberOfSides: EventEmitter<number> = new EventEmitter<number>();
-    @Input() polygon: PolygonService;
+    @Input() polygon: Shape;
 
     updateNumberOfSides(event: MatSliderChange): void {
         this.numberOfSides.emit(event.value as number);

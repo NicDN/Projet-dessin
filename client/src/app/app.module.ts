@@ -40,11 +40,11 @@ import { ResizeContainerComponent } from './components/resize-container/resize-c
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { LineSettingsSelectorComponent } from './components/tool-settings/line-settings-selector/line-settings-selector.component';
+import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
-import { PolygonSidesSelectorComponent } from './polygon-sides-selector/polygon-sides-selector.component';
 
 @NgModule({
     declarations: [
