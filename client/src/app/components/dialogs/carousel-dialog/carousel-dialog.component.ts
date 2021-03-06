@@ -90,4 +90,8 @@ export class CarouselDialogComponent implements OnInit {
             this.forwardDrawings();
         }
     }
+
+    closeDialog(): void {
+        this.dialogRef.close();
+    }
 }
