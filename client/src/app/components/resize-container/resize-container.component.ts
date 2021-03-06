@@ -65,6 +65,7 @@ export class ResizeContainerComponent {
     }
 
     resizeContainer(event: MouseEvent): void {
+        Image img = new Image();
         if (this.isValidWidth(event)) {
             this.width = event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET;
         }
