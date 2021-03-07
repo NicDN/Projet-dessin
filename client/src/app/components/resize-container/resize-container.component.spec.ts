@@ -7,8 +7,8 @@ import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '@app/c
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-
 import { ResizeContainerComponent, Status } from './resize-container.component';
+
 // tslint:disable: no-any no-string-literal
 describe('ResizeContainerComponent', () => {
     let component: ResizeContainerComponent;
@@ -145,8 +145,9 @@ describe('ResizeContainerComponent', () => {
     });
 
     it('#resizeCanvas should resize the canvas surface', () => {
-        component.width = 10;
-        component.height = 10;
+        const tmpSize = 10;
+        component.width = tmpSize;
+        component.height = tmpSize;
         const boxSize = { widthBox: 1, heightBox: 1 };
         component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
         expect(component.width).toEqual(boxSize.widthBox);
@@ -242,25 +243,21 @@ describe('ResizeContainerComponent', () => {
         expect(component.yCoordinateIsOverMinimum(mouseEvent)).toBeTrue();
     });
 
-    it('#yCoordinateIsUnderMaximum should return false if mouse position is over window height', () =>{
-        // const mouseEvent = { pageX: OVER_MINIMUM_X_COORDINATE, pageY: OVER_MINIMUM_Y_COORDINATE, button: 0 } as MouseEvent;
-    })
-
-    it('#xCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', ()=>{
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE*2 });
+    it('#xCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', () => {
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE * 2 });
         expect(component.xCoordinateIsUnderMaximum(mouseEventClick)).toBeTrue();
 
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE/2 });
+        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: OVER_MINIMUM_X_COORDINATE / 2 });
         expect(component.xCoordinateIsUnderMaximum(mouseEventClick)).toBeFalse();
-    })
+    });
 
-    it('#yCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', ()=>{
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE*2 });
+    it('#yCoordinateIsUnderMaximum should true when width is under maximum size and vice-versa', () => {
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE * 2 });
         expect(component.yCoordinateIsUnderMaximum(mouseEventClick)).toBeTrue();
 
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE/2 });
+        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_Y_COORDINATE / 2 });
         expect(component.yCoordinateIsUnderMaximum(mouseEventClick)).toBeFalse();
-    })
+    });
 
     it('#UpdateWidthValid and #UpdateHeightValid should allow resize according to the status ', () => {
         const MIDDLE = 1100;

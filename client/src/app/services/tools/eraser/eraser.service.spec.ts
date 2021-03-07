@@ -54,12 +54,12 @@ describe('EraserService', () => {
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
 
         // If decide to raw in white instead , decomment this.
-        // baseCtxStub.fillStyle = 'white';
-        // baseCtxStub.rect(0, 0, 1, 1);
-        // baseCtxStub.fill();
+        baseCtxStub.fillStyle = 'white'; //
+        baseCtxStub.rect(0, 0, 1, 1); //
+        baseCtxStub.fill(); //
         imageDataBefore = baseCtxStub.getImageData(0, 0, 1, 1);
 
-        // baseCtxStub.fillStyle = 'black';
+        baseCtxStub.fillStyle = 'black'; //
         baseCtxStub.rect(0, 0, 1, 1);
         baseCtxStub.fill();
         imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
@@ -106,7 +106,7 @@ describe('EraserService', () => {
     it('#eraseSquare should erase part off the context', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 }, service.thickness);
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });

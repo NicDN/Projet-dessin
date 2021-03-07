@@ -4,22 +4,70 @@ import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
+import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
+import { ColorService } from '../color/color.service';
+import { PencilService } from './../tools/pencil/pencil-service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
 describe('HotkeyService', () => {
     let service: HotkeyService;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+    let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
+    let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    const boxSizeStub = { widthBox: 10, heightBox: 10 };
+    const booleanStub = true;
+
+    const key_S_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+
+    const key_G_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+
+    // const key_O_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+
+    // const key_A_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const key_I_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+
+    // const key_E_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const key_E_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+
+    // const key_L_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const key_C_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+
+    // const key_Z_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const key_Z_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+
+    // const digit_1_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const digit_2_stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    // const digit_3_stub = new KeyboardEvent('keydown', { code: 'keyS' });
 
     // const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
     // let ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
+    // spy.calls.reset
     beforeEach(async(() => {
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals']);
+        dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
+        toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
+        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
+        drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
+        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(of(booleanStub));
+
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
             imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }])],
-            providers: [DrawingService, ToolsService, { provide: MatDialog, useValue: {} }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: ToolsService, useValue: toolsServiceSpyObj },
+                { provide: DialogService, useValue: dialogServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: MatDialog, useValue: {} },
+            ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -30,6 +78,14 @@ describe('HotkeyService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should call every function', () => {
+        service.onKeyDown(key_S_Ctrl_Stub);
+        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+        dialogServiceSpyObj.openDialog.calls.reset();
+        service.onKeyDown(key_G_Ctrl_Stub);
+        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledTimes(1);
     });
 
     // it('#verifyCtrlKeyStatus should not return if ctrl key is pressed', () => {
