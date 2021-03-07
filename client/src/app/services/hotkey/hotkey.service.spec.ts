@@ -86,65 +86,69 @@ describe('HotkeyService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call every function', () => {
-        spyOn(service, 'handleCtrlO');
-        service.listenToKeyEvents = true;
+    it(
+        '#initializeShorcutManager should initiate and be able to be called when on #onKey is pressed with the appropriate keyCode' +
+            ' should call every function',
+        () => {
+            spyOn(service, 'handleCtrlO');
+            service.listenToKeyEvents = true;
 
-        service.onKeyDown(keySCtrlStub);
-        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-        dialogServiceSpyObj.openDialog.calls.reset();
+            service.onKeyDown(keySCtrlStub);
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+            dialogServiceSpyObj.openDialog.calls.reset();
 
-        service.onKeyDown(keyGCtrlStub);
-        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-        dialogServiceSpyObj.openDialog.calls.reset();
+            service.onKeyDown(keyGCtrlStub);
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+            dialogServiceSpyObj.openDialog.calls.reset();
 
-        service.onKeyDown(keyOCtrlStub);
-        expect(service.handleCtrlO).toHaveBeenCalled();
+            service.onKeyDown(keyOCtrlStub);
+            expect(service.handleCtrlO).toHaveBeenCalled();
 
-        service.onKeyDown(keyAStub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(keyAStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(keyIStub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(keyIStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(keyEStub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(keyEStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(keyECtrlStub);
-        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-        dialogServiceSpyObj.openDialog.calls.reset();
+            service.onKeyDown(keyECtrlStub);
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+            dialogServiceSpyObj.openDialog.calls.reset();
 
-        service.onKeyDown(keyLStub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(keyLStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(keyCStub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(keyCStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(keyCtrlZStub);
-        expect(undoRedoServiceSpyObj.undo).toHaveBeenCalled();
-        undoRedoServiceSpyObj.undo.calls.reset();
+            service.onKeyDown(keyCtrlZStub);
+            expect(undoRedoServiceSpyObj.undo).toHaveBeenCalled();
+            undoRedoServiceSpyObj.undo.calls.reset();
 
-        service.onKeyDown(keyZCtrlShiftStub);
-        expect(undoRedoServiceSpyObj.redo).toHaveBeenCalled();
-        undoRedoServiceSpyObj.redo.calls.reset();
+            service.onKeyDown(keyZCtrlShiftStub);
+            expect(undoRedoServiceSpyObj.redo).toHaveBeenCalled();
+            undoRedoServiceSpyObj.redo.calls.reset();
 
-        service.onKeyDown(digit1Stub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(digit1Stub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(digit2Stub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
+            service.onKeyDown(digit2Stub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
 
-        service.onKeyDown(digit3Stub);
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-        toolsServiceSpyObj.setCurrentTool.calls.reset();
-    });
+            service.onKeyDown(digit3Stub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+            toolsServiceSpyObj.setCurrentTool.calls.reset();
+        },
+    );
 
     it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed and its on the editor component', () => {
         spyOn(service, 'currentRouteIsEditor').and.returnValue(true);

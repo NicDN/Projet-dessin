@@ -49,6 +49,11 @@ export class HotkeyService {
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
     ) {
+        this.initializeShorcutManager();
+        this.observeDialogService();
+    }
+
+    initializeShorcutManager(): void {
         this.shortCutManager = {
             KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
             KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
@@ -66,8 +71,6 @@ export class HotkeyService {
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
             KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
         };
-
-        this.observeDialogService();
     }
 
     observeDialogService(): void {
@@ -82,11 +85,9 @@ export class HotkeyService {
         }
         if (event.ctrlKey) {
             event.preventDefault();
-            if (event.shiftKey) {
-                this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.();
-            } else {
-                this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
-            }
+            event.shiftKey
+                ? this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.()
+                : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
@@ -95,11 +96,7 @@ export class HotkeyService {
     }
 
     handleCtrlO(): void {
-        if (!this.currentRouteIsEditor(this.router.url)) {
-            this.router.navigate(['editor']);
-        } else {
-            this.drawingService.handleNewDrawing();
-        }
+        this.currentRouteIsEditor(this.router.url) ? this.drawingService.handleNewDrawing() : this.router.navigate(['editor']);
     }
 
     currentRouteIsEditor(url: string): boolean {
