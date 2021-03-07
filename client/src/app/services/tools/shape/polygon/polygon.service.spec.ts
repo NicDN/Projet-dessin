@@ -20,13 +20,14 @@ fdescribe('PolygonService', () => {
 
     const OPACITY_STUB = 1;
     const THICKNESS_STUB = 4;
+    const SIDES_STUB = 4;
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
     const BOTTOM_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 20 };
     const TOP_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 0 };
 
-    //const RGB_MAX = 255;
+    const RGB_MAX = 255;
 
     beforeEach(() => {
         colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
@@ -62,6 +63,7 @@ fdescribe('PolygonService', () => {
         expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.lineCap).toEqual('round');
+        expect(drawingServiceSpyObj.baseCtx.lineJoin).toEqual('round');
     });
 
     it('#getCenterCoords should return coords of the center of the Polygon', () => {
@@ -81,5 +83,112 @@ fdescribe('PolygonService', () => {
         expect(service.getRadius(TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
         expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
         expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+    });
+
+    it('#drawPerimeter should draw a dotted line circle', () => {
+        const canvasSpyObj = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'arc', 'stroke', 'beginPath', 'save', 'restore']);
+
+        service.drawPerimeter(canvasSpyObj, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(canvasSpyObj.beginPath).toHaveBeenCalled();
+        expect(canvasSpyObj.setLineDash).toHaveBeenCalled();
+        expect(canvasSpyObj.arc).toHaveBeenCalled();
+        expect(canvasSpyObj.stroke).toHaveBeenCalled();
+    });
+
+    it('#adjustToWidth should adjust radiuses if ellipse has a certain border width', () => {
+        const expectedXRadius = 18;
+        const expectedYRadius = 8;
+        const radiuses: Vec2 = { x: 20, y: 10 };
+        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
+        service.traceType = TraceType.FilledAndBordered;
+
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(radiuses.x).toEqual(expectedXRadius);
+        expect(radiuses.y).toEqual(expectedYRadius);
+    });
+
+    it('#adjustToWidth should not adjust radiuses if ellipse doesnt have a border', () => {
+        const radiuses: Vec2 = { x: 20, y: 10 };
+        const expectedXRadius = 20;
+        const expectedYRadius = 10;
+        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
+        service.traceType = TraceType.FilledNoBordered;
+
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(radiuses.x).toEqual(expectedXRadius);
+        expect(radiuses.y).toEqual(expectedYRadius);
+    });
+
+    it('#adjustToWidth should adjust the width if its bigger than the box containing the ellipse', () => {
+        const initialWidth = 50;
+        const radius: Vec2 = { x: -5, y: -15 };
+        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
+
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
+        expect(radius.x).toBeGreaterThan(0);
+        expect(radius.y).toBeGreaterThan(0);
+    });
+
+    it('#adjustToWidth should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
+        const initialWidth = 50;
+        const radius: Vec2 = { x: 0, y: 0 };
+        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
+
+        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
+        expect(radius.x).toEqual(1);
+        expect(radius.y).toEqual(1);
+    });
+
+    it('#draw should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        service.thickness = THICKNESS_STUB;
+        service.traceType = TraceType.FilledAndBordered;
+        service.numberOfSides = SIDES_STUB;
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
+        const borderPoint: Vec2 = { x: 25, y: 1 };
+        const centerPoint: Vec2 = { x: 25, y: 25 };
+        const outsidePoint: Vec2 = { x: 51, y: 51 };
+
+        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#draw  without border should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        service.thickness = THICKNESS_STUB;
+        service.traceType = TraceType.FilledNoBordered;
+        service.numberOfSides = SIDES_STUB;
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
+        const borderPoint: Vec2 = { x: 25, y: 1 };
+        const centerPoint: Vec2 = { x: 25, y: 25 };
+        const outsidePoint: Vec2 = { x: 51, y: 51 };
+
+        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#draw  without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        service.thickness = THICKNESS_STUB;
+        service.traceType = TraceType.Bordered;
+        service.numberOfSides = SIDES_STUB;
+        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
+        const borderPoint: Vec2 = { x: 25, y: 1 };
+        const centerPoint: Vec2 = { x: 25, y: 25 };
+        const outsidePoint: Vec2 = { x: 51, y: 51 };
+
+        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 });
