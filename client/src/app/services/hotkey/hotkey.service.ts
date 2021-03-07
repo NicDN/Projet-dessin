@@ -22,10 +22,10 @@ enum shortCutManager {
     LINE = 'KeyL',
     SPRAY_CAN = 'KeyA',
     EYE_DROPPER = 'KeyI',
+    UNDO_REDO = 'KeyZ',
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
-    UNDO_REDO = 'KeyZ',
 }
 
 type ShortcutManager = {
@@ -64,7 +64,7 @@ export class HotkeyService {
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
-            KeyZ: { action: () => this.undoRedoService.undo(), actionCtrl: () => this.undoRedoService.redo() },
+            KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
         };
 
         this.observeDialogService();

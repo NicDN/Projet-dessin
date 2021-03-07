@@ -1,20 +1,22 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
+// import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
+import { MainPageComponent } from '@app/components/main-page/main-page.component';
+import { ColorService } from '@app/services/color/color.service';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { ColorService } from '../color/color.service';
-import { PencilService } from './../tools/pencil/pencil-service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
-describe('HotkeyService', () => {
+fdescribe('HotkeyService', () => {
     let service: HotkeyService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
@@ -23,32 +25,31 @@ describe('HotkeyService', () => {
     const boxSizeStub = { widthBox: 10, heightBox: 10 };
     const booleanStub = true;
 
-    const key_S_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+    const keySCtrlStub = new KeyboardEvent('keydown', { code: 'KeyS', ctrlKey: true });
 
-    const key_G_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+    const keyGCtrlStub = new KeyboardEvent('keydown', { code: 'KeyG', ctrlKey: true });
 
-    // const key_O_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+    const keyOCtrlStub = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
-    // const key_A_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const key_I_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    const keyAStub = new KeyboardEvent('keydown', { code: 'KeyA' });
+    const keyIStub = new KeyboardEvent('keydown', { code: 'KeyI' });
 
-    // const key_E_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const key_E_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+    const keyEStub = new KeyboardEvent('keydown', { code: 'KeyE' });
+    const keyECtrlStub = new KeyboardEvent('keydown', { code: 'KeyE', ctrlKey: true });
 
-    // const key_L_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const key_C_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    const keyLStub = new KeyboardEvent('keydown', { code: 'KeyL' });
+    const keyCStub = new KeyboardEvent('keydown', { code: 'KeyC' });
 
-    // const key_Z_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const key_Z_Ctrl_Stub = new KeyboardEvent('keydown', { code: 'keyS', ctrlKey: true });
+    const keyCtrlZStub = new KeyboardEvent('keydown', { code: 'KeyZ', ctrlKey: true });
+    const keyZCtrlShiftStub = new KeyboardEvent('keydown', { code: 'KeyZ', ctrlKey: true, shiftKey: true });
 
-    // const digit_1_Stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const digit_2_stub = new KeyboardEvent('keydown', { code: 'keyS' });
-    // const digit_3_stub = new KeyboardEvent('keydown', { code: 'keyS' });
+    const digit1Stub = new KeyboardEvent('keydown', { code: 'Digit1' });
+    const digit2Stub = new KeyboardEvent('keydown', { code: 'Digit2' });
+    const digit3Stub = new KeyboardEvent('keydown', { code: 'Digit3' });
 
-    // const noCtrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
-    // let ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
+    const noCtrlKeyOEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
+    const randomKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
-    // spy.calls.reset
     beforeEach(async(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
@@ -60,7 +61,12 @@ describe('HotkeyService', () => {
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
-            imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }])],
+            imports: [
+                RouterTestingModule.withRoutes([
+                    { path: 'home', component: MainPageComponent },
+                    { path: 'editor', component: EditorComponent },
+                ]),
+            ],
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ToolsService, useValue: toolsServiceSpyObj },
@@ -81,88 +87,103 @@ describe('HotkeyService', () => {
     });
 
     it('should call every function', () => {
-        service.onKeyDown(key_S_Ctrl_Stub);
+        spyOn(service, 'handleCtrlO');
+        service.listenToKeyEvents = true;
+
+        service.onKeyDown(keySCtrlStub);
         expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
         dialogServiceSpyObj.openDialog.calls.reset();
-        service.onKeyDown(key_G_Ctrl_Stub);
-        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledTimes(1);
+
+        service.onKeyDown(keyGCtrlStub);
+        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+        dialogServiceSpyObj.openDialog.calls.reset();
+
+        service.onKeyDown(keyOCtrlStub);
+        expect(service.handleCtrlO).toHaveBeenCalled();
+
+        service.onKeyDown(keyAStub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(keyIStub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(keyEStub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(keyECtrlStub);
+        expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
+        dialogServiceSpyObj.openDialog.calls.reset();
+
+        service.onKeyDown(keyLStub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(keyCStub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(keyCtrlZStub);
+        expect(undoRedoServiceSpyObj.undo).toHaveBeenCalled();
+        undoRedoServiceSpyObj.undo.calls.reset();
+
+        service.onKeyDown(keyZCtrlShiftStub);
+        expect(undoRedoServiceSpyObj.redo).toHaveBeenCalled();
+        undoRedoServiceSpyObj.redo.calls.reset();
+
+        service.onKeyDown(digit1Stub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(digit2Stub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
+
+        service.onKeyDown(digit3Stub);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
+        toolsServiceSpyObj.setCurrentTool.calls.reset();
     });
 
-    // it('#verifyCtrlKeyStatus should not return if ctrl key is pressed', () => {
-    //     service.ctrlKeyPressed = false;
-    //     spyOn(ctrlKeyEvent, 'preventDefault').and.stub();
-    //     service.verifyCtrlKeyStatus(ctrlKeyEvent);
-    //     expect(ctrlKeyEvent.preventDefault).toHaveBeenCalled();
-    //     expect(service.ctrlKeyPressed).toBeTrue();
-    // });
+    it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed and its on the editor component', () => {
+        service.router.navigate(['editor']).then(() => {
+            expect(service.router.url).toEqual('/editor');
+            service.handleCtrlO();
+            expect(drawingServiceSpyObj.handleNewDrawing).toHaveBeenCalled();
+        });
+    });
 
-    // it('#verifyCtrlKeyStatus should return if crtl key is not pressed', () => {
-    //     service.ctrlKeyPressed = true;
-    //     spyOn(noCtrlKeyEvent, 'preventDefault').and.stub();
-    //     service.verifyCtrlKeyStatus(noCtrlKeyEvent);
-    //     expect(noCtrlKeyEvent.preventDefault).not.toHaveBeenCalled();
-    //     expect(service.ctrlKeyPressed).toBeFalse();
-    // });
+    it('#handleCtrlO should rereoute to editor if it was not on that route', () => {
+        const navigateSpyObj = spyOn(service.router, 'navigate');
+        service.router.navigate(['randomRoute']);
+        service.handleCtrlO();
+        expect(navigateSpyObj).toHaveBeenCalled();
+    });
 
-    // // tslint:disable: no-magic-numbers
-    // it('#onKeyDown should call #setCurrentTool from toolservice when a tool key is pressed', () => {
-    //     const toolServiceSpy: jasmine.Spy = spyOn(service['toolService'], 'setCurrentTool').and.stub();
-    //     const getCurrentToolSpy = spyOn(service['toolService']['currentTool'], 'onKeyDown').and.stub();
+    it('#handleCtrlO should not call #handleNewDrawing if ctrl key is not pressed', () => {
+        service.router.navigate(['editor']).then(() => {
+            expect(service.router.url).toEqual('/editor');
+            service.onKeyDown(noCtrlKeyOEvent);
+            expect(drawingServiceSpyObj.handleNewDrawing).not.toHaveBeenCalled();
+        });
+        expect(service.router).toBeTruthy();
+    });
 
-    //     const eraserKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyE', ctrlKey: false });
-    //     const pencilKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyC', ctrlKey: false });
-    //     const lineKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyL', ctrlKey: false });
-    //     const ellipseKeyboardEvent = new KeyboardEvent('keydown', { code: 'Digit2', ctrlKey: false });
-    //     const rectangleKeyboardEvent = new KeyboardEvent('keydown', { code: 'Digit1', ctrlKey: false });
+    it('#onKeyDown should not go through if it is not listening to key events', () => {
+        spyOn(toolsServiceSpyObj.currentTool, 'onKeyDown');
+        service.listenToKeyEvents = false;
+        service.onKeyDown(randomKeyEvent);
+        expect(toolsServiceSpyObj.currentTool.onKeyDown).not.toHaveBeenCalled();
+    });
 
-    //     service.onKeyDown(eraserKeyboardEvent);
-    //     expect(toolServiceSpy).toHaveBeenCalledTimes(1);
-    //     expect(getCurrentToolSpy).toHaveBeenCalledTimes(1);
-
-    //     service.onKeyDown(pencilKeyboardEvent);
-    //     expect(toolServiceSpy).toHaveBeenCalledTimes(2);
-    //     expect(getCurrentToolSpy).toHaveBeenCalledTimes(2);
-
-    //     service.onKeyDown(lineKeyboardEvent);
-    //     expect(toolServiceSpy).toHaveBeenCalledTimes(3);
-    //     expect(getCurrentToolSpy).toHaveBeenCalledTimes(3);
-
-    //     service.onKeyDown(ellipseKeyboardEvent);
-    //     expect(toolServiceSpy).toHaveBeenCalledTimes(4);
-    //     expect(getCurrentToolSpy).toHaveBeenCalledTimes(4);
-
-    //     service.onKeyDown(rectangleKeyboardEvent);
-    //     expect(toolServiceSpy).toHaveBeenCalledTimes(5);
-    //     expect(getCurrentToolSpy).toHaveBeenCalledTimes(5);
-    // });
-
-    // it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed', () => {
-    //     const drawingServiceSpy: jasmine.Spy = spyOn(service.drawingService, 'handleNewDrawing');
-    //     service.onKeyDown(ctrlKeyEvent);
-    //     expect(drawingServiceSpy).toHaveBeenCalled();
-    // });
-
-    // it('#handleCtrlO should not call #handleNewDrawing if ctrl key is not pressed', () => {
-    //     const drawingServiceSpy: jasmine.Spy = spyOn(service.drawingService, 'handleNewDrawing');
-    //     service.onKeyDown(noCtrlKeyEvent);
-    //     expect(drawingServiceSpy).not.toHaveBeenCalled();
-    // });
-
-    // it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
-    //     const notAssignedKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
-    //     expect(service.onKeyDown(notAssignedKeyboardEvent)).toBeFalsy();
-    // });
-
-    // it('#handleCtrlO ctrl O should call handleNewDrawing from drawingService', () => {
-    //     // tslint:disable-next-line: no-any
-    //     const drawingServiceSpy: jasmine.Spy<any> = spyOn<any>(service.drawingService, 'handleNewDrawing');
-    //     ctrlKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
-    //     service.onKeyDown(ctrlKeyEvent);
-    //     expect(drawingServiceSpy).toHaveBeenCalled();
-    // });
-
-    // it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
-    //     const notAssignedKeyboardEvent = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
-    //     expect(service.onKeyDown(notAssignedKeyboardEvent)).toBeFalsy();
-    // });
+    it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
+        service.listenToKeyEvents = true;
+        const notAssignedKeyboardEvent1 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: true, shiftKey: true });
+        const notAssignedKeyboardEvent2 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
+        const notAssignedKeyboardEvent3 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: true, shiftKey: false });
+        expect(service.onKeyDown(notAssignedKeyboardEvent1)).toBeFalsy();
+        expect(service.onKeyDown(notAssignedKeyboardEvent2)).toBeFalsy();
+        expect(service.onKeyDown(notAssignedKeyboardEvent3)).toBeFalsy();
+    });
 });
