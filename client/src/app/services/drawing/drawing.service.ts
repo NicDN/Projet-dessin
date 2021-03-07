@@ -33,6 +33,7 @@ export class DrawingService {
         if (this.confirmReload()) {
             this.reloadDrawing();
         }
+        this.clearCanvas(this.previewCtx);
     }
 
     confirmReload(): boolean {
@@ -42,6 +43,7 @@ export class DrawingService {
     reloadDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
+        this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
     }
 
@@ -50,7 +52,7 @@ export class DrawingService {
     }
 
     canvasIsEmpty(): boolean {
-        this.clearCanvas(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
+        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
@@ -58,8 +60,15 @@ export class DrawingService {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
-        this.baseCtx.drawImage(this.previewCanvas, 0, 0);
+        this.fillWithWhite(this.baseCtx);
+
         this.clearCanvas(this.previewCtx);
+    }
+
+    fillWithWhite(context: CanvasRenderingContext2D): void {
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        context.drawImage(this.previewCanvas, 0, 0);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {

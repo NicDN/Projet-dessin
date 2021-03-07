@@ -53,7 +53,13 @@ describe('EraserService', () => {
 
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
 
+        // If decide to raw in white instead , decomment this.
+        baseCtxStub.fillStyle = 'white'; //
+        baseCtxStub.rect(0, 0, 1, 1); //
+        baseCtxStub.fill(); //
         imageDataBefore = baseCtxStub.getImageData(0, 0, 1, 1);
+
+        baseCtxStub.fillStyle = 'black'; //
         baseCtxStub.rect(0, 0, 1, 1);
         baseCtxStub.fill();
         imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);

@@ -63,7 +63,10 @@ export class EraserService extends PencilService {
     }
 
     eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {
-        ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
+        // ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
+        // If we want to draw in white:
+        ctx.fillStyle = 'white';
+        ctx.fillRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
     }
 
     onMouseMove(event: MouseEvent): void {
