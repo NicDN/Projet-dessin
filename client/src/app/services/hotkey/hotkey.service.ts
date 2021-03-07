@@ -95,10 +95,14 @@ export class HotkeyService {
     }
 
     handleCtrlO(): void {
-        if (this.router.url !== '/editor') {
+        if (!this.currentRouteIsEditor(this.router.url)) {
             this.router.navigate(['editor']);
         } else {
             this.drawingService.handleNewDrawing();
         }
+    }
+
+    currentRouteIsEditor(url: string): boolean {
+        return url === '/editor';
     }
 }

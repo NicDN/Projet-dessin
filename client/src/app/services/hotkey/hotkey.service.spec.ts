@@ -147,27 +147,32 @@ describe('HotkeyService', () => {
     });
 
     it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed and its on the editor component', () => {
-        service.router.navigate(['editor']).then(() => {
-            expect(service.router.url).toEqual('/editor');
-            service.handleCtrlO();
-            expect(drawingServiceSpyObj.handleNewDrawing).toHaveBeenCalled();
-        });
+        spyOn(service, 'currentRouteIsEditor').and.returnValue(true);
+        service.handleCtrlO();
+        expect(drawingServiceSpyObj.handleNewDrawing).toHaveBeenCalled();
     });
 
     it('#handleCtrlO should rereoute to editor if it was not on that route', () => {
-        const navigateSpyObj = spyOn(service.router, 'navigate');
-        service.router.navigate(['randomRoute']);
+        spyOn(service, 'currentRouteIsEditor').and.returnValue(false);
+        const navigateSpyObj = spyOn(service.router, 'navigate').and.returnValues();
         service.handleCtrlO();
         expect(navigateSpyObj).toHaveBeenCalled();
     });
 
     it('#handleCtrlO should not call #handleNewDrawing if ctrl key is not pressed', () => {
-        service.router.navigate(['editor']).then(() => {
-            expect(service.router.url).toEqual('/editor');
-            service.onKeyDown(noCtrlKeyOEvent);
-            expect(drawingServiceSpyObj.handleNewDrawing).not.toHaveBeenCalled();
-        });
-        expect(service.router).toBeTruthy();
+        spyOn(service, 'currentRouteIsEditor').and.returnValue(true);
+        service.onKeyDown(noCtrlKeyOEvent);
+        expect(drawingServiceSpyObj.handleNewDrawing).not.toHaveBeenCalled();
+    });
+
+    it('#currentRouteIsEditor should return true if current route is editor', () => {
+        const urlStub = '/editor';
+        expect(service.currentRouteIsEditor(urlStub)).toBeTrue();
+    });
+
+    it('#currentRouteIsEditor should return false if current route is editor', () => {
+        const urlStub = '/notEditor';
+        expect(service.currentRouteIsEditor(urlStub)).toBeFalse();
     });
 
     it('#onKeyDown should not go through if it is not listening to key events', () => {
