@@ -16,7 +16,7 @@ export abstract class Shape extends DrawingTool {
 
     traceType: TraceType;
     protected alternateShape: boolean;
-    readonly dashSize: number = 5;
+    readonly dashSize: number = 2;
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
         super(drawingService, colorService, toolName);

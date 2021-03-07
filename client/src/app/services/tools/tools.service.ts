@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { EraserService } from './eraser/eraser.service';
 import { LineService } from './line/line.service';
 import { PencilService } from './pencil/pencil-service';
+import { RectangleSelectionService } from './selection/rectangle-selection.service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from './shape/polygon/polygon.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';
@@ -25,6 +26,7 @@ export class ToolsService {
         public eraserService: EraserService,
         public sprayCanService: SprayCanService,
         public eyeDropperService: EyeDropperService,
+        public rectangleSelectionService: RectangleSelectionService,
     ) {
         this.currentTool = pencilService;
     }
@@ -34,7 +36,7 @@ export class ToolsService {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
-        this.currentTool = tool;
+        this.currentTool = tool === this.rectangleDrawingService ? this.rectangleSelectionService : tool;
         this.subject.next(tool);
     }
 
