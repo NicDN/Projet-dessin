@@ -84,18 +84,18 @@ describe('Shape', () => {
 
     it('#getActualEndCoords should return same end coords if not using alternate shape', () => {
         shape['alternateShape'] = false;
-        expect(shape.getTrueEndCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS)).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
-        expect(shape.getTrueEndCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS)).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(shape.getTrueEndCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS)).toEqual(TOP_RIGHT_CORNER_COORDS);
-        expect(shape.getTrueEndCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS)).toEqual(BOTTOM_LEFT_CORNER_COORDS);
+        expect(shape.getTrueEndCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, false)).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(shape.getTrueEndCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS, false)).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(shape.getTrueEndCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS, false)).toEqual(TOP_RIGHT_CORNER_COORDS);
+        expect(shape.getTrueEndCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS, false)).toEqual(BOTTOM_LEFT_CORNER_COORDS);
     });
 
     it('#getActualEndCoords should return coords of square if using alternate shape', () => {
         shape['alternateShape'] = true;
-        expect(shape.getTrueEndCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS)).toEqual({ x: 20, y: 20 });
-        expect(shape.getTrueEndCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS)).toEqual({ x: 20, y: 0 });
-        expect(shape.getTrueEndCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS)).toEqual({ x: 20, y: 0 });
-        expect(shape.getTrueEndCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS)).toEqual({ x: 20, y: 20 });
+        expect(shape.getTrueEndCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, true)).toEqual({ x: 20, y: 20 });
+        expect(shape.getTrueEndCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS, true)).toEqual({ x: 20, y: 0 });
+        expect(shape.getTrueEndCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS, true)).toEqual({ x: 20, y: 0 });
+        expect(shape.getTrueEndCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS, true)).toEqual({ x: 20, y: 20 });
     });
 
     it('#onMouseDown should set the begin and end coords correctly', () => {

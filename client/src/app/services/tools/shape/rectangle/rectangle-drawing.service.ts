@@ -19,7 +19,11 @@ export class RectangleDrawingService extends Shape {
     }
 
     drawRectangle(rectanglePropreties: RectanglePropreties): void {
-        const trueEndCoords: Vec2 = this.getTrueEndCoords(rectanglePropreties.beginCoords, rectanglePropreties.endCoords);
+        const trueEndCoords: Vec2 = this.getTrueEndCoords(
+            rectanglePropreties.beginCoords,
+            rectanglePropreties.endCoords,
+            rectanglePropreties.isAlternateShape,
+        );
         const sideLengths: Vec2 = {
             x: trueEndCoords.x - rectanglePropreties.beginCoords.x,
             y: trueEndCoords.y - rectanglePropreties.beginCoords.y,

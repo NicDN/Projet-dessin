@@ -81,12 +81,12 @@ export abstract class Shape extends DrawingTool {
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
     }
 
-    getTrueEndCoords(begin: Vec2, end: Vec2): Vec2 {
+    getTrueEndCoords(begin: Vec2, end: Vec2, isAlternateShape: boolean): Vec2 {
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
         const distX: number = Math.abs(end.x - begin.x);
         const distY: number = Math.abs(end.y - begin.y);
-        if (this.alternateShape) {
+        if (isAlternateShape) {
             endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(distX, distY);
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(distX, distY);
         }

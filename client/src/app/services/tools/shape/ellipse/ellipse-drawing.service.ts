@@ -26,7 +26,11 @@ export class EllipseDrawingService extends Shape {
     }
 
     drawEllipse(ellipsePropreties: EllipsePropreties): void {
-        const actualEndCoords: Vec2 = this.getTrueEndCoords(ellipsePropreties.beginCoords, ellipsePropreties.endCoords);
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(
+            ellipsePropreties.beginCoords,
+            ellipsePropreties.endCoords,
+            ellipsePropreties.isAlternateShape,
+        );
         const center: Vec2 = this.getCenterCoords(ellipsePropreties.beginCoords, actualEndCoords);
         const radiuses: Vec2 = {
             x: this.getRadius(ellipsePropreties.beginCoords.x, actualEndCoords.x),

@@ -16,7 +16,7 @@ import { of } from 'rxjs';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
-fdescribe('HotkeyService', () => {
+describe('HotkeyService', () => {
     let service: HotkeyService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
