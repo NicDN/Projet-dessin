@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { RectangleDrawingService } from '../shape/rectangle/rectangle-drawing.service';
 
 @Injectable({
     providedIn: 'root',
@@ -11,32 +11,50 @@ export class RectangleSelectionService extends SelectionTool {
     private data: ImageData;
     private offset: Vec2;
 
-    constructor(drawingService: DrawingService, private rectangleDrawingService: RectangleDrawingService) {
-        super(drawingService, 'Rectangle Selection');
+    constructor(drawingService: DrawingService, rectangleDrawingService: RectangleDrawingService) {
+        super(drawingService, rectangleDrawingService, 'Rectangle Selection');
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        this.rectangleDrawingService.drawPerimeter(ctx, begin, end);
+        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end);
+        this.rectangleDrawingService.drawPerimeter(ctx, begin, trueEndCoords);
     }
 
     drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end);
         ctx.save();
         ctx.lineWidth = 0;
         ctx.lineJoin = 'miter';
         ctx.strokeStyle = this.boxColor.rgbValue;
         ctx.globalAlpha = this.boxColor.opacity;
         ctx.beginPath();
-        ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
+        ctx.rect(begin.x, begin.y, trueEndCoords.x - begin.x, trueEndCoords.y - begin.y);
         ctx.stroke();
         ctx.restore();
+        this.drawControlPoints(ctx, begin, trueEndCoords);
+    }
+
+    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const pointWidth = 6;
+        const halfPointWidth = pointWidth / 2;
+        ctx.beginPath();
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'blue';
+        ctx.rect(begin.x - halfPointWidth, begin.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect(begin.x - halfPointWidth, end.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect(end.x - halfPointWidth, begin.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect(end.x - halfPointWidth, end.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect((end.x + begin.x) / 2 - halfPointWidth, begin.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect((end.x + begin.x) / 2 - halfPointWidth, end.y - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect(begin.x - halfPointWidth, (begin.y + end.y) / 2 - halfPointWidth, pointWidth, pointWidth);
+        ctx.rect(end.x - halfPointWidth, (begin.y + end.y) / 2 - halfPointWidth, pointWidth, pointWidth);
+        ctx.stroke();
+        ctx.fill();
     }
 
     isInsideSelection(point: Vec2): boolean {
         return (
-            Math.abs(point.x - this.finalTopLeft.x) < Math.abs(this.finalTopLeft.x - this.finalBottomRight.x) &&
-            Math.abs(point.x - this.finalBottomRight.x) < Math.abs(this.finalTopLeft.x - this.finalBottomRight.x) &&
-            Math.abs(point.y - this.finalTopLeft.y) < Math.abs(this.finalTopLeft.y - this.finalBottomRight.y) &&
-            Math.abs(point.y - this.finalBottomRight.y) < Math.abs(this.finalTopLeft.y - this.finalBottomRight.y)
+            point.x > this.finalTopLeft.x && point.x < this.finalBottomRight.x && point.y > this.finalTopLeft.y && point.y < this.finalBottomRight.y
         );
     }
 
@@ -61,6 +79,9 @@ export class RectangleSelectionService extends SelectionTool {
             x: Math.max(this.initialTopLeft.x, this.initialBottomRight.x),
             y: Math.max(this.initialTopLeft.y, this.initialBottomRight.y),
         };
+        this.initialTopLeft = this.finalTopLeft;
+        this.initialBottomRight = this.finalBottomRight;
+
         this.data = ctx.getImageData(
             this.initialTopLeft.x,
             this.initialTopLeft.y,
@@ -85,5 +106,21 @@ export class RectangleSelectionService extends SelectionTool {
 
     drawSelection(ctx: CanvasRenderingContext2D): void {
         ctx.putImageData(this.data, this.finalTopLeft.x, this.finalTopLeft.y);
+    }
+
+    cancelSelection(): void {
+        if (this.hasSelection) {
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.finalTopLeft.x = this.initialTopLeft.x;
+            this.finalTopLeft.y = this.initialTopLeft.y;
+            this.drawSelection(this.drawingService.baseCtx);
+            this.hasSelection = false;
+            this.movingSelection = false;
+            this.finalTopLeft.x = 0;
+            this.finalTopLeft.y = 0;
+            this.finalBottomRight.x = 0;
+            this.finalBottomRight.y = 0;
+            // this.data = 0;
+        }
     }
 }

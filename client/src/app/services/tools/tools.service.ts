@@ -36,6 +36,9 @@ export class ToolsService {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
+        if (this.currentTool === this.rectangleSelectionService) {
+            this.rectangleSelectionService.cancelSelection();
+        }
         this.currentTool = tool === this.rectangleDrawingService ? this.rectangleSelectionService : tool;
         this.subject.next(tool);
     }

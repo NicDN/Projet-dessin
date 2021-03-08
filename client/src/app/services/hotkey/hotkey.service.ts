@@ -38,7 +38,6 @@ export class HotkeyService {
     listenToKeyEvents: boolean = true;
 
     subscription: Subscription;
-
     constructor(
         public router: Router,
         public drawingService: DrawingService,
@@ -49,7 +48,9 @@ export class HotkeyService {
             KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
             KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
-            KeyA: { action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService) },
+            KeyA: {
+                action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
+            },
             KeyI: { action: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService) },
             KeyE: {
                 action: () => this.toolService.setCurrentTool(this.toolService.eraserService),
