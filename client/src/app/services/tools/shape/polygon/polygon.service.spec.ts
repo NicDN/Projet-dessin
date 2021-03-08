@@ -7,7 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PolygonService } from './polygon.service';
 
 // tslint:disable: no-string-literal
-fdescribe('PolygonService', () => {
+describe('PolygonService', () => {
     let service: PolygonService;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -24,9 +24,6 @@ fdescribe('PolygonService', () => {
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
-    const BOTTOM_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 20 };
-    const TOP_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 0 };
-
     const RGB_MAX = 255;
 
     beforeEach(() => {
@@ -66,25 +63,6 @@ fdescribe('PolygonService', () => {
         expect(drawingServiceSpyObj.baseCtx.lineJoin).toEqual('round');
     });
 
-    it('#getCenterCoords should return coords of the center of the Polygon', () => {
-        const expectedCenterCoords: Vec2 = { x: 20, y: 10 };
-        expect(service.getCenterCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS)).toEqual(expectedCenterCoords);
-        expect(service.getCenterCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS)).toEqual(expectedCenterCoords);
-        expect(service.getCenterCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS)).toEqual(expectedCenterCoords);
-        expect(service.getCenterCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS)).toEqual(expectedCenterCoords);
-    });
-
-    it('#getRadius should return radius of the Polygon', () => {
-        const expectedXRadius = 20;
-        const expectedYRadius = 10;
-        service.traceType = TraceType.FilledNoBordered;
-
-        expect(service.getRadius(TOP_LEFT_CORNER_COORDS.x, BOTTOM_RIGHT_CORNER_COORDS.x)).toEqual(expectedXRadius);
-        expect(service.getRadius(TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
-        expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
-        expect(service.getRadius(BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
-    });
-
     it('#drawPerimeter should draw a dotted line circle', () => {
         const canvasSpyObj = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'arc', 'stroke', 'beginPath', 'save', 'restore']);
 
@@ -93,52 +71,6 @@ fdescribe('PolygonService', () => {
         expect(canvasSpyObj.setLineDash).toHaveBeenCalled();
         expect(canvasSpyObj.arc).toHaveBeenCalled();
         expect(canvasSpyObj.stroke).toHaveBeenCalled();
-    });
-
-    it('#adjustToWidth should adjust radiuses if ellipse has a certain border width', () => {
-        const expectedXRadius = 18;
-        const expectedYRadius = 8;
-        const radiuses: Vec2 = { x: 20, y: 10 };
-        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
-        service.traceType = TraceType.FilledAndBordered;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(radiuses.x).toEqual(expectedXRadius);
-        expect(radiuses.y).toEqual(expectedYRadius);
-    });
-
-    it('#adjustToWidth should not adjust radiuses if ellipse doesnt have a border', () => {
-        const radiuses: Vec2 = { x: 20, y: 10 };
-        const expectedXRadius = 20;
-        const expectedYRadius = 10;
-        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
-        service.traceType = TraceType.FilledNoBordered;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(radiuses.x).toEqual(expectedXRadius);
-        expect(radiuses.y).toEqual(expectedYRadius);
-    });
-
-    it('#adjustToWidth should adjust the width if its bigger than the box containing the ellipse', () => {
-        const initialWidth = 50;
-        const radius: Vec2 = { x: -5, y: -15 };
-        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
-        expect(radius.x).toBeGreaterThan(0);
-        expect(radius.y).toBeGreaterThan(0);
-    });
-
-    it('#adjustToWidth should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
-        const initialWidth = 50;
-        const radius: Vec2 = { x: 0, y: 0 };
-        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
-        expect(radius.x).toEqual(1);
-        expect(radius.y).toEqual(1);
     });
 
     it('#draw should draw a Polygon on the canvas at the right position and using the right colours', () => {
@@ -175,7 +107,7 @@ fdescribe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#draw  without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
+    it('#draw without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
         service.thickness = THICKNESS_STUB;
         service.traceType = TraceType.Bordered;
         service.numberOfSides = SIDES_STUB;

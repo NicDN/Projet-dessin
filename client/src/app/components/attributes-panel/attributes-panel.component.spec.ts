@@ -79,7 +79,7 @@ describe('AttributesPanelComponent', () => {
 
     it('#setNumberOfSides should set the number of sides of a polygon correctly', () => {
         component.currentTool = polygonService;
-        const expectedNumberOfSides: number = 3;
+        const expectedNumberOfSides = 3;
         component.setNumberOfSides(expectedNumberOfSides);
         expect((component.currentTool as Shape).numberOfSides).toBe(expectedNumberOfSides);
     });
