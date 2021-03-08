@@ -145,7 +145,7 @@ describe('SprayCanService', () => {
     });
 
     it('#setContext should set the context for the spray', () => {
-        service.setContext(baseCtxStub);
+        service.setContext(baseCtxStub, { rgbValue: '#ff0000', opacity: 1 });
         expect(baseCtxStub.lineCap).toEqual('round');
         expect(baseCtxStub.lineJoin).toEqual('round');
         expect(baseCtxStub.fillStyle).toEqual('#ff0000');

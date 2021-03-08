@@ -74,28 +74,4 @@ export class EllipseDrawingService extends Shape {
         ctx.lineWidth = thickness;
         ctx.lineCap = 'round';
     }
-
-    getCenterCoords(begin: Vec2, end: Vec2): Vec2 {
-        return { x: (end.x + begin.x) / 2, y: (end.y + begin.y) / 2 };
-    }
-
-    getRadius(begin: number, end: number): number {
-        return Math.abs(end - begin) / 2;
-    }
-
-    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: TraceType): void {
-        const thicknessAdjustment: number = traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
-        radiuses.x -= thicknessAdjustment;
-        radiuses.y -= thicknessAdjustment;
-        if (radiuses.x <= 0) {
-            ctx.lineWidth = begin.x !== end.x ? Math.abs(begin.x - end.x) : 1;
-            radiuses.x = 1;
-            radiuses.y = this.getRadius(begin.y, end.y) - ctx.lineWidth / 2;
-        }
-        if (radiuses.y <= 0) {
-            ctx.lineWidth = begin.y !== end.y ? Math.abs(begin.y - end.y) : 1;
-            radiuses.y = 1;
-            radiuses.x = begin.x !== end.x ? this.getRadius(begin.x, end.x) - ctx.lineWidth / 2 : 1;
-        }
-    }
 }

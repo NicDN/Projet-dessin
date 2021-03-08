@@ -12,6 +12,7 @@ export interface PolygonPropreties {
     secondaryColor: Color;
     isAlternateShape: boolean;
     traceType: number;
+    numberOfSides: number;
 }
 
 export class PolygonCommand extends AbstractCommand {
@@ -19,6 +20,6 @@ export class PolygonCommand extends AbstractCommand {
         super();
     }
     execute(): void {
-        this.rectangleDrawingService.drawRectangle(this.rectanglePropreties);
+        this.rectangleDrawingService.drawPolygon(this.rectanglePropreties);
     }
 }
