@@ -46,22 +46,37 @@ export class DrawingsService {
     }
 
     async getDrawings(tags: string[], index: number): Promise<DrawingForm[]> {
-        const drawingForms: DrawingForm[] = [];
+        let drawingForms: DrawingForm[] = [];
+
+        await this.collection
+            .find({})
+            .toArray()
+            .then((drawingsData) => {
+                drawingsData.forEach((drawingData) => {
+                    // tslint:disable-next-line: no-string-literal
+                    drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
+                });
+            });
 
         // TODO: checker pourquoi length = 2 quand il est vide
-        if (tags.length === 2) {
-            await this.collection
-                .find({})
-                .toArray()
-                .then((drawingsData) => {
-                    drawingsData.forEach((drawingData) => {
-                        // tslint:disable-next-line: no-string-literal
-                        drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
-                    });
-                });
+        if (tags.length > 0) {
+            drawingForms = this.filterDrawingsByTags(drawingForms, tags);
         }
 
         return this.getValidDrawings(drawingForms, index);
+    }
+
+    private filterDrawingsByTags(drawingForms: DrawingForm[], tags: string[]): DrawingForm[] {
+        const filteredForms: DrawingForm[] = [];
+        for (const tag of tags) {
+            for (const form of drawingForms) {
+                if (form.tags.includes(tag) && !filteredForms.includes(form)) {
+                    filteredForms.push(form);
+                }
+            }
+            console.log(tag);
+        }
+        return filteredForms;
     }
 
     private async getValidDrawings(drawingForms: DrawingForm[], index: number): Promise<DrawingForm[]> {
@@ -95,19 +110,24 @@ export class DrawingsService {
     // }
 
     async deleteDrawing(id: string): Promise<void> {
-        return (
-            this.collection
-                // tslint:disable-next-line: prettier
-                .findOneAndDelete({ _id: new ObjectId(id) })
-                .then((res: FindAndModifyWriteOpResultObject<DrawingData>) => {
-                    if (!res.value) {
-                        throw new Error('Failed to delete drawing');
+        return await this.collection
+            // tslint:disable-next-line: prettier
+            .findOneAndDelete({ _id: new ObjectId(id) })
+            .then(async (res: FindAndModifyWriteOpResultObject<DrawingData>) => {
+                await fs.unlink(`${this.DRAWINGS_DIRECTORY}/` + id, (error) => {
+                    if (error) {
+                        throw new Error('FILE_NOT_FOUND');
                     }
-                })
-                .catch(() => {
-                    throw new Error('Failed to delete drawing');
-                })
-        );
+                });
+
+                // à quoi ça sert
+                // if (!res.value) {
+                //     throw new Error('FAILED_TO_DELETE_DRAWING');
+                // }
+            })
+            .catch(() => {
+                throw new Error('NOT_ON_DATABASE');
+            });
     }
 
     private validateDrawing(drawingForm: DrawingForm): boolean {

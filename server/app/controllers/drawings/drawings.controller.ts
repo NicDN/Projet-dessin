@@ -19,19 +19,19 @@ export class DrawingsController {
         this.router = Router();
 
         this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
-            console.log(req.params.id);
             this.drawingsService
                 .deleteDrawing(req.params.id)
                 .then(() => {
                     res.sendStatus(Httpstatus.StatusCodes.NO_CONTENT);
                 })
                 .catch((error: Error) => {
-                    res.status(Httpstatus.StatusCodes.NOT_FOUND).send(error.message);
+                    if (error.message === 'FILE_NOT_FOUND') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR);
+                    if (error.message === 'NOT_ON_DATABASE') res.status(Httpstatus.StatusCodes.NOT_FOUND);
                 });
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getDrawings(req.query.tags, Number(req.query.index)).then((forms) => {
+            this.drawingsService.getDrawings(JSON.parse(req.query.tags), Number(req.query.index)).then((forms) => {
                 res.json(forms);
             });
         });

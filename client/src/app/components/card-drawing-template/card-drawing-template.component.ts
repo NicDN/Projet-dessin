@@ -30,15 +30,15 @@ export class CardDrawingTemplateComponent {
 
     deleteDrawing(id: string): void {
         this.carouselService.deleteDrawingFromServer(id).subscribe(
-            () => {},
-            () => {
-                // callback is invoked if error
-                this.openSnackBar('Impossible de supprimer le dessin.', 'Fermer');
-            },
             () => {
                 // callback is invoked if success
                 this.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
                 this.requestDrawings.emit();
+            },
+            (error) => {
+                if (error == 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
+                if (error == 'NOT_FOUND') this.openSnackBar("Le dessin n'existe pas sur la base de données", 'Fermer');
+                if (error == 'INTERNAL_SERVER_ERROR') this.openSnackBar("Le dessin n'existe pas sur le serveur", 'Fermer');
             },
         );
     }

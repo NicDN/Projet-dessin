@@ -1,13 +1,15 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DrawingForm } from '@common/communication/drawingForm';
-import { Observable, of } from 'rxjs';
+import * as Httpstatus from 'http-status-codes';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CarouselService {
+    private readonly NO_SERVER_RESPONSE: number = 0;
     private readonly BASE_URL: string = 'http://localhost:3000/api/database';
 
     constructor(private http: HttpClient) {}
@@ -28,6 +30,15 @@ export class CarouselService {
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return (error: Error): Observable<T> => {
+            if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
+                return throwError('NO_SERVER_RESPONSE');
+            }
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
+                return throwError('NOT_FOUND');
+            }
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
+                return throwError('INTERNAL_SERVER_ERROR');
+            }
             return of(result as T);
         };
     }

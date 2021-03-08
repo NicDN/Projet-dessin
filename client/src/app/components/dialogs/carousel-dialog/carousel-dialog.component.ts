@@ -2,6 +2,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
 
@@ -22,7 +23,7 @@ export class CarouselDialogComponent implements OnInit {
 
     private startIndex: number = 0;
 
-    constructor(public carouselService: CarouselService, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
+    constructor(public carouselService: CarouselService, private snackBar: MatSnackBar, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
 
     ngOnInit(): void {
         this.requestDrawings();
@@ -30,10 +31,16 @@ export class CarouselDialogComponent implements OnInit {
 
     requestDrawings(): void {
         this.loading = true;
-        this.carouselService.requestDrawingsFromServer(this.searchedTags, this.startIndex).subscribe((drawings) => {
-            this.loading = false;
-            this.drawings = drawings;
-        });
+        this.carouselService.requestDrawingsFromServer(this.searchedTags, this.startIndex).subscribe(
+            (drawings) => {
+                this.loading = false;
+                this.drawings = drawings;
+            },
+            (error) => {
+                if (error == 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
+                if (error == 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins", 'Fermer');
+            },
+        );
     }
 
     async forwardDrawings(): Promise<void> {
@@ -87,5 +94,11 @@ export class CarouselDialogComponent implements OnInit {
     clearTags(): void {
         this.searchedTags = [];
         this.requestDrawings();
+    }
+
+    openSnackBar(message: string, action: string): void {
+        this.snackBar.open(message, action, {
+            duration: 5000,
+        });
     }
 }
