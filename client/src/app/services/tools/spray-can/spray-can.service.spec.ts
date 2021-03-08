@@ -4,6 +4,7 @@ import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/to
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { SprayCanPropreties } from './../../../classes/commands/spray-can-command/spray-can-command';
 import { SprayCanService } from './spray-can.service';
 
 // tslint:disable: no-string-literal no-any
@@ -101,6 +102,10 @@ describe('SprayCanService', () => {
         service.mouseDown = true;
         service.onMouseUp(mouseEvent);
         expect(clearPathSpy).toHaveBeenCalled();
+        clearPathSpy.calls.reset();
+        service.mouseDown = false;
+        service.onMouseUp(mouseEvent);
+        expect(clearPathSpy).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should add the mousePosition to the pathData if mouseDown is true', () => {
@@ -173,6 +178,26 @@ describe('SprayCanService', () => {
         const setContextSpy = spyOn(service, 'setContext').and.stub();
         service.drawSpray(baseCtxStub, pathStub);
         expect(setContextSpy).toHaveBeenCalled();
+    });
+
+    it('#sprayOnCanvas should not push to cleanPathData if is using undoRedo', () => {
+        const pathStub: Vec2[] = [{ x: 25, y: 25 }];
+        const arrayStub: number[] = [1, 2];
+        const sprayCanPropretiesStub: SprayCanPropreties = {
+            drawingCtx: drawingServiceSpyObj.baseCtx,
+            drawingPath: pathStub,
+            mainColor: { rgbValue: 'black', opacity: 1 },
+            dropletsDiameter: 1,
+            sprayDiameter: 1,
+            emissionRate: 1,
+            angleArray: arrayStub,
+            radiusArray: arrayStub,
+            randomGlobalAlpha: arrayStub,
+            randomArc: arrayStub,
+        };
+        service['cleanPathData'].length = 0;
+        service.sprayOnCanvas(sprayCanPropretiesStub, { x: 1, y: 1 } as Vec2, true);
+        expect(service['cleanPathData'].length).toEqual(0);
     });
 
     it('#drawSpray should draw something on the context', () => {

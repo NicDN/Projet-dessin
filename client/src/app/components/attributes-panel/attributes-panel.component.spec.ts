@@ -103,5 +103,7 @@ describe('AttributesPanelComponent', () => {
     it('#needsTraceThickness should verify that the tool needs a thickness', () => {
         component.currentTool = drawingTool;
         expect(component.needsTraceThickness()).toBeTrue();
+        component.currentTool = toolsService.sprayCanService;
+        expect(component.needsTraceThickness()).toBeFalse();
     });
 });
