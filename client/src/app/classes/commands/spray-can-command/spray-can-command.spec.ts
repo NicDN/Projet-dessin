@@ -1,0 +1,1 @@
+describe('spray-can-command', () => {});
