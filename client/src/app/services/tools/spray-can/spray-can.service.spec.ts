@@ -6,7 +6,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { SprayCanService } from './spray-can.service';
 
-// tslint:disable: no-string-literal
+// tslint:disable: no-string-literal no-any
 describe('SprayCanService', () => {
     let service: SprayCanService;
     let mouseEvent: MouseEvent;
@@ -27,8 +27,7 @@ describe('SprayCanService', () => {
             mainColor: { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
 
-        // add the functions I need from drawingService here
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
@@ -98,7 +97,6 @@ describe('SprayCanService', () => {
     });
 
     it('#onMouseUp should call clearPath', () => {
-        // tslint:disable-next-line: no-any
         const clearPathSpy = spyOn<any>(service, 'clearPath').and.stub();
         service.mouseDown = true;
         service.onMouseUp(mouseEvent);

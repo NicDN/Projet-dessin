@@ -13,6 +13,7 @@ export class SprayCanService extends TraceTool {
     readonly MIN_SPRAY_DIAMETER: number = 15;
     readonly MIN_EMISSION_RATE: number = 10;
     readonly ONESECMS: number = 1000;
+    readonly CIRCLENUMBER: number = 40;
 
     emissionRate: number = this.MIN_EMISSION_RATE;
     sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
@@ -37,6 +38,7 @@ export class SprayCanService extends TraceTool {
             this.clearPath();
             this.mouseDownCoord = this.getPositionFromMouse(event);
             this.pathData.push(this.mouseDownCoord);
+            // add command
             this.drawLine(this.drawingService.baseCtx, this.pathData);
         }
     }
@@ -45,6 +47,8 @@ export class SprayCanService extends TraceTool {
         this.mouseDown = false;
         this.clearPath();
         clearInterval(this.timer);
+        // add command
+        this.cleanPathData = [];
     }
 
     onMouseMove(event: MouseEvent): void {
@@ -84,7 +88,7 @@ export class SprayCanService extends TraceTool {
     drawSpray(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         ctx.save();
         this.setContext(ctx);
-        for (let i = 40; i--; ) {
+        for (let i = this.CIRCLENUMBER; i !== 0; i--) {
             const angle = this.getRandomNumber(0, Math.PI * 2);
             const radius = this.getRandomNumber(0, this.sprayDiameter);
             ctx.globalAlpha = Math.random();
@@ -99,6 +103,6 @@ export class SprayCanService extends TraceTool {
             ctx.fill();
         }
         ctx.restore();
-        this.cleanPathData.push(path[path.length - 1]); // This is for Tony The OG and his undo redo
+        this.cleanPathData.push(path[path.length - 1]);
     }
 }
