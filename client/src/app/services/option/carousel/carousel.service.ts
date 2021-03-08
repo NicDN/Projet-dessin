@@ -12,9 +12,10 @@ export class CarouselService {
 
     constructor(private http: HttpClient) {}
 
-    requestDrawingsFromServer(searchedTags: string[]): Observable<DrawingForm[]> {
+    requestDrawingsFromServer(searchedTags: string[], index: number): Observable<DrawingForm[]> {
         let params = new HttpParams();
         params = params.append('tags', JSON.stringify(searchedTags));
+        params = params.append('index', '' + index);
         return this.http
             .get<DrawingForm[]>(this.BASE_URL, { params })
             .pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));

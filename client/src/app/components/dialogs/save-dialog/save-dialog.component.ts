@@ -7,6 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FilterService } from '@app/services/filter/filter.service';
 import { SaveService } from '@app/services/option/save/save.service';
+
 @Component({
     selector: 'app-save-dialog',
     templateUrl: './save-dialog.component.html',
@@ -20,7 +21,7 @@ export class SaveDialogComponent {
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
     tags: string[] = [];
-    // savingState: boolean = false; // boolean to be used while saving
+    savingState: boolean = false; // boolean to be used while saving
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
     tagFormControl: FormControl = new FormControl('', [
@@ -38,15 +39,19 @@ export class SaveDialogComponent {
     ) {}
 
     postDrawing(fileName: string): void {
+        this.savingState = true;
         this.saveService.postDrawing(fileName, this.tags).subscribe(
             () => {
                 // how to remove this callback and others are called ?
             },
             () => {
+                this.savingState = false;
                 this.openSnackBar('Impossible de sauvegarder le dessin.', 'Fermer');
             },
             () => {
+                this.savingState = false;
                 this.openSnackBar('Le dessin a été sauvegardé avec succès.', 'Fermer');
+                this.dialogRef.close();
             },
         );
     }

@@ -1,13 +1,18 @@
 <div class="carousel-container">
     <h2 mat-dialog-title>Carrousel de dessins</h2>
     <div class="cards-container">
-        <mat-spinner *ngIf="!this.drawings"></mat-spinner>
-        <div *ngIf="this.drawings" class="cards-list-container">
+        <mat-spinner *ngIf="this.loading"></mat-spinner>
+        <div *ngIf="!this.loading" class="cards-list-container">
             <button id="arrow" mat-icon-button class="before" (click)="this.backwardDrawings()">
                 <mat-icon>navigate_before</mat-icon>
             </button>
             <div>
-                <app-card-drawing-template *ngFor="let drawing of this.getSlicedDrawings()" [drawingForm]="drawing" (closeCarousel)="this.closeDialog()"></app-card-drawing-template>
+                <app-card-drawing-template
+                    *ngFor="let drawing of drawings"
+                    [drawingForm]="drawing"
+                    (closeCarousel)="this.closeDialog()"
+                    (requestDrawings)="this.requestDrawings()"
+                ></app-card-drawing-template>
             </div>
             <button id="arrow" mat-icon-button class="next" (click)="this.forwardDrawings()">
                 <mat-icon>navigate_next</mat-icon>
@@ -17,20 +22,23 @@
     <mat-form-field>
         <mat-label>Filtrer avec étiquettes</mat-label>
         <mat-chip-list #chipList>
-            <mat-chip *ngFor="let tag of searchedTags" selectable="true" removable="true"
-                (removed)="this.removeTag(tag)">
-                {{tag}}
+            <mat-chip *ngFor="let tag of searchedTags" selectable="true" removable="true" (removed)="this.removeTag(tag)">
+                {{ tag }}
                 <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-            <input placeholder="Entrez une étiquette" [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
-                (matChipInputTokenEnd)="this.addTag($event)">
+            <input
+                placeholder="Entrez une étiquette"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="this.addTag($event)"
+            />
         </mat-chip-list>
         <!-- <mat-error *ngIf="this.noDrawingError">Aucun dessin trouvé</mat-error> -->
 
         <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearTags()">
             <mat-icon>close</mat-icon>
-        </button> 
+        </button>
     </mat-form-field>
     <button mat-flat-button color="primary" class="close-btn" (click)="this.closeDialog()">Fermer</button>
 </div>

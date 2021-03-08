@@ -4,7 +4,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
-// import { DrawingForm } from '@common/communication/drawingForm';
+
 @Component({
     selector: 'app-carousel-dialog',
     templateUrl: './carousel-dialog.component.html',
@@ -17,8 +17,8 @@ export class CarouselDialogComponent implements OnInit {
     drawings: DrawingForm[];
 
     searchedTags: string[] = [];
-
     noDrawingError: boolean = true;
+    loading: boolean = false;
 
     private startIndex: number = 0;
 
@@ -29,32 +29,21 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     requestDrawings(): void {
-        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe((drawings) => {
+        this.loading = true;
+        this.carouselService.requestDrawingsFromServer(this.searchedTags, this.startIndex).subscribe((drawings) => {
+            this.loading = false;
             this.drawings = drawings;
         });
     }
 
-    getSlicedDrawings(): DrawingForm[] {
-        let tempArr: DrawingForm[] = [];
-        if (this.startIndex === this.drawings.length - 1) {
-            tempArr = this.drawings.slice(0, 2);
-            tempArr.unshift(this.drawings[this.drawings.length - 1]);
-        } else if (this.startIndex === this.drawings.length - 2) {
-            tempArr.push(this.drawings[this.drawings.length - 2]);
-            tempArr.push(this.drawings[this.drawings.length - 1]);
-            tempArr.push(this.drawings[0]);
-        } else {
-            tempArr = this.drawings.slice(this.startIndex, this.startIndex + this.DRAWINGS_MAX_COUNT);
-        }
-        return tempArr;
+    async forwardDrawings(): Promise<void> {
+        this.startIndex++;
+        await this.requestDrawings();
     }
 
-    forwardDrawings(): void {
-        this.startIndex === this.drawings.length - 1 ? (this.startIndex = 0) : this.startIndex++;
-    }
-
-    backwardDrawings(): void {
-        this.startIndex === 0 ? (this.startIndex = this.drawings.length - 1) : this.startIndex--;
+    async backwardDrawings(): Promise<void> {
+        this.startIndex--;
+        await this.requestDrawings();
     }
 
     removeTag(tag: string): void {

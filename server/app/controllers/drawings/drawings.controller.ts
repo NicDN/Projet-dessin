@@ -18,27 +18,22 @@ export class DrawingsController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getDrawings(req.query.tags).then((forms) => {
-                res.json(forms);
-            });
-        });
-
-        // this.router.get('/tags', async (req: Request, res: Response, next: NextFunction) => {
-        //     this.drawingsService.getData(req.body).then((forms) => {
-        //         res.json(forms);
-        //     });
-        // });
-
         this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
+            console.log(req.params.id);
             this.drawingsService
                 .deleteDrawing(req.params.id)
                 .then(() => {
-                    res.sendStatus(Httpstatus.StatusCodes.NO_CONTENT).send();
+                    res.sendStatus(Httpstatus.StatusCodes.NO_CONTENT);
                 })
                 .catch((error: Error) => {
                     res.status(Httpstatus.StatusCodes.NOT_FOUND).send(error.message);
                 });
+        });
+
+        this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
+            this.drawingsService.getDrawings(req.query.tags, Number(req.query.index)).then((forms) => {
+                res.json(forms);
+            });
         });
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {

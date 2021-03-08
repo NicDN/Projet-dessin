@@ -1,13 +1,23 @@
 import { DrawingForm } from '@common/communication/drawingForm';
 import * as fs from 'fs';
+import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';
-import { Collection } from 'mongodb';
+import { Collection, FindAndModifyWriteOpResultObject, ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import { DrawingData } from '../../../classes/drawingData';
+import { HttpException } from '../../../classes/http.exception';
 import { TYPES } from '../../types';
 import { DatabaseService } from '../database/database.service';
 
 const DATABASE_COLLECTION = 'drawingData';
+
+const MAX_LENGTH = 10;
+const MIN_LENGTH = 2;
+
+const DRAWINGS_MAX_COUNT = 3;
+
+const LAST_INDEX = -3;
+const BEFORE_LAST_INDEX = -4;
 
 @injectable()
 export class DrawingsService {
@@ -22,20 +32,20 @@ export class DrawingsService {
     async storeDrawing(drawingForm: DrawingForm): Promise<void> {
         if (this.validateDrawing(drawingForm)) {
             const drawingData: DrawingData = { name: drawingForm.name, tags: drawingForm.tags };
-            await this.collection.insertOne(drawingData, (err, data) => {
-                drawingForm.id = data.insertedId.toString();
-                this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
-            });
-
-            // .catch((error: Error) => {
-            //     throw new HttpException(500, 'Failed to insert course');
-            // });
+            try {
+                await this.collection.insertOne(drawingData, (err, data) => {
+                    drawingForm.id = data.insertedId.toString();
+                    this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
+                });
+            } catch (error) {
+                throw new HttpException(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR, 'Failed to insert course');
+            }
         } else {
-            throw new Error('Invalid course');
+            throw new Error('Invalid');
         }
     }
 
-    async getDrawings(tags: string[]): Promise<DrawingForm[]> {
+    async getDrawings(tags: string[], index: number): Promise<DrawingForm[]> {
         const drawingForms: DrawingForm[] = [];
 
         // TODO: checker pourquoi length = 2 quand il est vide
@@ -45,35 +55,70 @@ export class DrawingsService {
                 .toArray()
                 .then((drawingsData) => {
                     drawingsData.forEach((drawingData) => {
-                        drawingForms.push({ name: drawingData['name'], tags: drawingData['tags'], id: drawingData['_id'], drawingData: '' });
+                        // tslint:disable-next-line: no-string-literal
+                        drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
                     });
                 });
         }
 
-        const formsToSend: DrawingForm[] = [];
+        return this.getValidDrawings(drawingForms, index);
+    }
+
+    private async getValidDrawings(drawingForms: DrawingForm[], index: number): Promise<DrawingForm[]> {
+        const validForms: DrawingForm[] = [];
 
         for (const form of drawingForms) {
-            const id = form['id'];
+            const id = form.id;
             await this.readFile(`${this.DRAWINGS_DIRECTORY}/` + id)
                 .then((image) => {
-                    form['drawingData'] = image;
-                    formsToSend.push(form);
+                    form.drawingData = image;
+                    validForms.push(form);
                 })
                 .catch(() => {
                     return;
                 });
         }
-        return formsToSend;
+        index = Math.abs(index % validForms.length);
+        const drawingMaxCount = validForms.length >= DRAWINGS_MAX_COUNT ? DRAWINGS_MAX_COUNT : validForms.length;
+
+        validForms.push(validForms[0]);
+        validForms.push(validForms[1]);
+        validForms.unshift(validForms[LAST_INDEX]);
+        validForms.unshift(validForms[BEFORE_LAST_INDEX]);
+
+        index += 2;
+        return validForms.splice(index, drawingMaxCount);
     }
 
     // async getDrawingsByTagName(): Promise<DrawingForm[]> {
     //
     // }
 
-    async deleteDrawing(id: string): Promise<void> {}
+    async deleteDrawing(id: string): Promise<void> {
+        return (
+            this.collection
+                // tslint:disable-next-line: prettier
+                .findOneAndDelete({ _id: new ObjectId(id) })
+                .then((res: FindAndModifyWriteOpResultObject<DrawingData>) => {
+                    if (!res.value) {
+                        throw new Error('Failed to delete drawing');
+                    }
+                })
+                .catch(() => {
+                    throw new Error('Failed to delete drawing');
+                })
+        );
+    }
 
     private validateDrawing(drawingForm: DrawingForm): boolean {
-        // TODO:  Des vérifications (client ET serveur) sont présentes pour la sauvegarde. Vérification minimale: nom non vide et étiquettes valides
+        return this.validateTags(drawingForm.tags) && drawingForm.name !== '';
+    }
+
+    private validateTags(tags: string[]): boolean {
+        for (const tag of tags) {
+            if (tag.length < MIN_LENGTH || tag.length > MAX_LENGTH) return false;
+            if (/\d/.test(tag)) return false;
+        }
         return true;
     }
 
@@ -90,7 +135,6 @@ export class DrawingsService {
         });
     }
 
-    // legit (commented function)
     private async readFile(name: string): Promise<string> {
         return new Promise((resolve, reject) => {
             fs.readFile(name, (err, data) => {

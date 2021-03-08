@@ -11,6 +11,7 @@ import { DrawingForm } from '@common/communication/drawingForm';
 export class CardDrawingTemplateComponent {
     @Input() drawingForm: DrawingForm;
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
+    @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {}
 
@@ -28,18 +29,18 @@ export class CardDrawingTemplateComponent {
     }
 
     deleteDrawing(id: string): void {
-        let feedBackMessage = '';
         this.carouselService.deleteDrawingFromServer(id).subscribe(
+            () => {},
             () => {
                 // callback is invoked if error
-                feedBackMessage = 'Impossible de supprimer le dessin.';
+                this.openSnackBar('Impossible de supprimer le dessin.', 'Fermer');
             },
             () => {
                 // callback is invoked if success
-                feedBackMessage = 'Le dessin a été supprimé avec succès.';
+                this.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
+                this.requestDrawings.emit();
             },
         );
-        this.openSnackBar(feedBackMessage, 'Fermer');
     }
 
     openSnackBar(message: string, action: string): void {
