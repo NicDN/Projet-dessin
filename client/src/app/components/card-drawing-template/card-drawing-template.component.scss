@@ -1,10 +1,25 @@
 .example-card {
-    max-width: 350px;
+    width: 350px;
+    height: 420px;
     display: inline-block;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin: 5px;
 }
 
 .tag-error {
     background-color: red;
 }
+.img-container {
+    background-color: gray;
+}
+
+img {
+    object-fit: contain;
+    height: 300px
+}
+mat-card-subtitle{
+    height: 40px;
+}
+
+
+
+

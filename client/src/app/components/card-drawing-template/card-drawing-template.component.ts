@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
@@ -10,15 +10,21 @@ import { DrawingForm } from '@common/communication/drawingForm';
 })
 export class CardDrawingTemplateComponent {
     @Input() drawingForm: DrawingForm;
+    @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {}
 
     setToCurrentDrawing(): void {
+        const image = new Image();
+        image.src = this.drawingForm.drawingData;
+        // this.drawingService.checkNewDrawing(image);
+
         // if (!this.drawingForm.drawing) {
         //     this.openSnackBar("Impossible d'ouvrir le dessin, veuillez en choisir un autre.", 'Fermer');
         //     return;
         // }
-        // Need antoine for opening the drawing
+
+        this.closeCarousel.emit();
     }
 
     deleteDrawing(id: string): void {
