@@ -80,8 +80,8 @@ describe('AttributesPanelComponent', () => {
         expect(component.shapeIsActive()).toBeTrue();
     });
 
-    it('#drawingToolIsActive should verify that a drawing tool is active', () => {
+    it('#needsTraceThickness should verify that the tool needs a thickness', () => {
         component.currentTool = drawingTool;
-        expect(component.drawingToolIsActive()).toBeTrue();
+        expect(component.needsTraceThickness()).toBeTrue();
     });
 });

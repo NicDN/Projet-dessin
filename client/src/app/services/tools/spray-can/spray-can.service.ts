@@ -12,22 +12,19 @@ export class SprayCanService extends TraceTool {
     readonly MIN_DROPLETS_DIAMETER: number = 3;
     readonly MIN_SPRAY_DIAMETER: number = 15;
     readonly MIN_EMISSION_RATE: number = 10;
-
     readonly ONESECMS: number = 1000;
-    emissionRate: number;
-    sprayDiameter: number;
-    dropletsDiameter: number;
-    private timer: number;
-    private cleanPathData: Vec2[];
-    private pathData: Vec2[];
+
+    emissionRate: number = this.MIN_EMISSION_RATE;
+    sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
+    dropletsDiameter: number = this.MIN_DROPLETS_DIAMETER;
+    private timer: ReturnType<typeof setInterval>;
+    private cleanPathData: Vec2[] = [];
+    private pathData: Vec2[] = [];
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Aérosol');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
-        this.dropletsDiameter = this.MIN_DROPLETS_DIAMETER;
-        this.sprayDiameter = this.MIN_SPRAY_DIAMETER;
-        this.emissionRate = this.MIN_EMISSION_RATE;
     }
 
     private clearPath(): void {
@@ -45,10 +42,6 @@ export class SprayCanService extends TraceTool {
     }
 
     onMouseUp(event: MouseEvent): void {
-        if (this.mouseDown) {
-            const mousePosition = this.getPositionFromMouse(event);
-            this.pathData.push(mousePosition);
-        }
         this.mouseDown = false;
         this.clearPath();
         clearInterval(this.timer);
@@ -75,10 +68,7 @@ export class SprayCanService extends TraceTool {
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         const self = this;
-        // tslint:disable-next-line: only-arrow-functions
-        this.timer = setInterval(function (): void {
-            self.drawSpray(ctx, path);
-        }, this.ONESECMS / this.emissionRate);
+        this.timer = setInterval(() => self.drawSpray(ctx, path), this.ONESECMS / this.emissionRate);
     }
 
     getRandomNumber(min: number, max: number): number {
