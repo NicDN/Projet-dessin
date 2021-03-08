@@ -1,5 +1,5 @@
 <mat-drawer-content class="attributes-panel-container">
-    <h2 class="tool-name-header">{{currentTool.toolName}}</h2>
+    <h2 class="tool-name-header">{{ currentTool.toolName }}</h2>
     <app-color-panel></app-color-panel>
     <mat-divider></mat-divider>
     <div *ngIf="needsTraceThickness()">
@@ -7,18 +7,25 @@
         <mat-divider></mat-divider>
     </div>
     <div *ngIf="shapeIsActive()">
+        <div *ngIf="polygonIsActive()">
+            <app-polygon-sides-selector [polygon]="currentTool" (numberOfSides)="setNumberOfSides($event)"></app-polygon-sides-selector>
+            <mat-divider></mat-divider>
+        </div>
         <app-trace-type-selector [tool]="currentTool" (traceType)="setTraceType($event)"></app-trace-type-selector>
         <mat-divider></mat-divider>
     </div>
 
-    <div *ngIf="this.currentTool===this.toolsService.lineService">
+    <div *ngIf="this.currentTool === this.toolsService.lineService">
         <mat-divider></mat-divider>
-        <app-line-settings-selector [tool]="currentTool" (junction)="setJunctionChecked($event)"
-            (junctionDiameter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
+        <app-line-settings-selector
+            [tool]="currentTool"
+            (junction)="setJunctionChecked($event)"
+            (junctionDiameter)="setLineJunctionDiameter($event)"
+        ></app-line-settings-selector>
         <mat-divider></mat-divider>
     </div>
 
-    <div *ngIf="this.currentTool===this.toolsService.sprayCanService">
+    <div *ngIf="this.currentTool === this.toolsService.sprayCanService">
         <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
@@ -26,5 +33,4 @@
         <mat-divider></mat-divider>
         <app-undo-redo></app-undo-redo>
     </div>
-
 </mat-drawer-content>
