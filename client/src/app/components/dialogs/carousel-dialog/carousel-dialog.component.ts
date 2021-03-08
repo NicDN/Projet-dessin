@@ -29,7 +29,9 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     requestDrawings(): void {
-        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe();
+        this.carouselService.requestDrawingsFromServer(this.searchedTags).subscribe((drawings) => {
+            this.drawings = drawings;
+        });
     }
 
     getSlicedDrawings(): DrawingForm[] {
@@ -87,5 +89,14 @@ export class CarouselDialogComponent implements OnInit {
         } else if (event.key === 'ArrowRight') {
             this.forwardDrawings();
         }
+    }
+
+    closeDialog(): void {
+        this.dialogRef.close();
+    }
+
+    clearTags(): void {
+        this.searchedTags = [];
+        this.requestDrawings();
     }
 }

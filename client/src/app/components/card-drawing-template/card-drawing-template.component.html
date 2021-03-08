@@ -1,14 +1,19 @@
-<mat-card class="example-card" (click)="this.setToCurrentDrawing()">
+<mat-card class="example-card" [class.mat-elevation-z8]="true">
     <img mat-card-image [src]="this.drawingForm.drawingData" alt="Photo of a Shiba Inu" />
     <mat-card-header>
         <mat-card-title>{{ drawingForm.name }}</mat-card-title>
         <mat-card-subtitle>
-            <mat-chip-list>
+            <mat-chip-list fxFlex>
                 <mat-chip *ngFor="let tag of drawingForm.tags">{{ tag }}</mat-chip>
             </mat-chip-list>
         </mat-card-subtitle>
     </mat-card-header>
-    <mat-card-actions>
-        <button mat-stroked-button (click)="this.deleteDrawing(this.drawingForm.id)">Supprimer</button>
+    <mat-card-actions fxFlexAlign="end" align="end" >
+        <button mat-icon-button (click)="this.setToCurrentDrawing()">
+            <mat-icon>mode_edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)">
+            <mat-icon>delete</mat-icon>
+        </button>
     </mat-card-actions>
 </mat-card>

@@ -18,7 +18,7 @@ export class DrawingsController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getData(req.body).then((forms) => {
+            this.drawingsService.getData(req.query.tags).then((forms) => {
                 res.json(forms);
             });
         });
@@ -43,7 +43,7 @@ export class DrawingsController {
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
             const drawingForm: DrawingForm = req.body;
-            this.drawingsService.storeData(drawingForm);
+            this.drawingsService.storeDrawing(drawingForm);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
     }

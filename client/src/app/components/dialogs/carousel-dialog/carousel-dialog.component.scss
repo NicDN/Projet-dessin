@@ -1,5 +1,5 @@
 .custom-width-dialog .carousel-container {
-    height: 700px;
+    height: 800px;
 }
 
 .cards-container {
@@ -44,6 +44,7 @@ mat-spinner {
 }
 
 mat-form-field {
-    width: 98%;
-    margin: 15px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

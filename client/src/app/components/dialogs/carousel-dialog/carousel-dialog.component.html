@@ -7,8 +7,7 @@
                 <mat-icon>navigate_before</mat-icon>
             </button>
             <div>
-                <app-card-drawing-template *ngFor="let drawing of this.getSlicedDrawings()" [drawingForm]="drawing">
-                </app-card-drawing-template>
+                <app-card-drawing-template *ngFor="let drawing of this.getSlicedDrawings()" [drawingForm]="drawing" (closeCarousel)="this.closeDialog()"></app-card-drawing-template>
             </div>
             <button id="arrow" mat-icon-button class="next" (click)="this.forwardDrawings()">
                 <mat-icon>navigate_next</mat-icon>
@@ -29,10 +28,9 @@
         </mat-chip-list>
         <!-- <mat-error *ngIf="this.noDrawingError">Aucun dessin trouvé</mat-error> -->
 
-        <button mat-button matSuffix mat-icon-button aria-label="Clear">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearTags()">
             <mat-icon>close</mat-icon>
         </button> 
     </mat-form-field>
-    <button mat-flat-button color="primary" class="close-btn" (click)=" this.dialogRef.close();">Fermer</button>
-    {{this.drawings.length}}
+    <button mat-flat-button color="primary" class="close-btn" (click)="this.closeDialog()">Fermer</button>
 </div>
