@@ -32,7 +32,11 @@ export class EraserService extends PencilService {
 
     executeErase(eraserPropreties: EraserPropreties): void {
         if (this.singleClick(eraserPropreties.drawingPath)) {
-            this.eraseSquare(eraserPropreties.drawingContext, { x: eraserPropreties.drawingPath[0].x, y: eraserPropreties.drawingPath[0].y });
+            this.eraseSquare(
+                eraserPropreties.drawingContext,
+                { x: eraserPropreties.drawingPath[0].x, y: eraserPropreties.drawingPath[0].y },
+                eraserPropreties.drawingThickness,
+            );
             return;
         }
 
@@ -47,7 +51,7 @@ export class EraserService extends PencilService {
             for (let i = 0; i < dist; i += 1) {
                 const xValue = oldPointX + Math.sin(angle) * i;
                 const yValue = oldPointY + Math.cos(angle) * i;
-                this.eraseSquare(eraserPropreties.drawingContext, { x: xValue, y: yValue });
+                this.eraseSquare(eraserPropreties.drawingContext, { x: xValue, y: yValue }, eraserPropreties.drawingThickness);
             }
             oldPointX = point.x;
             oldPointY = point.y;
@@ -74,11 +78,12 @@ export class EraserService extends PencilService {
         return path.length === 2;
     }
 
-    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2): void {
+    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
         // ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
         // If we want to draw in white:
         ctx.fillStyle = 'white';
-        ctx.fillRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
+        ctx.globalAlpha = 1;
+        ctx.fillRect(point.x - Math.floor(thickness / 2), point.y - Math.floor(thickness / 2), thickness, thickness);
     }
 
     onMouseMove(event: MouseEvent): void {
