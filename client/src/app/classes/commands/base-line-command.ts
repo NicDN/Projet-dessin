@@ -3,7 +3,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ResizeCommand } from './resize-command/resize-command';
 
 export class BaseLineCommand extends AbstractCommand {
-    constructor(private drawingService: DrawingService, private image: ImageData) {
+    constructor(private drawingService: DrawingService, private image: HTMLImageElement) {
         super();
     }
 

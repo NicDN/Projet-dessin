@@ -7,6 +7,7 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class DrawingService {
+    blankHTMLImage: HTMLImageElement;
     baseCtx: CanvasRenderingContext2D;
     previewCtx: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
@@ -19,8 +20,8 @@ export class DrawingService {
         this.subject.next(boxSize);
     }
 
-    sendBaseLineCommand(): void {
-        const baseLineCommand = new BaseLineCommand(this, this.baseCtx.getImageData(0, 0, this.canvas.width, this.canvas.height));
+    sendBaseLineCommand(image: HTMLImageElement): void {
+        const baseLineCommand = new BaseLineCommand(this, image);
         this.baseLineSubject.next(baseLineCommand);
     }
 
@@ -36,33 +37,42 @@ export class DrawingService {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    executeBaseLine(image: ImageData): void {
+    executeBaseLine(image: HTMLImageElement): void {
         if (image !== undefined) {
-            this.baseCtx.putImageData(image, 0, 0);
+            this.baseCtx.drawImage(image, 0, 0);
         }
     }
 
-    handleNewDrawing(): void {
+    handleNewDrawing(image?: HTMLImageElement): void {
         if (this.canvasIsEmpty()) {
-            this.reloadDrawing();
+            image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
             return;
         }
         if (this.confirmReload()) {
-            this.reloadDrawing();
+            image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
         }
         this.clearCanvas(this.previewCtx);
+    }
+
+    changeDrawing(image: HTMLImageElement): void {
+        this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
+        this.baseCtx.drawImage(image, 0, 0);
+        this.sendBaseLineCommand(image);
     }
 
     confirmReload(): boolean {
         return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
-    reloadDrawing(): void {
+    reloadToBlankDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
         this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
-        this.sendBaseLineCommand();
+
+        this.blankHTMLImage.width = this.canvas.width;
+        this.blankHTMLImage.height = this.canvas.height;
+        this.sendBaseLineCommand(this.blankHTMLImage);
     }
 
     resetCanvas(): void {
