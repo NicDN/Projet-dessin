@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class UndoRedoService {
-    commandList: AbstractCommand[];
-    undoneList: AbstractCommand[];
+    commandList: AbstractCommand[] = [];
+    undoneList: AbstractCommand[] = [];
     private canUndoRedo: boolean = true;
+    subscription: Subscription;
 
     constructor(private drawingService: DrawingService) {
-        this.commandList = [];
-        this.undoneList = [];
+        this.subscription = this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
+            this.setBaseLine(baseLineCommand);
+        });
     }
 
     disableUndoRedo(): void {
@@ -47,6 +50,13 @@ export class UndoRedoService {
                 this.executeAllCommands();
             }
         }
+    }
+
+    setBaseLine(baseLineCommand: AbstractCommand): void {
+        this.commandList = [];
+        this.undoneList = [];
+        this.commandList[0] = baseLineCommand;
+        console.log(this.commandList);
     }
 
     executeAllCommands(): void {

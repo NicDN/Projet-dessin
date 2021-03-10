@@ -1,6 +1,4 @@
 import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { BoxSize } from '@app/classes/box-size';
-import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -37,11 +35,12 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     ) {}
 
     ngAfterViewInit(): void {
-        this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;;
+        this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.canvas = this.baseCanvas.nativeElement;
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
         this.drawingService.fillWithWhite(this.drawingService.baseCtx);
+        this.drawingService.sendBaseLineCommand();
     }
 
     ngAfterContentInit(): void {
@@ -51,10 +50,6 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     setCanvasDimensions(): void {
         this.canvasWidth = window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
         this.canvasHeight = window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
-        const onLoadBoxSize: BoxSize = { widthBox: this.canvasWidth, heightBox: this.canvasHeight };
-
-        const onLoadActionResize: ResizeCommand = new ResizeCommand(onLoadBoxSize, this.drawingService);
-        this.undoRedoService.addCommand(onLoadActionResize);
     }
 
     @HostListener('window:mousemove', ['$event'])

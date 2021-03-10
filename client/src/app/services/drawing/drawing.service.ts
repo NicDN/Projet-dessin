@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
+import { BaseLineCommand } from '@app/classes/commands/base-line-command';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -12,9 +13,19 @@ export class DrawingService {
     previewCanvas: HTMLCanvasElement;
 
     subject: Subject<BoxSize> = new Subject<BoxSize>();
+    baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
+    }
+
+    sendBaseLineCommand(): void {
+        const baseLineCommand = new BaseLineCommand(this, this.baseCtx.getImageData(0, 0, this.canvas.width, this.canvas.height));
+        this.baseLineSubject.next(baseLineCommand);
+    }
+
+    newBaseLineSignals(): Observable<BaseLineCommand> {
+        return this.baseLineSubject.asObservable();
     }
 
     newIncomingResizeSignals(): Observable<BoxSize> {
@@ -23,6 +34,12 @@ export class DrawingService {
 
     clearCanvas(context: CanvasRenderingContext2D): void {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    executeBaseLine(image: ImageData): void {
+        if (image !== undefined) {
+            this.baseCtx.putImageData(image, 0, 0);
+        }
     }
 
     handleNewDrawing(): void {
@@ -45,6 +62,7 @@ export class DrawingService {
         this.clearCanvas(this.previewCtx);
         this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
+        this.sendBaseLineCommand();
     }
 
     resetCanvas(): void {

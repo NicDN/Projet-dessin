@@ -106,7 +106,7 @@ describe('EraserService', () => {
     it('#eraseSquare should erase part off the context', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 }, 1);
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });
