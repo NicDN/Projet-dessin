@@ -56,7 +56,6 @@ export class SprayCanService extends TraceTool {
             sprayCanCommand.setRandomStoring(this.randomStoring);
             this.cleanPathData = [];
             this.randomStoring = { angleArray: [], radiusArray: [], randomGlobalAlpha: [], randomArc: [] };
-            console.log(this.undoRedoService.commandList);
             this.undoRedoService.addCommand(sprayCanCommand);
         }
     }
@@ -102,7 +101,6 @@ export class SprayCanService extends TraceTool {
 
     loadProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): SprayCanPropreties {
         this.storeRandom();
-        console.log(this.randomStoring);
         return {
             drawingCtx: ctx,
             drawingPath: path,
