@@ -25,8 +25,7 @@ export class DrawingsController {
                     res.sendStatus(Httpstatus.StatusCodes.NO_CONTENT);
                 })
                 .catch((error: Error) => {
-                    if (error.message === 'FILE_NOT_FOUND') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR);
-                    if (error.message === 'NOT_ON_DATABASE') res.status(Httpstatus.StatusCodes.NOT_FOUND);
+                    if (error.message === 'FILE_NOT_FOUND') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
                 });
         });
 

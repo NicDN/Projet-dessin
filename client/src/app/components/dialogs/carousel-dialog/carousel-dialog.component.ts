@@ -37,8 +37,8 @@ export class CarouselDialogComponent implements OnInit {
                 this.drawings = drawings;
             },
             (error) => {
-                if (error == 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
-                if (error == 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins", 'Fermer');
+                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
+                if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins", 'Fermer');
             },
         );
     }

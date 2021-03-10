@@ -33,9 +33,6 @@ export class CarouselService {
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
                 return throwError('NO_SERVER_RESPONSE');
             }
-            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
-                return throwError('NOT_FOUND');
-            }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
                 return throwError('INTERNAL_SERVER_ERROR');
             }

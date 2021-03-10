@@ -16,7 +16,7 @@ export class DatabaseService {
 
     async start(): Promise<MongoClient | null> {
         try {
-            let client = await MongoClient.connect(DATABASE_URL, this.options);
+            const client = await MongoClient.connect(DATABASE_URL, this.options);
             this.client = client;
             this.db = client.db(DATABASE_NAME);
         } catch {

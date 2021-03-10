@@ -2,7 +2,7 @@ import { DrawingForm } from '@common/communication/drawingForm';
 import * as fs from 'fs';
 import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';
-import { Collection, FindAndModifyWriteOpResultObject, ObjectId } from 'mongodb';
+import { Collection, ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import { DrawingData } from '../../../classes/drawingData';
 import { HttpException } from '../../../classes/http.exception';
@@ -58,7 +58,6 @@ export class DrawingsService {
                 });
             });
 
-        // TODO: checker pourquoi length = 2 quand il est vide
         if (tags.length > 0) {
             drawingForms = this.filterDrawingsByTags(drawingForms, tags);
         }
@@ -105,29 +104,16 @@ export class DrawingsService {
         return validForms.splice(index, drawingMaxCount);
     }
 
-    // async getDrawingsByTagName(): Promise<DrawingForm[]> {
-    //
-    // }
-
     async deleteDrawing(id: string): Promise<void> {
-        return await this.collection
-            // tslint:disable-next-line: prettier
-            .findOneAndDelete({ _id: new ObjectId(id) })
-            .then(async (res: FindAndModifyWriteOpResultObject<DrawingData>) => {
-                await fs.unlink(`${this.DRAWINGS_DIRECTORY}/` + id, (error) => {
-                    if (error) {
-                        throw new Error('FILE_NOT_FOUND');
-                    }
-                });
+        try {
+            fs.unlinkSync(`${this.DRAWINGS_DIRECTORY}/` + id);
+        } catch (error) {
+            throw new Error('FILE_NOT_FOUND');
+        }
 
-                // à quoi ça sert
-                // if (!res.value) {
-                //     throw new Error('FAILED_TO_DELETE_DRAWING');
-                // }
-            })
-            .catch(() => {
-                throw new Error('NOT_ON_DATABASE');
-            });
+        return await this.collection
+            // tslint:disable-next-line: no-empty
+            .deleteOne({ _id: new ObjectId(id) }, () => {});
     }
 
     private validateDrawing(drawingForm: DrawingForm): boolean {
@@ -150,7 +136,6 @@ export class DrawingsService {
                     return;
                 }
                 resolve();
-                console.log('dessin sauvegardé dans le dossier drawingsData');
             });
         });
     }
