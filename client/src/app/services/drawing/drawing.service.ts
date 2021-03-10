@@ -90,14 +90,14 @@ export class DrawingService {
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
         this.fillWithWhite(this.baseCtx);
-
+        this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {
         context.fillStyle = 'white';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        context.drawImage(this.previewCanvas, 0, 0);
+        // context.drawImage(this.previewCanvas, 0, 0);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
