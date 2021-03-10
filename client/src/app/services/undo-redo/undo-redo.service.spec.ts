@@ -13,20 +13,40 @@ class TestCommand extends AbstractCommand {
         this.proprety = 1;
     }
 }
+/*
+        service = TestBed.inject(DrawingService);
+        canvasTestHelper = TestBed.inject(CanvasTestHelper);
+        service.canvas = canvasTestHelper.canvas;
+        service.previewCanvas = canvasTestHelper.selectionCanvas;
+        service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
+        service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
+
+
+
+*/
 
 // tslint:disable: no-string-literal
 describe('UndoRedoService', () => {
     let service: UndoRedoService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
-
+    let canvasStub : HTMLCanvasElement = document.createElement('canvas');
+    let canvasCtxStub : CanvasRenderingContext2D;
     const boxSizeStub: BoxSize = { widthBox: 1, heightBox: 1 };
 
 
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas','newBaseLineSignals']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas','newBaseLineSignals','newIncomingResizeSignals','sendNotifToResize', 'executeBaseLine']);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
+        canvasStub.width = 100;
+        canvasStub.height = 100;
+        canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
+        canvasCtxStub.fillStyle = 'black';
+        canvasCtxStub.fillRect(0,0,10,10);
+
+        drawingServiceSpyObj.canvas = canvasStub;
+
         let image = new Image();
-        image.src = drawingServiceSpyObj.canvas.toDataURL();
+        image.src = canvasStub.toDataURL();
         const baseLineStub = new BaseLineCommand(drawingServiceSpyObj,image);
         drawingServiceSpyObj.newBaseLineSignals.and.returnValue(of(baseLineStub));
 
@@ -35,6 +55,7 @@ describe('UndoRedoService', () => {
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
         service = TestBed.inject(UndoRedoService);
+
     });
 
     it('should be created', () => {
@@ -63,7 +84,7 @@ describe('UndoRedoService', () => {
     it('#addCommand should add a command to the commandList', () => {
         const command1: TestCommand = new TestCommand();
         service.commandList.push(command1);
-        expect(service.commandList.length).toEqual(1);
+        expect(service.commandList.length).toEqual(2);
     });
 
     it('#undo should add the latest command executed to the undoneList', () => {
@@ -87,10 +108,9 @@ describe('UndoRedoService', () => {
     });
 
     it('#undo should not undo if the number of elements in the commad list is under the start commands', () => {
-        const baseCmd: TestCommand = new TestCommand();
-        service.commandList.push(baseCmd);
         const executeAllCmdSpy = spyOn(service, 'executeAllCommands');
         service.undo();
+        expect(service.commandList.length).toEqual(1);
         expect(executeAllCmdSpy).not.toHaveBeenCalled();
     });
 

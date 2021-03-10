@@ -12,15 +12,17 @@ import { ToolBarComponent } from './tool-bar.component';
 describe('ToolBarComponent', () => {
     let component: ToolBarComponent;
     let fixture: ComponentFixture<ToolBarComponent>;
-    const tool: Tool = new PencilService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
     let toolsService: ToolsService;
-
+    let undoRedoServiceStub: UndoRedoService;
+    let tool: Tool;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
-            providers: [ToolsService],
+            providers: [ToolsService, {provide: UndoRedoService, useValue: undoRedoServiceStub}],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
+        undoRedoServiceStub = TestBed.inject(UndoRedoService)
+        tool = new PencilService(new DrawingService(), new ColorService(), undoRedoServiceStub);
     }));
 
     beforeEach(() => {
