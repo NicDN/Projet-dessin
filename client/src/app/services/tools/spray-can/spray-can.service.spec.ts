@@ -4,6 +4,7 @@ import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/to
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { SprayCanPropreties } from './../../../classes/commands/spray-can-command/spray-can-command';
 import { SprayCanService } from './spray-can.service';
 
@@ -16,6 +17,7 @@ describe('SprayCanService', () => {
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     const PRIMARY_COLOR_STUB = 'red';
     const OPACITY_STUB = 1;
@@ -29,10 +31,12 @@ describe('SprayCanService', () => {
         });
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
+                {provide: UndoRedoService, useValue : undoRedoServiceSpyObj},
             ],
         });
 

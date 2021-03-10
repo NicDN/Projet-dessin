@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color } from '@app/classes/color';
-import { SprayCanCommand, SprayCanPropreties } from '@app/classes/commands/spray-can-command/spray-can-command';
+import { RandomStoring, SprayCanCommand, SprayCanPropreties } from '@app/classes/commands/spray-can-command/spray-can-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -24,6 +24,8 @@ export class SprayCanService extends TraceTool {
     private timer: ReturnType<typeof setInterval>;
     private cleanPathData: Vec2[] = [];
     private pathData: Vec2[] = [];
+
+    private randomStoring: RandomStoring = { angleArray: [], radiusArray: [], randomGlobalAlpha: [], randomArc: [] };
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Aérosol');
@@ -51,7 +53,9 @@ export class SprayCanService extends TraceTool {
             this.clearPath();
             clearInterval(this.timer);
             const sprayCanCommand: SprayCanCommand = new SprayCanCommand(this, this.loadProprities(this.drawingService.baseCtx, this.cleanPathData));
+            sprayCanCommand.setRandomStoring(this.randomStoring);
             this.cleanPathData = [];
+            this.randomStoring = { angleArray: [], radiusArray: [], randomGlobalAlpha: [], randomArc: [] };
             console.log(this.undoRedoService.commandList);
             this.undoRedoService.addCommand(sprayCanCommand);
         }
@@ -97,6 +101,8 @@ export class SprayCanService extends TraceTool {
     }
 
     loadProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): SprayCanPropreties {
+        this.storeRandom();
+        console.log(this.randomStoring);
         return {
             drawingCtx: ctx,
             drawingPath: path,
@@ -104,11 +110,18 @@ export class SprayCanService extends TraceTool {
             dropletsDiameter: this.dropletsDiameter,
             sprayDiameter: this.sprayDiameter,
             emissionRate: this.emissionRate,
-            angleArray: this.generateRandomArray(0, Math.PI * 2),
-            radiusArray: this.generateRandomArray(0, this.sprayDiameter),
-            randomGlobalAlpha: this.generateRandomArray(0, 1),
-            randomArc: this.generateRandomArray(1, this.dropletsDiameter),
+            angleArray: this.randomStoring.angleArray[this.randomStoring.angleArray.length - 1],
+            radiusArray: this.randomStoring.radiusArray[this.randomStoring.radiusArray.length - 1],
+            randomGlobalAlpha: this.randomStoring.randomGlobalAlpha[this.randomStoring.randomGlobalAlpha.length - 1],
+            randomArc: this.randomStoring.randomArc[this.randomStoring.randomArc.length - 1],
         };
+    }
+
+    storeRandom(): void {
+        this.randomStoring.angleArray.push(this.generateRandomArray(0, Math.PI * 2));
+        this.randomStoring.radiusArray.push(this.generateRandomArray(0, this.sprayDiameter));
+        this.randomStoring.randomGlobalAlpha.push(this.generateRandomArray(0, 1));
+        this.randomStoring.randomArc.push(this.generateRandomArray(1, this.dropletsDiameter));
     }
 
     sprayOnCanvas(sprayCanPropreties: SprayCanPropreties, pointToDraw: Vec2, isUsingUndoRedo: boolean): void {

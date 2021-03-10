@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { TraceType } from '@app/classes/shape';
@@ -12,6 +13,7 @@ describe('EllipseDrawingService', () => {
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
@@ -32,11 +34,13 @@ describe('EllipseDrawingService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 EllipseDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
+                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
             ],
         });
 

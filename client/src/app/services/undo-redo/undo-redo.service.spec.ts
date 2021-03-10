@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
+import { BoxSize } from '@app/classes/box-size';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { BaseLineCommand } from '@app/classes/commands/base-line-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { of } from 'rxjs';
 import { UndoRedoService } from './undo-redo.service';
 
 class TestCommand extends AbstractCommand {
@@ -16,8 +19,18 @@ describe('UndoRedoService', () => {
     let service: UndoRedoService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
+    const boxSizeStub: BoxSize = { widthBox: 1, heightBox: 1 };
+
+
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas','newBaseLineSignals']);
+        drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
+        let image = new Image();
+        image.src = drawingServiceSpyObj.canvas.toDataURL();
+        const baseLineStub = new BaseLineCommand(drawingServiceSpyObj,image);
+        drawingServiceSpyObj.newBaseLineSignals.and.returnValue(of(baseLineStub));
+
+
         TestBed.configureTestingModule({
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });

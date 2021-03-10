@@ -4,6 +4,7 @@ import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { PolygonService } from './polygon.service';
 
 // tslint:disable: no-string-literal
@@ -14,6 +15,7 @@ describe('PolygonService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     const PRIMARY_COLOR_STUB = 'blue';
     const SECONDARY_COLOR_STUB = 'black';
@@ -32,12 +34,13 @@ describe('PolygonService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 PolygonService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
+                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
             ],
         });
 

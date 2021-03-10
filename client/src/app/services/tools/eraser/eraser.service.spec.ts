@@ -1,3 +1,4 @@
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
@@ -17,6 +18,7 @@ describe('EraserService', () => {
     let singleClickSpy: jasmine.Spy;
     let imageDataBefore: ImageData;
     let imageDataAfter: ImageData;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
@@ -27,9 +29,9 @@ describe('EraserService', () => {
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj },{ provide: UndoRedoService, useValue: undoRedoServiceSpyObj}],
         });
         service = TestBed.inject(EraserService);
 

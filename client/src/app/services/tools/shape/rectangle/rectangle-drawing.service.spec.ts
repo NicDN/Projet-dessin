@@ -4,6 +4,7 @@ import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { RectangleDrawingService } from './rectangle-drawing.service';
 
 // tslint:disable: no-string-literal
@@ -12,6 +13,7 @@ describe('RectangleDrawingService', () => {
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -32,12 +34,14 @@ describe('RectangleDrawingService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
 
         TestBed.configureTestingModule({
             providers: [
                 RectangleDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
+                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
             ],
         });
 
