@@ -1,14 +1,16 @@
 <div>
-    <mat-nav-list *ngFor="let selectionElement of selectionElements" [class.active]="selectionElement.tool === this.toolsService.currentTool">
-        <a
-            mat-list-item
-            (click)="toggleActive(selectionElement.selectionService)"
-            matTooltip="{{ selectionElement.selectionTipContent }}"
-            matTooltipPosition="right"
-            [matTooltipShowDelay]="750"
-            class="list-item"
-        >
-            <fa-icon icon="{{ selectionElement.icon }}"></fa-icon>
-        </a>
-    </mat-nav-list>
+    <p>Type de sélection</p>
+    <div class="selection-type">
+        <mat-button-toggle-group>
+            <mat-button-toggle
+                *ngFor="let selectionElement of selectionElements"
+                matTooltip="{{ selectionElement.selectionTipContent }}"
+                matTooltipPosition="below"
+                (click)="toggleActive(selectionElement.selectionService)"
+                [class.active]="selectionElement.selectionService === this.toolsService.currentTool"
+            >
+                <fa-icon icon="{{ selectionElement.icon }}"></fa-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
 </div>

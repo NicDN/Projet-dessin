@@ -1,15 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { SelectionTool } from './selection-tool';
 
 describe('SelectionTool', () => {
-    let service: SelectionTool;
+    // let service: SelectionTool;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(SelectionTool);
-    });
-
-    it('should be created', () => {
-        expect(service).toBeTruthy();
+        // service = TestBed.inject(SelectionTool);
     });
 });

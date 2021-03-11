@@ -64,12 +64,12 @@ describe('PolygonService', () => {
     });
 
     it('#drawPerimeter should draw a dotted line circle', () => {
-        const canvasSpyObj = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'arc', 'stroke', 'beginPath', 'save', 'restore']);
+        const canvasSpyObj = jasmine.createSpyObj('CanvasRenderingContext2D', ['setLineDash', 'ellipse', 'stroke', 'beginPath', 'save', 'restore']);
 
         service.drawPerimeter(canvasSpyObj, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(canvasSpyObj.beginPath).toHaveBeenCalled();
         expect(canvasSpyObj.setLineDash).toHaveBeenCalled();
-        expect(canvasSpyObj.arc).toHaveBeenCalled();
+        expect(canvasSpyObj.ellipse).toHaveBeenCalled();
         expect(canvasSpyObj.stroke).toHaveBeenCalled();
     });
 

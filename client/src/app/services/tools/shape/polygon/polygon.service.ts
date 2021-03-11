@@ -13,6 +13,8 @@ export class PolygonService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        this.alternateShape = true;
+
         ctx.save();
         this.drawPolygon(ctx, begin, end);
 
@@ -29,8 +31,6 @@ export class PolygonService extends Shape {
     }
 
     drawPolygon(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        this.alternateShape = true;
-
         const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
@@ -53,6 +53,7 @@ export class PolygonService extends Shape {
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         this.alternateShape = true;
+
         this.drawEllipticalPerimeter(ctx, begin, end);
     }
 }

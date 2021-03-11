@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
+
 interface SelectionBarElement {
     icon: string;
     selectionTipContent: string;
@@ -14,13 +16,13 @@ interface SelectionBarElement {
 })
 export class SelectionSelectorComponent {
     selectionElements: SelectionBarElement[] = [
-        { icon: 'square', selectionTipContent: 'rectangle selecting (tbd)', selectionService: this.toolsService.rectangleSelectionService },
-        { icon: 'circle', selectionTipContent: 'ellipse selecting (tbd', selectionService: this.toolsService.ellipseSelectionService },
+        { icon: 'square', selectionTipContent: 'Sélection par rectangle (R)', selectionService: this.toolsService.rectangleSelectionService },
+        { icon: 'circle', selectionTipContent: 'Sélection par ellipse (S)', selectionService: this.toolsService.ellipseSelectionService },
     ];
 
     constructor(public toolsService: ToolsService) {}
 
-    toggleActive(tool: Tool): void {
+    toggleActive(tool: SelectionTool): void {
         this.toolsService.setCurrentTool(tool);
     }
 }

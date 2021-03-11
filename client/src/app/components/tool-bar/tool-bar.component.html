@@ -1,8 +1,5 @@
 <div>
-    <mat-nav-list
-        *ngFor="let toolBarElement of toolBarElements"
-        [class.active]="toolBarElement.tool === this.toolService.currentTool || toolBarElement.secondTool === this.toolService.currentTool"
-    >
+    <mat-nav-list *ngFor="let toolBarElement of toolBarElements" [class.active]="checkActiveTool(toolBarElement.tool)">
         <a
             mat-list-item
             (click)="toggleActive(toolBarElement.tool)"

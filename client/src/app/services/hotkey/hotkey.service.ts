@@ -11,6 +11,7 @@ interface ShortcutFunctions {
 }
 
 enum shortCutManager {
+    RECTANGLE_SELECTION = 'KeyR',
     SAVE = 'KeyS',
     CAROUSEL = 'KeyG',
     EXPORT = 'KeyE',
@@ -45,7 +46,13 @@ export class HotkeyService {
         private dialogService: DialogService,
     ) {
         this.shortCutManager = {
-            KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
+            KeyR: {
+                action: () => this.toolService.setCurrentTool(this.toolService.rectangleSelectionService),
+            },
+            KeyS: {
+                action: () => this.toolService.setCurrentTool(this.toolService.ellipseSelectionService),
+                actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
+            },
             KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
             KeyA: {
