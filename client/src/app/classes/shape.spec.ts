@@ -3,7 +3,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CanvasTestHelper } from './canvas-test-helper';
-import { Shape } from './shape';
+import { Shape, TraceType } from './shape';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 
 export class ShapeStub extends Shape {
@@ -29,6 +29,7 @@ describe('Shape', () => {
 
     const COLOR_STUB = '#0000ff';
     const OPACITY_STUB = 0.4;
+    const THICKNESS_STUB = 4;
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
@@ -226,6 +227,71 @@ describe('Shape', () => {
         shape.mouseDown = true;
         shape.onKeyUp(leftShiftEvent);
         expect(drawPreviewSpy).toHaveBeenCalled();
+    });
+
+    it('#getCenterCoords should return coords of the center of the Polygon', () => {
+        const expectedCenterCoords: Vec2 = { x: 20, y: 10 };
+        expect(shape.getCenterCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS)).toEqual(expectedCenterCoords);
+        expect(shape.getCenterCoords(BOTTOM_RIGHT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS)).toEqual(expectedCenterCoords);
+        expect(shape.getCenterCoords(BOTTOM_LEFT_CORNER_COORDS, TOP_RIGHT_CORNER_COORDS)).toEqual(expectedCenterCoords);
+        expect(shape.getCenterCoords(TOP_RIGHT_CORNER_COORDS, BOTTOM_LEFT_CORNER_COORDS)).toEqual(expectedCenterCoords);
+    });
+
+    it('#getRadius should return radius of the Polygon', () => {
+        const expectedXRadius = 20;
+        const expectedYRadius = 10;
+        shape.traceType = TraceType.FilledNoBordered;
+
+        expect(shape.getRadius(TOP_LEFT_CORNER_COORDS.x, BOTTOM_RIGHT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(shape.getRadius(TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+        expect(shape.getRadius(BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(shape.getRadius(BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+    });
+
+    it('#adjustToWidth should adjust radiuses if ellipse has a certain border width', () => {
+        const expectedXRadius = 18;
+        const expectedYRadius = 8;
+        const radiuses: Vec2 = { x: 20, y: 10 };
+        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
+        shape.traceType = TraceType.FilledAndBordered;
+
+        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(radiuses.x).toEqual(expectedXRadius);
+        expect(radiuses.y).toEqual(expectedYRadius);
+    });
+
+    it('#adjustToWidth should not adjust radiuses if ellipse doesnt have a border', () => {
+        const radiuses: Vec2 = { x: 20, y: 10 };
+        const expectedXRadius = 20;
+        const expectedYRadius = 10;
+        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
+        shape.traceType = TraceType.FilledNoBordered;
+
+        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(radiuses.x).toEqual(expectedXRadius);
+        expect(radiuses.y).toEqual(expectedYRadius);
+    });
+
+    it('#adjustToWidth should adjust the width if its bigger than the circle containing the polygon', () => {
+        const initialWidth = 50;
+        const radius: Vec2 = { x: -5, y: -15 };
+        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
+
+        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
+        expect(radius.x).toBeGreaterThan(0);
+        expect(radius.y).toBeGreaterThan(0);
+    });
+
+    it('#adjustToWidth should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
+        const initialWidth = 50;
+        const radius: Vec2 = { x: 0, y: 0 };
+        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
+
+        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
+        expect(radius.x).toEqual(1);
+        expect(radius.y).toEqual(1);
     });
 
     it('#drawPerimeter should draw a dotted line rectangle', () => {
