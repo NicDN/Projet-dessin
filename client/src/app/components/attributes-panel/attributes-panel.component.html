@@ -33,4 +33,8 @@
         <mat-divider></mat-divider>
         <app-undo-redo></app-undo-redo>
     </div>
+
+    <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
+        <app-selection-selector></app-selection-selector>
+    </div>
 </mat-drawer-content>

@@ -41,6 +41,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { LineSettingsSelectorComponent } from './components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
+import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
@@ -72,6 +73,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         SaveDialogComponent,
         ExportDialogComponent,
         CardDrawingTemplateComponent,
+        SelectionSelectorComponent,
     ],
     imports: [
         BrowserModule,

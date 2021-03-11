@@ -107,20 +107,4 @@ export class RectangleSelectionService extends SelectionTool {
     drawSelection(ctx: CanvasRenderingContext2D): void {
         ctx.putImageData(this.data, this.finalTopLeft.x, this.finalTopLeft.y);
     }
-
-    cancelSelection(): void {
-        if (this.hasSelection) {
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.finalTopLeft.x = this.initialTopLeft.x;
-            this.finalTopLeft.y = this.initialTopLeft.y;
-            this.drawSelection(this.drawingService.baseCtx);
-            this.hasSelection = false;
-            this.movingSelection = false;
-            this.finalTopLeft.x = 0;
-            this.finalTopLeft.y = 0;
-            this.finalBottomRight.x = 0;
-            this.finalBottomRight.y = 0;
-            // this.data = 0;
-        }
-    }
 }

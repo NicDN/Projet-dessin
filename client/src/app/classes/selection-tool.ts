@@ -20,16 +20,12 @@ export abstract class SelectionTool extends Tool {
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
         if (!this.mouseDown) return;
-        if (this.isInsideSelection(this.getPositionFromMouse(event))) {
+        if (this.isInsideSelection(this.getPositionFromMouse(event)) && this.hasSelection) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.movingSelection = true;
             return;
         }
-        if (this.hasSelection) {
-            this.drawSelection(this.drawingService.baseCtx);
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.hasSelection = false;
-        }
+        this.cancelSelection();
         this.initialTopLeft = this.getPositionFromMouse(event);
         this.initialBottomRight = this.initialTopLeft;
     }
@@ -73,11 +69,13 @@ export abstract class SelectionTool extends Tool {
 
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
 
-            this.saveSelection(this.drawingService.baseCtx);
-            this.drawSelection(this.drawingService.previewCtx);
-            this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
-            this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
-            this.hasSelection = true;
+            if (this.initialTopLeft.x !== this.initialBottomRight.x && this.initialTopLeft.y !== this.initialBottomRight.y) {
+                this.saveSelection(this.drawingService.baseCtx);
+                this.drawSelection(this.drawingService.previewCtx);
+                this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
+                this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
+                this.hasSelection = true;
+            }
         }
     }
 
@@ -163,6 +161,14 @@ export abstract class SelectionTool extends Tool {
         this.hasSelection = true;
     }
 
+    cancelSelection(): void {
+        if (this.hasSelection) {
+            this.drawSelection(this.drawingService.baseCtx);
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.hasSelection = false;
+        }
+    }
+
     abstract moveSelection(ctx: CanvasRenderingContext2D, pos: Vec2): void;
 
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
@@ -176,6 +182,4 @@ export abstract class SelectionTool extends Tool {
     abstract saveSelection(ctx: CanvasRenderingContext2D): void;
 
     abstract setOffSet(pos: Vec2): void;
-
-    abstract cancelSelection(): void;
 }

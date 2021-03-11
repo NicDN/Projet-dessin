@@ -6,6 +6,7 @@ interface ToolBarElement {
     icon: string;
     toolTipContent: string;
     tool: Tool;
+    secondTool?: Tool;
 }
 @Component({
     selector: 'app-tool-bar',
@@ -22,6 +23,12 @@ export class ToolBarComponent {
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
         { icon: 'spray-can', toolTipContent: 'Aérosol (A)', tool: this.toolService.sprayCanService },
         { icon: 'eye-dropper', toolTipContent: 'Pipette (I)', tool: this.toolService.eyeDropperService },
+        {
+            icon: 'object-group',
+            toolTipContent: 'Sélection (tbd)',
+            tool: this.toolService.rectangleSelectionService,
+            secondTool: this.toolService.ellipseSelectionService,
+        },
     ];
     constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);

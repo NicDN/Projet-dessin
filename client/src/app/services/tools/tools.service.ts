@@ -34,15 +34,14 @@ export class ToolsService {
     }
 
     setCurrentTool(tool: Tool): void {
+        this.ellipseSelectionService.cancelSelection();
+        this.rectangleSelectionService.cancelSelection();
         if (this.currentTool === this.lineService) {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
-        if (this.currentTool === this.rectangleSelectionService) {
-            this.rectangleSelectionService.cancelSelection();
-        }
-        //this.currentTool = tool === this.rectangleDrawingService ? this.rectangleSelectionService : tool;
-        this.currentTool = tool === this.ellipseDrawingService ? this.ellipseSelectionService : tool;
+
+        this.currentTool = tool;
 
         this.subject.next(tool);
     }
