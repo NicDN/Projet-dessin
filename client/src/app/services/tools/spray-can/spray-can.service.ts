@@ -117,9 +117,9 @@ export class SprayCanService extends TraceTool {
 
     storeRandom(): void {
         this.randomStoring.angleArray.push(this.generateRandomArray(0, Math.PI * 2));
-        this.randomStoring.radiusArray.push(this.generateRandomArray(0, this.sprayDiameter));
+        this.randomStoring.radiusArray.push(this.generateRandomArray(0, this.sprayDiameter / 2));
         this.randomStoring.randomGlobalAlpha.push(this.generateRandomArray(0, 1));
-        this.randomStoring.randomArc.push(this.generateRandomArray(1, this.dropletsDiameter));
+        this.randomStoring.randomArc.push(this.generateRandomArray(1, this.dropletsDiameter / 2));
     }
 
     sprayOnCanvas(sprayCanPropreties: SprayCanPropreties, pointToDraw: Vec2, isUsingUndoRedo: boolean): void {

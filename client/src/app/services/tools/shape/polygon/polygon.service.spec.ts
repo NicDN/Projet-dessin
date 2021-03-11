@@ -40,7 +40,7 @@ describe('PolygonService', () => {
                 PolygonService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
-                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
 
