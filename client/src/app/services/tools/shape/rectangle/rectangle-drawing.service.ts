@@ -51,7 +51,6 @@ export class RectangleDrawingService extends Shape {
     }
 
     setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
-        ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineJoin = 'miter';
     }

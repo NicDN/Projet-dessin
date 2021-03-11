@@ -15,8 +15,8 @@ export abstract class Shape extends DrawingTool {
     private endCoord: Vec2;
 
     traceType: TraceType;
-    protected alternateShape: boolean;
-    readonly dashSize: number = 5;
+    alternateShape: boolean;
+    readonly dashSize: number = 2;
     numberOfSides: number = 3;
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
@@ -71,6 +71,22 @@ export abstract class Shape extends DrawingTool {
         ctx.setLineDash([this.dashSize * 2, this.dashSize]);
 
         ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    drawEllipticalPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
+        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
+        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
+        ctx.save();
+        ctx.beginPath();
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+
+        ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.restore();
     }

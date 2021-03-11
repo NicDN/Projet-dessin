@@ -13,6 +13,8 @@ export class PolygonService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        this.alternateShape = true;
+
         ctx.save();
         this.drawPolygon(ctx, begin, end);
 
@@ -29,8 +31,6 @@ export class PolygonService extends Shape {
     }
 
     drawPolygon(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        this.alternateShape = true;
-
         const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
@@ -52,18 +52,8 @@ export class PolygonService extends Shape {
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
-        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
-        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
-        ctx.save();
-        ctx.beginPath();
+        this.alternateShape = true;
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'black';
-        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
-
-        ctx.arc(center.x, center.y, radiuses.x, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.restore();
+        this.drawEllipticalPerimeter(ctx, begin, end);
     }
 }
