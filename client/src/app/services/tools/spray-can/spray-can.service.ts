@@ -14,7 +14,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 export class SprayCanService extends TraceTool {
     readonly MIN_DROPLETS_DIAMETER: number = 3;
     readonly MIN_SPRAY_DIAMETER: number = 15;
-    readonly MIN_EMISSION_RATE: number = 10;
+    readonly MIN_EMISSION_RATE: number = 25;
     readonly ONESECMS: number = 1000;
     readonly CIRCLENUMBER: number = 40;
 

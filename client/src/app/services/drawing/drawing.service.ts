@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command';
 import { Observable, Subject } from 'rxjs';
-
 @Injectable({
     providedIn: 'root',
 })
@@ -86,12 +85,15 @@ export class DrawingService {
     }
 
     onSizeChange(boxsize: BoxSize): void {
+        const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
         this.fillWithWhite(this.baseCtx);
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
+
+        this.previewCtx.putImageData(imageOldPreview, 0, 0);
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {

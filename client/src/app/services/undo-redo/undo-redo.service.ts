@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 export class UndoRedoService {
     commandList: AbstractCommand[] = [];
     undoneList: AbstractCommand[] = [];
-    private canUndoRedo: boolean = true;
+    canUndoRedo: boolean = true;
     subscription: Subscription;
 
     constructor(private drawingService: DrawingService) {

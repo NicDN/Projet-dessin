@@ -1,4 +1,5 @@
 import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -71,7 +72,9 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
     @HostListener('window:mouseup', ['$event'])
     onMouseUp(event: MouseEvent): void {
         if (!(this.toolsService.currentTool instanceof LineService)) {
-            this.undoRedoService.enableUndoRedo();
+            if (!(this.toolsService.currentTool instanceof SelectionTool)) {
+                this.undoRedoService.enableUndoRedo();
+            }
         }
         if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
     }
