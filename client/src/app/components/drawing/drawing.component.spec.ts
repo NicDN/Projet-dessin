@@ -1,6 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 // import { BoxSize } from '@app/classes/box-size';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -144,22 +143,6 @@ describe('DrawingComponent', () => {
     it("#onKeyUp should call tools service's #onKeyUp", () => {
         component.onKeyUp(keyBoardEvent);
         expect(toolsServiceSpy.onKeyUp).toHaveBeenCalled();
-    });
-
-    it("#onMouseOut should call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is true ", () => {
-        component['canDraw'] = true;
-        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
-        component.onMouseOut(mouseEventClick);
-        expect(mouseEventSpy).toHaveBeenCalled();
-        expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
-    });
-
-    it("#onMouseOut should not call the current tool's #onMouseOut when receiving a mouse out event if canDrawflag is false ", () => {
-        component['canDraw'] = false;
-        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
-        component.onMouseOut(mouseEventClick);
-        expect(mouseEventSpy).not.toHaveBeenCalled();
-        expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {

@@ -111,10 +111,6 @@ export class PencilService extends TraceTool {
         this.pathData = [];
     }
 
-    onMouseOut(event: MouseEvent): void {
-        this.onMouseUp(event);
-    }
-
     onMouseEnter(event: MouseEvent): void {
         // event.buttons is 1 when left click is pressed.
         if (event.buttons === 1) {

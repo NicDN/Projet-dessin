@@ -143,12 +143,6 @@ describe('SprayCanService', () => {
         expect(service['pathData']).toEqual(expectedPathStub);
     });
 
-    it('#onMouseOut should call onMouseUp', () => {
-        const onMouseUpSpy = spyOn(service, 'onMouseUp').and.stub();
-        service.onMouseOut(mouseEvent);
-        expect(onMouseUpSpy).toHaveBeenCalled();
-    });
-
     it('#onMouseEnter should call on mouseDown if left click is pressed and set mouseDownValue', () => {
         const onMouseDownSpy = spyOn(service, 'onMouseDown').and.stub();
         service.mouseDown = false;

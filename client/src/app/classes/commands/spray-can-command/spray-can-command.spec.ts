@@ -17,18 +17,21 @@ describe('spray-can-command', () => {
     const randomArrayStub: number[] = [0, 0];
     const randomArrayStub2: number[][] = [randomArrayStub, randomArrayStub];
     const randomArrayStub3: number[][] = [randomArrayStub, randomArrayStub, randomArrayStub];
+
     const storingStub: RandomStoring = {
         angleArray: randomArrayStub2,
         radiusArray: randomArrayStub2,
         randomGlobalAlpha: randomArrayStub2,
         randomArc: randomArrayStub2,
     };
+
     const storingStub3: RandomStoring = {
         angleArray: randomArrayStub3,
         radiusArray: randomArrayStub3,
         randomGlobalAlpha: randomArrayStub3,
         randomArc: randomArrayStub3,
     };
+
     const numberStub = 1;
     const MAIN_COLOR: Color = { rgbValue: 'red', opacity: 1 };
 

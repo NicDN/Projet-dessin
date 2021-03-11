@@ -67,12 +67,9 @@ export class SprayCanService extends TraceTool {
         }
     }
 
-    onMouseOut(event: MouseEvent): void {
-        this.onMouseUp(event);
-    }
-
     onMouseEnter(event: MouseEvent): void {
         // event.buttons is 1 when left click is pressed.
+        clearInterval(this.timer);
         if (event.buttons === 1) {
             this.mouseDown = true;
             this.onMouseDown(event);

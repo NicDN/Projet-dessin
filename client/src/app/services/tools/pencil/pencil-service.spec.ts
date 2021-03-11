@@ -18,7 +18,6 @@ describe('PencilService', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
-    let onMouseOutSpy: jasmine.Spy;
 
     const PRIMARY_COLOR_STUB = 'red';
     const OPACITY_STUB = 1;
@@ -136,12 +135,6 @@ describe('PencilService', () => {
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
         expect(imageData.data[thirdPosition]).not.toEqual(0); // A
-    });
-
-    it('#onMouseOut should call onMouseUp', () => {
-        onMouseOutSpy = spyOn(service, 'onMouseOut').and.callThrough();
-        service.onMouseOut(mouseEvent);
-        expect(onMouseOutSpy).toHaveBeenCalled();
     });
 
     it('#onMouseEnter should set pencil service bool mouseDown to true if the left click is pressed when entering the canvas ', () => {

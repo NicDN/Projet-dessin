@@ -1,9 +1,9 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EraserService } from './eraser.service';
 
 describe('EraserService', () => {
@@ -31,7 +31,10 @@ describe('EraserService', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj },{ provide: UndoRedoService, useValue: undoRedoServiceSpyObj}],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+            ],
         });
         service = TestBed.inject(EraserService);
 
