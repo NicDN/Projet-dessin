@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { RectangleDrawingService } from '../shape/rectangle/rectangle-drawing.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class RectangleSelectionService extends SelectionTool {
+export class EllipseSelectionService extends SelectionTool {
     private data: ImageData;
     private offset: Vec2;
 
@@ -17,7 +17,7 @@ export class RectangleSelectionService extends SelectionTool {
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end);
-        this.rectangleDrawingService.drawPerimeter(ctx, begin, trueEndCoords);
+        this.rectangleDrawingService.drawEllipticalPerimeter(ctx, begin, trueEndCoords);
     }
 
     drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -82,6 +82,8 @@ export class RectangleSelectionService extends SelectionTool {
         this.initialTopLeft = this.finalTopLeft;
         this.initialBottomRight = this.finalBottomRight;
 
+        const centerCoords: Vec2 = this.rectangleDrawingService.getCenterCoords(this.finalTopLeft, this.finalBottomRight);
+
         this.data = ctx.getImageData(
             this.initialTopLeft.x,
             this.initialTopLeft.y,
@@ -91,11 +93,14 @@ export class RectangleSelectionService extends SelectionTool {
 
         ctx.fillStyle = 'white';
         ctx.beginPath();
-        ctx.rect(
-            this.initialTopLeft.x,
-            this.initialTopLeft.y,
-            this.initialBottomRight.x - this.initialTopLeft.x,
-            this.initialBottomRight.y - this.initialTopLeft.y,
+        ctx.ellipse(
+            centerCoords.x,
+            centerCoords.y,
+            (this.initialBottomRight.x - this.initialTopLeft.x) / 2,
+            (this.initialBottomRight.y - this.initialTopLeft.y) / 2,
+            0,
+            0,
+            2 * Math.PI,
         );
         ctx.fill();
     }
@@ -105,7 +110,26 @@ export class RectangleSelectionService extends SelectionTool {
     }
 
     drawSelection(ctx: CanvasRenderingContext2D): void {
-        ctx.putImageData(this.data, this.finalTopLeft.x, this.finalTopLeft.y);
+        ctx.save();
+        const image: HTMLCanvasElement = document.createElement('canvas');
+        image.width = this.finalBottomRight.x - this.finalTopLeft.x;
+        image.height = this.finalBottomRight.y - this.finalTopLeft.y;
+        (image.getContext('2d') as CanvasRenderingContext2D).putImageData(this.data, 0, 0);
+        const centerCoords: Vec2 = this.rectangleDrawingService.getCenterCoords(this.finalTopLeft, this.finalBottomRight);
+
+        ctx.beginPath();
+        ctx.ellipse(
+            centerCoords.x,
+            centerCoords.y,
+            (this.finalBottomRight.x - this.finalTopLeft.x) / 2,
+            (this.finalBottomRight.y - this.finalTopLeft.y) / 2,
+            0,
+            0,
+            2 * Math.PI,
+        );
+        ctx.clip();
+        ctx.drawImage(image, this.finalTopLeft.x, this.finalTopLeft.y);
+        ctx.restore();
     }
 
     cancelSelection(): void {
