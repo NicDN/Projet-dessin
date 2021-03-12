@@ -1,29 +1,31 @@
 .attributes-panel-container {
-  background-color: rgb(66, 76, 83);
-  width: 350px;
-  height: 100%;  
-  display: block;
-  float: right;
-  text-align : center;
+    background-color: rgb(66, 76, 83);
+    width: 350px;
+    height: 100%;
+    display: block;
+    float: right;
+    text-align: center;
 }
 
-.tool-name-header{
-  padding-top: 10px;
-  margin-bottom: 0px;
-  background-color:rgb(229,18,130) ;
-  height: 47px;
-  color: white;
+.tool-name-header {
+    padding-top: 10px;
+    margin-bottom: 0px;
+    background-color: rgb(229, 18, 130);
+    height: 47px;
+    color: white;
 }
-mat-divider{
-  border-top-color:gray;
+mat-divider {
+    border-top-color: gray;
 }
-.undo-redo{
-  position:absolute;
+
+.undo-redo {
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 50px;
 }
-a{
-  color: lightslategray;
+
+a {
+    color: lightslategray;
 }

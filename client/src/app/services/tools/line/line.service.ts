@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
+import { LineCommand, LinePropreties } from '@app/classes/commands/line-command/line-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 const HALF_CIRCLE = 180;
 const QUARTER_CIRCLE = 90;
@@ -24,7 +26,7 @@ export class LineService extends TraceTool {
     pathData: Vec2[];
     mousePosition: Vec2;
 
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
         this.clearPath();
         this.drawWithJunction = false;
@@ -118,9 +120,14 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        this.drawLine(this.drawingService.baseCtx, this.pathData);
+        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
+        lineCommand.execute();
+
+        this.undoRedoService.addCommand(lineCommand);
         this.clearPath();
         this.updatePreview();
+
+        this.undoRedoService.enableUndoRedo();
     }
 
     updatePreview(): void {
@@ -141,22 +148,42 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
-        ctx.strokeStyle = this.colorService.mainColor.rgbValue;
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.beginPath();
+        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(ctx, path));
+        lineCommand.execute();
+    }
 
-        for (const point of path) {
-            ctx.lineWidth = this.thickness;
-            ctx.lineTo(point.x, point.y);
-            if (this.drawWithJunction) {
+    drawLineExecute(linePropreties: LinePropreties): void {
+        this.setContext(linePropreties.drawingContext, linePropreties);
+        linePropreties.drawingContext.beginPath();
+
+        for (const point of linePropreties.drawingPath) {
+            linePropreties.drawingContext.lineWidth = linePropreties.drawingThickness;
+            linePropreties.drawingContext.lineTo(point.x, point.y);
+            if (linePropreties.drawWithJunction) {
                 const circle = new Path2D();
-                circle.arc(point.x, point.y, this.junctionDiameter, 0, 2 * Math.PI);
-                ctx.fill(circle);
+                circle.arc(point.x, point.y, linePropreties.junctionDiameter, 0, 2 * Math.PI);
+                linePropreties.drawingContext.fill(circle);
             }
         }
-        ctx.stroke();
+        linePropreties.drawingContext.stroke();
+    }
+
+    private setContext(ctx: CanvasRenderingContext2D, linePropreties: LinePropreties): void {
+        ctx.globalAlpha = linePropreties.drawingColor.opacity;
+        ctx.strokeStyle = linePropreties.drawingColor.rgbValue;
+        ctx.fillStyle = linePropreties.drawingColor.rgbValue;
+        ctx.lineJoin = linePropreties.drawingContext.lineCap = 'round';
+    }
+
+    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): LinePropreties {
+        return {
+            drawingContext: ctx,
+            drawingPath: path,
+            drawingThickness: this.thickness,
+            drawingColor: { rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+            drawWithJunction: this.drawWithJunction,
+            junctionDiameter: this.junctionDiameter,
+        };
     }
 
     lockLine(): void {

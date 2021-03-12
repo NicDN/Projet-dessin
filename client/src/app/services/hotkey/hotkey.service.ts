@@ -3,13 +3,16 @@ import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 interface ShortcutFunctions {
     action?: () => void;
     actionCtrl?: () => void;
+    actionCtrlShift?: () => void;
 }
 
 enum shortCutManager {
+    RECTANGLE_SELECTION = 'KeyR',
     SAVE = 'KeyS',
     CAROUSEL = 'KeyG',
     EXPORT = 'KeyE',
@@ -19,6 +22,7 @@ enum shortCutManager {
     LINE = 'KeyL',
     SPRAY_CAN = 'KeyA',
     EYE_DROPPER = 'KeyI',
+    UNDO_REDO = 'KeyZ',
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
@@ -40,6 +44,7 @@ export class HotkeyService {
         public drawingService: DrawingService,
         private toolService: ToolsService,
         private dialogService: DialogService,
+        private undoRedoService: UndoRedoService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -47,10 +52,18 @@ export class HotkeyService {
 
     initializeShorcutManager(): void {
         this.shortCutManager = {
-            KeyS: { actionCtrl: () => this.dialogService.openDialog(DialogType.Save) },
+            KeyR: {
+                action: () => this.toolService.setCurrentTool(this.toolService.rectangleSelectionService),
+            },
+            KeyS: {
+                action: () => this.toolService.setCurrentTool(this.toolService.ellipseSelectionService),
+                actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
+            },
             KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
-            KeyA: { action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService) },
+            KeyA: {
+                action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
+            },
             KeyI: { action: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService) },
             KeyE: {
                 action: () => this.toolService.setCurrentTool(this.toolService.eraserService),
@@ -61,6 +74,7 @@ export class HotkeyService {
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
+            KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
         };
     }
 
@@ -76,7 +90,9 @@ export class HotkeyService {
         }
         if (event.ctrlKey) {
             event.preventDefault();
-            this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+            event.shiftKey
+                ? this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.()
+                : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
@@ -85,6 +101,10 @@ export class HotkeyService {
     }
 
     handleCtrlO(): void {
-        this.router.url ? this.drawingService.handleNewDrawing() : this.router.navigate(['editor']);
+        this.currentRouteIsEditor(this.router.url) ? this.drawingService.handleNewDrawing() : this.router.navigate(['editor']);
+    }
+
+    currentRouteIsEditor(url: string): boolean {
+        return url === '/editor';
     }
 }

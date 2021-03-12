@@ -3,6 +3,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EraserService } from './eraser.service';
 
 describe('EraserService', () => {
@@ -17,6 +18,7 @@ describe('EraserService', () => {
     let singleClickSpy: jasmine.Spy;
     let imageDataBefore: ImageData;
     let imageDataAfter: ImageData;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
@@ -27,9 +29,12 @@ describe('EraserService', () => {
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+            ],
         });
         service = TestBed.inject(EraserService);
 
@@ -54,12 +59,12 @@ describe('EraserService', () => {
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
 
         // If decide to raw in white instead , decomment this.
-        // baseCtxStub.fillStyle = 'white';
-        // baseCtxStub.rect(0, 0, 1, 1);
-        // baseCtxStub.fill();
+        baseCtxStub.fillStyle = 'white'; //
+        baseCtxStub.rect(0, 0, 1, 1); //
+        baseCtxStub.fill(); //
         imageDataBefore = baseCtxStub.getImageData(0, 0, 1, 1);
 
-        // baseCtxStub.fillStyle = 'black';
+        baseCtxStub.fillStyle = 'black'; //
         baseCtxStub.rect(0, 0, 1, 1);
         baseCtxStub.fill();
         imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
@@ -77,16 +82,6 @@ describe('EraserService', () => {
     it('#angleBetween should return the angle between 2 points', () => {
         const expectedValue = 0.6435011087932844;
         expect(service.angleBetween(point1, point2)).toEqual(expectedValue);
-    });
-
-    it('#verifThickness should set and check the eraser writing thickness on the canvas', () => {
-        const thicknessStubValue = 10;
-        service.verifThickness(baseCtxStub, thicknessStubValue);
-        expect(baseCtxStub.lineWidth).toEqual(thicknessStubValue);
-
-        const underMinThickness = 2;
-        service.verifThickness(baseCtxStub, underMinThickness);
-        expect(baseCtxStub.lineWidth).toEqual(service.MINTHICKNESS);
     });
 
     it('#singleClick should return if there is a single click', () => {
@@ -116,7 +111,7 @@ describe('EraserService', () => {
     it('#eraseSquare should erase part off the context', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 });
+        service.eraseSquare(baseCtxStub, { x: 0, y: 0 }, 1);
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });
@@ -132,15 +127,11 @@ describe('EraserService', () => {
     it('#drawLine should erase on the canvas if there is a single click', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        const singleClickStub = true;
-        singleClickSpy.and.returnValue(singleClickStub);
-
         service.onMouseDown(mouseEventStart);
         service.onMouseUp(mouseEventEnd);
 
         const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);
-        expect(drawLineSpy).toHaveBeenCalled();
     });
 
     it('#drawline should erase on mouse move', () => {

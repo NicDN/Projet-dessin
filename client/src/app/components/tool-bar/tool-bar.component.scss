@@ -1,6 +1,5 @@
 .sidenav {
     border: 1px solid black;
-    background-color: red;
     height: 45px;
 }
 .mat-list-item {
@@ -11,4 +10,9 @@
 
 .active {
     background-color: #e51282;
+}
+
+.polygon-icon {
+    font-size: 26px;
+    display: block;
 }

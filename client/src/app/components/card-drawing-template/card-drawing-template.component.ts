@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
 
@@ -13,14 +14,15 @@ export class CardDrawingTemplateComponent {
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
     @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();
 
-    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar) {}
+    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar, public drawingService: DrawingService) {}
 
     setToCurrentDrawing(): void {
         const image = new Image();
         image.src = this.drawingForm.drawingData;
-        // this.drawingService.checkNewDrawing(image);
 
-        this.closeCarousel.emit();
+        if (this.drawingService.handleNewDrawing(image)) {
+            this.closeCarousel.emit();
+        }
     }
 
     deleteDrawing(id: string): void {

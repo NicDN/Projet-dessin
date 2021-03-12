@@ -6,7 +6,9 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
+import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { AttributesPanelComponent } from './attributes-panel.component';
 
@@ -17,8 +19,14 @@ describe('AttributesPanelComponent', () => {
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService());
-    const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(new DrawingService(), new ColorService());
+    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(
+        new DrawingService(),
+        new ColorService(),
+        new UndoRedoService(new DrawingService()),
+    );
+
+    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -40,7 +48,7 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#subscribe assings current tool correctly ', async(() => {
-        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService());
+        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         component.subscribe();
         fixture.detectChanges();
@@ -75,13 +83,27 @@ describe('AttributesPanelComponent', () => {
         expect((component.currentTool as LineService).drawWithJunction).toBe(expectedJunction);
     });
 
+    it('#setNumberOfSides should set the number of sides of a polygon correctly', () => {
+        component.currentTool = polygonService;
+        const expectedNumberOfSides = 3;
+        component.setNumberOfSides(expectedNumberOfSides);
+        expect((component.currentTool as Shape).numberOfSides).toBe(expectedNumberOfSides);
+    });
+
     it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;
         expect(component.shapeIsActive()).toBeTrue();
     });
 
-    it('#drawingToolIsActive should verify that a drawing tool is active', () => {
+    it('#polygonIsActive should verify if the Polygon shape is active', () => {
+        component.currentTool = polygonService;
+        expect(component.polygonIsActive()).toBeTrue();
+    });
+
+    it('#needsTraceThickness should verify that the tool needs a thickness', () => {
         component.currentTool = drawingTool;
-        expect(component.drawingToolIsActive()).toBeTrue();
+        expect(component.needsTraceThickness()).toBeTrue();
+        component.currentTool = toolsService.sprayCanService;
+        expect(component.needsTraceThickness()).toBeFalse();
     });
 });

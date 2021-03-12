@@ -22,6 +22,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
@@ -43,6 +44,8 @@ import { ResizeContainerComponent } from './components/resize-container/resize-c
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { LineSettingsSelectorComponent } from './components/tool-settings/line-settings-selector/line-settings-selector.component';
+import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
+import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
@@ -68,10 +71,13 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
+
+        PolygonSidesSelectorComponent,
         CarouselDialogComponent,
         SaveDialogComponent,
         ExportDialogComponent,
         CardDrawingTemplateComponent,
+        SelectionSelectorComponent,
     ],
     imports: [
         BrowserModule,
@@ -108,6 +114,6 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 export class AppModule {
     // adding icons packs for font-awesome
     constructor(library: FaIconLibrary) {
-        library.addIconPacks(fas, far);
+        library.addIconPacks(fas, far, fab);
     }
 }

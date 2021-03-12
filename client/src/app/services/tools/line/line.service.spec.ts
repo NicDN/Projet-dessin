@@ -256,11 +256,10 @@ describe('LineService', () => {
 
     it('#finishLine shouldnt change the last point if it isnt near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
-        spyOn(service, 'drawLine').and.stub();
-
+        spyOn(service, 'drawLineExecute').and.returnValue();
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-        expect(service.drawLine).toHaveBeenCalled();
+        expect(service.drawLineExecute).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
     });
@@ -268,11 +267,10 @@ describe('LineService', () => {
     it('#finishLine should change the last point if it is near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
         service.mousePosition = { x: 20, y: 20 };
-        spyOn(service, 'drawLine');
-
+        spyOn(service, 'drawLineExecute').and.returnValue();
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-        expect(service.drawLine).toHaveBeenCalled();
+        expect(service.drawLineExecute).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
     });

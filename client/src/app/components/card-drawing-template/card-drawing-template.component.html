@@ -9,7 +9,7 @@
         </mat-card-subtitle>
     </mat-card-header>
     <mat-card-actions fxFlexAlign="end" align="end" >
-        <button mat-icon-button (click)="this.setToCurrentDrawing()" matTooltip="Charger le dessin" matTooltipPosition="above">
+        <button mat-icon-button [disabled]="drawingForm.drawingData === this.drawingService.canvas.toDataURL()" (click)="this.setToCurrentDrawing()" matTooltip="Charger le dessin" matTooltipPosition="above">
             <mat-icon>mode_edit</mat-icon>
         </button>
         <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)"  matTooltip="Supprimer" matTooltipPosition="above">
