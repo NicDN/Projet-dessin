@@ -6,20 +6,23 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ToolBarComponent } from './tool-bar.component';
 
 describe('ToolBarComponent', () => {
     let component: ToolBarComponent;
     let fixture: ComponentFixture<ToolBarComponent>;
-    const tool: Tool = new PencilService(new DrawingService(), new ColorService());
     let toolsService: ToolsService;
-
+    let undoRedoServiceStub: UndoRedoService;
+    let tool: Tool;
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
-            providers: [ToolsService],
+            providers: [ToolsService, { provide: UndoRedoService, useValue: undoRedoServiceStub }],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
+        undoRedoServiceStub = TestBed.inject(UndoRedoService);
+        tool = new PencilService(new DrawingService(), new ColorService(), undoRedoServiceStub);
     }));
 
     beforeEach(() => {

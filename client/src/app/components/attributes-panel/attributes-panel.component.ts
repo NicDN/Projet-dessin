@@ -3,6 +3,8 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Tool } from '@app/classes/tool';
 import { LineService } from '@app/services/tools/line/line.service';
+import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
+import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { Subscription } from 'rxjs';
 
@@ -27,6 +29,10 @@ export class AttributesPanelComponent {
         (this.currentTool as DrawingTool).thickness = thickness;
     }
 
+    setNumberOfSides(numberOfSides: number): void {
+        (this.currentTool as PolygonService).numberOfSides = numberOfSides;
+    }
+
     setTraceType(type: TraceType): void {
         (this.currentTool as Shape).traceType = type;
     }
@@ -43,7 +49,14 @@ export class AttributesPanelComponent {
         return this.currentTool instanceof Shape;
     }
 
-    drawingToolIsActive(): boolean {
+    polygonIsActive(): boolean {
+        return this.currentTool instanceof PolygonService;
+    }
+
+    needsTraceThickness(): boolean {
+        if (this.currentTool instanceof SprayCanService) {
+            return false;
+        }
         return this.currentTool instanceof DrawingTool;
     }
 }

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Tool } from '@app/classes/tool';
 import { ToolsService } from '@app/services/tools/tools.service';
 
@@ -22,6 +23,11 @@ export class ToolBarComponent {
         { icon: 'project-diagram', toolTipContent: 'Ligne (L)', tool: this.toolService.lineService },
         { icon: 'spray-can', toolTipContent: 'Aérosol (A)', tool: this.toolService.sprayCanService },
         { icon: 'eye-dropper', toolTipContent: 'Pipette (I)', tool: this.toolService.eyeDropperService },
+        {
+            icon: 'object-group',
+            toolTipContent: 'Sélection (R : Rectangle, S : Ellipse)',
+            tool: this.toolService.rectangleSelectionService,
+        },
     ];
     constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);
@@ -29,5 +35,15 @@ export class ToolBarComponent {
 
     toggleActive(tool: Tool): void {
         this.toolService.setCurrentTool(tool);
+    }
+
+    checkActiveTool(tool: Tool): boolean {
+        if (tool instanceof SelectionTool) {
+            return (
+                this.toolService.currentTool === this.toolService.rectangleSelectionService ||
+                this.toolService.currentTool === this.toolService.ellipseSelectionService
+            );
+        }
+        return tool === this.toolService.currentTool;
     }
 }

@@ -1,0 +1,16 @@
+<div>
+    <p>Type de sélection</p>
+    <div class="selection-type">
+        <mat-button-toggle-group>
+            <mat-button-toggle
+                *ngFor="let selectionElement of selectionElements"
+                matTooltip="{{ selectionElement.selectionTipContent }}"
+                matTooltipPosition="below"
+                (click)="toggleActive(selectionElement.selectionService)"
+                [class.active]="selectionElement.selectionService === this.toolsService.currentTool"
+            >
+                <fa-icon icon="{{ selectionElement.icon }}"></fa-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>

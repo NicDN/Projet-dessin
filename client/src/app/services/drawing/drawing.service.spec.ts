@@ -33,11 +33,15 @@ describe('DrawingService', () => {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
+        const image = new Image();
+        image.src = service.canvas.toDataURL();
+        service.blankHTMLImage = image;
+
         drawingServiceSpyCheckIfEmpty = spyOn(service, 'canvasIsEmpty').and.callThrough();
-        drawingServiceSpyReloadDrawing = spyOn(service, 'reloadDrawing').and.callThrough();
+        drawingServiceSpyReloadDrawing = spyOn(service, 'reloadToBlankDrawing').and.callThrough();
         drawingServiceSpyValidateInput = spyOn(service, 'confirmReload').and.callThrough();
         drawingServiceSpyChangeSizeOfCanvas = spyOn(service, 'changeSizeOfCanvas').and.callThrough();
-        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.callThrough();
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
     });
 
     it('should be created', () => {
@@ -64,9 +68,11 @@ describe('DrawingService', () => {
         expect(service.canvas.height).toEqual(boxSizeStub.heightBox);
     });
 
-    it('#reloadDrawing should clear the canvas and have default height and width', () => {
-        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas');
-        service.reloadDrawing();
+    it('#reloadToBlankDrawing should clear the canvas and have default height and width', () => {
+        const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.returnValue();
+        spyOn(service, 'fillWithWhite').and.returnValue();
+        spyOn(service, 'sendBaseLineCommand').and.returnValue();
+        service.reloadToBlankDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
@@ -81,8 +87,9 @@ describe('DrawingService', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
         fixture.detectChanges();
-        const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'newDrawingNotification');
-        service.sendNotifReload();
+        const checkNotif: jasmine.Spy = spyOn(resizeContainerComponent, 'resizeNotification');
+        const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        service.sendNotifToResize(boxSize);
         expect(checkNotif).toHaveBeenCalled();
     });
 

@@ -15,8 +15,9 @@ export abstract class Shape extends DrawingTool {
     private endCoord: Vec2;
 
     traceType: TraceType;
-    protected alternateShape: boolean;
-    readonly dashSize: number = 5;
+    alternateShape: boolean;
+    readonly dashSize: number = 2;
+    numberOfSides: number = 3;
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
         super(drawingService, colorService, toolName);
@@ -35,7 +36,8 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.executeShapeCommand(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            // this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -74,18 +76,34 @@ export abstract class Shape extends DrawingTool {
         ctx.restore();
     }
 
+    drawEllipticalPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end, this.alternateShape);
+        const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
+        const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
+        ctx.save();
+        ctx.beginPath();
+
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'black';
+        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+
+        ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.restore();
+    }
+
     drawPreview(): void {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
     }
 
-    getTrueEndCoords(begin: Vec2, end: Vec2): Vec2 {
+    getTrueEndCoords(begin: Vec2, end: Vec2, isAlternateShape: boolean): Vec2 {
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
         const distX: number = Math.abs(end.x - begin.x);
         const distY: number = Math.abs(end.y - begin.y);
-        if (this.alternateShape) {
+        if (isAlternateShape) {
             endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(distX, distY);
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(distX, distY);
         }
@@ -102,5 +120,30 @@ export abstract class Shape extends DrawingTool {
         ctx.globalAlpha = color.opacity;
     }
 
+    getCenterCoords(begin: Vec2, end: Vec2): Vec2 {
+        return { x: (end.x + begin.x) / 2, y: (end.y + begin.y) / 2 };
+    }
+
+    getRadius(begin: number, end: number): number {
+        return Math.abs(end - begin) / 2;
+    }
+
+    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: number): void {
+        const thicknessAdjustment: number = traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
+        radiuses.x -= thicknessAdjustment;
+        radiuses.y -= thicknessAdjustment;
+        if (radiuses.x <= 0) {
+            ctx.lineWidth = begin.x !== end.x ? Math.abs(begin.x - end.x) : 1;
+            radiuses.x = 1;
+            radiuses.y = this.getRadius(begin.y, end.y) - ctx.lineWidth / 2;
+        }
+        if (radiuses.y <= 0) {
+            ctx.lineWidth = begin.y !== end.y ? Math.abs(begin.y - end.y) : 1;
+            radiuses.y = 1;
+            radiuses.x = begin.x !== end.x ? this.getRadius(begin.x, end.x) - ctx.lineWidth / 2 : 1;
+        }
+    }
+
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }
