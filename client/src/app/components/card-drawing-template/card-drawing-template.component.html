@@ -1,27 +1,19 @@
-<!-- <mat-card>
-<img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-<mat-card-header>
-    <mat-card-title>Nom du dessin</mat-card-title>
-    <mat-card-subtitle>Tag</mat-card-subtitle>
-</mat-card-header>
-</mat-card> -->
-<!-- 
-<mat-card class="example-card">
+<mat-card class="example-card" [class.mat-elevation-z8]="true">
+    <img mat-card-image [src]="this.drawingForm.drawingData" alt="Photo of a Shiba Inu" />
     <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
-      <mat-card-title>Shiba Inu</mat-card-title>
-      <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+        <mat-card-title>{{ drawingForm.name }}</mat-card-title>
+        <mat-card-subtitle>
+            <mat-chip-list fxFlex>
+                <mat-chip *ngFor="let tag of drawingForm.tags">{{ tag }}</mat-chip>
+            </mat-chip-list>
+        </mat-card-subtitle>
     </mat-card-header>
-    <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-    <mat-card-content>
-      <p>
-        The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-        A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-        bred for hunting.
-      </p>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-button>LIKE</button>
-      <button mat-button>SHARE</button>
+    <mat-card-actions fxFlexAlign="end" align="end" >
+        <button mat-icon-button [disabled]="this.isTheLoadedCanvas()" (click)="this.setToCurrentDrawing()" matTooltip="Charger le dessin" matTooltipPosition="above">
+            <mat-icon>mode_edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)"  matTooltip="Supprimer" matTooltipPosition="above">
+            <mat-icon>delete</mat-icon>
+        </button>
     </mat-card-actions>
-  </mat-card> -->
+</mat-card>

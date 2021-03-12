@@ -4,7 +4,6 @@ import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -37,11 +36,9 @@ type ShortcutManager = {
     providedIn: 'root',
 })
 export class HotkeyService {
-    shortCutManager: ShortcutManager;
+    private shortCutManager: ShortcutManager;
+    private listenToKeyEvents: boolean = true;
 
-    listenToKeyEvents: boolean = true;
-
-    subscription: Subscription;
     constructor(
         public router: Router,
         public drawingService: DrawingService,
@@ -82,8 +79,8 @@ export class HotkeyService {
     }
 
     observeDialogService(): void {
-        this.subscription = this.dialogService.listenToKeyEvents().subscribe((value) => {
-            this.listenToKeyEvents = value;
+        this.dialogService.listenToKeyEvents().subscribe((listenToKeyEvents) => {
+            this.listenToKeyEvents = listenToKeyEvents;
         });
     }
 

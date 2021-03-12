@@ -8,7 +8,8 @@
             [matTooltipShowDelay]="750"
             class="list-item"
         >
-            <fa-icon icon="{{ toolBarElement.icon }}"></fa-icon>
+            <fa-icon *ngIf="toolBarElement.tool !== this.toolService.polygonService "icon="{{ toolBarElement.icon }}"></fa-icon>
+            <fa-icon class="polygon-icon" *ngIf="toolBarElement.tool === this.toolService.polygonService " [icon]="['fab','centos']"></fa-icon>
         </a>
     </mat-nav-list>
 </div>

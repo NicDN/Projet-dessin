@@ -1,0 +1,31 @@
+.save-container {
+    width: 600px;
+    height: 450px;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.bottom-div {
+    position: absolute;
+    bottom: 0;
+}
+
+.save-canvas-btn {
+    margin-right: 10px;
+}
+
+mat-form-field {
+    width: 590px;
+    margin: 5px;
+}
+
+.tag-rules{
+    border-color: black;
+    width: 100%;
+    border-radius: 5px;
+}
+
+.error{
+    color: red;
+}

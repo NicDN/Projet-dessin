@@ -5,6 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,11 +17,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LineSettingsSelectorComponent } from '@app/components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
@@ -100,6 +104,9 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         MatSelectModule,
         MatCheckboxModule,
         MatButtonToggleModule,
+        MatChipsModule,
+        MatRippleModule,
+        MatSnackBarModule,
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],
@@ -109,6 +116,6 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 export class AppModule {
     // adding icons packs for font-awesome
     constructor(library: FaIconLibrary) {
-        library.addIconPacks(fas, far);
+        library.addIconPacks(fas, far, fab);
     }
 }

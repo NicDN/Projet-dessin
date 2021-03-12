@@ -5,6 +5,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 
 interface SelectionBarElement {
     icon: string;
+    iconFamily: string;
     selectionTipContent: string;
     selectionService: Tool;
 }
@@ -16,8 +17,18 @@ interface SelectionBarElement {
 })
 export class SelectionSelectorComponent {
     selectionElements: SelectionBarElement[] = [
-        { icon: 'square', selectionTipContent: 'Sélection par rectangle (R)', selectionService: this.toolsService.rectangleSelectionService },
-        { icon: 'circle', selectionTipContent: 'Sélection par ellipse (S)', selectionService: this.toolsService.ellipseSelectionService },
+        {
+            iconFamily: 'far',
+            icon: 'square',
+            selectionTipContent: 'Sélection par rectangle (R)',
+            selectionService: this.toolsService.rectangleSelectionService,
+        },
+        {
+            iconFamily: 'far',
+            icon: 'circle',
+            selectionTipContent: 'Sélection par ellipse (S)',
+            selectionService: this.toolsService.ellipseSelectionService,
+        },
     ];
 
     constructor(public toolsService: ToolsService) {}

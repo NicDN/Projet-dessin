@@ -12,6 +12,9 @@ export class DrawingService {
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
+    newImage?: HTMLImageElement = undefined;
+    loadByDefault: boolean = true;
+
     subject: Subject<BoxSize> = new Subject<BoxSize>();
     baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
 
@@ -21,6 +24,9 @@ export class DrawingService {
 
     sendBaseLineCommand(image: HTMLImageElement): void {
         const baseLineCommand = new BaseLineCommand(this, image);
+        this.clearCanvas(this.previewCtx);
+        this.clearCanvas(this.baseCtx);
+        baseLineCommand.execute();
         this.baseLineSubject.next(baseLineCommand);
     }
 
@@ -42,15 +48,19 @@ export class DrawingService {
         }
     }
 
-    handleNewDrawing(image?: HTMLImageElement): void {
+    handleNewDrawing(image?: HTMLImageElement): boolean {
+        let confirm = false;
         if (this.canvasIsEmpty()) {
             image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
-            return;
+            return true;
         }
         if (this.confirmReload()) {
+            confirm = true;
             image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
         }
         this.clearCanvas(this.previewCtx);
+
+        return confirm;
     }
 
     changeDrawing(image: HTMLImageElement): void {

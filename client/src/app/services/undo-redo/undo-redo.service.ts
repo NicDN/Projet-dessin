@@ -56,7 +56,6 @@ export class UndoRedoService {
         this.commandList = [];
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
-        console.log(this.commandList);
     }
 
     executeAllCommands(): void {

@@ -1,1 +1,56 @@
-<p>save-dialog works!</p>
+<div class="save-container">
+    <h2 mat-dialog-title>Sauvegarder les dessin</h2>
+    <form>
+        <mat-form-field class="file-name">
+            <input matInput  #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required />
+            <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
+                <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="fileNameFormControl.invalid"> Veuillez entrer un nom </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Ajoutez des étiquettes</mat-label>
+            <mat-chip-list #chipList ngDefaultControl>
+                <mat-chip *ngFor="let tag of tags" selectable="true" removable="true" (removed)="this.removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <input
+                    pattern="[a-zA-Z ]*"
+                    placeholder="Ajoutez des étiquettes"
+                    type="text"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="true"
+                    (matChipInputTokenEnd)="addTag($event)"
+                    [formControl]="tagFormControl"
+                />
+            </mat-chip-list>
+
+            <button mat-button matSuffix mat-icon-button *ngIf="this.tags.length" aria-label="Clear" (click)="clearTags()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </form>
+    <div class="tag-rules">
+        <mat-list role="list">
+            <p>Règles pour avoir une étiquette valide:</p>
+            <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum</mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum</mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Ne doit pas contenir de chiffres</mat-list-item>
+        </mat-list>
+    </div>
+
+    <div class="bottom-div">
+        <button
+            mat-flat-button
+            color="primary"
+            class="save-canvas-btn"
+            [disabled]="tagFormControl.invalid || fileNameFormControl.invalid || this.savingState"
+            (click)="postDrawing(fileName.value)"
+        >
+            Sauvegarder
+        </button>
+        <button mat-flat-button color="primary" class="cancel-btn" (click)="this.dialogRef.close()">Annuler</button>
+    </div>
+</div>
