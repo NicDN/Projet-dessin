@@ -14,6 +14,8 @@ export class EyeDropperService extends Tool {
     currentPixelData: ImageData;
     currentGridOfPixelData: ImageData;
     leftClick: boolean = false;
+    preview: boolean = false;
+    gridDrawn: boolean = false;
 
     private subject: Subject<void> = new Subject<void>();
 
@@ -31,19 +33,22 @@ export class EyeDropperService extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
-        // this.currentGridOfPixelData = this.drawingService.baseCtx.getImageData(
-        //     this.getPositionFromMouse(event).x - 10,
-        //     this.getPositionFromMouse(event).y - 10,
-        //     20,
-        //     20,
-        // );
-        const sizePreview = 10;
+        const sizePreview = 11;
         this.currentGridOfPixelData = this.drawingService.baseCtx.getImageData(
-            this.getPositionFromMouse(event).x - sizePreview / 2,
-            this.getPositionFromMouse(event).y - sizePreview / 2,
+            this.getPositionFromMouse(event).x - Math.floor(sizePreview / 2),
+            this.getPositionFromMouse(event).y - Math.floor(sizePreview / 2),
             sizePreview,
             sizePreview,
         );
+    }
+
+    onMouseEnter(event: MouseEvent): void {
+        this.preview = true;
+    }
+
+    onMouseOut(event: MouseEvent): void {
+        this.preview = false;
+        this.gridDrawn = false;
     }
 
     getImageData(mousePosition: Vec2): void {

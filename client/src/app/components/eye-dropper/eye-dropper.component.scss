@@ -1,4 +1,4 @@
-#eye-dropper-canvas{
+#eye-dropper-canvas {
     z-index: 0;
     position: relative;
     width: 250px;
@@ -7,17 +7,16 @@
     top: 0;
 }
 
-#eye-dropper-canvas-container{
+#eye-dropper-canvas-container {
     margin-left: 40px;
     position: absolute;
     width: 250px;
     height: 250px;
-    border: solid;
-    border-color: black;
+    border: none;
     border-radius: 2px;
 }
 
-#grid-canvas{
+#grid-canvas {
     z-index: 1;
     position: absolute;
     left: 0;
