@@ -1,6 +1,6 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, HostListener, OnInit } from '@angular/core';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { MatChipInputEvent, MatChipList } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
@@ -12,13 +12,13 @@ import { DrawingForm } from '@common/communication/drawingForm';
     styleUrls: ['./carousel-dialog.component.scss'],
 })
 export class CarouselDialogComponent implements OnInit {
+    @ViewChild('chipList') chipList: MatChipList;
+
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-    readonly DRAWINGS_MAX_COUNT: number = 3;
     drawings: DrawingForm[];
 
     searchedTags: string[] = [];
-    noDrawingError: boolean = true;
     loading: boolean = false;
 
     private startIndex: number = 0;
@@ -35,12 +35,24 @@ export class CarouselDialogComponent implements OnInit {
             (drawings) => {
                 this.loading = false;
                 this.drawings = drawings;
+
+                this.validateFilter();
             },
             (error) => {
-                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
-                if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins", 'Fermer');
+                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur.", 'Fermer');
+                this.loading = false;
+                // if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins.", 'Fermer');
+                // TODO: no need for this line ?
             },
         );
+    }
+
+    private validateFilter(): void {
+        this.searchedTags.length !== 0
+            ? this.drawings.length === 0
+                ? (this.chipList.errorState = true)
+                : (this.chipList.errorState = false)
+            : (this.chipList.errorState = false);
     }
 
     async forwardDrawings(): Promise<void> {
@@ -96,9 +108,9 @@ export class CarouselDialogComponent implements OnInit {
         this.requestDrawings();
     }
 
-    openSnackBar(message: string, action: string): void {
+    private openSnackBar(message: string, action: string): void {
         this.snackBar.open(message, action, {
-            duration: 5000,
+            duration: 2000,
         });
     }
 }

@@ -38,7 +38,7 @@
         <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearTags()">
             <mat-icon>close</mat-icon>
         </button>
-        <!-- <mat-error *ngIf="drawings.>Aucun dessin trouvé</mat-error> -->
+        <mat-error *ngIf="chipList.errorState">Aucun dessin trouvé</mat-error>
     </mat-form-field>
     <button mat-flat-button color="primary" class="close-btn" (click)="this.closeDialog()">Fermer</button>
 </div>

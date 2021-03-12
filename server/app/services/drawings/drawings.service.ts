@@ -73,7 +73,6 @@ export class DrawingsService {
                     filteredForms.push(form);
                 }
             }
-            console.log(tag);
         }
         return filteredForms;
     }
@@ -111,9 +110,16 @@ export class DrawingsService {
             throw new Error('FILE_NOT_FOUND');
         }
 
-        return await this.collection
-            // tslint:disable-next-line: no-empty
-            .deleteOne({ _id: new ObjectId(id) }, () => {});
+        return this.collection
+            .findOneAndDelete({ _id: new ObjectId(id) })
+            .then((deletedDrawing) => {
+                if (deletedDrawing.value == null) {
+                    throw new Error('NOT_ON_DATABASE');
+                }
+            })
+            .catch(() => {
+                throw new Error('FAILED_TO_DELETE_DRAWING');
+            });
     }
 
     private validateDrawing(drawingForm: DrawingForm): boolean {

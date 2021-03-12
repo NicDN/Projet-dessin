@@ -36,6 +36,14 @@ export class CarouselService {
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
                 return throwError('INTERNAL_SERVER_ERROR');
             }
+
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
+                return throwError('NOT_ON_DATABASE');
+            }
+
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
+                return throwError('FAILED_TO_DELETE_DRAWING');
+            }
             return of(result as T);
         };
     }

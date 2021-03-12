@@ -26,6 +26,8 @@ export class DrawingsController {
                 })
                 .catch((error: Error) => {
                     if (error.message === 'FILE_NOT_FOUND') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                    if (error.message === 'NOT_ON_DATABASE') res.status(Httpstatus.StatusCodes.NOT_FOUND).send();
+                    if (error.message === 'FAILED_TO_DELETE_DRAWING') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
                 });
         });
 

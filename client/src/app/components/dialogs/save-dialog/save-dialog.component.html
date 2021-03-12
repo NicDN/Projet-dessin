@@ -2,8 +2,8 @@
     <h2 mat-dialog-title>Sauvegarder les dessin</h2>
     <form>
         <mat-form-field class="file-name">
-            <input matInput #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required />
-            <button mat-button *ngIf="fileName.value" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
+            <input matInput  #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required />
+            <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
                 <mat-icon>close</mat-icon>
             </button>
             <mat-error *ngIf="fileNameFormControl.invalid"> Veuillez entrer un nom </mat-error>

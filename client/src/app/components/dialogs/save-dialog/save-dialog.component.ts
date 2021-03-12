@@ -21,6 +21,7 @@ export class SaveDialogComponent {
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
     tags: string[] = [];
+
     savingState: boolean = false; // boolean to be used while saving
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
