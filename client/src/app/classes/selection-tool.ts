@@ -3,9 +3,15 @@ import { MouseButton, Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 export abstract class SelectionTool extends Tool {
-    constructor(drawingService: DrawingService, protected rectangleDrawingService: RectangleDrawingService, toolName: string) {
+    constructor(
+        drawingService: DrawingService,
+        protected rectangleDrawingService: RectangleDrawingService,
+        toolName: string,
+        protected undoRedoService: UndoRedoService,
+    ) {
         super(drawingService, toolName);
     }
 
@@ -64,7 +70,11 @@ export abstract class SelectionTool extends Tool {
                 return;
             }
             if (this.rectangleDrawingService.alternateShape) {
-                this.initialBottomRight = this.rectangleDrawingService.getTrueEndCoords(this.initialTopLeft, this.getPositionFromMouse(event));
+                this.initialBottomRight = this.rectangleDrawingService.getTrueEndCoords(
+                    this.initialTopLeft,
+                    this.getPositionFromMouse(event),
+                    this.rectangleDrawingService.alternateShape,
+                );
             } else {
                 this.initialBottomRight = this.getPositionFromMouse(event);
             }
@@ -75,10 +85,11 @@ export abstract class SelectionTool extends Tool {
 
             if (this.initialTopLeft.x !== this.initialBottomRight.x && this.initialTopLeft.y !== this.initialBottomRight.y) {
                 this.saveSelection(this.drawingService.baseCtx);
-                this.drawSelection(this.drawingService.previewCtx);
+                this.draw(this.drawingService.previewCtx);
                 this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
                 this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
                 this.hasSelection = true;
+                this.undoRedoService.disableUndoRedo();
             }
         }
     }
@@ -121,17 +132,17 @@ export abstract class SelectionTool extends Tool {
         this.moveSelectionArrow(ctx, deltaX, deltaY);
         setTimeout(() => {
             if (event.code === null) {
-                this.handleArrowContinuous(ctx, deltaX, deltaY);
+                this.handleArrowContinuous(ctx, deltaX, deltaY, event);
             }
         }, initialTimer);
     }
 
-    handleArrowContinuous(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
-        const initialTimer = 100;
+    handleArrowContinuous(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number, event: KeyboardEvent): void {
+        const continuousTimer = 100;
         setTimeout(() => {
             this.moveSelectionArrow(ctx, deltaX, deltaY);
             this.timeoutHandler = 0;
-        }, initialTimer);
+        }, continuousTimer);
     }
 
     moveSelectionArrow(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
@@ -140,7 +151,7 @@ export abstract class SelectionTool extends Tool {
         this.finalBottomRight.x += deltaX;
         this.finalBottomRight.y += deltaY;
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawSelection(ctx);
+        this.draw(ctx);
         this.drawPerimeter(ctx, this.finalTopLeft, this.finalBottomRight);
         this.drawBox(ctx, this.finalTopLeft, this.finalBottomRight);
     }
@@ -157,24 +168,26 @@ export abstract class SelectionTool extends Tool {
         this.initialTopLeft = { x: 0, y: 0 };
         this.initialBottomRight = { x: this.drawingService.canvas.width, y: this.drawingService.canvas.height };
         this.saveSelection(this.drawingService.baseCtx);
-        this.drawSelection(this.drawingService.previewCtx);
+        this.draw(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
         this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
         this.hasSelection = true;
+        this.undoRedoService.disableUndoRedo();
     }
 
     cancelSelection(): void {
         if (this.hasSelection) {
-            this.drawSelection(this.drawingService.baseCtx);
+            this.finalDrawDown(this.drawingService.baseCtx);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.hasSelection = false;
+            this.undoRedoService.enableUndoRedo();
         }
     }
 
     drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end);
+        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end, this.rectangleDrawingService.alternateShape);
         ctx.save();
-        ctx.lineWidth = 0;
+        ctx.lineWidth = 1;
         ctx.lineJoin = 'miter';
         ctx.strokeStyle = this.boxColor.rgbValue;
         ctx.globalAlpha = this.boxColor.opacity;
@@ -189,6 +202,8 @@ export abstract class SelectionTool extends Tool {
         const pointWidth = 6;
         const halfPointWidth = pointWidth / 2;
         ctx.beginPath();
+        ctx.lineWidth = 1;
+
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'blue';
         ctx.rect(begin.x - halfPointWidth, begin.y - halfPointWidth, pointWidth, pointWidth);
@@ -216,7 +231,7 @@ export abstract class SelectionTool extends Tool {
             y: this.finalTopLeft.y + Math.abs(this.initialBottomRight.y - this.initialTopLeft.y),
         };
 
-        this.drawSelection(ctx);
+        this.draw(ctx);
         this.drawPerimeter(ctx, this.finalTopLeft, this.finalBottomRight);
         this.drawBox(ctx, this.finalTopLeft, this.finalBottomRight);
     }
@@ -249,7 +264,8 @@ export abstract class SelectionTool extends Tool {
 
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 
-    abstract drawSelection(ctx: CanvasRenderingContext2D): void;
+    abstract draw(ctx: CanvasRenderingContext2D): void;
+    abstract finalDrawDown(ctx: CanvasRenderingContext2D): void;
 
     abstract fillWithWhite(ctx: CanvasRenderingContext2D, topLeft: Vec2, bottomRight: Vec2): void;
 }

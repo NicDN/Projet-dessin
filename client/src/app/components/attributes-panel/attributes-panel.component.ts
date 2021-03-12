@@ -48,6 +48,7 @@ export class AttributesPanelComponent {
     shapeIsActive(): boolean {
         return this.currentTool instanceof Shape;
     }
+
     polygonIsActive(): boolean {
         return this.currentTool instanceof PolygonService;
     }

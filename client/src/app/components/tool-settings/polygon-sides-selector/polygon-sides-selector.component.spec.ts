@@ -6,12 +6,13 @@ import { Shape } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { PolygonSidesSelectorComponent } from './polygon-sides-selector.component';
 
 describe('PolygonSidesSelectorComponent', () => {
     let component: PolygonSidesSelectorComponent;
     let fixture: ComponentFixture<PolygonSidesSelectorComponent>;
-    const polygon: Shape = new PolygonService(new DrawingService(), new ColorService());
+    const polygon: Shape = new PolygonService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

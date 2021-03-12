@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { SprayCanPropreties } from '@app/classes/commands/spray-can-command/spray-can-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { SprayCanService } from './spray-can.service';
 
 // tslint:disable: no-string-literal no-any
@@ -15,7 +17,12 @@ describe('SprayCanService', () => {
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
+    let sprayCanPropretiesStub: SprayCanPropreties;
+
+    const pathStub: Vec2[] = [{ x: 25, y: 25 }];
+    const arrayStub: number[] = [1, 2];
     const PRIMARY_COLOR_STUB = 'red';
     const OPACITY_STUB = 1;
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
@@ -28,10 +35,12 @@ describe('SprayCanService', () => {
         });
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
 
@@ -50,6 +59,19 @@ describe('SprayCanService', () => {
             button: MouseButton.Left,
             buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
+
+        sprayCanPropretiesStub = {
+            drawingCtx: drawingServiceSpyObj.baseCtx,
+            drawingPath: pathStub,
+            mainColor: { rgbValue: 'black', opacity: 1 },
+            dropletsDiameter: 1,
+            sprayDiameter: 1,
+            emissionRate: 1,
+            angleArray: arrayStub,
+            radiusArray: arrayStub,
+            randomGlobalAlpha: arrayStub,
+            randomArc: arrayStub,
+        };
     });
 
     it('should be created', () => {
@@ -101,6 +123,10 @@ describe('SprayCanService', () => {
         service.mouseDown = true;
         service.onMouseUp(mouseEvent);
         expect(clearPathSpy).toHaveBeenCalled();
+        clearPathSpy.calls.reset();
+        service.mouseDown = false;
+        service.onMouseUp(mouseEvent);
+        expect(clearPathSpy).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should add the mousePosition to the pathData if mouseDown is true', () => {
@@ -115,12 +141,6 @@ describe('SprayCanService', () => {
         service.mouseDown = false;
         service.onMouseMove(mouseEvent);
         expect(service['pathData']).toEqual(expectedPathStub);
-    });
-
-    it('#onMouseOut should call onMouseUp', () => {
-        const onMouseUpSpy = spyOn(service, 'onMouseUp').and.stub();
-        service.onMouseOut(mouseEvent);
-        expect(onMouseUpSpy).toHaveBeenCalled();
     });
 
     it('#onMouseEnter should call on mouseDown if left click is pressed and set mouseDownValue', () => {
@@ -145,7 +165,7 @@ describe('SprayCanService', () => {
     });
 
     it('#setContext should set the context for the spray', () => {
-        service.setContext(baseCtxStub);
+        service.setContext(baseCtxStub, { rgbValue: '#ff0000', opacity: 1 });
         expect(baseCtxStub.lineCap).toEqual('round');
         expect(baseCtxStub.lineJoin).toEqual('round');
         expect(baseCtxStub.fillStyle).toEqual('#ff0000');
@@ -169,10 +189,16 @@ describe('SprayCanService', () => {
     });
 
     it('#drawSpray should call setContext to make the context ready for drawing', () => {
-        const pathStub: Vec2[] = [{ x: 25, y: 25 }];
+        const pathStub1: Vec2[] = [{ x: 25, y: 25 }];
         const setContextSpy = spyOn(service, 'setContext').and.stub();
-        service.drawSpray(baseCtxStub, pathStub);
+        service.drawSpray(baseCtxStub, pathStub1);
         expect(setContextSpy).toHaveBeenCalled();
+    });
+
+    it('#sprayOnCanvas should not push to cleanPathData if is using undoRedo', () => {
+        service['cleanPathData'].length = 0;
+        service.sprayOnCanvas(sprayCanPropretiesStub, { x: 1, y: 1 } as Vec2, true);
+        expect(service['cleanPathData'].length).toEqual(0);
     });
 
     it('#drawSpray should draw something on the context', () => {
@@ -180,9 +206,37 @@ describe('SprayCanService', () => {
         const bigParameterStub = 100;
         service.dropletsDiameter = bigParameterStub;
         service.emissionRate = bigParameterStub;
+        // tslint:disable-next-line: no-shadowed-variable
         const pathStub = [{ x: 0, y: 0 }];
         service.drawSpray(baseCtxStub, pathStub);
         const imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataAfter).not.toEqual(imageDataBefore);
+    });
+
+    it('#generateRandomArray should return an array with random value between min and max', () => {
+        const min = 0;
+        const max = 10;
+        const arrayStub1: number[] = service.generateRandomArray(min, max);
+        for (const index of arrayStub1) {
+            expect(index > min && index < max).toBeTruthy();
+        }
+    });
+
+    it('#storeRandom should call generateRandomArray 4 times', () => {
+        const numberOfCallsStub = 4;
+        const generateRandomSpy = spyOn(service, 'generateRandomArray').and.stub();
+        service.storeRandom();
+        expect(generateRandomSpy).toHaveBeenCalledTimes(numberOfCallsStub);
+    });
+
+    it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
+        const drawingPathStub: Vec2[] = [{ x: 1, y: 2 }];
+        const sprayCanPropreties: SprayCanPropreties = service.loadProprities(baseCtxStub, drawingPathStub);
+        expect(sprayCanPropreties.drawingCtx).toEqual(baseCtxStub);
+        expect(sprayCanPropreties.drawingPath).toEqual(drawingPathStub);
+        expect(sprayCanPropreties.mainColor.rgbValue).toEqual(PRIMARY_COLOR_STUB);
+        expect(sprayCanPropreties.dropletsDiameter).toEqual(service.dropletsDiameter);
+        expect(sprayCanPropreties.sprayDiameter).toEqual(service.sprayDiameter);
+        expect(sprayCanPropreties.emissionRate).toEqual(service.emissionRate);
     });
 });

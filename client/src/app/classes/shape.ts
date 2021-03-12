@@ -36,7 +36,8 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.executeShapeCommand(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            // this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -76,7 +77,7 @@ export abstract class Shape extends DrawingTool {
     }
 
     drawEllipticalPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end);
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(begin, end, this.alternateShape);
         const center: Vec2 = this.getCenterCoords(begin, actualEndCoords);
         const radiuses: Vec2 = { x: this.getRadius(begin.x, actualEndCoords.x), y: this.getRadius(begin.y, actualEndCoords.y) };
         ctx.save();
@@ -97,12 +98,12 @@ export abstract class Shape extends DrawingTool {
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
     }
 
-    getTrueEndCoords(begin: Vec2, end: Vec2): Vec2 {
+    getTrueEndCoords(begin: Vec2, end: Vec2, isAlternateShape: boolean): Vec2 {
         let endCoordX: number = end.x;
         let endCoordY: number = end.y;
         const distX: number = Math.abs(end.x - begin.x);
         const distY: number = Math.abs(end.y - begin.y);
-        if (this.alternateShape) {
+        if (isAlternateShape) {
             endCoordX = begin.x + Math.sign(end.x - begin.x) * Math.min(distX, distY);
             endCoordY = begin.y + Math.sign(end.y - begin.y) * Math.min(distX, distY);
         }
@@ -127,8 +128,8 @@ export abstract class Shape extends DrawingTool {
         return Math.abs(end - begin) / 2;
     }
 
-    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2): void {
-        const thicknessAdjustment: number = this.traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
+    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: number): void {
+        const thicknessAdjustment: number = traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
         radiuses.x -= thicknessAdjustment;
         radiuses.y -= thicknessAdjustment;
         if (radiuses.x <= 0) {
@@ -144,4 +145,5 @@ export abstract class Shape extends DrawingTool {
     }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

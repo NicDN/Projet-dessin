@@ -1,22 +1,34 @@
 import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
+import { BaseLineCommand } from '@app/classes/commands/base-line-command';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class DrawingService {
+    blankHTMLImage: HTMLImageElement;
     baseCtx: CanvasRenderingContext2D;
     previewCtx: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
-    private subject: Subject<void> = new Subject<void>();
+    subject: Subject<BoxSize> = new Subject<BoxSize>();
+    baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
 
-    sendNotifReload(): void {
-        this.subject.next();
+    sendNotifToResize(boxSize: BoxSize): void {
+        this.subject.next(boxSize);
     }
 
-    newIncomingResizeSignals(): Observable<void> {
+    sendBaseLineCommand(image: HTMLImageElement): void {
+        const baseLineCommand = new BaseLineCommand(this, image);
+        this.baseLineSubject.next(baseLineCommand);
+    }
+
+    newBaseLineSignals(): Observable<BaseLineCommand> {
+        return this.baseLineSubject.asObservable();
+    }
+
+    newIncomingResizeSignals(): Observable<BoxSize> {
         return this.subject.asObservable();
     }
 
@@ -24,30 +36,47 @@ export class DrawingService {
         context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    handleNewDrawing(): void {
+    executeBaseLine(image: HTMLImageElement): void {
+        if (image !== undefined) {
+            this.baseCtx.drawImage(image, 0, 0);
+        }
+    }
+
+    handleNewDrawing(image?: HTMLImageElement): void {
         if (this.canvasIsEmpty()) {
-            this.reloadDrawing();
+            image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
             return;
         }
         if (this.confirmReload()) {
-            this.reloadDrawing();
+            image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
         }
         this.clearCanvas(this.previewCtx);
+    }
+
+    changeDrawing(image: HTMLImageElement): void {
+        this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
+        this.baseCtx.drawImage(image, 0, 0);
+        this.sendBaseLineCommand(image);
     }
 
     confirmReload(): boolean {
         return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
-    reloadDrawing(): void {
+    reloadToBlankDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
         this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
+
+        this.blankHTMLImage.width = this.canvas.width;
+        this.blankHTMLImage.height = this.canvas.height;
+        this.sendBaseLineCommand(this.blankHTMLImage);
     }
 
     resetCanvas(): void {
-        this.sendNotifReload();
+        const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
+        this.sendNotifToResize(boxSize);
     }
 
     canvasIsEmpty(): boolean {
@@ -59,9 +88,9 @@ export class DrawingService {
         const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
-
         this.changeSizeOfCanvas(this.canvas, boxsize);
         this.fillWithWhite(this.baseCtx);
+        this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
 
         this.previewCtx.putImageData(imageOldPreview, 0, 0);
@@ -70,7 +99,7 @@ export class DrawingService {
     fillWithWhite(context: CanvasRenderingContext2D): void {
         context.fillStyle = 'white';
         context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        context.drawImage(this.previewCanvas, 0, 0);
+        // context.drawImage(this.previewCanvas, 0, 0);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {

@@ -6,12 +6,13 @@ import { By } from '@angular/platform-browser';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/line/line.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineSettingsSelectorComponent } from './line-settings-selector.component';
 
 describe('LineSettingsSelectorComponent', () => {
     let component: LineSettingsSelectorComponent;
     let fixture: ComponentFixture<LineSettingsSelectorComponent>;
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService());
+    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -4,6 +4,7 @@ import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EllipseDrawingService } from './ellipse-drawing.service';
 
 // tslint:disable: no-string-literal
@@ -12,6 +13,7 @@ describe('EllipseDrawingService', () => {
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
 
@@ -32,11 +34,13 @@ describe('EllipseDrawingService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 EllipseDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
 
@@ -59,30 +63,6 @@ describe('EllipseDrawingService', () => {
         expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.lineCap).toEqual('round');
-    });
-
-    it('#adjustToWidth should adjust radiuses if ellipse has a certain border width', () => {
-        const expectedXRadius = 18;
-        const expectedYRadius = 8;
-        const radiuses: Vec2 = { x: 20, y: 10 };
-        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
-        service.traceType = TraceType.FilledAndBordered;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(radiuses.x).toEqual(expectedXRadius);
-        expect(radiuses.y).toEqual(expectedYRadius);
-    });
-
-    it('#adjustToWidth should not adjust radiuses if ellipse doesnt have a border', () => {
-        const radiuses: Vec2 = { x: 20, y: 10 };
-        const expectedXRadius = 20;
-        const expectedYRadius = 10;
-        drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
-        service.traceType = TraceType.FilledNoBordered;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(radiuses.x).toEqual(expectedXRadius);
-        expect(radiuses.y).toEqual(expectedYRadius);
     });
 
     it('#draw should draw an ellipse on the canvas at the right position and using the right colours', () => {
@@ -135,27 +115,5 @@ describe('EllipseDrawingService', () => {
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
-    });
-
-    it('#adjustToWidth should adjust the width if its bigger than the box containing the ellipse', () => {
-        const initialWidth = 50;
-        const radius: Vec2 = { x: -5, y: -15 };
-        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
-        expect(radius.x).toBeGreaterThan(0);
-        expect(radius.y).toBeGreaterThan(0);
-    });
-
-    it('#adjustToWidth should adjust radiuses and width if begin and end are the same point (edge case, necessary)', () => {
-        const initialWidth = 50;
-        const radius: Vec2 = { x: 0, y: 0 };
-        drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
-
-        service.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, BOTTOM_RIGHT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
-        expect(radius.x).toEqual(1);
-        expect(radius.y).toEqual(1);
     });
 });
