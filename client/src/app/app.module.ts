@@ -18,6 +18,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LineSettingsSelectorComponent } from '@app/components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
@@ -34,12 +35,12 @@ import { ExportDialogComponent } from './components/dialogs/export-dialog/export
 import { SaveDialogComponent } from './components/dialogs/save-dialog/save-dialog.component';
 import { DrawingComponent } from './components/drawing/drawing.component';
 import { EditorComponent } from './components/editor/editor.component';
+import { EyeDropperComponent } from './components/eye-dropper/eye-dropper.component';
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
-import { LineSettingsSelectorComponent } from './components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
@@ -67,6 +68,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
+        EyeDropperComponent,
 
         PolygonSidesSelectorComponent,
         CarouselDialogComponent,
