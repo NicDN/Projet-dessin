@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CarouselDialogComponent } from '@app/components/dialogs/carousel-dialog/carousel-dialog.component';
 import { ExportDialogComponent } from '@app/components/dialogs/export-dialog/export-dialog.component';
 import { SaveDialogComponent } from '@app/components/dialogs/save-dialog/save-dialog.component';
@@ -17,6 +17,7 @@ describe('DialogService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [MatDialogModule],
+            providers: [{ provide: MatDialogRef, useValue: dialogRefSpyObj }],
         });
         service = TestBed.inject(DialogService);
     });
@@ -32,7 +33,10 @@ describe('DialogService', () => {
     it('#openDialog should open the right dialog ', () => {
         // // Opening carrousel dialog
         service.openDialog(DialogType.Carousel);
-        expect(dialogSpy).toHaveBeenCalledWith(CarouselDialogComponent);
+        expect(dialogSpy).toHaveBeenCalledWith(CarouselDialogComponent, {
+            width: '1400px',
+            maxWidth: '100vw',
+        });
         expect(dialogRefSpyObj.afterClosed).toHaveBeenCalled();
 
         // // Opening save dialog

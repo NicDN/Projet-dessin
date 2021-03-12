@@ -12,6 +12,8 @@ export class DrawingService {
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
+    loadByDefault: boolean = true;
+
     subject: Subject<BoxSize> = new Subject<BoxSize>();
     baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
 

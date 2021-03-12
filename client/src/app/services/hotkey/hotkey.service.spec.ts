@@ -57,7 +57,7 @@ describe('HotkeyService', () => {
         toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
-        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(of(booleanStub));
+        dialogServiceSpyObj['listenToKeyEvents'].and.returnValue(of(booleanStub));
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -91,7 +91,7 @@ describe('HotkeyService', () => {
             ' should call every function',
         () => {
             spyOn(service, 'handleCtrlO');
-            service.listenToKeyEvents = true;
+            service['listenToKeyEvents'] = true;
 
             service.onKeyDown(keySCtrlStub);
             expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
@@ -181,13 +181,13 @@ describe('HotkeyService', () => {
 
     it('#onKeyDown should not go through if it is not listening to key events', () => {
         spyOn(toolsServiceSpyObj.currentTool, 'onKeyDown');
-        service.listenToKeyEvents = false;
+        service['listenToKeyEvents'] = false;
         service.onKeyDown(randomKeyEvent);
         expect(toolsServiceSpyObj.currentTool.onKeyDown).not.toHaveBeenCalled();
     });
 
     it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
-        service.listenToKeyEvents = true;
+        service['listenToKeyEvents'] = true;
         const notAssignedKeyboardEvent1 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: true, shiftKey: true });
         const notAssignedKeyboardEvent2 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: false });
         const notAssignedKeyboardEvent3 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: true, shiftKey: false });

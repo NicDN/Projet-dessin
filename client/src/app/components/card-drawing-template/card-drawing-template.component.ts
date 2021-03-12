@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { DrawingForm } from '@common/communication/drawingForm';
@@ -14,11 +15,21 @@ export class CardDrawingTemplateComponent {
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
     @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();
 
-    constructor(private carouselService: CarouselService, private snackBar: MatSnackBar, public drawingService: DrawingService) {}
+    constructor(
+        private carouselService: CarouselService,
+        private snackBar: MatSnackBar,
+        public drawingService: DrawingService,
+        private router: Router,
+    ) {}
 
     setToCurrentDrawing(): void {
         const image = new Image();
         image.src = this.drawingForm.drawingData;
+
+        if (this.router.url !== '/editor') {
+            // this.drawingService.loadByDefault = false;
+            this.router.navigate(['editor']);
+        }
 
         if (this.drawingService.handleNewDrawing(image)) {
             this.closeCarousel.emit();
@@ -47,5 +58,12 @@ export class CardDrawingTemplateComponent {
         this.snackBar.open(message, action, {
             duration: 2000,
         });
+    }
+
+    isTheLoadedCanvas(): boolean {
+        if (this.router.url === '/home') {
+            return false;
+        }
+        return this.drawingService.canvas === undefined ? false : this.drawingForm.drawingData === this.drawingService.canvas.toDataURL();
     }
 }

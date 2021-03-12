@@ -41,11 +41,12 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
         this.drawingService.canvas = this.baseCanvas.nativeElement;
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
         this.drawingService.fillWithWhite(this.drawingService.baseCtx);
-        const ht = new Image(this.canvasWidth, this.canvasHeight);
 
-        ht.src = this.drawingService.canvas.toDataURL();
-        this.drawingService.blankHTMLImage = ht;
-        this.drawingService.sendBaseLineCommand(ht);
+        const baseImage = new Image(this.canvasWidth, this.canvasHeight);
+        baseImage.src = this.drawingService.canvas.toDataURL();
+        this.drawingService.blankHTMLImage = baseImage;
+        this.drawingService.handleNewDrawing(baseImage);
+        // this.drawingService.sendBaseLineCommand(baseImage);
     }
 
     ngAfterContentInit(): void {
