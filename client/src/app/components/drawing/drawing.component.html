@@ -1,6 +1,16 @@
-<div id="canvas-container" [ngStyle]="this.toolsService.currentTool === this.toolsService.eraserService ? { cursor: 'none' } : { cursor: 'crosshair' }">
+<div
+    id="canvas-container"
+    [ngStyle]="this.toolsService.currentTool === this.toolsService.eraserService ? { cursor: 'none' } : { cursor: 'crosshair' }"
+>
     <canvas id="canvas" #baseCanvas [attr.width]="width" [attr.height]="height"></canvas>
-    <canvas id="previewLayer" #previewCanvas [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)"></canvas>
+    <canvas
+        id="previewLayer"
+        #previewCanvas
+        [attr.width]="width"
+        [attr.height]="height"
+        (mousedown)="onMouseDown($event)"
+        oncontextmenu="return false"
+    ></canvas>
     <div>
         <app-resize-container
             [width]="width"
