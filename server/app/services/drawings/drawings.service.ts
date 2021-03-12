@@ -1,4 +1,4 @@
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 import * as fs from 'fs';
 import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';
@@ -53,7 +53,6 @@ export class DrawingsService {
             .toArray()
             .then((drawingsData) => {
                 drawingsData.forEach((drawingData) => {
-                    // tslint:disable-next-line: no-string-literal
                     drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
                 });
             });

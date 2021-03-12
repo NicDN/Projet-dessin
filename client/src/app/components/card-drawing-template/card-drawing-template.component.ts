@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
     selector: 'app-card-drawing-template',
@@ -20,24 +20,40 @@ export class CardDrawingTemplateComponent {
         private snackBar: MatSnackBar,
         public drawingService: DrawingService,
         private router: Router,
-    ) {}
+    ) {
+        // this.routeEvent(this.router);
+    }
+
+    // routeEvent(router: Router): void {
+    //     router.events.subscribe((e) => {
+    //         if (e instanceof NavigationEnd) {
+    //             const image = new Image();
+    //             image.src = this.drawingForm.drawingData;
+    //             if (this.drawingService.handleNewDrawing(image)) {
+    //                 this.closeCarousel.emit();
+    //             }
+    //         }
+    //     });
+    // }
 
     setToCurrentDrawing(): void {
         const image = new Image();
         image.src = this.drawingForm.drawingData;
 
         if (this.router.url !== '/editor') {
-            // this.drawingService.loadByDefault = false;
             this.router.navigate(['editor']);
-        }
-
-        if (this.drawingService.handleNewDrawing(image)) {
+            this.drawingService.newImage = image;
             this.closeCarousel.emit();
+        } else {
+            if (this.drawingService.handleNewDrawing(image)) {
+                this.closeCarousel.emit();
+            }
         }
     }
 
     deleteDrawing(id: string): void {
         this.carouselService.deleteDrawingFromServer(id).subscribe(
+            // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
                 if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');

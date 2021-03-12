@@ -12,6 +12,7 @@ export class DrawingService {
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
+    newImage?: HTMLImageElement = undefined;
     loadByDefault: boolean = true;
 
     subject: Subject<BoxSize> = new Subject<BoxSize>();

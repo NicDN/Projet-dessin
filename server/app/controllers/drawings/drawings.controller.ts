@@ -1,6 +1,6 @@
 import { DrawingsService } from '@app/services/drawings/drawings.service';
 import { TYPES } from '@app/types';
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 import { NextFunction, Request, Response, Router } from 'express';
 import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';

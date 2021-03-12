@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 import * as Httpstatus from 'http-status-codes';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';

@@ -42,9 +42,8 @@ export class SaveDialogComponent {
     postDrawing(fileName: string): void {
         this.savingState = true;
         this.saveService.postDrawing(fileName, this.tags).subscribe(
-            () => {
-                // how to remove this callback and others are called ?
-            },
+            // tslint:disable-next-line: no-empty
+            () => {},
             () => {
                 this.savingState = false;
                 this.openSnackBar('Impossible de sauvegarder le dessin.', 'Fermer');

@@ -4,7 +4,7 @@ import { MatChipInputEvent, MatChipList } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
     selector: 'app-carousel-dialog',
@@ -16,7 +16,7 @@ export class CarouselDialogComponent implements OnInit {
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-    drawings: DrawingForm[];
+    drawings: DrawingForm[] = [];
 
     searchedTags: string[] = [];
     loading: boolean = false;

@@ -1,8 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingForm } from '@common/communication/drawingForm';
+import { DrawingForm } from '@common/communication/drawing-form';
 
 import { CardDrawingTemplateComponent } from './card-drawing-template.component';
 
@@ -24,7 +25,7 @@ describe('CardDrawingTemplateComponent', () => {
         drawingServiceSpyObj.canvas = canvasMock;
 
         TestBed.configureTestingModule({
-            imports: [HttpClientModule, MatSnackBarModule],
+            imports: [HttpClientModule, MatSnackBarModule, RouterTestingModule],
             declarations: [CardDrawingTemplateComponent],
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         }).compileComponents();
