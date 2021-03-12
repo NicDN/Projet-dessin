@@ -9,7 +9,7 @@
             class="list-item"
         >
             <fa-icon *ngIf="toolBarElement.tool !== this.toolService.polygonService "icon="{{ toolBarElement.icon }}"></fa-icon>
-            <fa-icon class="polygon-icon" *ngIf="toolBarElement.tool === this.toolService.polygonService " [icon]="['fab','centos']"></fa-icon>
+            <mat-icon  *ngIf="toolBarElement.tool === this.toolService.polygonService ">change_history</mat-icon>
         </a>
     </mat-nav-list>
 </div>

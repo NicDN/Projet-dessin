@@ -6,6 +6,7 @@
                 <button id="arrow" mat-icon-button class="before" (click)="this.backwardDrawings()">
                     <mat-icon>navigate_before</mat-icon>
                 </button>
+                <h1 class="filter-error" *ngIf="this.chipList.errorState">Aucun dessin trouvé</h1>
                 <app-card-drawing-template *ngFor="let drawing of drawings" [drawingForm]="drawing"
                     (closeCarousel)="this.closeDialog()" (requestDrawings)="this.requestDrawings()">
                 </app-card-drawing-template>

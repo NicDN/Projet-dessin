@@ -23,7 +23,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LineSettingsSelectorComponent } from '@app/components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
@@ -116,6 +115,6 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 export class AppModule {
     // adding icons packs for font-awesome
     constructor(library: FaIconLibrary) {
-        library.addIconPacks(fas, far, fab);
+        library.addIconPacks(fas, far);
     }
 }

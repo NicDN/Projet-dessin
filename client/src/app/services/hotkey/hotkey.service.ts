@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -45,6 +46,7 @@ export class HotkeyService {
         private toolService: ToolsService,
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
+        private rectangleSelectionService: RectangleSelectionService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -63,6 +65,7 @@ export class HotkeyService {
             KeyO: { actionCtrl: () => this.handleCtrlO() },
             KeyA: {
                 action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
+                actionCtrl: () => this.handleSelectAll(),
             },
             KeyI: { action: () => this.toolService.setCurrentTool(this.toolService.eyeDropperService) },
             KeyE: {
@@ -98,6 +101,11 @@ export class HotkeyService {
         }
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
         event.returnValue = true; // To accept default web shortCutManager
+    }
+
+    handleSelectAll(): void {
+        this.toolService.setCurrentTool(this.toolService.rectangleSelectionService);
+        this.rectangleSelectionService.selectAll();
     }
 
     handleCtrlO(): void {

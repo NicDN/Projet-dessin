@@ -28,6 +28,7 @@ export class SaveDialogComponent {
     tagFormControl: FormControl = new FormControl('', [
         Validators.maxLength(this.TAG_MAX_LENGTH),
         Validators.minLength(this.TAG_MIN_LENGTH),
+        // this.UniqueTagValidator,
         Validators.pattern('[a-zA-Z ]*'),
     ]);
 
@@ -90,4 +91,11 @@ export class SaveDialogComponent {
             duration: 5000,
         });
     }
+
+    // private UniqueTagValidator(control: FormControl): { [key: string]: boolean } | null {
+    //     if (this.tags.includes(control.value)) {
+    //         return { badValueFound: true };
+    //     }
+    //     return null;
+    // }
 }

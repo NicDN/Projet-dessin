@@ -96,12 +96,7 @@ export abstract class SelectionTool extends Tool {
 
     onKeyDown(event: KeyboardEvent): void {
         const moveDelta = 3;
-        if (event.ctrlKey && event.code === 'KeyA') {
-            if (this.hasSelection) {
-                this.cancelSelection();
-            }
-            this.selectAll();
-        }
+
         if (event.code === 'Escape') this.cancelSelection();
         if (event.code === 'ShiftLeft' && !this.hasSelection) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);

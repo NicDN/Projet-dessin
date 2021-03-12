@@ -10,7 +10,7 @@
     </mat-card-header>
     <mat-card-actions fxFlexAlign="end" align="end" >
         <button mat-icon-button [disabled]="this.isTheLoadedCanvas()" (click)="this.setToCurrentDrawing()" matTooltip="Charger le dessin" matTooltipPosition="above">
-            <mat-icon>mode_edit</mat-icon>
+           <fa-icon icon="cloud-download-alt"></fa-icon>
         </button>
         <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)"  matTooltip="Supprimer" matTooltipPosition="above">
             <mat-icon>delete</mat-icon>
