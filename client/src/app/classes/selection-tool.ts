@@ -132,17 +132,17 @@ export abstract class SelectionTool extends Tool {
         this.moveSelectionArrow(ctx, deltaX, deltaY);
         setTimeout(() => {
             if (event.code === null) {
-                this.handleArrowContinuous(ctx, deltaX, deltaY);
+                this.handleArrowContinuous(ctx, deltaX, deltaY, event);
             }
         }, initialTimer);
     }
 
-    handleArrowContinuous(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
-        const initialTimer = 100;
+    handleArrowContinuous(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number, event: KeyboardEvent): void {
+        const continuousTimer = 100;
         setTimeout(() => {
             this.moveSelectionArrow(ctx, deltaX, deltaY);
             this.timeoutHandler = 0;
-        }, initialTimer);
+        }, continuousTimer);
     }
 
     moveSelectionArrow(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
