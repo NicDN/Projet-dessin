@@ -21,41 +21,44 @@ class TestCommand extends AbstractCommand {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-
-
 */
 
 // tslint:disable: no-string-literal
 describe('UndoRedoService', () => {
     let service: UndoRedoService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
-    let canvasStub : HTMLCanvasElement = document.createElement('canvas');
-    let canvasCtxStub : CanvasRenderingContext2D;
+    const canvasStub: HTMLCanvasElement = document.createElement('canvas');
+    let canvasCtxStub: CanvasRenderingContext2D;
     const boxSizeStub: BoxSize = { widthBox: 1, heightBox: 1 };
 
-
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas','newBaseLineSignals','newIncomingResizeSignals','sendNotifToResize', 'executeBaseLine']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', [
+            'clearCanvas',
+            'newBaseLineSignals',
+            'newIncomingResizeSignals',
+            'sendNotifToResize',
+            'executeBaseLine',
+        ]);
+        const stubWidthAndHeight = 100;
+        const stubFillRectWidthAndHeight = 100;
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
-        canvasStub.width = 100;
-        canvasStub.height = 100;
+        canvasStub.width = stubWidthAndHeight;
+        canvasStub.height = stubWidthAndHeight;
         canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
         canvasCtxStub.fillStyle = 'black';
-        canvasCtxStub.fillRect(0,0,10,10);
+        canvasCtxStub.fillRect(0, 0, stubFillRectWidthAndHeight, stubFillRectWidthAndHeight);
 
         drawingServiceSpyObj.canvas = canvasStub;
 
-        let image = new Image();
+        const image = new Image();
         image.src = canvasStub.toDataURL();
-        const baseLineStub = new BaseLineCommand(drawingServiceSpyObj,image);
+        const baseLineStub = new BaseLineCommand(drawingServiceSpyObj, image);
         drawingServiceSpyObj.newBaseLineSignals.and.returnValue(of(baseLineStub));
-
 
         TestBed.configureTestingModule({
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
         service = TestBed.inject(UndoRedoService);
-
     });
 
     it('should be created', () => {

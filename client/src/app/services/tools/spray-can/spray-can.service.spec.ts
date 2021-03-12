@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { SprayCanPropreties } from '@app/classes/commands/spray-can-command/spray-can-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { SprayCanPropreties } from './../../../classes/commands/spray-can-command/spray-can-command';
 import { SprayCanService } from './spray-can.service';
 
 // tslint:disable: no-string-literal no-any
@@ -206,6 +206,7 @@ describe('SprayCanService', () => {
         const bigParameterStub = 100;
         service.dropletsDiameter = bigParameterStub;
         service.emissionRate = bigParameterStub;
+        // tslint:disable-next-line: no-shadowed-variable
         const pathStub = [{ x: 0, y: 0 }];
         service.drawSpray(baseCtxStub, pathStub);
         const imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);

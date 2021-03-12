@@ -18,10 +18,10 @@ describe('ToolBarComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
-            providers: [ToolsService, {provide: UndoRedoService, useValue: undoRedoServiceStub}],
+            providers: [ToolsService, { provide: UndoRedoService, useValue: undoRedoServiceStub }],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
-        undoRedoServiceStub = TestBed.inject(UndoRedoService)
+        undoRedoServiceStub = TestBed.inject(UndoRedoService);
         tool = new PencilService(new DrawingService(), new ColorService(), undoRedoServiceStub);
     }));
 

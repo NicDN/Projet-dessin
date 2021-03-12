@@ -1,10 +1,10 @@
-import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EllipseDrawingService } from './ellipse-drawing.service';
 
 // tslint:disable: no-string-literal
@@ -40,7 +40,7 @@ describe('EllipseDrawingService', () => {
                 EllipseDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
-                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
 

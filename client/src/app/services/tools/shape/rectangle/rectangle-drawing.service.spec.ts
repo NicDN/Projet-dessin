@@ -41,7 +41,7 @@ describe('RectangleDrawingService', () => {
                 RectangleDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
-                {provide: UndoRedoService, useValue: undoRedoServiceSpyObj},
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
         });
 
@@ -131,7 +131,13 @@ describe('RectangleDrawingService', () => {
         const initialLengths = { x: SIDE_LENGTHS_STUB.x, y: SIDE_LENGTHS_STUB.y };
         drawingServiceSpyObj.previewCtx.lineWidth = initialWidth;
 
-        service.adjustToBorder(drawingServiceSpyObj.previewCtx, SIDE_LENGTHS_STUB, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.Bordered);
+        service.adjustToBorder(
+            drawingServiceSpyObj.previewCtx,
+            SIDE_LENGTHS_STUB,
+            TOP_LEFT_CORNER_COORDS,
+            BOTTOM_RIGHT_CORNER_COORDS,
+            TraceType.Bordered,
+        );
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(TOP_LEFT_CORNER_COORDS.x).toBeGreaterThan(initialCoords.x);
         expect(TOP_LEFT_CORNER_COORDS.y).toBeGreaterThan(initialCoords.y);

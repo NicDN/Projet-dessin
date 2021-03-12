@@ -33,10 +33,10 @@ describe('DrawingService', () => {
         service.baseCtx = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service.previewCtx = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-        let image = new Image();
+        const image = new Image();
         image.src = service.canvas.toDataURL();
         service.blankHTMLImage = image;
-        
+
         drawingServiceSpyCheckIfEmpty = spyOn(service, 'canvasIsEmpty').and.callThrough();
         drawingServiceSpyReloadDrawing = spyOn(service, 'reloadToBlankDrawing').and.callThrough();
         drawingServiceSpyValidateInput = spyOn(service, 'confirmReload').and.callThrough();
@@ -71,7 +71,7 @@ describe('DrawingService', () => {
     it('#reloadToBlankDrawing should clear the canvas and have default height and width', () => {
         const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn(service, 'resetCanvas').and.returnValue();
         spyOn(service, 'fillWithWhite').and.returnValue();
-        spyOn(service,'sendBaseLineCommand').and.returnValue();
+        spyOn(service, 'sendBaseLineCommand').and.returnValue();
         service.reloadToBlankDrawing();
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();

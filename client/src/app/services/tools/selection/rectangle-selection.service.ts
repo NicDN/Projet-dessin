@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
+import { RectangleSelectionCommand } from '@app/classes/commands/rectangle-selection-command/rectangle-selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { RectangleSelectionCommand } from './../../../classes/commands/rectangle-selection-command/rectangle-selection-command';
 
 @Injectable({
     providedIn: 'root',
