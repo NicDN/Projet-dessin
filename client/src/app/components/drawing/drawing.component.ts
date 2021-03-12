@@ -99,6 +99,11 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
         if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
     }
 
+    @HostListener('mouseout', ['$event'])
+    onMouseOut(event: MouseEvent): void {
+        this.toolsService.currentTool.onMouseOut(event);
+    }
+
     disableDrawing(isUsingResizeButton: boolean): void {
         this.canDraw = !isUsingResizeButton;
     }
