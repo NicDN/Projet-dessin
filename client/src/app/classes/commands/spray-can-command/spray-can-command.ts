@@ -12,16 +12,12 @@ export interface SprayCanPropreties {
     emissionRate: number;
     angleArray: number[];
     radiusArray: number[];
-    randomGlobalAlpha: number[];
-    randomArc: number[];
     randomStoring?: RandomStoring;
 }
 
 export interface RandomStoring {
     angleArray: number[][];
     radiusArray: number[][];
-    randomGlobalAlpha: number[][];
-    randomArc: number[][];
 }
 
 export class SprayCanCommand extends AbstractCommand {
@@ -34,8 +30,6 @@ export class SprayCanCommand extends AbstractCommand {
             if (this.sprayCanProprieties.randomStoring !== undefined) {
                 this.sprayCanProprieties.angleArray = this.sprayCanProprieties.randomStoring.angleArray[i];
                 this.sprayCanProprieties.radiusArray = this.sprayCanProprieties.randomStoring.radiusArray[i];
-                this.sprayCanProprieties.randomGlobalAlpha = this.sprayCanProprieties.randomStoring.randomGlobalAlpha[i];
-                this.sprayCanProprieties.randomArc = this.sprayCanProprieties.randomStoring.randomArc[i];
                 this.sprayCanService.sprayOnCanvas(this.sprayCanProprieties, path, true);
                 i++;
             }

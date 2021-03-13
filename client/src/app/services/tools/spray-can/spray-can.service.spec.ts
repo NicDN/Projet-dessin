@@ -69,8 +69,6 @@ describe('SprayCanService', () => {
             emissionRate: 1,
             angleArray: arrayStub,
             radiusArray: arrayStub,
-            randomGlobalAlpha: arrayStub,
-            randomArc: arrayStub,
         };
     });
 
@@ -222,8 +220,8 @@ describe('SprayCanService', () => {
         }
     });
 
-    it('#storeRandom should call generateRandomArray 4 times', () => {
-        const numberOfCallsStub = 4;
+    it('#storeRandom should call generateRandomArray 2 times', () => {
+        const numberOfCallsStub = 2;
         const generateRandomSpy = spyOn(service, 'generateRandomArray').and.stub();
         service.storeRandom();
         expect(generateRandomSpy).toHaveBeenCalledTimes(numberOfCallsStub);
@@ -235,7 +233,7 @@ describe('SprayCanService', () => {
         expect(sprayCanPropreties.drawingCtx).toEqual(baseCtxStub);
         expect(sprayCanPropreties.drawingPath).toEqual(drawingPathStub);
         expect(sprayCanPropreties.mainColor.rgbValue).toEqual(PRIMARY_COLOR_STUB);
-        expect(sprayCanPropreties.dropletsDiameter).toEqual(service.dropletsDiameter);
+        expect(sprayCanPropreties.dropletsDiameter * 2).toEqual(service.dropletsDiameter);
         expect(sprayCanPropreties.sprayDiameter).toEqual(service.sprayDiameter);
         expect(sprayCanPropreties.emissionRate).toEqual(service.emissionRate);
     });
