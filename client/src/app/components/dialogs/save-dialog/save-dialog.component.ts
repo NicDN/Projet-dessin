@@ -1,6 +1,6 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,10 +25,11 @@ export class SaveDialogComponent {
     savingState: boolean = false; // boolean to be used while saving
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
+
     tagFormControl: FormControl = new FormControl('', [
         Validators.maxLength(this.TAG_MAX_LENGTH),
         Validators.minLength(this.TAG_MIN_LENGTH),
-        // this.UniqueTagValidator,
+        this.uniqueTagValidator.bind(this),
         Validators.pattern('[a-zA-Z ]*'),
     ]);
 
@@ -92,10 +93,19 @@ export class SaveDialogComponent {
         });
     }
 
-    // private UniqueTagValidator(control: FormControl): { [key: string]: boolean } | null {
-    //     if (this.tags.includes(control.value)) {
-    //         return { badValueFound: true };
-    //     }
-    //     return null;
+    uniqueTagValidator(control: AbstractControl): { [key: string]: boolean } | null {
+        if (this.tags.includes(control.value)) {
+            return { badValueFound: true };
+        }
+        return null;
+    }
+
+    // uniqueTagValidator(): ValidatorFn {
+    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
+    //         if (this.tags.includes(control.value)) {
+    //             return { badValueFound: true };
+    //         }
+    //         return null;
+    //     };
     // }
 }
