@@ -2,8 +2,8 @@
 <div
     #box
     class="resizable-draggable"
-    [style.width.px]="width"
-    [style.height.px]="height"
+    [style.width.px]="this.width"
+    [style.height.px]="this.height"
     [class.active]="status === 1 || status === 2 || status === 3"
     (window:mouseup)="setStatus(0)"
 >

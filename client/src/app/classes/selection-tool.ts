@@ -18,6 +18,14 @@ export abstract class SelectionTool extends Tool {
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     movingSelection: boolean = false;
     hasSelection: boolean = false;
+
+    readonly moveDelta: number = 3;
+    movingWithArrows: boolean = false;
+    keyUpIsDown: boolean = false;
+    keyDownIsDown: boolean = false;
+    keyLeftIsDown: boolean = false;
+    keyRightIsDown: boolean = false;
+
     private timeoutHandler: number;
     protected initialTopLeft: Vec2 = { x: 0, y: 0 };
     protected initialBottomRight: Vec2 = { x: 0, y: 0 };
@@ -95,18 +103,14 @@ export abstract class SelectionTool extends Tool {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        const moveDelta = 3;
-
         if (event.code === 'Escape') this.cancelSelection();
         if (event.code === 'ShiftLeft' && !this.hasSelection) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.rectangleDrawingService.onKeyDown(event);
             this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
         }
-        if (event.code === 'ArrowUp') this.handleArrowInitialTime(this.drawingService.previewCtx, 0, -moveDelta, event);
-        if (event.code === 'ArrowDown') this.handleArrowInitialTime(this.drawingService.previewCtx, 0, moveDelta, event);
-        if (event.code === 'ArrowLeft') this.handleArrowInitialTime(this.drawingService.previewCtx, -moveDelta, 0, event);
-        if (event.code === 'ArrowRight') this.handleArrowInitialTime(this.drawingService.previewCtx, moveDelta, 0, event);
+
+        this.handleMovingArrows(event);
     }
 
     onKeyUp(event: KeyboardEvent): void {
@@ -116,28 +120,51 @@ export abstract class SelectionTool extends Tool {
             this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
         }
 
+        this.updateArrowKeysNotPressed(event);
+
         if (this.timeoutHandler) {
             clearTimeout(this.timeoutHandler);
             this.timeoutHandler = 0;
         }
     }
 
+    handleMovingArrows(event: KeyboardEvent): void {
+        this.updateArrowKeysPressed(event);
+        if (this.checkIfAnyArrowIsPressed()) this.handleArrowInitialTime(this.drawingService.previewCtx, 0, -this.moveDelta, event);
+    }
+
     handleArrowInitialTime(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number, event: KeyboardEvent): void {
-        const initialTimer = 500;
+        const initialTimer = 100;
+        deltaY = 0;
+        deltaX = 0;
+        if (this.keyUpIsDown) deltaY -= this.moveDelta;
+        if (this.keyDownIsDown) deltaY += this.moveDelta;
+        if (this.keyLeftIsDown) deltaX -= this.moveDelta;
+        if (this.keyRightIsDown) deltaX += this.moveDelta;
+
         this.moveSelectionArrow(ctx, deltaX, deltaY);
         setTimeout(() => {
-            if (event.code === null) {
-                this.handleArrowContinuous(ctx, deltaX, deltaY, event);
+            if (event.code !== null) {
+                this.moveSelectionArrow(ctx, deltaX, deltaY);
             }
         }, initialTimer);
     }
 
-    handleArrowContinuous(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number, event: KeyboardEvent): void {
-        const continuousTimer = 100;
-        setTimeout(() => {
-            this.moveSelectionArrow(ctx, deltaX, deltaY);
-            this.timeoutHandler = 0;
-        }, continuousTimer);
+    checkIfAnyArrowIsPressed(): boolean {
+        return this.keyUpIsDown || this.keyDownIsDown || this.keyLeftIsDown || this.keyRightIsDown;
+    }
+
+    updateArrowKeysPressed(event: KeyboardEvent): void {
+        if (event.code === 'ArrowUp') this.keyUpIsDown = true;
+        if (event.code === 'ArrowDown') this.keyDownIsDown = true;
+        if (event.code === 'ArrowLeft') this.keyLeftIsDown = true;
+        if (event.code === 'ArrowRight') this.keyRightIsDown = true;
+    }
+    updateArrowKeysNotPressed(event: KeyboardEvent): void {
+        if (event.code === 'ArrowUp') this.keyUpIsDown = false;
+        if (event.code === 'ArrowDown') this.keyDownIsDown = false;
+        if (event.code === 'ArrowLeft') this.keyLeftIsDown = false;
+        if (event.code === 'ArrowRight') this.keyRightIsDown = false;
     }
 
     moveSelectionArrow(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
@@ -176,6 +203,9 @@ export abstract class SelectionTool extends Tool {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.hasSelection = false;
             this.undoRedoService.enableUndoRedo();
+        } else {
+            if (this.drawingService.previewCtx === undefined) return;
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
         }
     }
 
