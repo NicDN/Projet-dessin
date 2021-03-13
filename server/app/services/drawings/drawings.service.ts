@@ -53,6 +53,7 @@ export class DrawingsService {
             .toArray()
             .then((drawingsData) => {
                 drawingsData.forEach((drawingData) => {
+                    // tslint:disable-next-line: no-string-literal
                     drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
                 });
             });

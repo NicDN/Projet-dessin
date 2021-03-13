@@ -43,6 +43,14 @@ mat-spinner {
     margin-right: auto;
 }
 
+.filter-error {
+    color: red;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transform: translateY(7px);
+}
+
 mat-form-field {
     width: 100%;
     margin-top: 10px;

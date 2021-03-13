@@ -13,7 +13,7 @@ export class OptionBarComponent {
         { icon: 'cloud-upload-alt', toolTipContent: 'Sauvegarder le dessin (Ctrl-S)', action: () => this.dialogService.openDialog(DialogType.Save) },
         { icon: 'download', toolTipContent: 'Exporter le dessin (Ctrl-E)', action: () => this.dialogService.openDialog(DialogType.Export) },
         {
-            icon: 'photo-video',
+            icon: 'images',
             toolTipContent: 'Voir le carrousel de dessins (Ctrl-G)',
             action: () => this.dialogService.openDialog(DialogType.Carousel),
         },
