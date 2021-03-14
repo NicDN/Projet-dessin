@@ -21,7 +21,6 @@ export class SaveDialogComponent {
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
     tags: string[] = [];
-
     savingState: boolean = false; // boolean to be used while saving
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
@@ -99,13 +98,4 @@ export class SaveDialogComponent {
         }
         return null;
     }
-
-    // uniqueTagValidator(): ValidatorFn {
-    //     return (control: AbstractControl): { [key: string]: boolean } | null => {
-    //         if (this.tags.includes(control.value)) {
-    //             return { badValueFound: true };
-    //         }
-    //         return null;
-    //     };
-    // }
 }
