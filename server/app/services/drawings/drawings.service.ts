@@ -40,7 +40,6 @@ export class DrawingsService {
                 })
                 .catch((error: Error) => {
                     if (error.message === 'FAILED_TO_SAVE_DRAWING') {
-                        // TODO: make it cleaner (error caught 2nd time)
                         throw new Error('FAILED_TO_SAVE_DRAWING');
                     } else {
                         throw new Error('DATABASE_ERROR');

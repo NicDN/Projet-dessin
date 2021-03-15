@@ -4,8 +4,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SaveService } from '@app/services/option/save/save.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { of, throwError } from 'rxjs';
 
 import { SaveDialogComponent } from './save-dialog.component';
@@ -16,7 +17,7 @@ describe('SaveDialogComponent', () => {
     let fixture: ComponentFixture<SaveDialogComponent>;
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<SaveDialogComponent>>;
-    let snackbarSpy: jasmine.SpyObj<MatSnackBar>;
+    let snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
     let saveServiceSpy: jasmine.SpyObj<SaveService>;
 
     const input = document.createElement('input');
@@ -25,7 +26,7 @@ describe('SaveDialogComponent', () => {
 
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
-        snackbarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+        snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
 
         saveServiceSpy = jasmine.createSpyObj('SaveService', ['postDrawing']);
 
@@ -34,7 +35,7 @@ describe('SaveDialogComponent', () => {
             imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule],
             providers: [
                 { provide: MatDialogRef, useValue: matDialogRefSpy },
-                { provide: MatSnackBar, useValue: snackbarSpy },
+                { provide: SnackBarService, useValue: snackbarServiceSpy },
                 { provide: SaveService, useValue: saveServiceSpy },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
@@ -61,7 +62,7 @@ describe('SaveDialogComponent', () => {
         component.postDrawing(FILE_NAME);
         expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
-        expect(component['openSnackBar']).toHaveBeenCalledWith('Le dessin a été sauvegardé avec succès.', 'Fermer');
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Le dessin a été sauvegardé avec succès.', 'Fermer');
         expect(matDialogRefSpy.close).toHaveBeenCalled();
     });
 
@@ -73,7 +74,7 @@ describe('SaveDialogComponent', () => {
         component.postDrawing(FILE_NAME);
         expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
-        expect(component['openSnackBar']).toHaveBeenCalledWith('fake error', 'Fermer');
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('fake error', 'Fermer');
     });
 
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {
@@ -117,11 +118,6 @@ describe('SaveDialogComponent', () => {
         const EMPTY_ARRAY: string[] = [];
         component.clearTags();
         expect(component.tags).toEqual(EMPTY_ARRAY);
-    });
-
-    it('#openSnackBar should open the snack bar correctly', () => {
-        component['openSnackBar']('test', 'close');
-        expect(snackbarSpy.open).toHaveBeenCalled();
     });
 
     it('#uniqueTagValidator should validate that a input tag is unique', () => {

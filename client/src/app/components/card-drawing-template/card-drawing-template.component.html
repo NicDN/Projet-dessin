@@ -16,8 +16,10 @@
         <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)" matTooltip="Supprimer"
             matTooltipPosition="above">
             <mat-icon *ngIf="!this.deletingState">delete</mat-icon>
-            <mat-icon *ngIf="this.deletingState"><mat-spinner color="primary" diameter="20">
-            </mat-spinner></mat-icon>
+            <mat-icon *ngIf="this.deletingState">
+                <mat-spinner color="primary" diameter="20">
+                </mat-spinner>
+            </mat-icon>
         </button>
     </mat-card-actions>
 </mat-card>

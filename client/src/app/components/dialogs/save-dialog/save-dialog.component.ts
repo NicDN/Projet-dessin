@@ -3,8 +3,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { SaveService } from '@app/services/option/save/save.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 @Component({
     selector: 'app-save-dialog',
@@ -31,7 +31,7 @@ export class SaveDialogComponent {
         Validators.pattern('[a-zA-Z ]*'),
     ]);
 
-    constructor(private saveService: SaveService, public dialogRef: MatDialogRef<SaveDialogComponent>, private snackBar: MatSnackBar) {}
+    constructor(private saveService: SaveService, public dialogRef: MatDialogRef<SaveDialogComponent>, private snackBarService: SnackBarService) {}
 
     postDrawing(fileName: string): void {
         this.savingState = true;
@@ -40,11 +40,11 @@ export class SaveDialogComponent {
             () => {},
             (error) => {
                 this.savingState = false;
-                this.openSnackBar(error, 'Fermer');
+                this.snackBarService.openSnackBar(error, 'Fermer');
             },
             () => {
                 this.savingState = false;
-                this.openSnackBar('Le dessin a été sauvegardé avec succès.', 'Fermer');
+                this.snackBarService.openSnackBar('Le dessin a été sauvegardé avec succès.', 'Fermer');
                 this.dialogRef.close();
             },
         );
@@ -74,12 +74,6 @@ export class SaveDialogComponent {
 
     clearTags(): void {
         this.tags = [];
-    }
-
-    private openSnackBar(message: string, action: string): void {
-        this.snackBar.open(message, action, {
-            duration: 5000,
-        });
     }
 
     private uniqueTagValidator(control: AbstractControl): { [key: string]: boolean } | null {

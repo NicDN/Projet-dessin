@@ -2,8 +2,8 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MatChipInputEvent, MatChipList } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
@@ -23,7 +23,11 @@ export class CarouselDialogComponent implements OnInit {
 
     private startIndex: number = 0;
 
-    constructor(public carouselService: CarouselService, private snackBar: MatSnackBar, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
+    constructor(
+        public carouselService: CarouselService,
+        private snackBarService: SnackBarService,
+        public dialogRef: MatDialogRef<CarouselDialogComponent>,
+    ) {}
 
     ngOnInit(): void {
         this.requestDrawings();
@@ -39,7 +43,7 @@ export class CarouselDialogComponent implements OnInit {
                 this.validateFilter();
             },
             (error) => {
-                this.openSnackBar(error, 'Fermer');
+                this.snackBarService.openSnackBar(error, 'Fermer');
                 this.loading = false;
             },
         );
@@ -99,11 +103,5 @@ export class CarouselDialogComponent implements OnInit {
     clearSearchedTags(): void {
         this.searchedTags = [];
         this.requestDrawings();
-    }
-
-    private openSnackBar(message: string, action: string): void {
-        this.snackBar.open(message, action, {
-            duration: 2000,
-        });
     }
 }

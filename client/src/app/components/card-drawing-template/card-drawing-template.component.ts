@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
@@ -19,7 +19,7 @@ export class CardDrawingTemplateComponent {
 
     constructor(
         private carouselService: CarouselService,
-        private snackBar: MatSnackBar,
+        private snackBarService: SnackBarService,
         public drawingService: DrawingService,
         private router: Router,
     ) {}
@@ -28,7 +28,7 @@ export class CardDrawingTemplateComponent {
         const image = new Image();
         image.src = this.drawingForm.drawingData;
 
-        if (this.router.url !== '/editor') {
+        if (this.router.url === '/home') {
             this.router.navigate(['editor']);
             this.drawingService.newImage = image;
             this.closeCarousel.emit();
@@ -45,22 +45,16 @@ export class CardDrawingTemplateComponent {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                this.openSnackBar(error, 'Fermer');
+                this.snackBarService.openSnackBar(error, 'Fermer');
                 this.deletingState = false;
                 this.requestDrawings.emit();
             },
             () => {
-                this.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
+                this.snackBarService.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
                 this.deletingState = false;
                 this.requestDrawings.emit();
             },
         );
-    }
-
-    openSnackBar(message: string, action: string): void {
-        this.snackBar.open(message, action, {
-            duration: 2000,
-        });
     }
 
     isTheLoadedCanvas(): boolean {

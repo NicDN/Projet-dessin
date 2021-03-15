@@ -3,8 +3,9 @@ import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 import { of, throwError } from 'rxjs';
 
@@ -16,7 +17,7 @@ describe('CarouselDialogComponent', () => {
     let fixture: ComponentFixture<CarouselDialogComponent>;
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<CarouselDialogComponent>>;
-    let snackbarSpy: jasmine.SpyObj<MatSnackBar>;
+    let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let carouselServiceSpy: jasmine.SpyObj<CarouselService>;
 
     const input = document.createElement('input');
@@ -32,16 +33,16 @@ describe('CarouselDialogComponent', () => {
 
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
-        snackbarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+        snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
         carouselServiceSpy = jasmine.createSpyObj('CarouselService', ['requestDrawingsFromServer']);
 
         TestBed.configureTestingModule({
             declarations: [CarouselDialogComponent],
             imports: [HttpClientTestingModule, MatSnackBarModule],
             providers: [
-                { provide: MatDialogRef, useValue: matDialogRefSpy },
-                { provide: MatSnackBar, useValue: snackbarSpy },
                 { provide: CarouselService, useValue: carouselServiceSpy },
+                { provide: MatDialogRef, useValue: matDialogRefSpy },
+                { provide: SnackBarService, useValue: snackbarServiceSpy },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -85,7 +86,7 @@ describe('CarouselDialogComponent', () => {
         spyOn<any>(component, 'openSnackBar');
         component.requestDrawings();
         expect(carouselServiceSpy.requestDrawingsFromServer).toHaveBeenCalled();
-        expect(component['openSnackBar']).toHaveBeenCalledWith('fake error', 'Fermer');
+        expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('fake error', 'Fermer');
         expect(component.loading).toBeFalse();
     });
 
@@ -188,10 +189,5 @@ describe('CarouselDialogComponent', () => {
         component.clearSearchedTags();
         expect(component.searchedTags).toEqual(EMPTY_ARRAY);
         expect(component.requestDrawings).toHaveBeenCalled();
-    });
-
-    it('#openSnackBar should open the snack bar correctly', () => {
-        component['openSnackBar']('test', 'close');
-        expect(snackbarSpy.open).toHaveBeenCalled();
     });
 });
