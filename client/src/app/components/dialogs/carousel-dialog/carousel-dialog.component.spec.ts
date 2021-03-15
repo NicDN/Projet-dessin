@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { MatChipInputEvent, MatChipList } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
@@ -31,10 +31,16 @@ describe('CarouselDialogComponent', () => {
         { id: '3', name: 'drawingThree', tags: TAGS_MOCK, drawingData: 'base64' },
     ];
 
+    const chipList: MatChipList = {
+        errorState: false,
+    } as MatChipList;
+
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
         snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
         carouselServiceSpy = jasmine.createSpyObj('CarouselService', ['requestDrawingsFromServer']);
+
+        carouselServiceSpy.requestDrawingsFromServer.and.returnValue(of(drawingsMock));
 
         TestBed.configureTestingModule({
             declarations: [CarouselDialogComponent],
@@ -53,6 +59,7 @@ describe('CarouselDialogComponent', () => {
         component = fixture.componentInstance;
         component['startIndex'] = 0;
         component.searchedTags = TAGS_MOCK;
+        component.chipList = chipList;
 
         fixture.detectChanges();
     });
@@ -62,7 +69,7 @@ describe('CarouselDialogComponent', () => {
     });
 
     it('#ngOnInit should call #requestDrawings', () => {
-        spyOn(component, 'requestDrawings');
+        spyOn(component, 'requestDrawings').and.stub();
         component.ngOnInit();
         expect(component.requestDrawings).toHaveBeenCalled();
     });
@@ -82,8 +89,6 @@ describe('CarouselDialogComponent', () => {
     it('#requestDrawings should display error message if a error occured', () => {
         carouselServiceSpy.requestDrawingsFromServer.and.returnValue(throwError('fake error'));
 
-        // tslint:disable-next-line: no-any
-        spyOn<any>(component, 'openSnackBar');
         component.requestDrawings();
         expect(carouselServiceSpy.requestDrawingsFromServer).toHaveBeenCalled();
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('fake error', 'Fermer');

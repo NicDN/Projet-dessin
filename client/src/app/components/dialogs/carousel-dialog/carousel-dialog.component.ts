@@ -33,7 +33,7 @@ export class CarouselDialogComponent implements OnInit {
         this.requestDrawings();
     }
 
-    async requestDrawings(): Promise<void> {
+    requestDrawings(): void {
         this.loading = true;
         this.carouselService.requestDrawingsFromServer(this.searchedTags, this.startIndex).subscribe(
             (drawings) => {
@@ -59,12 +59,12 @@ export class CarouselDialogComponent implements OnInit {
 
     async forwardDrawings(): Promise<void> {
         this.startIndex++;
-        await this.requestDrawings();
+        this.requestDrawings();
     }
 
     async backwardDrawings(): Promise<void> {
         this.startIndex--;
-        await this.requestDrawings();
+        this.requestDrawings();
     }
 
     removeTag(tag: string): void {

@@ -17,7 +17,7 @@ describe('SaveDialogComponent', () => {
     let fixture: ComponentFixture<SaveDialogComponent>;
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<SaveDialogComponent>>;
-    let snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
+    let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let saveServiceSpy: jasmine.SpyObj<SaveService>;
 
     const input = document.createElement('input');
@@ -57,8 +57,6 @@ describe('SaveDialogComponent', () => {
     it('#postDrawing should save a drawing correctly if no error occured', () => {
         saveServiceSpy.postDrawing.and.returnValue(of());
 
-        // tslint:disable-next-line: no-any
-        spyOn<any>(component, 'openSnackBar');
         component.postDrawing(FILE_NAME);
         expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
@@ -69,8 +67,6 @@ describe('SaveDialogComponent', () => {
     it('#postDrawing should display error message if the drawing could not be saved', () => {
         saveServiceSpy.postDrawing.and.returnValue(throwError('fake error'));
 
-        // tslint:disable-next-line: no-any
-        spyOn<any>(component, 'openSnackBar');
         component.postDrawing(FILE_NAME);
         expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
@@ -78,7 +74,7 @@ describe('SaveDialogComponent', () => {
     });
 
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {
-        // TODO: sometimes 'sevent' from the addTag test is in the Array !
+        // TODO: sometimes 'seven' from the addTag test is in the Array !
         const TAG_TWO = 'two';
         const EXPECTED_TAGS = ['one', 'three', 'four', 'five', 'six'];
         component.removeTag(TAG_TWO);
