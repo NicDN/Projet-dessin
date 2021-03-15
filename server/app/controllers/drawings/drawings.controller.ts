@@ -39,8 +39,15 @@ export class DrawingsController {
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
             const drawingForm: DrawingForm = req.body;
-            this.drawingsService.storeDrawing(drawingForm);
-            res.sendStatus(HTTP_STATUS_CREATED);
+            this.drawingsService
+                .storeDrawing(drawingForm)
+                .then(() => {
+                    res.sendStatus(HTTP_STATUS_CREATED);
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'FAILED_TO_SAVE_DRAWING') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                    if (error.message === 'DATABASE_ERROR') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                });
         });
     }
 }

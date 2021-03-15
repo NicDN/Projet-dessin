@@ -28,7 +28,7 @@
                     (matChipInputTokenEnd)="this.addTag($event)" />
             </mat-chip-list>
 
-            <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearTags()">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchedTags()">
                 <mat-icon>close</mat-icon>
             </button>
             <mat-error *ngIf="chipList.errorState">Aucun dessin trouvé</mat-error>

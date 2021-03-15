@@ -8,7 +8,7 @@ import { DrawingForm } from '@common/communication/drawing-form';
 import { SaveService } from './save.service';
 
 // tslint:disable: no-string-literal
-fdescribe('SaveService', () => {
+describe('SaveService', () => {
     let service: SaveService;
     let httpMock: HttpTestingController;
     let baseUrl = '';

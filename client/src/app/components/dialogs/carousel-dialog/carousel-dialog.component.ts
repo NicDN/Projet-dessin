@@ -67,25 +67,20 @@ export class CarouselDialogComponent implements OnInit {
         const index = this.searchedTags.indexOf(tag);
         if (index >= 0) {
             this.searchedTags.splice(index, 1);
+            this.requestDrawings();
         }
-
-        this.requestDrawings();
     }
 
     addTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
 
-        // add tag to searchedTags array
-        if ((value || '').trim()) {
+        if (value.trim()) {
             this.searchedTags.push(value);
-        }
-        // Reset the input value
-        if (input) {
-            input.value = '';
+            this.requestDrawings();
         }
 
-        this.requestDrawings();
+        input.value = '';
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -101,7 +96,7 @@ export class CarouselDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    clearTags(): void {
+    clearSearchedTags(): void {
         this.searchedTags = [];
         this.requestDrawings();
     }

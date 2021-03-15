@@ -14,14 +14,13 @@ import { SaveDialogComponent } from './save-dialog.component';
 describe('SaveDialogComponent', () => {
     let component: SaveDialogComponent;
     let fixture: ComponentFixture<SaveDialogComponent>;
-    const input = document.createElement('input');
-    const FILE_NAME = 'test name';
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<SaveDialogComponent>>;
     let snackbarSpy: jasmine.SpyObj<MatSnackBar>;
-
     let saveServiceSpy: jasmine.SpyObj<SaveService>;
 
+    const input = document.createElement('input');
+    const FILE_NAME = 'test name';
     const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
 
     beforeEach(async(() => {
@@ -54,7 +53,7 @@ describe('SaveDialogComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('#postDrawing should save a drawing correctly if no error is thrown', () => {
+    it('#postDrawing should save a drawing correctly if no error occured', () => {
         saveServiceSpy.postDrawing.and.returnValue(of());
 
         // tslint:disable-next-line: no-any
@@ -72,6 +71,7 @@ describe('SaveDialogComponent', () => {
         // tslint:disable-next-line: no-any
         spyOn<any>(component, 'openSnackBar');
         component.postDrawing(FILE_NAME);
+        expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
         expect(component['openSnackBar']).toHaveBeenCalledWith('fake error', 'Fermer');
     });

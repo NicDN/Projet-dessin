@@ -1,11 +1,9 @@
 import { DrawingForm } from '@common/communication/drawing-form';
 import * as fs from 'fs';
-import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';
 import { Collection, ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import { DrawingData } from '../../../classes/drawingData';
-import { HttpException } from '../../../classes/http.exception';
 import { TYPES } from '../../types';
 import { DatabaseService } from '../database/database.service';
 
@@ -32,16 +30,24 @@ export class DrawingsService {
     async storeDrawing(drawingForm: DrawingForm): Promise<void> {
         if (this.validateDrawing(drawingForm)) {
             const drawingData: DrawingData = { name: drawingForm.name, tags: drawingForm.tags };
-            try {
-                await this.collection.insertOne(drawingData, (err, data) => {
+            await this.collection
+                .insertOne(drawingData)
+                .then(async (data) => {
                     drawingForm.id = data.insertedId.toString();
-                    this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
+                    await this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData).catch(() => {
+                        throw new Error('FAILED_TO_SAVE_DRAWING');
+                    });
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'FAILED_TO_SAVE_DRAWING') {
+                        // TODO: make it cleaner (error caught 2nd time)
+                        throw new Error('FAILED_TO_SAVE_DRAWING');
+                    } else {
+                        throw new Error('DATABASE_ERROR');
+                    }
                 });
-            } catch (error) {
-                throw new HttpException(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR, 'Failed to insert course');
-            }
         } else {
-            throw new Error('Invalid');
+            throw new Error('INVALID_DRAWING');
         }
     }
 
