@@ -5,7 +5,7 @@ import { DrawingForm } from '@common/communication/drawing-form';
 
 import { CarouselService } from './carousel.service';
 
-fdescribe('CarouselService', () => {
+describe('CarouselService', () => {
     let service: CarouselService;
     let httpMock: HttpTestingController;
     let baseUrl: string;
