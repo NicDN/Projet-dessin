@@ -1,6 +1,6 @@
 .save-container {
     width: 600px;
-    height: 450px;
+    height: 470px;
     position: relative;
     overflow-y: auto;
     overflow-x: auto;
@@ -21,6 +21,7 @@ mat-form-field {
 }
 
 .tag-rules{
+    overflow-y: scroll;
     border-color: black;
     width: 100%;
     border-radius: 5px;

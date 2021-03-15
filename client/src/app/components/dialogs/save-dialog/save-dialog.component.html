@@ -38,11 +38,12 @@
             <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum</mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum</mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Doit contenir uniquement des lettres</mat-list-item>
+            <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée</mat-list-item>
         </mat-list>
     </div>
 
     <div class="bottom-div">
-        <button
+        <button 
             mat-flat-button
             color="primary"
             class="save-canvas-btn"

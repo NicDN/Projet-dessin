@@ -4,8 +4,6 @@ import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DrawingService } from '@app/services/drawing/drawing.service';
-import { FilterService } from '@app/services/filter/filter.service';
 import { SaveService } from '@app/services/option/save/save.service';
 
 @Component({
@@ -14,14 +12,15 @@ import { SaveService } from '@app/services/option/save/save.service';
     styleUrls: ['./save-dialog.component.scss'],
 })
 export class SaveDialogComponent {
-    readonly TAG_MAX_LENGTH: number = 10;
-    readonly TAG_MIN_LENGTH: number = 2;
-
     @ViewChild('chipList') chipList: ElementRef;
 
+    private readonly TAG_MAX_LENGTH: number = 10;
+    private readonly TAG_MIN_LENGTH: number = 2;
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+
     tags: string[] = [];
-    savingState: boolean = false; // boolean to be used while saving
+    savingState: boolean = false; // boolean set to true while saving
+    uniqueTagError: boolean = false;
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
 
@@ -32,22 +31,16 @@ export class SaveDialogComponent {
         Validators.pattern('[a-zA-Z ]*'),
     ]);
 
-    constructor(
-        public drawingService: DrawingService,
-        private saveService: SaveService,
-        public filterService: FilterService,
-        public dialogRef: MatDialogRef<SaveDialogComponent>,
-        private snackBar: MatSnackBar,
-    ) {}
+    constructor(private saveService: SaveService, public dialogRef: MatDialogRef<SaveDialogComponent>, private snackBar: MatSnackBar) {}
 
     postDrawing(fileName: string): void {
         this.savingState = true;
         this.saveService.postDrawing(fileName, this.tags).subscribe(
             // tslint:disable-next-line: no-empty
             () => {},
-            () => {
+            (error) => {
                 this.savingState = false;
-                this.openSnackBar('Impossible de sauvegarder le dessin.', 'Fermer');
+                this.openSnackBar(error, 'Fermer');
             },
             () => {
                 this.savingState = false;
@@ -72,29 +65,28 @@ export class SaveDialogComponent {
         const input = event.input;
         const value = event.value;
 
-        // add tag to searchedTags array
-        if ((value || '').trim()) {
+        if (value.trim()) {
             this.tags.push(value);
         }
-        // Reset the input value
-        if (input) {
-            input.value = '';
-        }
+
+        input.value = '';
     }
 
     clearTags(): void {
         this.tags = [];
     }
 
-    openSnackBar(message: string, action: string): void {
+    private openSnackBar(message: string, action: string): void {
         this.snackBar.open(message, action, {
             duration: 5000,
         });
     }
 
-    uniqueTagValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    private uniqueTagValidator(control: AbstractControl): { [key: string]: boolean } | null {
+        this.uniqueTagError = false;
         if (this.tags.includes(control.value)) {
-            return { badValueFound: true };
+            this.uniqueTagError = true;
+            return { nonUniqueTagFound: true };
         }
         return null;
     }

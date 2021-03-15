@@ -29,7 +29,7 @@ export class CarouselDialogComponent implements OnInit {
         this.requestDrawings();
     }
 
-    requestDrawings(): void {
+    async requestDrawings(): Promise<void> {
         this.loading = true;
         this.carouselService.requestDrawingsFromServer(this.searchedTags, this.startIndex).subscribe(
             (drawings) => {
@@ -39,10 +39,8 @@ export class CarouselDialogComponent implements OnInit {
                 this.validateFilter();
             },
             (error) => {
-                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur.", 'Fermer');
+                this.openSnackBar(error, 'Fermer');
                 this.loading = false;
-                // if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins.", 'Fermer');
-                // TODO: no need for this line ?
             },
         );
     }

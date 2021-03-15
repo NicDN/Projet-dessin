@@ -31,18 +31,16 @@ export class CarouselService {
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return (error: Error): Observable<T> => {
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
-                return throwError('NO_SERVER_RESPONSE');
+                return throwError("Impossible d'accéder au serveur.");
             }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
-                return throwError('INTERNAL_SERVER_ERROR');
+                return throwError("Le dessin n'existe pas sur le serveur.");
             }
-
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
-                return throwError('NOT_ON_DATABASE');
+                return throwError('Impossible de supprimer le dessin sur la base de données.');
             }
-
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
-                return throwError('FAILED_TO_DELETE_DRAWING');
+                return throwError('La suppression sur la base de donnée a échouée.');
             }
             return of(result as T);
         };

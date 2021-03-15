@@ -4,26 +4,40 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { SaveService } from '@app/services/option/save/save.service';
+import { of, throwError } from 'rxjs';
 
 import { SaveDialogComponent } from './save-dialog.component';
 
-fdescribe('SaveDialogComponent', () => {
+// tslint:disable: no-string-literal
+describe('SaveDialogComponent', () => {
     let component: SaveDialogComponent;
     let fixture: ComponentFixture<SaveDialogComponent>;
-    let input = document.createElement('input');
+    const input = document.createElement('input');
+    const FILE_NAME = 'test name';
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<SaveDialogComponent>>;
+    let snackbarSpy: jasmine.SpyObj<MatSnackBar>;
+
+    let saveServiceSpy: jasmine.SpyObj<SaveService>;
 
     const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
 
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
+        snackbarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+
+        saveServiceSpy = jasmine.createSpyObj('SaveService', ['postDrawing']);
 
         TestBed.configureTestingModule({
             declarations: [SaveDialogComponent],
             imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule],
-            providers: [{ provide: MatDialogRef, useValue: matDialogRefSpy }],
+            providers: [
+                { provide: MatDialogRef, useValue: matDialogRefSpy },
+                { provide: MatSnackBar, useValue: snackbarSpy },
+                { provide: SaveService, useValue: saveServiceSpy },
+            ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -32,6 +46,7 @@ fdescribe('SaveDialogComponent', () => {
         fixture = TestBed.createComponent(SaveDialogComponent);
         component = fixture.componentInstance;
         component.tags = TAGS_MOCK;
+
         fixture.detectChanges();
     });
 
@@ -39,8 +54,30 @@ fdescribe('SaveDialogComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('#postDrawing should save a drawing correctly if no error is thrown', () => {
+        saveServiceSpy.postDrawing.and.returnValue(of());
+
+        // tslint:disable-next-line: no-any
+        spyOn<any>(component, 'openSnackBar');
+        component.postDrawing(FILE_NAME);
+        expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
+        expect(component.savingState).toBe(false);
+        expect(component['openSnackBar']).toHaveBeenCalledWith('Le dessin a été sauvegardé avec succès.', 'Fermer');
+        expect(matDialogRefSpy.close).toHaveBeenCalled();
+    });
+
+    it('#postDrawing should display error message if the drawing could not be saved', () => {
+        saveServiceSpy.postDrawing.and.returnValue(throwError('fake error'));
+
+        // tslint:disable-next-line: no-any
+        spyOn<any>(component, 'openSnackBar');
+        component.postDrawing(FILE_NAME);
+        expect(component.savingState).toBe(false);
+        expect(component['openSnackBar']).toHaveBeenCalledWith('fake error', 'Fermer');
+    });
+
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {
-        // TODO: sometimes the test contains 'invalid' string from another test!
+        // TODO: sometimes 'sevent' from the addTag test is in the Array !
         const TAG_TWO = 'two';
         const EXPECTED_TAGS = ['one', 'three', 'four', 'five', 'six'];
         component.removeTag(TAG_TWO);
@@ -55,15 +92,23 @@ fdescribe('SaveDialogComponent', () => {
 
     it('#addTag should add a tag correclty', () => {
         const matChipInputEvent: MatChipInputEvent = { input, value: 'seven' };
-        const EXPECTED_TAGS = ['one', 'three', 'four', 'five', 'six', 'seven'];
+        TAGS_MOCK.push(matChipInputEvent.value);
+        const EXPECTED_TAGS = TAGS_MOCK;
         component.addTag(matChipInputEvent);
-        expect(component.tags).toEqual(EXPECTED_TAGS);
+        expect(component.tags).toBe(EXPECTED_TAGS);
+        expect(input.value).toBe('');
     });
 
     it('#addTag should not add a tag if the tag does not respect the input rules', () => {
-        const CONTROL: FormControl = new FormControl();
-        CONTROL.setErrors({ invalid: true });
+        component.tagFormControl.setErrors({ invalid: true });
+        expect(component.tagFormControl.invalid).toBeTrue();
         const matChipInputEvent: MatChipInputEvent = { input, value: 'invalid' };
+        component.addTag(matChipInputEvent);
+        expect(component.tags).toEqual(TAGS_MOCK);
+    });
+
+    it('#addTag should not add a tag if the tag is made of spaces', () => {
+        const matChipInputEvent: MatChipInputEvent = { input, value: '' };
         component.addTag(matChipInputEvent);
         expect(component.tags).toEqual(TAGS_MOCK);
     });
@@ -72,5 +117,26 @@ fdescribe('SaveDialogComponent', () => {
         const EMPTY_ARRAY: string[] = [];
         component.clearTags();
         expect(component.tags).toEqual(EMPTY_ARRAY);
+    });
+
+    it('#openSnackBar should open the snack bar correctly', () => {
+        component['openSnackBar']('test', 'close');
+        expect(snackbarSpy.open).toHaveBeenCalled();
+    });
+
+    it('#uniqueTagValidator should validate that a input tag is unique', () => {
+        // case 1: non unique tag
+        const NON_UNIQUE_TAG = 'three'; // three already exists in TAGS_MOCK
+        const incorrectForm: FormControl = new FormControl(NON_UNIQUE_TAG);
+        expect(component['uniqueTagValidator'](incorrectForm)).toEqual({
+            nonUniqueTagFound: true,
+        });
+        expect(component.uniqueTagError).toBeTrue();
+
+        // case 2: unique tag
+        const UNIQUE_TAG = 'unique'; // 'unique' does not exists in TAGS_MOCK
+        const correctForm: FormControl = new FormControl(UNIQUE_TAG);
+        expect(component['uniqueTagValidator'](correctForm)).toEqual(null);
+        expect(component.uniqueTagError).toBeFalse();
     });
 });

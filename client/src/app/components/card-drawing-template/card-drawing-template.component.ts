@@ -15,26 +15,14 @@ export class CardDrawingTemplateComponent {
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
     @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();
 
+    deletingState: boolean = false; // boolean set to true while deleting the drawing
+
     constructor(
         private carouselService: CarouselService,
         private snackBar: MatSnackBar,
         public drawingService: DrawingService,
         private router: Router,
-    ) {
-        // this.routeEvent(this.router);
-    }
-
-    // routeEvent(router: Router): void {
-    //     router.events.subscribe((e) => {
-    //         if (e instanceof NavigationEnd) {
-    //             const image = new Image();
-    //             image.src = this.drawingForm.drawingData;
-    //             if (this.drawingService.handleNewDrawing(image)) {
-    //                 this.closeCarousel.emit();
-    //             }
-    //         }
-    //     });
-    // }
+    ) {}
 
     setToCurrentDrawing(): void {
         const image = new Image();
@@ -52,19 +40,18 @@ export class CardDrawingTemplateComponent {
     }
 
     deleteDrawing(id: string): void {
+        this.deletingState = true;
         this.carouselService.deleteDrawingFromServer(id).subscribe(
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur", 'Fermer');
-                if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Le dessin n'existe pas sur le serveur", 'Fermer');
-                if (error === 'NOT_ON_DATABASE') this.openSnackBar('Impossible de supprimer le dessin sur la base de données.', 'Fermer');
-                if (error === 'FAILED_TO_DELETE_DRAWING') this.openSnackBar('La suppression sur la base de donnée a échouée.', 'Fermer');
-
+                this.openSnackBar(error, 'Fermer');
+                this.deletingState = false;
                 this.requestDrawings.emit();
             },
             () => {
                 this.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
+                this.deletingState = false;
                 this.requestDrawings.emit();
             },
         );
