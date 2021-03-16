@@ -50,6 +50,7 @@ import { SprayCanSettingsSelectorComponent } from './components/tool-settings/sp
 import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
+import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 
 @NgModule({
     declarations: [
@@ -79,6 +80,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ExportDialogComponent,
         CardDrawingTemplateComponent,
         SelectionSelectorComponent,
+        GenericSliderComponent,
     ],
     imports: [
         BrowserModule,
