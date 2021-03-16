@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command';
+import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
-import { ShapeService } from './../shape.service';
 
 @Injectable({
     providedIn: 'root',

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionCommand, SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command';
+import { SelectionCommand, SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';

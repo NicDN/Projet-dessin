@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command';
+import { DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({

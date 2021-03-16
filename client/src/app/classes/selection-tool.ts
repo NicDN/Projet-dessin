@@ -1,5 +1,5 @@
 import { Color } from '@app/classes/color';
-import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command';
+import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { MouseButton, Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';

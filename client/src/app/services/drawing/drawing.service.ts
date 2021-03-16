@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
-import { BaseLineCommand } from '@app/classes/commands/base-line-command';
+import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',

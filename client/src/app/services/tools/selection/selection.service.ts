@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionPropreties } from '@app/classes/commands/selection-command';
+import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({

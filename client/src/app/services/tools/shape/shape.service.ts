@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ShapePropreties } from '@app/classes/commands/shape-command';
+import { ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
