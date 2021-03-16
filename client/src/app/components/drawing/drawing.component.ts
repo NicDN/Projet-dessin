@@ -45,8 +45,7 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
         const baseImage = new Image(this.canvasWidth, this.canvasHeight);
         baseImage.src = this.drawingService.canvas.toDataURL();
         this.drawingService.blankHTMLImage = baseImage;
-
-        this.drawingService.sendBaseLineCommand(baseImage);
+        this.drawingService.handleNewDrawing(baseImage);
 
         if (this.drawingService.newImage) {
             this.drawingService.handleNewDrawing(this.drawingService.newImage);

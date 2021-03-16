@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
@@ -18,9 +18,9 @@ export const enum Status {
     templateUrl: './resize-container.component.html',
     styleUrls: ['./resize-container.component.scss'],
 })
-export class ResizeContainerComponent implements AfterContentInit {
-    width: number;
-    height: number;
+export class ResizeContainerComponent {
+    @Input() width: number;
+    @Input() height: number;
 
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
 
@@ -33,12 +33,6 @@ export class ResizeContainerComponent implements AfterContentInit {
 
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToResizeNotifications();
-    }
-
-    ngAfterContentInit(): void {
-        if (this.width === undefined) return;
-        this.width = this.drawingService.canvas.width;
-        this.height = this.drawingService.canvas.height;
     }
 
     setStatus(status: number): void {

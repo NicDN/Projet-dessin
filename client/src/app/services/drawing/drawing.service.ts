@@ -76,7 +76,7 @@ export class DrawingService {
     reloadToBlankDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        this.fillWithWhite(this.baseCtx);
+        // this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
 
         this.blankHTMLImage.width = this.canvas.width;
