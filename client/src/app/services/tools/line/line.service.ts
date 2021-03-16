@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LineCommand, LinePropreties } from '@app/classes/commands/line-command/line-command';
+import { DrawingToolCommand, DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -120,7 +120,7 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
+        const lineCommand: DrawingToolCommand = new DrawingToolCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
         lineCommand.execute();
 
         this.undoRedoService.addCommand(lineCommand);
@@ -148,34 +148,36 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(ctx, path));
+        const lineCommand: DrawingToolCommand = new DrawingToolCommand(this, this.loadUpProprities(ctx, path));
         lineCommand.execute();
     }
 
-    drawLineExecute(linePropreties: LinePropreties): void {
-        this.setContext(linePropreties.drawingContext, linePropreties);
-        linePropreties.drawingContext.beginPath();
+    drawLineExecute(drawingToolPropreties: DrawingToolPropreties): void {
+        this.setContext(drawingToolPropreties.drawingContext, drawingToolPropreties);
+        drawingToolPropreties.drawingContext.beginPath();
 
-        for (const point of linePropreties.drawingPath) {
-            linePropreties.drawingContext.lineWidth = linePropreties.drawingThickness;
-            linePropreties.drawingContext.lineTo(point.x, point.y);
-            if (linePropreties.drawWithJunction) {
+        for (const point of drawingToolPropreties.drawingPath) {
+            drawingToolPropreties.drawingContext.lineWidth = drawingToolPropreties.drawingThickness;
+            drawingToolPropreties.drawingContext.lineTo(point.x, point.y);
+            if (drawingToolPropreties.drawWithJunction) {
                 const circle = new Path2D();
-                circle.arc(point.x, point.y, linePropreties.junctionDiameter, 0, 2 * Math.PI);
-                linePropreties.drawingContext.fill(circle);
+                if (drawingToolPropreties.junctionDiameter === undefined) return;
+                circle.arc(point.x, point.y, drawingToolPropreties.junctionDiameter, 0, 2 * Math.PI);
+                drawingToolPropreties.drawingContext.fill(circle);
             }
         }
-        linePropreties.drawingContext.stroke();
+        drawingToolPropreties.drawingContext.stroke();
     }
 
-    private setContext(ctx: CanvasRenderingContext2D, linePropreties: LinePropreties): void {
-        ctx.globalAlpha = linePropreties.drawingColor.opacity;
-        ctx.strokeStyle = linePropreties.drawingColor.rgbValue;
-        ctx.fillStyle = linePropreties.drawingColor.rgbValue;
-        ctx.lineJoin = linePropreties.drawingContext.lineCap = 'round';
+    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: DrawingToolPropreties): void {
+        if (drawingToolPropreties.drawingColor === undefined) return;
+        ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
+        ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
+        ctx.fillStyle = drawingToolPropreties.drawingColor.rgbValue;
+        ctx.lineJoin = drawingToolPropreties.drawingContext.lineCap = 'round';
     }
 
-    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): LinePropreties {
+    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,

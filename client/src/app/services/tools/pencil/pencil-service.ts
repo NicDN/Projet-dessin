@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command/pencil-command';
+import { DrawingToolCommand, DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -63,42 +63,43 @@ export class PencilService extends TraceTool {
 
     sendCommandAction(): void {
         if (this.isEraser) return;
-        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
+        const drawingCommand: DrawingToolCommand = new DrawingToolCommand(this, this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
         drawingCommand.execute();
         this.undoRedoService.addCommand(drawingCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(ctx, path));
+        const drawingCommand: DrawingToolCommand = new DrawingToolCommand(this, this.loadUpPropreties(ctx, path));
         drawingCommand.execute();
     }
 
-    executeDrawLine(pencilPropreties: PencilPropreties): void {
-        this.setContext(pencilPropreties.drawingContext, pencilPropreties);
-        pencilPropreties.drawingContext.save();
-        let oldPointX: number = pencilPropreties.drawingPath[0].x;
-        let oldPointY: number = pencilPropreties.drawingPath[0].y;
+    executeDrawLine(drawingToolPropreties: DrawingToolPropreties): void {
+        this.setContext(drawingToolPropreties.drawingContext, drawingToolPropreties);
+        drawingToolPropreties.drawingContext.save();
+        let oldPointX: number = drawingToolPropreties.drawingPath[0].x;
+        let oldPointY: number = drawingToolPropreties.drawingPath[0].y;
 
-        pencilPropreties.drawingContext.beginPath();
-        for (const point of pencilPropreties.drawingPath) {
-            pencilPropreties.drawingContext.moveTo(oldPointX, oldPointY);
-            pencilPropreties.drawingContext.lineTo(point.x, point.y);
+        drawingToolPropreties.drawingContext.beginPath();
+        for (const point of drawingToolPropreties.drawingPath) {
+            drawingToolPropreties.drawingContext.moveTo(oldPointX, oldPointY);
+            drawingToolPropreties.drawingContext.lineTo(point.x, point.y);
 
             oldPointX = point.x;
             oldPointY = point.y;
         }
-        pencilPropreties.drawingContext.stroke();
-        pencilPropreties.drawingContext.restore();
+        drawingToolPropreties.drawingContext.stroke();
+        drawingToolPropreties.drawingContext.restore();
     }
 
-    private setContext(ctx: CanvasRenderingContext2D, pencilPropreties: PencilPropreties): void {
+    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: DrawingToolPropreties): void {
         ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.lineWidth = pencilPropreties.drawingThickness;
-        ctx.globalAlpha = pencilPropreties.drawingColor.opacity;
-        ctx.strokeStyle = pencilPropreties.drawingColor.rgbValue;
+        ctx.lineWidth = drawingToolPropreties.drawingThickness;
+        if (drawingToolPropreties.drawingColor === undefined) return;
+        ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
+        ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): PencilPropreties {
+    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,

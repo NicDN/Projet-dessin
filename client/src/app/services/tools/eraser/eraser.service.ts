@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EraserCommand, EraserPropreties } from '@app/classes/commands/erasing-command/erasing-command';
+import { DrawingToolCommand, DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -20,17 +20,23 @@ export class EraserService extends PencilService {
         this.isEraser = true;
     }
     sendCommandAction(): void {
-        const erraserCommand: EraserCommand = new EraserCommand(this, this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData));
+        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
+            this,
+            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
+        );
         erraserCommand.execute();
         this.undoRedoService.addCommand(erraserCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const erraserCommand: EraserCommand = new EraserCommand(this, this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData));
+        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
+            this,
+            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
+        );
         erraserCommand.execute();
     }
 
-    executeErase(eraserPropreties: EraserPropreties): void {
+    executeErase(eraserPropreties: DrawingToolPropreties): void {
         if (this.singleClick(eraserPropreties.drawingPath)) {
             this.eraseSquare(
                 eraserPropreties.drawingContext,
@@ -58,7 +64,7 @@ export class EraserService extends PencilService {
         }
     }
 
-    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): EraserPropreties {
+    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,

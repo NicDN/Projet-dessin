@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EllipseSelectionCommand } from '@app/classes/commands/ellipse-selection-command/ellipse-selection-command';
+import { SelectionCommand } from '@app/classes/commands/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -29,7 +29,7 @@ export class EllipseSelectionService extends SelectionTool {
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        const ellipseSelectionCommand: EllipseSelectionCommand = new EllipseSelectionCommand(
+        const ellipseSelectionCommand: SelectionCommand = new SelectionCommand(
             this,
             ctx,
             this.data,
@@ -65,7 +65,7 @@ export class EllipseSelectionService extends SelectionTool {
     }
 
     finalDrawDown(ctx: CanvasRenderingContext2D): void {
-        const ellipseSelectionCommand: EllipseSelectionCommand = new EllipseSelectionCommand(
+        const ellipseSelectionCommand: SelectionCommand = new SelectionCommand(
             this,
             ctx,
             this.data,

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RectangleSelectionCommand } from '@app/classes/commands/rectangle-selection-command/rectangle-selection-command';
+import { SelectionCommand } from '@app/classes/commands/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -27,25 +27,25 @@ export class RectangleSelectionService extends SelectionTool {
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        const rectangleSelectionCommand: RectangleSelectionCommand = new RectangleSelectionCommand(
+        const rectangleSelectionCommand: SelectionCommand = new SelectionCommand(
             this,
             ctx,
             this.data,
-            this.finalTopLeft,
             this.initialTopLeft,
             this.initialBottomRight,
+            this.finalTopLeft,
         );
         rectangleSelectionCommand.execute();
     }
 
     finalDrawDown(ctx: CanvasRenderingContext2D): void {
-        const rectangleSelectionCommand: RectangleSelectionCommand = new RectangleSelectionCommand(
+        const rectangleSelectionCommand: SelectionCommand = new SelectionCommand(
             this,
             ctx,
             this.data,
-            this.finalTopLeft,
             this.initialTopLeft,
             this.initialBottomRight,
+            this.finalTopLeft,
         );
         rectangleSelectionCommand.execute();
         this.undoRedoService.addCommand(rectangleSelectionCommand);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
+import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -15,17 +15,17 @@ export class EllipseDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
         ellipseCommand.execute();
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
         ellipseCommand.execute();
         this.undoRedoService.addCommand(ellipseCommand);
     }
 
-    drawEllipse(ellipsePropreties: EllipsePropreties): void {
+    drawEllipse(ellipsePropreties: ShapePropreties): void {
         const actualEndCoords: Vec2 = this.getTrueEndCoords(
             ellipsePropreties.beginCoords,
             ellipsePropreties.endCoords,
@@ -56,7 +56,7 @@ export class EllipseDrawingService extends Shape {
         ellipsePropreties.drawingContext.restore();
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): EllipsePropreties {
+    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             drawingContext: ctx,
             beginCoords: begin,
