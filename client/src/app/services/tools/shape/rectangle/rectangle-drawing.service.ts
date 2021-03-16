@@ -1,20 +1,35 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command';
+import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { Subscription } from 'rxjs';
+import { ShapeService } from '../shape.service';
 @Injectable({
     providedIn: 'root',
 })
 export class RectangleDrawingService extends Shape {
-    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
+    subscription: Subscription;
+    constructor(
+        drawingService: DrawingService,
+        colorService: ColorService,
+        public undoRedoService: UndoRedoService,
+        private shapeService: ShapeService,
+    ) {
         super(drawingService, colorService, 'Rectangle');
+        this.listenToNewRectangleDrawingCommands();
+    }
+
+    listenToNewRectangleDrawingCommands(): void {
+        this.subscription = this.shapeService.newRectangleDrawing().subscribe((shapePropreties) => {
+            this.drawRectangle(shapePropreties);
+        });
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
         rectangleCommand.execute();
     }
 
@@ -45,13 +60,14 @@ export class RectangleDrawingService extends Shape {
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommad: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
-        rectangleCommad.execute();
-        this.undoRedoService.addCommand(rectangleCommad);
+        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        rectangleCommand.execute();
+        this.undoRedoService.addCommand(rectangleCommand);
     }
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
+            shapeType: ShapeType.Rectangle,
             drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,

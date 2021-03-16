@@ -4,7 +4,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { DrawingForm } from '@common/communication/drawing-form';
-
 import { CardDrawingTemplateComponent } from './card-drawing-template.component';
 
 describe('CardDrawingTemplateComponent', () => {

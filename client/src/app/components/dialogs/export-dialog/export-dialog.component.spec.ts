@@ -1,15 +1,10 @@
-import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
-// tslint:disable-next-line: no-duplicate-imports
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-
 import { DrawingService } from '@app/services/drawing/drawing.service';
-
 import { FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
-
 import { ExportDialogComponent } from './export-dialog.component';
 
 // tslint:disable:no-string-literal

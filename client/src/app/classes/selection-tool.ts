@@ -1,4 +1,5 @@
 import { Color } from '@app/classes/color';
+import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command';
 import { MouseButton, Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -280,7 +281,16 @@ export abstract class SelectionTool extends Tool {
             this.initialBottomRight.y - this.initialTopLeft.y,
         );
 
-        this.fillWithWhite(ctx, this.initialTopLeft, this.initialBottomRight);
+        const selectionPropretiesTmp: SelectionPropreties = {
+            selectionType: SelectionType.Rectangle,
+            selectionCtx: ctx,
+            imageData: this.data,
+            topLeft: this.initialTopLeft,
+            bottomRight: this.initialBottomRight,
+            finalTopLeft: this.finalTopLeft,
+            finalBottomRight: this.finalBottomRight,
+        };
+        this.fillWithWhite(selectionPropretiesTmp);
     }
 
     setOffSet(pos: Vec2): void {
@@ -292,5 +302,5 @@ export abstract class SelectionTool extends Tool {
     abstract draw(ctx: CanvasRenderingContext2D): void;
     abstract finalDrawDown(ctx: CanvasRenderingContext2D): void;
 
-    abstract fillWithWhite(ctx: CanvasRenderingContext2D, topLeft: Vec2, bottomRight: Vec2): void;
+    abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
 }

@@ -1,26 +1,41 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command';
+import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EllipseDrawingService extends Shape {
-    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
+    subscription: Subscription;
+    constructor(
+        drawingService: DrawingService,
+        colorService: ColorService,
+        private undoRedoService: UndoRedoService,
+        private shapeService: ShapeService,
+    ) {
         super(drawingService, colorService, 'Ellipse');
+        this.listenToNewEllipseDrawingCommands();
+    }
+
+    listenToNewEllipseDrawingCommands(): void {
+        this.subscription = this.shapeService.newEllipseDrawing().subscribe((shapePropreties) => {
+            this.drawEllipse(shapePropreties);
+        });
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
         ellipseCommand.execute();
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
         ellipseCommand.execute();
         this.undoRedoService.addCommand(ellipseCommand);
     }
@@ -58,6 +73,7 @@ export class EllipseDrawingService extends Shape {
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
+            shapeType: ShapeType.Ellipse,
             drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,

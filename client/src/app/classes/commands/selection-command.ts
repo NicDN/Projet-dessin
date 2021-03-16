@@ -1,31 +1,33 @@
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
-import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { EllipseSelectionService } from '@app/services/tools/selection/ellipse-selection.service';
-import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { SelectionService } from '@app/services/tools/selection/selection.service';
+
+export enum SelectionType {
+    Rectangle = 1,
+    Ellipse = 2,
+}
+
+export interface SelectionPropreties {
+    selectionType: SelectionType;
+    selectionCtx: CanvasRenderingContext2D;
+    imageData: ImageData;
+    topLeft: Vec2;
+    bottomRight: Vec2;
+    finalTopLeft: Vec2;
+    finalBottomRight: Vec2;
+}
 
 export class SelectionCommand extends AbstractCommand {
-    constructor(
-        private selectionTool: SelectionTool,
-        private ctx: CanvasRenderingContext2D,
-        private imageData: ImageData,
-        private topLeft: Vec2,
-        private bottomRight: Vec2,
-        private finalTopLeft: Vec2,
-        private finalBottomRight?: Vec2,
-    ) {
+    constructor(private selectionPropreties: SelectionPropreties, private selectionService: SelectionService) {
         super();
     }
 
     execute(): void {
-        if (this.selectionTool instanceof RectangleSelectionService) {
-            (this.selectionTool as RectangleSelectionService).fillWithWhite(this.ctx, this.topLeft, this.bottomRight);
-            (this.selectionTool as RectangleSelectionService).drawSelectionRectangle(this.ctx, this.finalTopLeft, this.imageData);
+        if (this.selectionPropreties.selectionType === SelectionType.Rectangle) {
+            this.selectionService.sendSelectionRectangleNotifs(this.selectionPropreties);
         }
-        if (this.selectionTool instanceof EllipseSelectionService) {
-            if (this.finalBottomRight === undefined) return;
-            (this.selectionTool as EllipseSelectionService).fillWithWhite(this.ctx, this.topLeft, this.bottomRight);
-            (this.selectionTool as EllipseSelectionService).drawSelectionEllipse(this.ctx, this.imageData, this.finalBottomRight, this.finalTopLeft);
+        if (this.selectionPropreties.selectionType === SelectionType.Ellipse) {
+            this.selectionService.sendSelectionEllipseNotifs(this.selectionPropreties);
         }
     }
 }

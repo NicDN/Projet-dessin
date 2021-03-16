@@ -1,28 +1,45 @@
 import { Injectable } from '@angular/core';
-import { DrawingToolCommand, DrawingToolPropreties } from '@app/classes/commands/drawing-tool-command';
+import { DrawingToolCommand, DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/pencil/pencil-service';
+import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
+import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EraserService extends PencilService {
+    subscription: Subscription;
+
     readonly MINTHICKNESS: number = 5;
 
-    constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
-        super(drawingService, colorService, undoRedoService);
+    constructor(
+        drawingService: DrawingService,
+        colorService: ColorService,
+        undoRedoService: UndoRedoService,
+        protected drawingToolService: DrawingToolService,
+    ) {
+        super(drawingService, colorService, undoRedoService, drawingToolService);
         this.thickness = this.MINTHICKNESS;
         this.minThickness = this.MINTHICKNESS;
         this.toolName = 'Efface';
         this.isEraser = true;
+        this.listenToNewDrawingEraserCommands();
     }
+
+    listenToNewDrawingEraserCommands(): void {
+        this.subscription = this.drawingToolService.listenToNewDrawingEraserNotifications().subscribe((drawingToolPropreties) => {
+            this.executeErase(drawingToolPropreties);
+        });
+    }
+
     sendCommandAction(): void {
         const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this,
             this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
+            this.drawingToolService,
         );
         erraserCommand.execute();
         this.undoRedoService.addCommand(erraserCommand);
@@ -30,26 +47,26 @@ export class EraserService extends PencilService {
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this,
             this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
+            this.drawingToolService,
         );
         erraserCommand.execute();
     }
 
-    executeErase(eraserPropreties: DrawingToolPropreties): void {
-        if (this.singleClick(eraserPropreties.drawingPath)) {
+    executeErase(drawingToolPropreties: DrawingToolPropreties): void {
+        if (this.singleClick(drawingToolPropreties.drawingPath)) {
             this.eraseSquare(
-                eraserPropreties.drawingContext,
-                { x: eraserPropreties.drawingPath[0].x, y: eraserPropreties.drawingPath[0].y },
-                eraserPropreties.drawingThickness,
+                drawingToolPropreties.drawingContext,
+                { x: drawingToolPropreties.drawingPath[0].x, y: drawingToolPropreties.drawingPath[0].y },
+                drawingToolPropreties.drawingThickness,
             );
             return;
         }
 
-        let oldPointX: number = eraserPropreties.drawingPath[0].x;
-        let oldPointY: number = eraserPropreties.drawingPath[0].y;
+        let oldPointX: number = drawingToolPropreties.drawingPath[0].x;
+        let oldPointY: number = drawingToolPropreties.drawingPath[0].y;
 
-        for (const point of eraserPropreties.drawingPath) {
+        for (const point of drawingToolPropreties.drawingPath) {
             const dist = this.distanceBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
 
             const angle = this.angleBetween({ x: oldPointX, y: oldPointY }, { x: point.x, y: point.y });
@@ -57,7 +74,7 @@ export class EraserService extends PencilService {
             for (let i = 0; i < dist; i += 1) {
                 const xValue = oldPointX + Math.sin(angle) * i;
                 const yValue = oldPointY + Math.cos(angle) * i;
-                this.eraseSquare(eraserPropreties.drawingContext, { x: xValue, y: yValue }, eraserPropreties.drawingThickness);
+                this.eraseSquare(drawingToolPropreties.drawingContext, { x: xValue, y: yValue }, drawingToolPropreties.drawingThickness);
             }
             oldPointX = point.x;
             oldPointY = point.y;
@@ -66,6 +83,7 @@ export class EraserService extends PencilService {
 
     loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
         return {
+            traceToolType: TraceToolType.Eraser,
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,

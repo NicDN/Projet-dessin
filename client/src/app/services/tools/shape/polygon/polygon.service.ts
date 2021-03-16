@@ -1,26 +1,43 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command';
+import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { Subscription } from 'rxjs';
+import { ShapeService } from './../shape.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PolygonService extends Shape {
-    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
+    subscription: Subscription;
+    constructor(
+        drawingService: DrawingService,
+        colorService: ColorService,
+        public undoRedoService: UndoRedoService,
+        private shapeService: ShapeService,
+    ) {
         super(drawingService, colorService, 'Polygone');
+        this.listenToNewPolygonDrawingCommands();
     }
+
+    listenToNewPolygonDrawingCommands(): void {
+        this.subscription = this.shapeService.newPolygonDrawing().subscribe((shapePropreties) => {
+            this.drawPolygon(shapePropreties);
+        });
+    }
+
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const polygonCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
         polygonCommand.execute();
         this.undoRedoService.addCommand(polygonCommand);
     }
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
+            shapeType: ShapeType.Polygon,
             drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,
@@ -34,7 +51,7 @@ export class PolygonService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand: ShapeCommand = new ShapeCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const polygonCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
         polygonCommand.execute();
     }
 

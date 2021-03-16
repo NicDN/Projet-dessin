@@ -4,7 +4,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { LineService } from '@app/services/tools/line/line.service';
+import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';

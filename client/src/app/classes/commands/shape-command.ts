@@ -1,13 +1,16 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
-import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
-import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
-import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { Observable, Subject } from 'rxjs';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
+
+export enum ShapeType {
+    Rectangle = 1,
+    Ellipse = 2,
+    Polygon = 3,
+}
 
 export interface ShapePropreties {
+    shapeType: ShapeType;
     drawingContext: CanvasRenderingContext2D;
     beginCoords: Vec2;
     endCoords: Vec2;
@@ -20,29 +23,13 @@ export interface ShapePropreties {
 }
 
 export class ShapeCommand extends AbstractCommand {
-    rectangleSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();
-    ellipseSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();
-    polygonSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();
-
-    constructor(private shape: Shape, private shapePropreties: ShapePropreties) {
+    constructor(private shapePropreties: ShapePropreties, private shapeService: ShapeService) {
         super();
     }
 
     execute(): void {
-        if (this.shape instanceof RectangleDrawingService) this.rectangleSubject.next(this.shapePropreties);
-        if (this.shape instanceof EllipseDrawingService) (this.shape as EllipseDrawingService).drawEllipse(this.shapePropreties);
-        if (this.shape instanceof PolygonService) (this.shape as PolygonService).drawPolygon(this.shapePropreties);
-    }
-
-    newRectangleShapeSignal(): Observable<ShapePropreties> {
-        return this.rectangleSubject.asObservable();
-    }
-
-    newEllipseShapeSignal(): Observable<ShapePropreties> {
-        return this.ellipseSubject.asObservable();
-    }
-
-    newPolygonShapeSignal(): Observable<ShapePropreties> {
-        return this.polygonSubject.asObservable();
+        if (this.shapePropreties.shapeType === ShapeType.Rectangle) this.shapeService.sendDrawRectangleNotifs(this.shapePropreties);
+        if (this.shapePropreties.shapeType === ShapeType.Ellipse) this.shapeService.sendDrawEllipseNotifs(this.shapePropreties);
+        if (this.shapePropreties.shapeType === ShapeType.Polygon) this.shapeService.sendDrawPolygonNotifs(this.shapePropreties);
     }
 }

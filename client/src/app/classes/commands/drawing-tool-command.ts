@@ -1,12 +1,16 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
-import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { EraserService } from '@app/services/tools/eraser/eraser.service';
-import { LineService } from '@app/services/tools/line/line.service';
-import { PencilService } from '@app/services/tools/pencil/pencil-service';
+import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
+
+export enum TraceToolType {
+    Pencil = 1,
+    Eraser = 2,
+    Line = 3,
+}
 
 export interface DrawingToolPropreties {
+    traceToolType: TraceToolType;
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;
@@ -16,12 +20,20 @@ export interface DrawingToolPropreties {
 }
 
 export class DrawingToolCommand extends AbstractCommand {
-    constructor(private traceTool: TraceTool, private drawingToolPropreties: DrawingToolPropreties) {
+    constructor(private drawingToolPropreties: DrawingToolPropreties, private drawingToolService: DrawingToolService) {
         super();
     }
     execute(): void {
-        if (this.traceTool instanceof PencilService) (this.traceTool as PencilService).executeDrawLine(this.drawingToolPropreties);
-        if (this.traceTool instanceof EraserService) (this.traceTool as EraserService).executeErase(this.drawingToolPropreties);
-        if (this.traceTool instanceof LineService) (this.traceTool as LineService).drawLineExecute(this.drawingToolPropreties);
+        if (this.drawingToolPropreties.traceToolType === TraceToolType.Pencil) {
+            this.drawingToolService.sendDrawingPencilNotifs(this.drawingToolPropreties);
+        }
+
+        if (this.drawingToolPropreties.traceToolType === TraceToolType.Eraser) {
+            this.drawingToolService.sendDrawingEraserNotifs(this.drawingToolPropreties);
+        }
+
+        if (this.drawingToolPropreties.traceToolType === TraceToolType.Line) {
+            this.drawingToolService.sendDrawingLineNotifs(this.drawingToolPropreties);
+        }
     }
 }
