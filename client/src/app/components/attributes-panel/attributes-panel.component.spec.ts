@@ -4,9 +4,11 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
@@ -19,14 +21,25 @@ describe('AttributesPanelComponent', () => {
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const lineService: LineService = new LineService(
+        new DrawingService(),
+        new ColorService(),
+        new UndoRedoService(new DrawingService()),
+        new DrawingToolService(),
+    );
     const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(
         new DrawingService(),
         new ColorService(),
         new UndoRedoService(new DrawingService()),
+        new ShapeService(),
     );
 
-    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const polygonService: PolygonService = new PolygonService(
+        new DrawingService(),
+        new ColorService(),
+        new UndoRedoService(new DrawingService()),
+        new ShapeService(),
+    );
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -48,7 +61,12 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#subscribe assings current tool correctly ', async(() => {
-        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+        const expectedCurrentTool = new LineService(
+            new DrawingService(),
+            new ColorService(),
+            new UndoRedoService(new DrawingService()),
+            new DrawingToolService(),
+        );
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         component.subscribe();
         fixture.detectChanges();

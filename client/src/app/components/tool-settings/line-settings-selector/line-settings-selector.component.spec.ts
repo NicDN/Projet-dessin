@@ -5,6 +5,7 @@ import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineSettingsSelectorComponent } from './line-settings-selector.component';
@@ -12,7 +13,12 @@ import { LineSettingsSelectorComponent } from './line-settings-selector.componen
 describe('LineSettingsSelectorComponent', () => {
     let component: LineSettingsSelectorComponent;
     let fixture: ComponentFixture<LineSettingsSelectorComponent>;
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const lineService: LineService = new LineService(
+        new DrawingService(),
+        new ColorService(),
+        new UndoRedoService(new DrawingService()),
+        new DrawingToolService(),
+    );
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

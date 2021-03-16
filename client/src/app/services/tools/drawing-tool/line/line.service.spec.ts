@@ -1,18 +1,24 @@
 // tslint:disable: no-string-literal
 // tslint:disable: max-file-line-count
-
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { Color } from '@app/classes/color';
+import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
+import { DrawingToolService } from '../drawing-tool.service';
 import { LineService } from './line.service';
 
-describe('LineService', () => {
+fdescribe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
+    let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;
+    let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     let updatePreviewSpy: jasmine.Spy;
     let calculateAngleSpy: jasmine.Spy;
@@ -20,11 +26,45 @@ describe('LineService', () => {
     let clearPathSpy: jasmine.Spy;
     let removePointSpy: jasmine.Spy;
 
+    const canvasStub: HTMLCanvasElement = document.createElement('canvas');
+    let canvasCtxStub: CanvasRenderingContext2D;
+    canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
+
+    const pathStub: Vec2 = { x: 1, y: 1 };
+    const pathArrayStub: Vec2[] = [pathStub, pathStub];
+    const colorStub: Color = { rgbValue: 'red', opacity: 1 };
+
+    const drawingToolPropretiesStub: DrawingToolPropreties = {
+        traceToolType: TraceToolType.Line,
+        drawingContext: canvasCtxStub,
+        drawingPath: pathArrayStub,
+        drawingThickness: 1,
+        drawingColor: colorStub,
+        drawWithJunction: true,
+        junctionDiameter: 1,
+    };
+
     const DEFAULT_MOUSE_POSITION = { x: 45, y: 55 };
     const EXPECTED_NUMBER_OF_CALLS = 4;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
+        drawingToolServiceSpyObj = jasmine.createSpyObj('DrawingToolService', [
+            'listenToNewDrawingPencilNotifications',
+            'listenToNewDrawingEraserNotifications',
+            'listenToNewDrawingLineNotifications',
+            'sendDrawingLineNotifs',
+        ]);
+        drawingToolServiceSpyObj.listenToNewDrawingPencilNotifications.and.returnValue(of(drawingToolPropretiesStub));
+        drawingToolServiceSpyObj.listenToNewDrawingEraserNotifications.and.returnValue(of(drawingToolPropretiesStub));
+        drawingToolServiceSpyObj.listenToNewDrawingLineNotifications.and.returnValue(of(drawingToolPropretiesStub));
+
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: DrawingToolService, useValue: drawingToolServiceSpyObj },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+            ],
+        });
         service = TestBed.inject(LineService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -299,36 +339,45 @@ describe('LineService', () => {
         expect(service.calculateAngle(lastSelectedPoint) > 0).toBeTrue();
     });
 
-    it('#drawLine should not draw anything if theres no point in the path', () => {
-        service.pathData = [];
+    it('#drawLineExecute should not draw anything if theres no point in the path', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
 
-        service.drawLine(baseCtxStub, service.pathData);
+        drawingToolPropretiesStub.drawingContext = baseCtxStub;
+        drawingToolPropretiesStub.drawingPath = [];
+
+        service.drawLineExecute(drawingToolPropretiesStub);
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
         expect(baseCtxStub.lineTo).not.toHaveBeenCalled();
         expect(baseCtxStub.fill).not.toHaveBeenCalled();
     });
 
-    it('#drawLine should not draw junctions if drawWithJunction isnt set', () => {
+    it('#drawLineExecute should not draw junctions if drawWithJunction isnt set', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
 
-        service.drawLine(baseCtxStub, service.pathData);
+        drawingToolPropretiesStub.drawingContext = baseCtxStub;
+        drawingToolPropretiesStub.drawWithJunction = false;
+        drawingToolPropretiesStub.drawingPath = service.pathData;
+
+        service.drawLineExecute(drawingToolPropretiesStub);
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
         expect(baseCtxStub.lineTo).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
         expect(baseCtxStub.fill).not.toHaveBeenCalled();
     });
 
-    it('#drawLine should draw junctions if drawWithJunction is set', () => {
-        service.drawWithJunction = true;
+    it('#drawLineExecute should draw junctions if drawWithJunction is set', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
 
-        service.drawLine(baseCtxStub, service.pathData);
+        drawingToolPropretiesStub.drawingContext = baseCtxStub;
+        drawingToolPropretiesStub.drawWithJunction = true;
+        drawingToolPropretiesStub.drawingPath = service.pathData;
+
+        service.drawLineExecute(drawingToolPropretiesStub);
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
         expect(baseCtxStub.lineTo).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
         expect(baseCtxStub.fill).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);

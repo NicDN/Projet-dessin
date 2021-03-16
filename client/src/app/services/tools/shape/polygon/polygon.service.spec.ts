@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { Color } from '@app/classes/color';
+import { ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
 import { PolygonService } from './polygon.service';
 
 // tslint:disable: no-string-literal
@@ -16,6 +20,8 @@ describe('PolygonService', () => {
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
+    let shapePropretiesStub: ShapePropreties;
 
     const PRIMARY_COLOR_STUB = 'blue';
     const SECONDARY_COLOR_STUB = 'black';
@@ -25,7 +31,9 @@ describe('PolygonService', () => {
     const SIDES_STUB = 4;
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
-    const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
+    const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 50, y: 50 };
+    const mainColorStub: Color = { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB };
+    const secondaryColorStub: Color = { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB };
     const RGB_MAX = 255;
 
     beforeEach(() => {
@@ -35,12 +43,36 @@ describe('PolygonService', () => {
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
+            'newRectangleDrawing',
+            'newEllipseDrawing',
+            'newPolygonDrawing',
+            'sendDrawPolygonNotifs',
+        ]);
+        shapePropretiesStub = {
+            shapeType: ShapeType.Rectangle,
+            drawingContext: baseCtxStub,
+            beginCoords: TOP_LEFT_CORNER_COORDS,
+            endCoords: BOTTOM_RIGHT_CORNER_COORDS,
+            drawingThickness: THICKNESS_STUB,
+            mainColor: mainColorStub,
+            secondaryColor: secondaryColorStub,
+            isAlternateShape: true,
+            traceType: TraceType.FilledAndBordered,
+            numberOfSides: SIDES_STUB,
+        };
+
+        shapeServiceSpyObj.newRectangleDrawing.and.returnValue(of(shapePropretiesStub));
+        shapeServiceSpyObj.newEllipseDrawing.and.returnValue(of(shapePropretiesStub));
+        shapeServiceSpyObj.newPolygonDrawing.and.returnValue(of(shapePropretiesStub));
+
         TestBed.configureTestingModule({
             providers: [
                 PolygonService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: ShapeService, usevalue: shapeServiceSpyObj },
             ],
         });
 
@@ -52,6 +84,8 @@ describe('PolygonService', () => {
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
+
+        shapePropretiesStub.drawingContext = service['drawingService'].baseCtx;
     });
 
     it('should be created', () => {
@@ -76,12 +110,9 @@ describe('PolygonService', () => {
         expect(canvasSpyObj.stroke).toHaveBeenCalled();
     });
 
-    it('#draw should draw a Polygon on the canvas at the right position and using the right colours', () => {
-        service.thickness = THICKNESS_STUB;
-        service.traceType = TraceType.FilledAndBordered;
-        service.numberOfSides = SIDES_STUB;
-        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
-        const borderPoint: Vec2 = { x: 25, y: 1 };
+    it('#drawPolygon should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        service.drawPolygon(shapePropretiesStub);
+        const borderPoint: Vec2 = { x: 25, y: 2 };
         const centerPoint: Vec2 = { x: 25, y: 25 };
         const outsidePoint: Vec2 = { x: 51, y: 51 };
 
@@ -93,11 +124,9 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#draw  without border should draw a Polygon on the canvas at the right position and using the right colours', () => {
-        service.thickness = THICKNESS_STUB;
-        service.traceType = TraceType.FilledNoBordered;
-        service.numberOfSides = SIDES_STUB;
-        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
+    it('#drawPolygon  without border should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        shapePropretiesStub.traceType = TraceType.FilledNoBordered;
+        service.drawPolygon(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 25, y: 1 };
         const centerPoint: Vec2 = { x: 25, y: 25 };
         const outsidePoint: Vec2 = { x: 51, y: 51 };
@@ -110,11 +139,9 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#draw without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
-        service.thickness = THICKNESS_STUB;
-        service.traceType = TraceType.Bordered;
-        service.numberOfSides = SIDES_STUB;
-        service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, { x: 50, y: 50 });
+    it('#drawPolygon without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
+        shapePropretiesStub.traceType = TraceType.Bordered;
+        service.drawPolygon(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 25, y: 1 };
         const centerPoint: Vec2 = { x: 25, y: 25 };
         const outsidePoint: Vec2 = { x: 51, y: 51 };

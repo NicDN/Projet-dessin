@@ -12,7 +12,6 @@ export class DrawingToolService {
     eraserSubject: Subject<DrawingToolPropreties> = new Subject<DrawingToolPropreties>();
     lineSubject: Subject<DrawingToolPropreties> = new Subject<DrawingToolPropreties>();
 
-    listenToNewErasingNotifications: Observable<DrawingToolPropreties>;
     sendDrawingPencilNotifs(drawingToolPropreties: DrawingToolPropreties): void {
         this.pencilSubject.next(drawingToolPropreties);
     }

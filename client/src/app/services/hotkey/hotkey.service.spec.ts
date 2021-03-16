@@ -13,6 +13,7 @@ import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.se
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
+import { DrawingToolService } from '../tools/drawing-tool/drawing-tool.service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
@@ -54,7 +55,7 @@ describe('HotkeyService', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
-        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
+        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj, new DrawingToolService());
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         dialogServiceSpyObj['listenToKeyEvents'].and.returnValue(of(booleanStub));
