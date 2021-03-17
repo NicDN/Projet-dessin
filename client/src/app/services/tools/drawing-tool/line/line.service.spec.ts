@@ -384,7 +384,7 @@ describe('LineService', () => {
         expect(baseCtxStub.fill).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
     });
 
-    it('#drawLine should load propreties and call drawLineExecute', () => {
+    it('#drawLine should load propreties', () => {
         const loadUpSpy = spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = service.pathData;
         service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
@@ -402,8 +402,9 @@ describe('LineService', () => {
 
     it('#setContext should return if drawing color is undefined', () => {
         drawingToolPropretiesStub.drawingColor = undefined;
-        service['setContext'](baseCtxStub, drawingToolPropretiesStub);
-        expect(baseCtxStub.lineJoin).not.toEqual('round');
+        drawingToolPropretiesStub.drawingContext.lineJoin = 'miter';
+        service['setContext'](drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub);
+        expect(drawingToolPropretiesStub.drawingContext.lineJoin).not.toEqual('round');
     });
 
     it('#lockLine should lock the line near the x axis', () => {

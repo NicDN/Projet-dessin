@@ -52,7 +52,7 @@ describe('EraserService', () => {
         ]);
 
         drawingToolPropretiesStub = {
-            traceToolType: TraceToolType.Line,
+            traceToolType: TraceToolType.Eraser,
             drawingContext: canvasCtxStub,
             drawingPath: pathArrayStub,
             drawingThickness: 4,
@@ -158,16 +158,16 @@ describe('EraserService', () => {
         expect(baseCtxStub.globalAlpha).toEqual(1);
     });
 
-    it('#executeDrawLine should erase on the canvas if there is a single click', () => {
+    it('#executeErase should erase on the canvas if there is a single click', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.executeDrawLine(drawingToolPropretiesStub);
+        service.executeErase(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         imageData.data[3] = imageData.data[3] + 1;
         expect(imageData).toEqual(imageDataBefore);
     });
 
-    it('#executeDrawLine should erase on mouse move', () => {
+    it('#executeErase should erase on mouse move', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         const singleClickStub = false;
@@ -178,19 +178,18 @@ describe('EraserService', () => {
             { x: 1, y: 1 },
         ];
         drawingToolPropretiesStub.drawingPath = path2;
-        service.executeDrawLine(drawingToolPropretiesStub);
+        service.executeErase(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);
     });
 
-    /*it('#drawLine should load propreties and call executeErase', () => {
-        service.isEraser = true;
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+    it('#drawLine should load propreties', () => {
+        const loadUpSpy = spyOn(service, 'loadUpEraserPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
-        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+        service.drawLine(drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub.drawingPath);
 
         expect(loadUpSpy).toHaveBeenCalled();
-    });*/
+    });
 
     it('#sendCommandAction should call execute of eraser and add the command to the stack of undo-redo', () => {
         const eraserSpy = spyOn(service, 'executeErase');

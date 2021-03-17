@@ -169,7 +169,7 @@ describe('PencilService', () => {
         expect(imageData.data[thirdPosition]).not.toEqual(0); // A
     });
 
-    it('#drawLine should load propreties and call executeDrawLine', () => {
+    it('#drawLine should load propreties', () => {
         const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
         service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
@@ -206,13 +206,12 @@ describe('PencilService', () => {
     });
 
     it('#setContext should set the context for drawing', () => {
-        //service.isEraser = false;
-        service['setContext'](baseCtxStub, drawingToolPropretiesStub);
-        expect(baseCtxStub.lineCap).toEqual('round');
-        expect(baseCtxStub.lineJoin).toEqual('round');
-        expect(baseCtxStub.lineWidth).toEqual(service.thickness);
-        expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
-        expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
+        service['setContext'](drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub);
+        expect(drawingToolPropretiesStub.drawingContext.lineCap).toEqual('round');
+        expect(drawingToolPropretiesStub.drawingContext.lineJoin).toEqual('round');
+        expect(drawingToolPropretiesStub.drawingContext.lineWidth).toEqual(service.thickness);
+        expect(drawingToolPropretiesStub.drawingContext.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+        expect(drawingToolPropretiesStub.drawingContext.strokeStyle).toEqual('#ff0000');
     });
 
     it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
