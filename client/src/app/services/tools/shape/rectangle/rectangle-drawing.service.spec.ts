@@ -211,4 +211,13 @@ describe('RectangleDrawingService', () => {
         expect(shapePropreties.isAlternateShape).toEqual(service.alternateShape);
         expect(shapePropreties.traceType).toEqual(service.traceType);
     });
+
+    it('#executeShapeCommand should call execute of rectangle and add the command to the stack of undoRedo', () => {
+        const beginAndEnd: Vec2 = { x: 1, y: 2 };
+        service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
+        const rectangleSpy = spyOn(service, 'drawRectangle');
+        service.listenToNewRectangleDrawingCommands();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(rectangleSpy).toHaveBeenCalled();
+    });
 });

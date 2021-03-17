@@ -4,7 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { SelectionService } from '@app/services/tools/selection/selection.service';
 
 // tslint:disable: no-string-literal
-fdescribe('selection-command', () => {
+describe('selection-command', () => {
     let selectionCommand: SelectionCommand;
     let selectionServiceSpyObj: jasmine.SpyObj<SelectionService>;
     const canvasStub: HTMLCanvasElement = document.createElement('canvas');

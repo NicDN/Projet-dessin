@@ -43,7 +43,7 @@ describe('EllipseDrawingService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
 
         shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
             'newRectangleDrawing',
@@ -195,5 +195,14 @@ describe('EllipseDrawingService', () => {
         expect(shapePropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);
         expect(shapePropreties.isAlternateShape).toEqual(service.alternateShape);
         expect(shapePropreties.traceType).toEqual(service.traceType);
+    });
+
+    it('#executeShapeCommand should call execute of ellipse and add the command to the stack of undoRedo', () => {
+        const beginAndEnd: Vec2 = { x: 1, y: 2 };
+        service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
+        const ellipseSpy = spyOn(service, 'drawEllipse');
+        service.listenToNewEllipseDrawingCommands();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(ellipseSpy).toHaveBeenCalled();
     });
 });

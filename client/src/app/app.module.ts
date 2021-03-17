@@ -42,6 +42,7 @@ import { EyeDropperComponent } from './components/eye-dropper/eye-dropper.compon
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
+import { SelectionOptionsComponent } from './components/selection-options/selection-options.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
@@ -79,6 +80,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ExportDialogComponent,
         CardDrawingTemplateComponent,
         SelectionSelectorComponent,
+        SelectionOptionsComponent,
     ],
     imports: [
         BrowserModule,

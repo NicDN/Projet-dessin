@@ -6,7 +6,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { ShapeService } from '@app/services/tools/shape/shape.service';
 
 // tslint:disable: no-string-literal
-fdescribe('shape-command', () => {
+describe('shape-command', () => {
     let shapeCommand: ShapeCommand;
     let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
 

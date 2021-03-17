@@ -6,7 +6,7 @@ import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-too
 import { TraceToolType } from './drawing-tool-command';
 
 // tslint:disable: no-string-literal
-fdescribe('drawing-tool-command', () => {
+describe('drawing-tool-command', () => {
     let drawingToolCommand: DrawingToolCommand;
 
     let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;

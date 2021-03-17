@@ -10,7 +10,7 @@ import { EraserService } from './eraser/eraser.service';
 import { LineService } from './line/line.service';
 import { PencilService } from './pencil/pencil.service';
 
-fdescribe('DrawingToolService', () => {
+describe('DrawingToolService', () => {
     let service: DrawingToolService;
     let pencilService: PencilService;
     let eraserService: EraserService;

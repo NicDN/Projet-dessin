@@ -8,8 +8,7 @@
     </div>
     <div *ngIf="shapeIsActive()">
         <div *ngIf="polygonIsActive()">
-            <app-polygon-sides-selector [polygon]="currentTool" (numberOfSides)="setNumberOfSides($event)">
-            </app-polygon-sides-selector>
+            <app-polygon-sides-selector [polygon]="currentTool" (numberOfSides)="setNumberOfSides($event)"> </app-polygon-sides-selector>
             <mat-divider></mat-divider>
         </div>
         <app-trace-type-selector [tool]="currentTool" (traceType)="setTraceType($event)"></app-trace-type-selector>
@@ -18,8 +17,11 @@
 
     <div *ngIf="this.currentTool === this.toolsService.lineService">
         <mat-divider></mat-divider>
-        <app-line-settings-selector [tool]="currentTool" (junction)="setJunctionChecked($event)"
-            (junctionDiameter)="setLineJunctionDiameter($event)"></app-line-settings-selector>
+        <app-line-settings-selector
+            [tool]="currentTool"
+            (junction)="setJunctionChecked($event)"
+            (junctionDiameter)="setLineJunctionDiameter($event)"
+        ></app-line-settings-selector>
         <mat-divider></mat-divider>
     </div>
 
@@ -27,7 +29,7 @@
         <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
-    <div *ngIf="this.currentTool===this.toolsService.eyeDropperService">
+    <div *ngIf="this.currentTool === this.toolsService.eyeDropperService">
         <app-eye-dropper></app-eye-dropper>
     </div>
     <div class="undo-redo">
@@ -35,21 +37,24 @@
         <app-undo-redo></app-undo-redo>
     </div>
 
-    <div
-        *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
+    <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
         <app-selection-selector></app-selection-selector>
         <mat-divider></mat-divider>
     </div>
 
-
     <!-- <div class="bottom"> -->
-        <!-- <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
+    <!-- <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
 
         </div> -->
-        <div class="undo-redo">
-            <mat-divider></mat-divider>
-            <app-undo-redo></app-undo-redo>
-        </div>
-    <!-- </div> -->
 
+    <div class="selection-options">
+        <mat-divider></mat-divider>
+        <app-selection-options></app-selection-options>
+    </div>
+
+    <div class="undo-redo">
+        <mat-divider></mat-divider>
+        <app-undo-redo></app-undo-redo>
+    </div>
+    <!-- </div> -->
 </mat-drawer-content>

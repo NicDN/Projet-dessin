@@ -173,4 +173,12 @@ describe('PolygonService', () => {
         expect(loadUpSpy).toHaveBeenCalled();
         expect(drawPolygonSpy).toHaveBeenCalled();
     });
+
+    it('#executeShapeCommand should call execute of polygon and add the command to the stack of undoRedo', () => {
+        service.executeShapeCommand(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        const polygonSpy = spyOn(service, 'drawPolygon');
+        service.listenToNewPolygonDrawingCommands();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(polygonSpy).toHaveBeenCalled();
+    });
 });

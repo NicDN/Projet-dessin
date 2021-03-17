@@ -164,6 +164,18 @@ describe('UndoRedoService', () => {
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
+    it('#setBaseLine should change the base line of commands', () => {
+        const commandBaseLine: TestCommand = new TestCommand();
+        const command1: TestCommand = new TestCommand();
+        const newBaseLine: TestCommand = new TestCommand();
+        service['commandList'][0] = commandBaseLine;
+        service['commandList'][1] = command1;
+        service.setBaseLine(newBaseLine);
+        expect(service['commandList'][0]).toBe(newBaseLine);
+        expect(service['commandList'].length).toEqual(1);
+        expect(service['undoneList'].length).toEqual(0);
+    });
+
     it('#executeAllCommands should execute all commands', () => {
         const command1: TestCommand = new TestCommand();
         const command2: TestCommand = new TestCommand();
