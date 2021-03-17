@@ -154,6 +154,13 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
+    it('#drawPolygon should return if number of sides is undefined', () => {
+        shapePropretiesStub.numberOfSides = undefined;
+        const getCenterCoordsSpy = spyOn(service, 'getCenterCoords');
+        service.drawPolygon(shapePropretiesStub);
+        expect(getCenterCoordsSpy).not.toHaveBeenCalled();
+    });
+
     it('#loadUpPropreties should set the ShapePropreties to current service so it can be used in the redo', () => {
         const polygonPropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(polygonPropreties.shapeType).toEqual(ShapeType.Polygon);
@@ -175,9 +182,9 @@ describe('PolygonService', () => {
     });
 
     it('#executeShapeCommand should call execute of polygon and add the command to the stack of undoRedo', () => {
-        service.executeShapeCommand(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         const polygonSpy = spyOn(service, 'drawPolygon');
         service.listenToNewPolygonDrawingCommands();
+        service.executeShapeCommand(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(polygonSpy).toHaveBeenCalled();
     });
