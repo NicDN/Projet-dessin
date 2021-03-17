@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 import { DrawingToolService } from '../drawing-tool.service';
 import { LineService } from './line.service';
 
-fdescribe('LineService', () => {
+describe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
@@ -296,10 +296,9 @@ fdescribe('LineService', () => {
 
     it('#finishLine shouldnt change the last point if it isnt near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
-        spyOn(service, 'drawLineExecute').and.returnValue();
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-        expect(service.drawLineExecute).toHaveBeenCalled();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
     });
@@ -307,10 +306,9 @@ fdescribe('LineService', () => {
     it('#finishLine should change the last point if it is near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
         service.mousePosition = { x: 20, y: 20 };
-        spyOn(service, 'drawLineExecute').and.returnValue();
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-        expect(service.drawLineExecute).toHaveBeenCalled();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
     });

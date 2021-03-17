@@ -42,7 +42,7 @@ describe('PolygonService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
             'newRectangleDrawing',
             'newEllipseDrawing',
@@ -50,7 +50,7 @@ describe('PolygonService', () => {
             'sendDrawPolygonNotifs',
         ]);
         shapePropretiesStub = {
-            shapeType: ShapeType.Rectangle,
+            shapeType: ShapeType.Polygon,
             drawingContext: baseCtxStub,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
@@ -152,5 +152,25 @@ describe('PolygonService', () => {
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#loadUpPropreties should set the ShapePropreties to current service so it can be used in the redo', () => {
+        const polygonPropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(polygonPropreties.shapeType).toEqual(ShapeType.Polygon);
+        expect(polygonPropreties.drawingContext).toEqual(baseCtxStub);
+        expect(polygonPropreties.beginCoords).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(polygonPropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
+        expect(polygonPropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);
+        expect(polygonPropreties.traceType).toEqual(service.traceType);
+        expect(polygonPropreties.numberOfSides).toEqual(service.numberOfSides);
+    });
+
+    it('#draw should loadUpPropreties and call drawPolygon', () => {
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        const drawPolygonSpy = spyOn(service, 'drawPolygon');
+        service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+
+        expect(loadUpSpy).toHaveBeenCalled();
+        expect(drawPolygonSpy).toHaveBeenCalled();
     });
 });

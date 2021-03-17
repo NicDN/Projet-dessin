@@ -52,9 +52,17 @@ describe('EllipseDrawingService', () => {
             'sendDrawEllipseNotifs',
         ]);
 
+        const canvasStub: HTMLCanvasElement = document.createElement('canvas');
+        let canvasCtxStub: CanvasRenderingContext2D;
+        const stubWidthAndHeight = 100;
+        canvasStub.width = stubWidthAndHeight;
+        canvasStub.height = stubWidthAndHeight;
+        canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
+        canvasCtxStub.fillStyle = 'black';
+
         shapePropretiesStub = {
-            shapeType: ShapeType.Rectangle,
-            drawingContext: baseCtxStub,
+            shapeType: ShapeType.Ellipse,
+            drawingContext: canvasCtxStub,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
             drawingThickness: THICKNESS_STUB,
@@ -78,11 +86,10 @@ describe('EllipseDrawingService', () => {
             ],
         });
 
+        service = TestBed.inject(EllipseDrawingService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
-
-        service = TestBed.inject(EllipseDrawingService);
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
@@ -166,5 +173,27 @@ describe('EllipseDrawingService', () => {
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#draw should loadUp propreties and call drawEllipse', () => {
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        spyOn(service, 'drawEllipse');
+        service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+
+        expect(shapeServiceSpyObj.sendDrawEllipseNotifs).toHaveBeenCalled();
+        expect(loadUpSpy).toHaveBeenCalled();
+    });
+
+    it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
+        const beginAndEnd: Vec2 = { x: 1, y: 2 };
+
+        const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
+        expect(shapePropreties.shapeType).toEqual(ShapeType.Ellipse);
+        expect(shapePropreties.drawingContext).toEqual(baseCtxStub);
+        expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
+        expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
+        expect(shapePropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);
+        expect(shapePropreties.isAlternateShape).toEqual(service.alternateShape);
+        expect(shapePropreties.traceType).toEqual(service.traceType);
     });
 });

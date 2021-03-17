@@ -2,6 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Color } from '@app/classes/color';
+import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { Tool } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -11,7 +12,6 @@ import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.se
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { DrawingToolPropreties, TraceToolType } from './../../classes/commands/drawing-tool-command/drawing-tool-command';
 import { ToolBarComponent } from './tool-bar.component';
 
 describe('ToolBarComponent', () => {

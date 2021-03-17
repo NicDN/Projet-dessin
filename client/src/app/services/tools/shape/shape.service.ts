@@ -6,7 +6,6 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class ShapeService {
-    constructor() {}
     rectangleSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();
     ellipseSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();
     polygonSubject: Subject<ShapePropreties> = new Subject<ShapePropreties>();

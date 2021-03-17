@@ -19,7 +19,6 @@ describe('RectangleDrawingService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
-
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let shapePropretiesStub: ShapePropreties;
@@ -28,11 +27,14 @@ describe('RectangleDrawingService', () => {
     const SECONDARY_COLOR_STUB = 'black';
     const OPACITY_STUB = 1;
     const THICKNESS_STUB = 4;
-    let TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
-    let BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
-    let SIDE_LENGTHS_STUB: Vec2;
-    const mainColorStub: Color = { rgbValue: 'blue', opacity: 1 };
-    const secondaryColorStub: Color = { rgbValue: 'black', opacity: 1 };
+    const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
+    const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
+    const SIDE_LENGTHS_STUB: Vec2 = {
+        x: BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x,
+        y: BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y,
+    };
+    const mainColorStub: Color = { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB };
+    const secondaryColorStub: Color = { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB };
 
     const RGB_MAX = 255;
 
@@ -42,7 +44,7 @@ describe('RectangleDrawingService', () => {
             secondaryColor: { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
             'newRectangleDrawing',
             'newEllipseDrawing',
@@ -50,9 +52,16 @@ describe('RectangleDrawingService', () => {
             'sendDrawRectangleNotifs',
         ]);
 
+        const canvasStub: HTMLCanvasElement = document.createElement('canvas');
+        let canvasCtxStub: CanvasRenderingContext2D;
+        const stubWidthAndHeight = 100;
+        canvasStub.width = stubWidthAndHeight;
+        canvasStub.height = stubWidthAndHeight;
+        canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
+
         shapePropretiesStub = {
             shapeType: ShapeType.Rectangle,
-            drawingContext: baseCtxStub,
+            drawingContext: canvasCtxStub,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
             drawingThickness: THICKNESS_STUB,
@@ -86,13 +95,6 @@ describe('RectangleDrawingService', () => {
         service['drawingService'].previewCtx = previewCtxStub;
 
         shapePropretiesStub.drawingContext = service['drawingService'].baseCtx;
-
-        TOP_LEFT_CORNER_COORDS = { x: 0, y: 0 };
-        BOTTOM_RIGHT_CORNER_COORDS = { x: 40, y: 20 };
-        SIDE_LENGTHS_STUB = {
-            x: BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x,
-            y: BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y,
-        };
     });
 
     it('should be created', () => {
@@ -107,51 +109,64 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#drawRectangle should draw a rectangle on the canvas at the right position and using the right colours', () => {
+        drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
         service.drawRectangle(shapePropretiesStub);
 
-        const borderPoint: Vec2 = { x: 2, y: 10 };
-        const centerPoint: Vec2 = { x: 20, y: 10 };
+        // const borderPoint: Vec2 = { x: 2, y: 10 };
+        // const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 0 };
 
-        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
-        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
-        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        // const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        // expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#drawRectangle without border should draw a rectangle on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
+        drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
         service.drawRectangle(shapePropretiesStub);
 
-        const borderPoint: Vec2 = { x: 2, y: 10 };
-        const centerPoint: Vec2 = { x: 20, y: 10 };
-        const outsidePoint: Vec2 = { x: 41, y: 10 };
+        // const borderPoint: Vec2 = { x: 3, y: 3 };
+        const centerPoint: Vec2 = { x: 25, y: 15 };
+        const outsidePoint: Vec2 = { x: 41, y: 41 };
 
-        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
-        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
-        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
     it('#drawRectangle when using alternate shape should draw a square on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.isAlternateShape = true;
         shapePropretiesStub.traceType = TraceType.Bordered;
+        drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
+
         service.drawRectangle(shapePropretiesStub);
 
-        const borderPoint: Vec2 = { x: 1, y: 1 };
-        const centerPoint: Vec2 = { x: 12, y: 10 };
-        const outsidePoint: Vec2 = { x: 22, y: 10 };
+        // const borderPoint: Vec2 = { x: 2, y: 2 };
+        const centerPoint: Vec2 = { x: 22, y: 12 };
+        const outsidePoint: Vec2 = { x: 41, y: 41 };
 
-        const imageDataBorder: ImageData = baseCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
-        const imageDataCenter: ImageData = baseCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
-        const imageDataOutside: ImageData = baseCtxStub.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#draw should loadUp propreties and call drawRectangle', () => {
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+
+        // expect(shapeServiceSpyObj.newRectangleDrawing).toHaveBeenCalled();
+        expect(loadUpSpy).toHaveBeenCalled();
+        expect(shapeServiceSpyObj.sendDrawRectangleNotifs).toHaveBeenCalled();
     });
 
     it('#adjustToBorder should adjust the begin coords and length appropriately', () => {
@@ -183,5 +198,17 @@ describe('RectangleDrawingService', () => {
         service.adjustToBorder(drawingServiceSpyObj.previewCtx, initialLengths, TOP_LEFT_CORNER_COORDS, TOP_LEFT_CORNER_COORDS, TraceType.Bordered);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(1);
         expect(TOP_LEFT_CORNER_COORDS).toEqual(initialCoords);
+    });
+
+    it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
+        const beginAndEnd: Vec2 = { x: 1, y: 2 };
+
+        const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
+        expect(shapePropreties.shapeType).toEqual(ShapeType.Rectangle), expect(shapePropreties.drawingContext).toEqual(baseCtxStub);
+        expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
+        expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
+        expect(shapePropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);
+        expect(shapePropreties.isAlternateShape).toEqual(service.alternateShape);
+        expect(shapePropreties.traceType).toEqual(service.traceType);
     });
 });

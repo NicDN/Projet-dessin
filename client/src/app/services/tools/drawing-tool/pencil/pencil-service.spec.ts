@@ -1,10 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { Color } from '@app/classes/color';
+import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
+import { DrawingToolService } from '../drawing-tool.service';
 import { PencilService } from './pencil.service';
 
 // tslint:disable: no-string-literal
@@ -15,9 +19,28 @@ describe('PencilService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
+
+    const canvasStub: HTMLCanvasElement = document.createElement('canvas');
+    let canvasCtxStub: CanvasRenderingContext2D;
+    canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
+
+    const pathStub: Vec2 = { x: 1, y: 1 };
+    const pathArrayStub: Vec2[] = [pathStub, pathStub];
+    const colorStub: Color = { rgbValue: 'red', opacity: 1 };
+
+    const drawingToolPropretiesStub: DrawingToolPropreties = {
+        traceToolType: TraceToolType.Pencil,
+        drawingContext: canvasCtxStub,
+        drawingPath: pathArrayStub,
+        drawingThickness: 1,
+        drawingColor: colorStub,
+        drawWithJunction: true,
+        junctionDiameter: 1,
+    };
 
     const PRIMARY_COLOR_STUB = 'red';
     const OPACITY_STUB = 1;
@@ -32,11 +55,23 @@ describe('PencilService', () => {
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'sendCommandAction']);
+        drawingToolServiceSpyObj = jasmine.createSpyObj('DrawingToolService', [
+            'listenToNewDrawingPencilNotifications',
+            'listenToNewDrawingEraserNotifications',
+            'listenToNewDrawingLineNotifications',
+            'sendDrawingPencilNotifs',
+        ]);
+
+        drawingToolServiceSpyObj.listenToNewDrawingPencilNotifications.and.returnValue(of(drawingToolPropretiesStub));
+        drawingToolServiceSpyObj.listenToNewDrawingEraserNotifications.and.returnValue(of(drawingToolPropretiesStub));
+        drawingToolServiceSpyObj.listenToNewDrawingLineNotifications.and.returnValue(of(drawingToolPropretiesStub));
+
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: DrawingToolService, useValue: drawingToolServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -120,16 +155,13 @@ describe('PencilService', () => {
         expect(drawLineSpy).not.toHaveBeenCalled();
     });
 
-    it('#should change the pixel of the canvas ', () => {
-        mouseEvent = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseDown(mouseEvent);
-        mouseEvent = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
-        service.onMouseUp(mouseEvent);
+    it('#executeDrawLine should change the pixel of the canvas ', () => {
+        service.executeDrawLine(drawingToolPropretiesStub);
 
         const expectedRedColor = 255;
         const thirdPosition = 3;
 
-        const imageData: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
+        const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
 
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
@@ -165,13 +197,12 @@ describe('PencilService', () => {
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
     });
 
-    // Moved to command
-    // it('#setContext should set the context for drawing', () => {
-    //     service.setContext(baseCtxStub);
-    //     expect(baseCtxStub.lineCap).toEqual('round');
-    //     expect(baseCtxStub.lineJoin).toEqual('round');
-    //     expect(baseCtxStub.lineWidth).toEqual(service.thickness);
-    //     expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
-    //     expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
-    // });
+    it('#setContext should set the context for drawing', () => {
+        service['setContext'](baseCtxStub, drawingToolPropretiesStub);
+        expect(baseCtxStub.lineCap).toEqual('round');
+        expect(baseCtxStub.lineJoin).toEqual('round');
+        expect(baseCtxStub.lineWidth).toEqual(service.thickness);
+        expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+        expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
+    });
 });
