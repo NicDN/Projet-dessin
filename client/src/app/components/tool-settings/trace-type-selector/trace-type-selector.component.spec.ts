@@ -53,17 +53,15 @@ describe('TraceTypeSelectorComponent', () => {
         expect(component.setActiveTraceType).toHaveBeenCalled();
     });
 
-    it('should raise traceType event when #setActiveTraceType is called', () => {
-        const traceTypeExpected: TraceType = TraceType.Bordered;
-        spyOn(component.traceType, 'emit');
-        component.setActiveTraceType(traceTypeExpected);
-        expect(component.traceType.emit).toHaveBeenCalled();
-        expect(component.traceType.emit).toHaveBeenCalledWith(traceTypeExpected);
-    });
-
     it('#getColor should get the right color according to the toolTipContent provided', () => {
         expect(component.getColor('Contour')).toBe(colorServiceSpy.secondaryColor.rgbValue);
         expect(component.getColor('Plein')).toBe(colorServiceSpy.mainColor.rgbValue);
         expect(component.getColor('')).toBe('white');
+    });
+
+    it('#setActiveTraceType should set the active trace type correclty ', () => {
+        const traceTypeExpected: TraceType = TraceType.Bordered;
+        component.setActiveTraceType(traceTypeExpected);
+        expect(component.tool.traceType).toBe(traceTypeExpected);
     });
 });

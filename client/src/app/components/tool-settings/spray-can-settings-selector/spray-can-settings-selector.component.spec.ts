@@ -32,19 +32,4 @@ describe('SprayCanSettingsSelectorComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('#updateEmissionRate should update the current tool emission', () => {
-        component.updateEmissionRate(matSliderChange);
-        expect(component.tool.emissionRate).toEqual(SLIDER_EXPECTED_VALUE);
-    });
-
-    it('#updateDropletsDiameter should raise the spray diameter', () => {
-        component.updateDropletsDiameter(matSliderChange);
-        expect(component.tool.dropletsDiameter).toEqual(SLIDER_EXPECTED_VALUE);
-    });
-
-    it('#updateSprayDiameter should raise the spray diameter', () => {
-        component.updateSprayDiameter(matSliderChange);
-        expect(component.tool.sprayDiameter).toEqual(SLIDER_EXPECTED_VALUE);
-    });
 });

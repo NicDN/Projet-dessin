@@ -1,7 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingTool } from '@app/classes/drawing-tool';
-import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/line/line.service';
@@ -19,7 +18,7 @@ describe('AttributesPanelComponent', () => {
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+
     const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(
         new DrawingService(),
         new ColorService(),
@@ -54,41 +53,6 @@ describe('AttributesPanelComponent', () => {
         fixture.detectChanges();
         expect(component.currentTool).toBe(expectedCurrentTool);
     }));
-
-    it('#setThickness should set the thickness correctly', () => {
-        const EXPECTED_THICKNESS = 10;
-        component.setThickness(EXPECTED_THICKNESS);
-        expect((component.currentTool as DrawingTool).thickness).toBe(EXPECTED_THICKNESS);
-    });
-
-    it('#setTraceType should set the trace type correctly', () => {
-        component.currentTool = ellipseDrawingService;
-        const expectedTraceType: TraceType = TraceType.Bordered;
-        component.setTraceType(expectedTraceType);
-        expect((component.currentTool as Shape).traceType).toBe(expectedTraceType);
-    });
-
-    it('#setLineJunctionDiameter should set the line junction diameter correctly', () => {
-        component.currentTool = lineService;
-        const EXPECTED_LINE_DIAMETER = 10;
-        component.setLineJunctionDiameter(EXPECTED_LINE_DIAMETER);
-        expect((component.currentTool as LineService).junctionDiameter).toBe(EXPECTED_LINE_DIAMETER);
-    });
-
-    it('#setJunctionChecked should set the type of line junction correctly', () => {
-        component.currentTool = lineService;
-        const expectedJunction = false;
-        (component.currentTool as LineService).drawWithJunction = !expectedJunction;
-        component.setJunctionChecked(expectedJunction);
-        expect((component.currentTool as LineService).drawWithJunction).toBe(expectedJunction);
-    });
-
-    it('#setNumberOfSides should set the number of sides of a polygon correctly', () => {
-        component.currentTool = polygonService;
-        const expectedNumberOfSides = 3;
-        component.setNumberOfSides(expectedNumberOfSides);
-        expect((component.currentTool as Shape).numberOfSides).toBe(expectedNumberOfSides);
-    });
 
     it('#shapeIsActive should verify that a shape is active', () => {
         component.currentTool = ellipseDrawingService;

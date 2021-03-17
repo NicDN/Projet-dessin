@@ -10,6 +10,9 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     providedIn: 'root',
 })
 export class PolygonService extends Shape {
+    readonly MAX_SIDES: number = 12;
+    readonly MIN_SIDES: number = 3;
+
     constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Polygone');
     }
