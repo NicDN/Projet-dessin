@@ -2,13 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { EllipseSelectionService } from '@app/services/tools/selection/ellipse-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { SelectionService } from '@app/services/tools/selection/selection.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { RectangleDrawingService } from '../shape/rectangle/rectangle-drawing.service';
-import { EllipseSelectionService } from './ellipse-selection.service';
-import { SelectionService } from './selection.service';
 
-fdescribe('SelectionService', () => {
+describe('SelectionService', () => {
     let service: SelectionService;
     let drawingServiceStub: DrawingService;
     let rectangleDrawingServiceStub: RectangleDrawingService;
