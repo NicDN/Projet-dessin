@@ -182,4 +182,21 @@ describe('EraserService', () => {
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);
     });
+
+    /*it('#drawLine should load propreties and call executeErase', () => {
+        service.isEraser = true;
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        drawingToolPropretiesStub.drawingPath = pathArrayStub;
+        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+
+        expect(loadUpSpy).toHaveBeenCalled();
+    });*/
+
+    it('#sendCommandAction should call execute of eraser and add the command to the stack of undo-redo', () => {
+        const eraserSpy = spyOn(service, 'executeErase');
+        service.listenToNewDrawingEraserCommands();
+        service.sendCommandAction();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(eraserSpy).toHaveBeenCalled();
+    });
 });

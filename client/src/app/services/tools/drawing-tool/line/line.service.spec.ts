@@ -343,6 +343,7 @@ describe('LineService', () => {
         spyOn(baseCtxStub, 'fill');
 
         drawingToolPropretiesStub.drawingContext = baseCtxStub;
+        drawingToolPropretiesStub.junctionDiameter = 1;
         drawingToolPropretiesStub.drawingPath = [];
 
         service.drawLineExecute(drawingToolPropretiesStub);
@@ -358,6 +359,7 @@ describe('LineService', () => {
 
         drawingToolPropretiesStub.drawingContext = baseCtxStub;
         drawingToolPropretiesStub.drawWithJunction = false;
+        drawingToolPropretiesStub.junctionDiameter = 1;
         drawingToolPropretiesStub.drawingPath = service.pathData;
 
         service.drawLineExecute(drawingToolPropretiesStub);
@@ -372,6 +374,7 @@ describe('LineService', () => {
         spyOn(baseCtxStub, 'fill');
 
         drawingToolPropretiesStub.drawingContext = baseCtxStub;
+        drawingToolPropretiesStub.junctionDiameter = 1;
         drawingToolPropretiesStub.drawWithJunction = true;
         drawingToolPropretiesStub.drawingPath = service.pathData;
 
@@ -379,6 +382,28 @@ describe('LineService', () => {
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
         expect(baseCtxStub.lineTo).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
         expect(baseCtxStub.fill).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
+    });
+
+    it('#drawLine should load propreties and call drawLineExecute', () => {
+        const loadUpSpy = spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
+        drawingToolPropretiesStub.drawingPath = service.pathData;
+        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+
+        expect(loadUpSpy).toHaveBeenCalled();
+    });
+
+    it('#drawLine should return if junction diameter is undefined', () => {
+        drawingToolPropretiesStub.junctionDiameter = undefined;
+        const beginPathSpy = spyOn(drawingToolPropretiesStub.drawingContext, 'beginPath');
+        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+
+        expect(beginPathSpy).not.toHaveBeenCalled();
+    });
+
+    it('#setContext should return if drawing color is undefined', () => {
+        drawingToolPropretiesStub.drawingColor = undefined;
+        service['setContext'](baseCtxStub, drawingToolPropretiesStub);
+        expect(baseCtxStub.lineJoin).not.toEqual('round');
     });
 
     it('#lockLine should lock the line near the x axis', () => {

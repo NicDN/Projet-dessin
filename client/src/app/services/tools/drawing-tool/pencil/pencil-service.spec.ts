@@ -169,6 +169,14 @@ describe('PencilService', () => {
         expect(imageData.data[thirdPosition]).not.toEqual(0); // A
     });
 
+    it('#drawLine should load propreties and call executeDrawLine', () => {
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        drawingToolPropretiesStub.drawingPath = pathArrayStub;
+        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+
+        expect(loadUpSpy).toHaveBeenCalled();
+    });
+
     it('#onMouseEnter should set pencil service bool mouseDown to true if the left click is pressed when entering the canvas ', () => {
         service.onMouseEnter(mouseEvent);
         expect(service.mouseDown).toEqual(true);
@@ -198,11 +206,33 @@ describe('PencilService', () => {
     });
 
     it('#setContext should set the context for drawing', () => {
+        //service.isEraser = false;
         service['setContext'](baseCtxStub, drawingToolPropretiesStub);
         expect(baseCtxStub.lineCap).toEqual('round');
         expect(baseCtxStub.lineJoin).toEqual('round');
         expect(baseCtxStub.lineWidth).toEqual(service.thickness);
         expect(baseCtxStub.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
         expect(baseCtxStub.strokeStyle).toEqual('#ff0000');
+    });
+
+    it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
+        const pencilSpy = spyOn(service, 'executeDrawLine');
+        service.listenToNewDrawingPencilCommands();
+        service.sendCommandAction();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(pencilSpy).toHaveBeenCalled();
+    });
+
+    it('#sendCommandAction should return if we are erasing', () => {
+        service.isEraser = true;
+        service.listenToNewDrawingPencilCommands();
+        service.sendCommandAction();
+        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
+    });
+
+    it('#setContext should return if drawing color is undefined', () => {
+        drawingToolPropretiesStub.drawingColor = undefined;
+        service['setContext'](baseCtxStub, drawingToolPropretiesStub);
+        expect(baseCtxStub.lineJoin).not.toEqual('round');
     });
 });
