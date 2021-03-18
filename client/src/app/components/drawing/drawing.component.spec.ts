@@ -5,7 +5,12 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
+import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { SelectionService } from '@app/services/tools/selection/selection.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from './drawing.component';
@@ -19,7 +24,7 @@ const UNDER_MINIMUM_WIDTH = 600;
 const UNDER_MINIMUM_HEIGHT = 400;
 
 // tslint:disable: no-string-literal
-describe('DrawingComponent', () => {
+fdescribe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
 
@@ -39,7 +44,7 @@ describe('DrawingComponent', () => {
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('HotkeyService', ['addCommand']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('HotkeyService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -128,12 +133,38 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
     });
 
+    it('#onMouseUp is instance of line should not call enableUndoRedo from undoRedoService ', () => {
+        component['canDraw'] = true;
+        toolsServiceSpy.currentTool = new LineService(drawingStub, colorServiceStub, undoRedoServiceSpyObj, new DrawingToolService());
+        component.onMouseUp(mouseEventClick);
+        expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();
+    });
+
+    it('#onMouseUp is instance of line should not call enableUndoRedo from undoRedoService ', () => {
+        component['canDraw'] = true;
+        toolsServiceSpy.currentTool = new RectangleSelectionService(
+            drawingStub,
+            new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj, new ShapeService()),
+            undoRedoServiceSpyObj,
+            new SelectionService(),
+        );
+        component.onMouseUp(mouseEventClick);
+        expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();
+    });
+
     it("#onMouseUp should not call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
         component['canDraw'] = false;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseUp');
         component.onMouseUp(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
+    });
+
+    it("#onMouseOut should call the current tool's #onMouseOut when receiving a mouse out event", () => {
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseOut');
+        component.onMouseOut(mouseEventClick);
+        expect(mouseEventSpy).toHaveBeenCalled();
+        expect(mouseEventSpy).toHaveBeenCalledWith(mouseEventClick);
     });
 
     it('#onKeyDown should call #onKeyDown of hotKeyService', () => {
@@ -186,5 +217,21 @@ describe('DrawingComponent', () => {
         onLoadCanvasHeight = window.innerHeight * HALF_RATIO;
         component.setCanvasDimensions();
         expect(component['canvasHeight']).toEqual(onLoadCanvasHeight);
+    });
+
+    it('#ngAfterViewInit should not HandleNewDrawing a second time if newImage is undefined', () => {
+        component.drawingService.newImage = undefined;
+        const handleNewDrawing = spyOn(component.drawingService, 'handleNewDrawing');
+        component.ngAfterViewInit();
+        expect(handleNewDrawing).toHaveBeenCalledTimes(1);
+    });
+
+    it('#ngAfterViewInit should HandleNewDrawing a second time if newImage is not undefined', () => {
+        const imageStub = new Image();
+        imageStub.src = component.drawingService.canvas.toDataURL();
+        component.drawingService.newImage = imageStub;
+        const handleNewDrawing = spyOn(component.drawingService, 'handleNewDrawing');
+        component.ngAfterViewInit();
+        expect(handleNewDrawing).toHaveBeenCalledTimes(2);
     });
 });

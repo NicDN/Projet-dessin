@@ -6,7 +6,7 @@ import { ResizeContainerComponent } from '@app/components/resize-container/resiz
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { DrawingService } from './drawing.service';
 
-fdescribe('DrawingService', () => {
+describe('DrawingService', () => {
     let resizeContainerComponent: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
     let undoRedoService: UndoRedoService;
