@@ -123,7 +123,8 @@ describe('CardDrawingTemplateComponent', () => {
     });
 
     it('#isTheLoadedCanvas should return false if the canvas is undefined', () => {
-        // if the canvas is not set, it is undefined
+        // @ts-ignore
+        drawingServiceSpyObj.canvas = undefined;
         expect(component.isTheLoadedCanvas()).toBeFalse();
     });
 
