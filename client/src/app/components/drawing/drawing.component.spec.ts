@@ -24,7 +24,7 @@ const UNDER_MINIMUM_WIDTH = 600;
 const UNDER_MINIMUM_HEIGHT = 400;
 
 // tslint:disable: no-string-literal
-fdescribe('DrawingComponent', () => {
+describe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
 

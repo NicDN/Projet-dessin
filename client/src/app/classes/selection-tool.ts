@@ -207,6 +207,8 @@ export abstract class SelectionTool extends Tool {
         } else {
             if (this.drawingService.previewCtx === undefined) return;
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.initialTopLeft.x = this.initialBottomRight.x;
+            this.initialTopLeft.y = this.initialBottomRight.y;
         }
     }
 

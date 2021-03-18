@@ -187,7 +187,7 @@ export class LineService extends TraceTool {
         drawingToolPropreties.drawingContext.stroke();
     }
 
-    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: DrawingToolPropreties): void {
+    setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: DrawingToolPropreties): void {
         if (drawingToolPropreties.drawingColor === undefined) return;
         ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
         ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;

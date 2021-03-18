@@ -7,22 +7,24 @@ import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
 import { MainPageComponent } from '@app/components/main-page/main-page.component';
 import { ColorService } from '@app/services/color/color.service';
-import { DialogService } from '@app/services/dialog/dialog.service';
+import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { DrawingToolService } from '../tools/drawing-tool/drawing-tool.service';
+import { RectangleSelectionService } from './../tools/selection/rectangle-selection.service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
-describe('HotkeyService', () => {
+fdescribe('HotkeyService', () => {
     let service: HotkeyService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
     let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    let rectangleSelectionServiceSpyObj: jasmine.SpyObj<RectangleSelectionService>;
     const boxSizeStub = { widthBox: 10, heightBox: 10 };
     const booleanStub = true;
 
@@ -33,10 +35,15 @@ describe('HotkeyService', () => {
     const keyOCtrlStub = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
     const keyAStub = new KeyboardEvent('keydown', { code: 'KeyA' });
+    const keyCtrlAStub = new KeyboardEvent('keydown', { code: 'KeyA', ctrlKey: true });
+
     const keyIStub = new KeyboardEvent('keydown', { code: 'KeyI' });
 
     const keyEStub = new KeyboardEvent('keydown', { code: 'KeyE' });
     const keyECtrlStub = new KeyboardEvent('keydown', { code: 'KeyE', ctrlKey: true });
+
+    const keyRStub = new KeyboardEvent('keydown', { code: 'KeyR' });
+    const keySStub = new KeyboardEvent('keydown', { code: 'KeyS' });
 
     const keyLStub = new KeyboardEvent('keydown', { code: 'KeyL' });
     const keyCStub = new KeyboardEvent('keydown', { code: 'KeyC' });
@@ -54,6 +61,7 @@ describe('HotkeyService', () => {
     beforeEach(async(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
+        rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
         toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj, new DrawingToolService());
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
@@ -73,6 +81,7 @@ describe('HotkeyService', () => {
                 { provide: ToolsService, useValue: toolsServiceSpyObj },
                 { provide: DialogService, useValue: dialogServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: RectangleSelectionService, useValue: rectangleSelectionServiceSpyObj },
                 { provide: MatDialog, useValue: {} },
             ],
             schemas: [NO_ERRORS_SCHEMA],
@@ -92,42 +101,35 @@ describe('HotkeyService', () => {
             ' should call every function',
         () => {
             spyOn(service, 'handleCtrlO');
+            spyOn(service, 'handleSelectAll');
             service['listenToKeyEvents'] = true;
 
             service.onKeyDown(keySCtrlStub);
-            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-            dialogServiceSpyObj.openDialog.calls.reset();
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledWith(DialogType.Save);
 
             service.onKeyDown(keyGCtrlStub);
-            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-            dialogServiceSpyObj.openDialog.calls.reset();
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledWith(DialogType.Carousel);
 
             service.onKeyDown(keyOCtrlStub);
             expect(service.handleCtrlO).toHaveBeenCalled();
 
             service.onKeyDown(keyAStub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.sprayCanService);
 
             service.onKeyDown(keyIStub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.eyeDropperService);
 
             service.onKeyDown(keyEStub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.eraserService);
 
             service.onKeyDown(keyECtrlStub);
-            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalled();
-            dialogServiceSpyObj.openDialog.calls.reset();
+            expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledWith(DialogType.Export);
 
             service.onKeyDown(keyLStub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.lineService);
 
             service.onKeyDown(keyCStub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.pencilService);
 
             service.onKeyDown(keyCtrlZStub);
             expect(undoRedoServiceSpyObj.undo).toHaveBeenCalled();
@@ -138,16 +140,22 @@ describe('HotkeyService', () => {
             undoRedoServiceSpyObj.redo.calls.reset();
 
             service.onKeyDown(digit1Stub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
 
             service.onKeyDown(digit2Stub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.ellipseDrawingService);
 
             service.onKeyDown(digit3Stub);
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalled();
-            toolsServiceSpyObj.setCurrentTool.calls.reset();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.polygonService);
+
+            service.onKeyDown(keySStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.ellipseDrawingService);
+
+            service.onKeyDown(keyRStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
+
+            service.onKeyDown(keyCtrlAStub);
+            expect(service.handleSelectAll).toHaveBeenCalled();
         },
     );
 
@@ -195,5 +203,11 @@ describe('HotkeyService', () => {
         expect(service.onKeyDown(notAssignedKeyboardEvent1)).toBeFalsy();
         expect(service.onKeyDown(notAssignedKeyboardEvent2)).toBeFalsy();
         expect(service.onKeyDown(notAssignedKeyboardEvent3)).toBeFalsy();
+    });
+
+    it('#handleSelectAll should set current tool to rectangleSelectionService and call the selectAll method from it', () => {
+        service.handleSelectAll();
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
+        expect(rectangleSelectionServiceSpyObj.selectAll).toHaveBeenCalled();
     });
 });
