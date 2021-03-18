@@ -43,7 +43,7 @@ export class DrawingService {
     }
 
     executeBaseLine(image: HTMLImageElement): void {
-        if (image !== undefined) {
+        if (image.width > 0 && image.height > 0) {
             this.baseCtx.drawImage(image, 0, 0);
         }
     }

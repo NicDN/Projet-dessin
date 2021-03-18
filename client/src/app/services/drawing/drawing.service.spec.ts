@@ -3,11 +3,13 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { DrawingService } from './drawing.service';
 
-describe('DrawingService', () => {
+fdescribe('DrawingService', () => {
     let resizeContainerComponent: ResizeContainerComponent;
     let fixture: ComponentFixture<ResizeContainerComponent>;
+    let undoRedoService: UndoRedoService;
 
     let service: DrawingService;
     let canvasTestHelper: CanvasTestHelper;
@@ -17,6 +19,7 @@ describe('DrawingService', () => {
     let drawingServiceSpyValidateInput: jasmine.Spy;
     let drawingServiceSpyChangeSizeOfCanvas: jasmine.Spy;
     let drawingServiceSpyClearCanvas: jasmine.Spy;
+    let imageStub: HTMLImageElement;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -27,6 +30,7 @@ describe('DrawingService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(DrawingService);
+        undoRedoService = TestBed.inject(UndoRedoService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         service.canvas = canvasTestHelper.canvas;
         service.previewCanvas = canvasTestHelper.selectionCanvas;
@@ -36,6 +40,12 @@ describe('DrawingService', () => {
         const image = new Image();
         image.src = service.canvas.toDataURL();
         service.blankHTMLImage = image;
+
+        const nonEmptyimage = new Image();
+        service.baseCtx.fillRect(0, 0, 1, 1);
+        nonEmptyimage.src = service.canvas.toDataURL();
+        imageStub = nonEmptyimage;
+        service.baseCtx.clearRect(0, 0, 1, 1);
 
         drawingServiceSpyCheckIfEmpty = spyOn(service, 'canvasIsEmpty').and.callThrough();
         drawingServiceSpyReloadDrawing = spyOn(service, 'reloadToBlankDrawing').and.callThrough();
@@ -83,6 +93,33 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
 
+    it('#sendBaseLineCommand should call the setBaseLineCommand from undoRedo', () => {
+        const setBaseLineSpy = spyOn(undoRedoService, 'setBaseLine');
+        service.sendBaseLineCommand(imageStub);
+        expect(setBaseLineSpy).toHaveBeenCalled();
+    });
+
+    it('#changeDrawing should change the current drawing on canvas', () => {
+        const image1 = new Image();
+        service.baseCtx.fillRect(0, 0, 4, 4);
+        image1.src = service.canvas.toDataURL();
+
+        service.changeDrawing(image1);
+        expect(service.canvas.toDataURL()).toEqual(image1.src);
+    });
+
+    it('#change drawing should call the set base line method of undoRedoService', () => {
+        const setBaseLineSpy = spyOn(undoRedoService, 'setBaseLine');
+        service.changeDrawing(imageStub);
+        expect(setBaseLineSpy).toHaveBeenCalled();
+    });
+
+    it('#executeBaseLine should not call drawImage if image is undefined', () => {
+        const drawImageSpy = spyOn(service.baseCtx, 'drawImage');
+        service.executeBaseLine(new Image());
+        expect(drawImageSpy).not.toHaveBeenCalled();
+    });
+
     it('#sendNotifReload should send a notification to the observer about the new drawing', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         resizeContainerComponent = fixture.componentInstance;
@@ -127,6 +164,30 @@ describe('DrawingService', () => {
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
     });
 
+    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is not empty', () => {
+        const emptyStub = false;
+        const cancelStub = true;
+        drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
+        drawingServiceSpyValidateInput.and.returnValue(cancelStub);
+        const changeDrawingSpy = spyOn(service, 'changeDrawing');
+
+        service.handleNewDrawing(imageStub);
+
+        expect(changeDrawingSpy).toHaveBeenCalledWith(imageStub);
+    });
+
+    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is empty', () => {
+        const emptyStub = true;
+        const cancelStub = false;
+        drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
+        drawingServiceSpyValidateInput.and.returnValue(cancelStub);
+        const changeDrawingSpy = spyOn(service, 'changeDrawing');
+
+        service.handleNewDrawing(imageStub);
+
+        expect(changeDrawingSpy).toHaveBeenCalledWith(imageStub);
+    });
+
     it('#validateUserInput should return the value of the window.confirm function', () => {
         const windowConfirmSpy = spyOn(window, 'confirm');
         windowConfirmSpy.and.returnValue(true);
@@ -141,5 +202,21 @@ describe('DrawingService', () => {
         service.onSizeChange(boxSizeStub);
         expect(drawingServiceSpyChangeSizeOfCanvas.and.stub()).toHaveBeenCalledTimes(2);
         expect(drawingServiceSpyClearCanvas).toHaveBeenCalled();
+    });
+
+    it('#fillWithWhite should fill the context with white', () => {
+        const WHITE_VALUE = 255;
+        service.fillWithWhite(service.baseCtx);
+        const imageData = service.baseCtx.getImageData(0, 0, 1, 1);
+        expect(imageData.data).toEqual(Uint8ClampedArray.of(WHITE_VALUE, WHITE_VALUE, WHITE_VALUE, WHITE_VALUE));
+    });
+
+    it('canvasIsEmpty should return true if the canvas is empty', () => {
+        expect(service.canvasIsEmpty()).toBeTrue();
+    });
+
+    it('canvasIsEmpty should return false if the canvas is not empty', () => {
+        service.baseCtx.fillRect(0, 0, 1, 1);
+        expect(service.canvasIsEmpty()).toBeFalse();
     });
 });
