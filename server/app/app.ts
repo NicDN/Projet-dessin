@@ -4,6 +4,7 @@ import * as cors from 'cors';
 import * as express from 'express';
 import { inject, injectable } from 'inversify';
 import * as logger from 'morgan';
+import 'reflect-metadata';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { DrawingsController } from './controllers/drawings/drawings.controller';
@@ -37,8 +38,8 @@ export class Application {
     private config(): void {
         // Middlewares configuration
         this.app.use(logger('dev'));
-        this.app.use(bodyParser.json({limit:'50mb'}));
-        this.app.use(bodyParser.urlencoded({limit:'50mb', extended: true }));
+        this.app.use(bodyParser.json({ limit: '50mb' }));
+        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(cookieParser());
         this.app.use(cors());
     }
