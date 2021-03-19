@@ -7,7 +7,7 @@ import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SaveService } from '@app/services/option/save/save.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
-import { of, throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 
 import { SaveDialogComponent } from './save-dialog.component';
 
@@ -55,9 +55,11 @@ describe('SaveDialogComponent', () => {
     });
 
     it('#postDrawing should save a drawing correctly if no error occured', () => {
-        saveServiceSpy.postDrawing.and.returnValue(of());
+        let subject: Subject<void> = new Subject();
+        saveServiceSpy.postDrawing.and.returnValue(subject);
 
         component.postDrawing(FILE_NAME);
+        subject.next();
         expect(saveServiceSpy.postDrawing).toHaveBeenCalledWith(FILE_NAME, TAGS_MOCK);
         expect(component.savingState).toBe(false);
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Le dessin a été sauvegardé avec succès.', 'Fermer');
@@ -74,9 +76,9 @@ describe('SaveDialogComponent', () => {
     });
 
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {
-        // TODO: sometimes 'seven' from the addTag test is in the Array !
         const TAG_TWO = 'two';
         const EXPECTED_TAGS = ['one', 'three', 'four', 'five', 'six'];
+        component.tags = ['one', 'two', 'three', 'four', 'five', 'six'];
         component.removeTag(TAG_TWO);
         expect(component.tags).toEqual(EXPECTED_TAGS);
     });
@@ -89,10 +91,9 @@ describe('SaveDialogComponent', () => {
 
     it('#addTag should add a tag correclty', () => {
         const matChipInputEvent: MatChipInputEvent = { input, value: 'seven' };
-        TAGS_MOCK.push(matChipInputEvent.value);
-        const EXPECTED_TAGS = TAGS_MOCK;
+        const EXPECTED_TAGS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
         component.addTag(matChipInputEvent);
-        expect(component.tags).toBe(EXPECTED_TAGS);
+        expect(component.tags).toEqual(EXPECTED_TAGS);
         expect(input.value).toBe('');
     });
 

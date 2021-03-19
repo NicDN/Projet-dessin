@@ -64,12 +64,17 @@ describe('CarouselService', () => {
         expect(req.request.method).toBe('DELETE');
     });
 
-    it('should handle error safely', () => {
+    it('should display a generic message when receiving a unhandled error', () => {
         const UNHANDLED_ERROR = 300;
-        // TODO: not sure how to test line 45. i dont think it is a good test.
-        service.requestDrawingsFromServer(TAGS_MOCK, index).subscribe((response: DrawingForm[]) => {
-            expect(response).toBeUndefined(); // it shounld not be undefiend.
-        }, fail);
+        service.requestDrawingsFromServer(TAGS_MOCK, index).subscribe(
+            (response: DrawingForm[]) => {
+                expect(response).toBeUndefined();
+            },
+            (error) => {
+                expect(error).toBe("Une erreur s'est produite");
+            },
+            fail,
+        );
 
         const req = httpMock.expectOne((request) => request.params.has('tags') && request.params.has('index'));
         expect(req.request.method).toBe('GET');

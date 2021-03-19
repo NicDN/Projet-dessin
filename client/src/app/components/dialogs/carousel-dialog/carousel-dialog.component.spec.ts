@@ -58,7 +58,8 @@ describe('CarouselDialogComponent', () => {
         fixture = TestBed.createComponent(CarouselDialogComponent);
         component = fixture.componentInstance;
         component['startIndex'] = 0;
-        component.searchedTags = TAGS_MOCK;
+        component.searchedTags = ['one', 'two', 'three', 'four', 'five', 'six'];
+
         component.chipList = chipList;
 
         fixture.detectChanges();
@@ -136,7 +137,6 @@ describe('CarouselDialogComponent', () => {
     });
 
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {
-        // TODO: sometimes 'seven' from the addTag test is in the Array !
         const TAG_TWO = 'two';
         const EXPECTED_TAGS = ['one', 'three', 'four', 'five', 'six'];
 
@@ -154,11 +154,11 @@ describe('CarouselDialogComponent', () => {
 
     it('#addTag should add a tag correclty', () => {
         const matChipInputEvent: MatChipInputEvent = { input, value: 'seven' };
-        TAGS_MOCK.push(matChipInputEvent.value);
-        const EXPECTED_TAGS = TAGS_MOCK;
+        const EXPECTED_TAGS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
+
         spyOn(component, 'requestDrawings');
         component.addTag(matChipInputEvent);
-        expect(component.searchedTags).toBe(EXPECTED_TAGS);
+        expect(component.searchedTags).toEqual(EXPECTED_TAGS);
         expect(component.requestDrawings).toHaveBeenCalled();
         expect(input.value).toBe('');
     });
@@ -181,6 +181,17 @@ describe('CarouselDialogComponent', () => {
         spyOn(component, 'forwardDrawings');
         component.onKeyDown(keyboardEvent);
         expect(component.forwardDrawings).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not call neither of #forwardDrawings or #backwardDrawings if any other key is pressed ', () => {
+        keyboardEvent = { key: 'ArrowDown' } as KeyboardEvent;
+
+        spyOn(component, 'forwardDrawings');
+        spyOn(component, 'backwardDrawings');
+
+        component.onKeyDown(keyboardEvent);
+        expect(component.forwardDrawings).not.toHaveBeenCalled();
+        expect(component.backwardDrawings).not.toHaveBeenCalled();
     });
 
     it('#closeDialog should close the dialog correctly', () => {

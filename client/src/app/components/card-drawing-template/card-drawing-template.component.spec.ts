@@ -8,7 +8,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
-import { of, throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 
 import { CardDrawingTemplateComponent } from './card-drawing-template.component';
 
@@ -93,11 +93,13 @@ describe('CardDrawingTemplateComponent', () => {
     });
 
     it('#deleteDrawing should delete a drawing correctly if no error occured', () => {
-        carouselServiceSpy.deleteDrawingFromServer.and.returnValue(of());
+        let subject: Subject<any> = new Subject();
+
+        carouselServiceSpy.deleteDrawingFromServer.and.returnValue(subject);
+
         spyOn(component.requestDrawings, 'emit');
-
         component.deleteDrawing(drawingFormMock.id);
-
+        subject.next();
         expect(carouselServiceSpy.deleteDrawingFromServer).toHaveBeenCalledWith(drawingFormMock.id);
         expect(component.deletingState).toBeFalse();
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith('Le dessin a été supprimé avec succès.', 'Fermer');

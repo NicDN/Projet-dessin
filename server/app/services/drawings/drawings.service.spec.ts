@@ -13,7 +13,7 @@ import { DatabaseService } from '../database/database.service';
 import { DatabaseServiceMock } from '../database/database.service.mock';
 import { DrawingsService } from './drawings.service';
 
-describe('Index service', () => {
+describe('Drawings service', () => {
     let databaseService: Stubbed<DatabaseService>;
     let drawingsService: DrawingsService;
     let databaseServiceMock: DatabaseServiceMock;

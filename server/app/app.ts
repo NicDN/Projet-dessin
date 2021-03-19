@@ -16,7 +16,7 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
     app: express.Application;
 
-    constructor(@inject(TYPES.DrawingsController) private databaseController: DrawingsController) {
+    constructor(@inject(TYPES.DrawingsController) private databaseController: DrawingsController) { // TODO: renommer
         this.app = express();
 
         this.swaggerOptions = {
@@ -47,7 +47,7 @@ export class Application {
     bindRoutes(): void {
         // Notre application utilise le routeur de notre API `Index`
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
-        this.app.use('/api/database', this.databaseController.router);
+        this.app.use('/api/database', this.databaseController.router); 
         this.errorHandling();
     }
 
