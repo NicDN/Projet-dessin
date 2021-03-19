@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionCommand, SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -13,22 +13,9 @@ import { Subscription } from 'rxjs';
 export class EllipseSelectionService extends SelectionTool {
     subscription: Subscription;
 
-    constructor(
-        drawingService: DrawingService,
-        rectangleDrawingService: RectangleDrawingService,
-        undoRedoService: UndoRedoService,
-        // private selectionService: SelectionService,
-    ) {
+    constructor(drawingService: DrawingService, rectangleDrawingService: RectangleDrawingService, undoRedoService: UndoRedoService) {
         super(drawingService, rectangleDrawingService, 'Sélection par ellipse', undoRedoService);
-        // this.listenToNewEllipseSelectionCommands();
     }
-
-    /*listenToNewEllipseSelectionCommands(): void {
-        this.subscription = this.selectionService.newEllipseSelection().subscribe((selectionPropreties) => {
-            this.fillWithWhite(selectionPropreties);
-            this.drawSelection(selectionPropreties);
-        });
-    }*/
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const trueEndCoords = this.shapeService.getTrueEndCoords(begin, end, this.shapeService.alternateShape);
@@ -50,12 +37,6 @@ export class EllipseSelectionService extends SelectionTool {
             2 * Math.PI,
         );
         selectionPropreties.selectionCtx.fill();
-    }
-
-    draw(ctx: CanvasRenderingContext2D): void {
-        const ellipseSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
-        ellipseSelectionCommand.execute();
-        if (ctx === this.drawingService.baseCtx) this.undoRedoService.addCommand(ellipseSelectionCommand);
     }
 
     drawSelection(selectionPropreties: SelectionPropreties): void {

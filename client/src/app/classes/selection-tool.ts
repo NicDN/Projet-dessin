@@ -1,5 +1,5 @@
 import { Color } from '@app/classes/color';
-import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -307,9 +307,13 @@ export abstract class SelectionTool extends Tool {
         this.mouseMoveOffset = { x: pos.x - this.finalTopLeft.x, y: pos.y - this.finalTopLeft.y };
     }
 
-    abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    draw(ctx: CanvasRenderingContext2D): void {
+        const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
+        selectionCommand.execute();
+        if (ctx === this.drawingService.baseCtx && this.initialTopLeft !== this.finalTopLeft) this.undoRedoService.addCommand(selectionCommand);
+    }
 
-    abstract draw(ctx: CanvasRenderingContext2D): void;
+    abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
 
