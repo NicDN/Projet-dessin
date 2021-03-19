@@ -27,13 +27,13 @@ export class RectangleSelectionService extends SelectionTool {
     listenToNewRectangleDrawingCommands(): void {
         this.subscription = this.selectionService.newRectangleSelection().subscribe((selectionPropreties) => {
             this.fillWithWhite(selectionPropreties);
-            this.drawSelectionRectangle(selectionPropreties);
+            this.drawSelection(selectionPropreties);
         });
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end, this.rectangleDrawingService.alternateShape);
-        this.rectangleDrawingService.drawPerimeter(ctx, begin, trueEndCoords);
+        const trueEndCoords = this.shapeService.getTrueEndCoords(begin, end, this.shapeService.alternateShape);
+        this.shapeService.drawPerimeter(ctx, begin, trueEndCoords);
     }
 
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
@@ -49,17 +49,12 @@ export class RectangleSelectionService extends SelectionTool {
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        const rectangleSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpPropreties(ctx), this.selectionService);
+        const rectangleSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         rectangleSelectionCommand.execute();
+        if (ctx === this.drawingService.baseCtx) this.undoRedoService.addCommand(rectangleSelectionCommand);
     }
 
-    finalDrawDown(ctx: CanvasRenderingContext2D): void {
-        const rectangleSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpPropreties(ctx), this.selectionService);
-        rectangleSelectionCommand.execute();
-        this.undoRedoService.addCommand(rectangleSelectionCommand);
-    }
-
-    loadUpPropreties(ctx: CanvasRenderingContext2D): SelectionPropreties {
+    loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
         return {
             selectionType: SelectionType.Rectangle,
             selectionCtx: ctx,
@@ -71,7 +66,7 @@ export class RectangleSelectionService extends SelectionTool {
         };
     }
 
-    drawSelectionRectangle(selectionPropreties: SelectionPropreties): void {
+    drawSelection(selectionPropreties: SelectionPropreties): void {
         selectionPropreties.selectionCtx.putImageData(
             selectionPropreties.imageData,
             selectionPropreties.finalTopLeft.x,

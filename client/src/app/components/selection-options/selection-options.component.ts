@@ -16,7 +16,7 @@ export class SelectionOptionsComponent {
     ) {}
 
     selectionIsActive(): boolean {
-        if (this.rectangleSelectionService.hasSelection || this.ellipseSelectionService.hasSelection) {
+        if (this.rectangleSelectionService.selectionExists || this.ellipseSelectionService.selectionExists) {
             return true;
         }
         return false;
