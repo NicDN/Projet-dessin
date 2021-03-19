@@ -106,12 +106,17 @@ describe('SaveService', () => {
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR });
     });
 
-    it('should handle error safely', () => {
+    it('should display a generic message when receiving a unhandled error', () => {
         const UNHANDLED_ERROR = 300;
-        // TODO: not sure how to test line 45. i dont think it is a good test.
-        service.postDrawing(FILE_NAME, TAGS).subscribe((response) => {
-            expect(response).toBeUndefined(); // it shounld not be undefiend.
-        }, fail);
+        service.postDrawing(FILE_NAME, TAGS).subscribe(
+            (response) => {
+                expect(response).toBeUndefined();
+            },
+            (error) => {
+                expect(error).toBe("Une erreur s'est produite");
+            },
+            fail,
+        );
 
         const req = httpMock.expectOne(baseUrl + '/upload');
 
