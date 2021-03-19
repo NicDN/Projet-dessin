@@ -44,13 +44,11 @@ import { OptionBarComponent } from './components/option-bar/option-bar.component
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
-import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
+import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
-import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
-import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 
 @NgModule({
     declarations: [
@@ -65,7 +63,6 @@ import { GenericSliderComponent } from './components/tool-settings/generic-slide
         ResizeContainerComponent,
         ToolBarComponent,
         OptionBarComponent,
-        ThicknessSelectorComponent,
         TraceTypeSelectorComponent,
         LineSettingsSelectorComponent,
         ColorSliderComponent,
@@ -73,8 +70,6 @@ import { GenericSliderComponent } from './components/tool-settings/generic-slide
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
         EyeDropperComponent,
-
-        PolygonSidesSelectorComponent,
         CarouselDialogComponent,
         SaveDialogComponent,
         ExportDialogComponent,

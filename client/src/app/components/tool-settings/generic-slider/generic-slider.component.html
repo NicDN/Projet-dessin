@@ -1,1 +1,9 @@
-
+<div>
+    <div class="divider">
+        <p>{{sliderSetting.title}}</p>
+        <p>{{sliderSetting.getAttribute() }} {{sliderSetting.unit}}</p>
+    </div>
+    <mat-slider [min]="sliderSetting.min" [max]="sliderSetting.max" tickInterval="1" (input)="updateSetting($event)"
+        [value]="sliderSetting.getAttribute()">
+    </mat-slider>
+</div>

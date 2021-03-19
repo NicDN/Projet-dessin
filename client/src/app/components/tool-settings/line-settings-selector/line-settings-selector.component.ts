@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSliderChange } from '@angular/material/slider';
 import { LineService } from '@app/services/tools/line/line.service';
@@ -9,15 +9,13 @@ import { LineService } from '@app/services/tools/line/line.service';
     styleUrls: ['./line-settings-selector.component.scss'],
 })
 export class LineSettingsSelectorComponent {
-    @Output() junction: EventEmitter<boolean> = new EventEmitter<boolean>();
-    @Output() junctionDiameter: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: LineService;
 
     updateDiameter(event: MatSliderChange): void {
-        this.junctionDiameter.emit(event.value as number);
+        this.tool.junctionDiameter = event.value as number;
     }
 
     updateJunction(junction: MatSlideToggleChange): void {
-        this.junction.emit(junction.checked);
+        this.tool.drawWithJunction = junction.checked;
     }
 }

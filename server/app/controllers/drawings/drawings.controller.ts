@@ -32,9 +32,14 @@ export class DrawingsController {
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getDrawings(JSON.parse(req.query.tags), Number(req.query.index)).then((forms) => {
-                res.json(forms);
-            });
+            this.drawingsService
+                .getDrawings(JSON.parse(req.query.tags), Number(req.query.index))
+                .then((drawingForm) => {
+                    res.json(drawingForm);
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'DATABASE_ERROR') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                });
         });
 
         this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
@@ -45,8 +50,8 @@ export class DrawingsController {
                     res.sendStatus(HTTP_STATUS_CREATED);
                 })
                 .catch((error: Error) => {
-                    if (error.message === 'FAILED_TO_SAVE_DRAWING') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
-                    if (error.message === 'DATABASE_ERROR') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                    if (error.message === 'FAILED_TO_SAVE_DRAWING') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                    if (error.message === 'DATABASE_ERROR') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
                 });
         });
     }

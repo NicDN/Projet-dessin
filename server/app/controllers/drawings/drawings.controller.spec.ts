@@ -1,74 +1,93 @@
-// import 'reflect-metadata';
-// import { Stubbed, testingContainer } from '../../../test/test-utils';
-// import { Application } from '../../app';
-// import { DrawingsService } from '../../services/drawings/drawings.service';
-// import { TYPES } from '../../types';
+import { expect } from 'chai';
+import 'reflect-metadata';
+import * as supertest from 'supertest';
+import { DrawingForm } from '../../../../common/communication/drawing-form';
+import { Stubbed, testingContainer } from '../../../test/test-utils';
+import { Application } from '../../app';
+import { DrawingsService } from '../../services/drawings/drawings.service';
+import { TYPES } from '../../types';
 
-// // tslint:disable:no-any
-// const HTTP_STATUS_OK = 200;
-// const HTTP_STATUS_CREATED = 201;
+const HTTP_STATUS_OK = 200;
+const HTTP_STATUS_NO_CONTENT = 204;
+const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+const HTTP_STATUS_NOT_FOUND = 404;
+const HTTP_STATUS_BAD_GATEWAY = 502;
+const HTTP_STATUS_CREATED = 201;
 
-// describe('IndexController', () => {
-//     let drawingsService: Stubbed<DrawingsService>;
-//     let app: Express.Application;
+// tslint:disable: no-any
+describe('DrawingsController', () => {
+    let drawingsService: Stubbed<DrawingsService>;
+    let app: Express.Application;
 
-// beforeEach(async () => {
-//     const [container, sandbox] = await testingContainer();
-//     container.rebind(TYPES.DrawingsService).toConstantValue({
-//         deleteDrawing: sandbox.stub().resolves(),
-//     });
-//     drawingsService = container.get(TYPES.DrawingsService);
-//     app = container.get<Application>(TYPES.Application).app;
-// });
+    const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
 
-//     it('#delete should return message from drawings service on valid delete request', async () => {});
+    const baseDrawingsForms: DrawingForm[] = [
+        { id: '1', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
+        { id: '2', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
+        { id: '3', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
+    ];
 
-//     it('#delete should return an error message from drawings service when no file is found', async () => {});
+    const drawingForms: DrawingForm[] = [
+        { id: '1', name: 'drawingOne', tags: TAGS_MOCK, drawingData: 'base64' },
+        { id: '2', name: 'drawingTwo', tags: TAGS_MOCK, drawingData: 'base64' },
+        { id: '3', name: 'drawingThree', tags: TAGS_MOCK, drawingData: 'base64' },
+    ];
+    // TODO: all tests times out
+    beforeEach(async () => {
+        const [container, sandbox] = await testingContainer();
+        // TODO: sert a quoi?
+        container.rebind(TYPES.DrawingsService).toConstantValue({
+            deleteDrawing: sandbox.stub().resolves(),
+            getDrawings: sandbox.stub().resolves(baseDrawingsForms),
+            storeDrawing: sandbox.stub().resolves(),
+        });
+        drawingsService = container.get(TYPES.DrawingsService);
+        app = container.get<Application>(TYPES.Application).app;
+    });
 
-//     it('#delete should return an error message from drawings service when the file isnt on the database', async () => {});
+    it('should return status 204 on valid delete request to /delete/:id', async () => {
+        drawingsService.deleteDrawing.returns({});
+        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_NO_CONTENT);
+    });
 
-//     it('#delete should return an error message from drawings service when theres an error deleting', async () => {});
+    it('should return status 500 when a drawing is not found on the server on delete request to /delete/:id', async () => {
+        drawingsService.deleteDrawing.returns(new Error('FILE_NOT_FOUND'));
+        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+    });
 
-//     it('#get should return a message from drawings service on valid get request', async () => {});
+    it('should return status 404 when the drawing info is not found on database on delete request to /delete/:id', async () => {
+        drawingsService.deleteDrawing.returns(new Error('NOT_ON_DATABASE'));
+        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_NOT_FOUND);
+    });
 
-//     it('#post should return a message from drawings service on valid post request', async () => {});
+    it('should return status 502 when drawings service has failed to delete the drawing on delete request to /delete/:id', async () => {
+        drawingsService.deleteDrawing.returns(new Error('FAILED_TO_DELETE_DRAWING'));
+        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_BAD_GATEWAY);
+    });
 
-//     it('#post should return an error message from drawings service when theres an error saving', async () => {});
+    it('should return a list of drawings from drawings service on valid get request', async () => {
+        drawingsService.getDrawings.returns(drawingForms);
 
-//     it('#post should return an error message from drawings service when theres an error with the database', async () => {});
+        return supertest(app)
+            .get('/api/database')
+            .expect(HTTP_STATUS_OK)
 
-// it('should return message from index service on valid get request to root', async () => {
-//     return supertest(app)
-//         .get('/api/index')
-//         .expect(HTTP_STATUS_OK)
-//         .then((response: any) => {
-//             expect(response.body).to.deep.equal(baseMessage);
-//         });
-// });
+            .then((response: any) => {
+                expect(response.body).to.deep.equal(drawingForms);
+            });
+    });
 
-// it('should return message from index service on valid get request to about route', async () => {
-//     const aboutMessage = { ...baseMessage, title: 'About' };
-//     drawingsService.about.returns(aboutMessage);
-//     return supertest(app)
-//         .get('/api/index/about')
-//         .expect(HTTP_STATUS_OK)
-//         .then((response: any) => {
-//             expect(response.body).to.deep.equal(aboutMessage);
-//         });
-// });
+    it('should store a drawing on valid post request to /upload', async () => {
+        return supertest(app).post('/api/database/upload').send(drawingForms[0]).set('Accept', 'application/json').expect(HTTP_STATUS_CREATED);
+    });
 
-// it('should store message in the array on valid post request to /send', async () => {
-//     const message: Message = { title: 'Hello', body: 'World' };
-//     return supertest(app).post('/api/index/send').send(message).set('Accept', 'application/json').expect(HTTP_STATUS_CREATED);
-// });
+    it('should return status 500 when the server failed to save the drawing on post request to /upload', async () => {
+        drawingsService.deleteDrawing.returns(new Error('FAILED_TO_SAVE_DRAWING'));
+        return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+    });
 
-// it('should return an arrat of messages on valid get request to /all', async () => {
-//     indexService.getAllMessages.returns([baseMessage, baseMessage]);
-//     return supertest(app)
-//         .get('/api/index/all')
-//         .expect(HTTP_STATUS_OK)
-//         .then((response: any) => {
-//             expect(response.body).to.deep.equal([baseMessage, baseMessage]);
-//         });
-// });
-// });
+    it('should return status 502 when a database error occured on post request to /upload', async () => {
+        drawingsService.deleteDrawing.returns(new Error('DATABASE_ERROR'));
+        return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_BAD_GATEWAY);
+    });
+});
