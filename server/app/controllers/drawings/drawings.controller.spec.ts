@@ -45,13 +45,14 @@ describe('DrawingsController', () => {
         app = container.get<Application>(TYPES.Application).app;
     });
 
-    it('should return status 204 on valid delete request to /delete/:id', async () => {
-        drawingsService.deleteDrawing.returns({});
-        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_NO_CONTENT);
+    it('should return status 204 on valid delete request to /delete/:id', (done) => {
+        drawingsService.deleteDrawing.resolves({});
+        supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_NO_CONTENT, done);
     });
 
     it('should return status 500 when a drawing is not found on the server on delete request to /delete/:id', async () => {
-        drawingsService.deleteDrawing.returns(new Error('FILE_NOT_FOUND'));
+        drawingsService.deleteDrawing.rejects(new Error('FILE_NOT_FOUND'));
+        // .reject(new Error)
         return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
