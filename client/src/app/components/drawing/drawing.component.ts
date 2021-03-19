@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -18,7 +18,7 @@ export const HALF_RATIO = 0.5;
     templateUrl: './drawing.component.html',
     styleUrls: ['./drawing.component.scss'],
 })
-export class DrawingComponent implements AfterViewInit, AfterContentInit {
+export class DrawingComponent implements AfterViewInit {
     @ViewChild('baseCanvas', { static: false }) baseCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('previewCanvas', { static: false }) previewCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -42,23 +42,10 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
         this.drawingService.fillWithWhite(this.drawingService.baseCtx);
 
-        const baseImage = new Image(this.canvasWidth, this.canvasHeight);
+        const baseImage = new Image(this.canvasSize.x, this.canvasSize.y);
         baseImage.src = this.drawingService.canvas.toDataURL();
         this.drawingService.blankHTMLImage = baseImage;
-        this.drawingService.handleNewDrawing(baseImage);
-
-        if (this.drawingService.newImage) {
-            this.drawingService.handleNewDrawing(this.drawingService.newImage);
-        }
-    }
-
-    ngAfterContentInit(): void {
-        this.setCanvasDimensions();
-    }
-
-    setCanvasDimensions(): void {
-        this.canvasWidth = window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
-        this.canvasHeight = window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
+        this.drawingService.handleNewDrawing(this.drawingService.newImage ? this.drawingService.newImage : baseImage);
     }
 
     @HostListener('window:mousemove', ['$event'])

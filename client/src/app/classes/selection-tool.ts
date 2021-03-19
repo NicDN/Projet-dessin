@@ -144,6 +144,7 @@ export abstract class SelectionTool extends Tool {
         if (this.keyRightIsDown) deltaX += this.moveDelta;
 
         this.moveSelectionArrow(ctx, deltaX, deltaY);
+
         setTimeout(() => {
             if (event.code !== null) {
                 this.moveSelectionArrow(ctx, deltaX, deltaY);

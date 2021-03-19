@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
@@ -18,9 +18,9 @@ export const enum Status {
     templateUrl: './resize-container.component.html',
     styleUrls: ['./resize-container.component.scss'],
 })
-export class ResizeContainerComponent {
-    @Input() width: number;
-    @Input() height: number;
+export class ResizeContainerComponent implements AfterViewInit, OnInit, AfterContentChecked {
+    width: number = 0;
+    height: number = 0;
 
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
 
@@ -34,6 +34,27 @@ export class ResizeContainerComponent {
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToResizeNotifications();
     }
+
+    // After view init, after loaded, regarder le flag
+    ngAfterViewInit(): void {
+        // this.width = this.drawingService.canvas.width;
+        // this.height = this.drawingService.canvas.height;
+    }
+
+    ngOnInit(): void {
+        // this.width = 5;
+        // this.height = 5;
+        // this.listenToResizeNotifications();
+    }
+
+    ngAfterContentChecked(): void {
+        // this.listenToResizeNotifications();
+    }
+
+    // ngAfterContentInit(): void{
+    //     this.width = this.drawingService.canvas.width;
+    //     this.height = this.drawingService.canvas.height;
+    // }
 
     setStatus(status: number): void {
         this.status = status;
@@ -66,9 +87,11 @@ export class ResizeContainerComponent {
 
     resizeContainer(event: MouseEvent): void {
         if (this.isValidWidth(event)) {
+            this.box.nativeElement.style.width = `${event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET}px`;
             this.width = event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET;
         }
         if (this.isValidHeight(event)) {
+            this.box.nativeElement.style.height = `${event.pageY - this.MOUSE_OFFSET}px`;
             this.height = event.pageY - this.MOUSE_OFFSET;
         }
     }
@@ -76,6 +99,10 @@ export class ResizeContainerComponent {
     resizeCanvas(newWidth: number, newHeight: number): void {
         this.width = newWidth;
         this.height = newHeight;
+
+        this.box.nativeElement.style.width = `${newWidth}px`;
+        this.box.nativeElement.style.height = `${newHeight}px`;
+
         const resizeBoxSize = { widthBox: newWidth, heightBox: newHeight };
         this.drawingService.onSizeChange(resizeBoxSize);
     }
