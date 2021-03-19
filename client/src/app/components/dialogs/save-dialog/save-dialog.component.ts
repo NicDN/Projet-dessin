@@ -36,16 +36,14 @@ export class SaveDialogComponent {
     postDrawing(fileName: string): void {
         this.savingState = true;
         this.saveService.postDrawing(fileName, this.tags).subscribe(
-            // tslint:disable-next-line: no-empty
-            () => {},
-            (error) => {
-                this.savingState = false;
-                this.snackBarService.openSnackBar(error, 'Fermer');
-            },
             () => {
                 this.savingState = false;
                 this.snackBarService.openSnackBar('Le dessin a été sauvegardé avec succès.', 'Fermer');
                 this.dialogRef.close();
+            },
+            (error) => {
+                this.savingState = false;
+                this.snackBarService.openSnackBar(error, 'Fermer');
             },
         );
     }

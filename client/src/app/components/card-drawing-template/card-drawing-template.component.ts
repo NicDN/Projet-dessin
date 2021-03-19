@@ -42,15 +42,13 @@ export class CardDrawingTemplateComponent {
     deleteDrawing(id: string): void {
         this.deletingState = true;
         this.carouselService.deleteDrawingFromServer(id).subscribe(
-            // tslint:disable-next-line: no-empty
-            () => {},
-            (error) => {
-                this.snackBarService.openSnackBar(error, 'Fermer');
+            () => {
+                this.snackBarService.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
                 this.deletingState = false;
                 this.requestDrawings.emit();
             },
-            () => {
-                this.snackBarService.openSnackBar('Le dessin a été supprimé avec succès.', 'Fermer');
+            (error) => {
+                this.snackBarService.openSnackBar(error, 'Fermer');
                 this.deletingState = false;
                 this.requestDrawings.emit();
             },
