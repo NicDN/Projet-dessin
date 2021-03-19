@@ -20,7 +20,7 @@ describe('DrawingsController', () => {
     let app: Express.Application;
 
     const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
-    
+
     const drawingForms: DrawingForm[] = [
         { id: '1', name: 'drawingOne', tags: TAGS_MOCK, drawingData: 'base64' },
         { id: '2', name: 'drawingTwo', tags: TAGS_MOCK, drawingData: 'base64' },
@@ -65,9 +65,12 @@ describe('DrawingsController', () => {
         return supertest(app)
             .get('/api/database')
             .expect(HTTP_STATUS_OK)
-            .then((response: any) => {
-                expect(response.body).to.deep.equal(drawingForms);
-            });
+            .expect((res) => expect(res.body.to.deep.equal(drawingForms)));
+        // .end(done);
+        // .then((response: any) => {
+
+        // });
+        // done();
     });
 
     it('should store a drawing on valid post request to /upload', async () => {
