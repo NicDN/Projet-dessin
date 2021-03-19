@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+// import { response } from 'express';
 import 'reflect-metadata';
 import * as supertest from 'supertest';
 import { DrawingForm } from '../../../../common/communication/drawing-form';
@@ -13,6 +14,7 @@ const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
 const HTTP_STATUS_NOT_FOUND = 404;
 const HTTP_STATUS_BAD_GATEWAY = 502;
 const HTTP_STATUS_CREATED = 201;
+const HTTP_STATUS_BAD_REQUEST = 400;
 
 // tslint:disable: no-any
 describe('DrawingsController', () => {
@@ -58,19 +60,30 @@ describe('DrawingsController', () => {
         return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_BAD_GATEWAY);
     });
 
-    // TODO: last test not passing
+    it('should return status 400 when a unhandled error occured on delete request to /delete/:id', async () => {
+        drawingsService.deleteDrawing.rejects(new Error('UNHANDLED_ERROR'));
+        return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_BAD_REQUEST);
+    });
+
     it('should return a list of drawings from drawings service on valid get request', async () => {
         drawingsService.getDrawings.resolves(drawingForms);
 
-        return supertest(app)
+        supertest(app)
             .get('/api/database')
             .expect(HTTP_STATUS_OK)
-            .expect((res) => expect(res.body.to.deep.equal(drawingForms)));
-        // .end(done);
-        // .then((response: any) => {
+            .then((response: any) => {
+                expect(response.body.to.deep.equal(drawingForms));
+            });
+    });
 
-        // });
-        // done();
+    it('should return status 502 when a database error occured on get request', async () => {
+        drawingsService.getDrawings.rejects(new Error('DATABASE_ERROR'));
+        return supertest(app).get('/api/database').expect(HTTP_STATUS_BAD_GATEWAY);
+    });
+
+    it('should return status 400 when a unhandled error occured on get request', async () => {
+        drawingsService.getDrawings.rejects(new Error('UNHANDLED_ERROR'));
+        return supertest(app).get('/api/database').expect(HTTP_STATUS_BAD_REQUEST);
     });
 
     it('should store a drawing on valid post request to /upload', async () => {
@@ -85,5 +98,10 @@ describe('DrawingsController', () => {
     it('should return status 502 when a database error occured on post request to /upload', async () => {
         drawingsService.storeDrawing.rejects(new Error('DATABASE_ERROR'));
         return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_BAD_GATEWAY);
+    });
+
+    it('should return status 400 when a unhandled error occured on post request to /upload', async () => {
+        drawingsService.storeDrawing.rejects(new Error('UNHANDLED_ERROR'));
+        return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_BAD_REQUEST);
     });
 });
