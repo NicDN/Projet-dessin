@@ -20,25 +20,17 @@ describe('DrawingsController', () => {
     let app: Express.Application;
 
     const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
-
-    const baseDrawingsForms: DrawingForm[] = [
-        { id: '1', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
-        { id: '2', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
-        { id: '3', name: 'nothing', tags: TAGS_MOCK, drawingData: '' },
-    ];
-
     const drawingForms: DrawingForm[] = [
         { id: '1', name: 'drawingOne', tags: TAGS_MOCK, drawingData: 'base64' },
         { id: '2', name: 'drawingTwo', tags: TAGS_MOCK, drawingData: 'base64' },
         { id: '3', name: 'drawingThree', tags: TAGS_MOCK, drawingData: 'base64' },
     ];
-    // TODO: all tests times out
+
     beforeEach(async () => {
         const [container, sandbox] = await testingContainer();
-        // TODO: sert a quoi?
         container.rebind(TYPES.DrawingsService).toConstantValue({
             deleteDrawing: sandbox.stub().resolves(),
-            getDrawings: sandbox.stub().resolves(baseDrawingsForms),
+            getDrawings: sandbox.stub().resolves(drawingForms),
             storeDrawing: sandbox.stub().resolves(),
         });
         drawingsService = container.get(TYPES.DrawingsService);
@@ -52,27 +44,26 @@ describe('DrawingsController', () => {
 
     it('should return status 500 when a drawing is not found on the server on delete request to /delete/:id', async () => {
         drawingsService.deleteDrawing.rejects(new Error('FILE_NOT_FOUND'));
-        // .reject(new Error)
         return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('should return status 404 when the drawing info is not found on database on delete request to /delete/:id', async () => {
-        drawingsService.deleteDrawing.returns(new Error('NOT_ON_DATABASE'));
+        drawingsService.deleteDrawing.rejects(new Error('NOT_ON_DATABASE'));
         return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_NOT_FOUND);
     });
 
     it('should return status 502 when drawings service has failed to delete the drawing on delete request to /delete/:id', async () => {
-        drawingsService.deleteDrawing.returns(new Error('FAILED_TO_DELETE_DRAWING'));
+        drawingsService.deleteDrawing.rejects(new Error('FAILED_TO_DELETE_DRAWING'));
         return supertest(app).delete('/api/database/delete/1').expect(HTTP_STATUS_BAD_GATEWAY);
     });
 
+    // TODO: last test not passing
     it('should return a list of drawings from drawings service on valid get request', async () => {
-        drawingsService.getDrawings.returns(drawingForms);
+        drawingsService.getDrawings.resolves(drawingForms);
 
         return supertest(app)
             .get('/api/database')
             .expect(HTTP_STATUS_OK)
-
             .then((response: any) => {
                 expect(response.body).to.deep.equal(drawingForms);
             });
@@ -83,12 +74,12 @@ describe('DrawingsController', () => {
     });
 
     it('should return status 500 when the server failed to save the drawing on post request to /upload', async () => {
-        drawingsService.deleteDrawing.returns(new Error('FAILED_TO_SAVE_DRAWING'));
+        drawingsService.storeDrawing.rejects(new Error('FAILED_TO_SAVE_DRAWING'));
         return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_INTERNAL_SERVER_ERROR);
     });
 
     it('should return status 502 when a database error occured on post request to /upload', async () => {
-        drawingsService.deleteDrawing.returns(new Error('DATABASE_ERROR'));
+        drawingsService.storeDrawing.rejects(new Error('DATABASE_ERROR'));
         return supertest(app).post('/api/database/upload').expect(HTTP_STATUS_BAD_GATEWAY);
     });
 });

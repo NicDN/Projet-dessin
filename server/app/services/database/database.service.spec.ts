@@ -17,12 +17,20 @@ describe('Database service', () => {
     beforeEach(async () => {
         databaseService = new DatabaseService();
         mongoServer = new MongoMemoryServer();
+        // await mongoServer.getUri();
     });
 
     afterEach(async () => {
         if (databaseService['client'] && databaseService['client'].isConnected()) {
             await databaseService['client'].close();
         }
+    });
+
+
+    it('#start without passing url should still connect to the databse', async () => {
+        await databaseService.start();
+        expect(databaseService['client']).to.not.be.undefined;
+        expect(databaseService['db'].databaseName).to.equal('polydessin');
     });
 
     it('#start should connect to the database when start is called', async () => {
@@ -47,23 +55,6 @@ describe('Database service', () => {
             expect(databaseService['client']).to.be.undefined;
         }
     });
-
-    // it('#start should throw an error when the database is closed', async () => {
-    //     // Try to reconnect to local server
-    //     mongoServer.stop();
-    //     try {
-    //         databaseService.start();
-    //     } catch {
-    //         // tslint:disable-next-line: no-unused-expression
-    //         expect(databaseService['client']).to.be.undefined;
-    //     }
-    // });
-
-    // it('#start should throw an error when connection fail', async () => {
-    //     // const clientConnectStub = stub(MongoClient, 'connect').returns();
-    //     const startSpy = spy(databaseService, 'start');
-    //     expect(startSpy).to.throw();
-    // });
 
     it('should return this.db when #database is called', async () => {
         expect(databaseService.database).to.equals(databaseService['db']);

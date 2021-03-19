@@ -81,7 +81,7 @@ describe('SaveService', () => {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                expect(error).toBe('La sauvegarde du dessin sur le serveur a échouée.');
+                expect(error).toBe('La sauvegarde des informations sur la base de données a échouée');
             },
             fail,
         );
@@ -96,7 +96,7 @@ describe('SaveService', () => {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                expect(error).toBe('La sauvegarde des informations sur la base de données a échouée');
+                expect(error).toBe('La sauvegarde du dessin sur le serveur a échouée.');
             },
             fail,
         );

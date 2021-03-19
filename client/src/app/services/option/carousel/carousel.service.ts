@@ -43,6 +43,7 @@ export class CarouselService {
                 return throwError("Erreur lors de l'accès à la base de données.");
             }
             return of(result as T);
+            // return throw generique, never type
         };
     }
 }

@@ -58,7 +58,8 @@ describe('CarouselDialogComponent', () => {
         fixture = TestBed.createComponent(CarouselDialogComponent);
         component = fixture.componentInstance;
         component['startIndex'] = 0;
-        component.searchedTags = TAGS_MOCK;
+        component.searchedTags = [...TAGS_MOCK];
+        
         component.chipList = chipList;
 
         fixture.detectChanges();
