@@ -2,10 +2,12 @@
 // tslint:disable: no-unused-expression
 import { DrawingForm } from '@common/communication/drawing-form';
 import { expect } from 'chai';
+import * as fs from 'fs';
 // import { taggedConstraint } from 'inversify';
 // import { Db } from 'mongodb';
 // import { MongoMemoryServer } from 'mongodb-memory-server';
 import 'reflect-metadata';
+import { restore, spy } from 'sinon';
 // import { isMainThread } from 'worker_threads';
 import { Stubbed, testingContainer } from '../../../test/test-utils';
 import { TYPES } from '../../types';
@@ -32,7 +34,13 @@ describe('Drawings service', () => {
         drawingsService = new DrawingsService(databaseService);
     });
 
-    it('should return this.databaseService.database.collection when #collection is called', async () => {});
+    afterEach(async () => {
+        restore();
+    });
+
+    it('should return this.databaseService.database.collection when #collection is called', async () => {
+        expect(drawingsService.collection).to.eql([]);
+    });
 
     it('should throw an error when #storeDrawing doesnt have a valid DrawingForm', async () => {});
 
@@ -55,7 +63,7 @@ describe('Drawings service', () => {
         const FORMS: DrawingForm[] = [{ id: '', name: 'OogaBooga', tags: ['houlala', 'bongo'], drawingData: '' }, EXPECTED_FORM];
         const SEARCH_TAGS = ['jesus'];
 
-        expect(drawingsService['filterDrawingsByTags'](FORMS, SEARCH_TAGS)).to.equal(EXPECTED_FORM);
+        expect(drawingsService['filterDrawingsByTags'](FORMS, SEARCH_TAGS)).to.eql([EXPECTED_FORM]);
     });
 
     it('#filterDrawingsByTags should return every DrawingForms with at least one of the valid tags one time', async () => {
@@ -65,12 +73,25 @@ describe('Drawings service', () => {
         ];
         const SEARCH_TAGS = ['jesus', 'houlala'];
 
-        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS, SEARCH_TAGS)).to.equal(EXPECTED_FORMS);
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql(EXPECTED_FORMS);
     });
 
-    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm', async () => {});
+    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm', async () => {
+        const EXPECTED_FORMS: DrawingForm[] = [];
+        const SEARCH_TAGS = ['jesus', 'houlala'];
 
-    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm with a valid tag', async () => {});
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
+    });
+
+    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm with a valid tag', async () => {
+        const EXPECTED_FORMS: DrawingForm[] = [
+            { id: '', name: 'OogaBooga', tags: ['houlaa', 'bgo'], drawingData: '' },
+            { id: '', name: 'Agatha', tags: ['jeus', 'painan'], drawingData: '' },
+        ];
+        const SEARCH_TAGS = ['jesus', 'houlala'];
+
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
+    });
 
     it('#getValidDrawings should return an array of 3 DrawingForms', async () => {});
 
@@ -124,11 +145,48 @@ describe('Drawings service', () => {
         expect(drawingsService['validateTags'](tags)).to.be.false;
     });
 
-    it('should write a file in the local directory when #writeFile get a valid fileName and string', async () => {});
+    it('should write a file in the local directory when #writeFile get a valid fileName and string', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const CONTENT = 'adsf';
+        const fsWriteFileSpy = spy(fs, 'writeFile');
 
-    it('should throw an error when #writeFile cant write the file', async () => {});
+        await drawingsService['writeFile'](FILENAME, CONTENT);
+        fs.unlinkSync(FILENAME);
+        expect(fsWriteFileSpy.calledOnce);
+    });
 
-    it('should return a valid string when #readFile get a valid name', async () => {});
+    it('should throw an error when #writeFile cant write the file', async () => {
+        const FILENAME = 'D:`//..w.`w.e2-e-2e0=932-0r32fdsfdsc';
+        const CONTENT = 'adsf';
+        const fsWriteFileSpy = spy(fs, 'writeFile');
 
-    it('should return nothing if #readFile cant read the asked file', async () => {});
+        try {
+            await drawingsService['writeFile'](FILENAME, CONTENT);
+        } catch {
+            expect(fsWriteFileSpy.calledOnce);
+        }
+    });
+
+    it('should return a valid string when #readFile get a valid name', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const CONTENT = 'adsf';
+        fs.writeFileSync(FILENAME, CONTENT);
+
+        const file = await drawingsService['readFile'](FILENAME);
+        fs.unlinkSync(FILENAME);
+        expect(file).to.eql(CONTENT);
+    });
+
+    it('should return nothing if #readFile cant read the asked file', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const fsReadFileSpy = spy(fs, 'readFile');
+        let file = '';
+
+        try {
+            file = await drawingsService['readFile'](FILENAME);
+        } catch {
+            expect(file).to.eql('');
+            expect(fsReadFileSpy.calledOnce);
+        }
+    });
 });

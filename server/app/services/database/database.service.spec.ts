@@ -17,7 +17,6 @@ describe('Database service', () => {
     beforeEach(async () => {
         databaseService = new DatabaseService();
         mongoServer = new MongoMemoryServer();
-        // await mongoServer.getUri();
     });
 
     afterEach(async () => {
