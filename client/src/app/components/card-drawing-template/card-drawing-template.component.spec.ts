@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -27,6 +28,7 @@ describe('CardDrawingTemplateComponent', () => {
             imports: [HttpClientModule, MatSnackBarModule, RouterTestingModule],
             declarations: [CardDrawingTemplateComponent],
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

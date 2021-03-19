@@ -2,6 +2,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Color } from './color';
+import { ShapePropreties } from './commands/shape-command/shape-command';
 import { MouseButton } from './tool';
 import { Vec2 } from './vec2';
 
@@ -145,5 +146,6 @@ export abstract class Shape extends DrawingTool {
     }
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    abstract drawShape(shapePropreties: ShapePropreties): void;
     abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

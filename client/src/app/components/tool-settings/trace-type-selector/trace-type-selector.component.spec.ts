@@ -5,19 +5,13 @@ import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TraceTypeSelectorComponent } from './trace-type-selector.component';
 
 describe('TraceTypeSelectorComponent', () => {
     let component: TraceTypeSelectorComponent;
     let fixture: ComponentFixture<TraceTypeSelectorComponent>;
-    const shape: Shape = new RectangleDrawingService(
-        new DrawingService(),
-        new ColorService(),
-        new UndoRedoService(new DrawingService()),
-        new ShapeService(),
-    );
+    const shape: Shape = new RectangleDrawingService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -1,8 +1,20 @@
 <div>
-    <button mat-button matTooltip="Annuler (Ctrl-Z)" [disabled]="this.undoRedoService.commandList.length<=1"   matTooltipPosition="left" (click)="this.undoRedoService.undo()">
-        <mat-icon [class.active]="!(this.undoRedoService.commandList.length<=1)">undo</mat-icon>
+    <button
+        mat-button
+        matTooltip="Annuler (Ctrl-Z)"
+        [disabled]="this.commandListIsEmpty"
+        matTooltipPosition="left"
+        (click)="this.undoRedoService.undo()"
+    >
+        <mat-icon [class.active]="!this.commandListIsEmpty">undo</mat-icon>
     </button>
-    <button mat-button matTooltip="Refaire (Ctrl-Shift-Z)" [disabled]="this.undoRedoService.undoneList.length<=0"  matTooltipPosition="right" (click)="this.undoRedoService.redo()"> 
-        <mat-icon [class.active]="!(this.undoRedoService.undoneList.length<=0)">redo</mat-icon>
+    <button
+        mat-button
+        matTooltip="Refaire (Ctrl-Shift-Z)"
+        [disabled]="this.redoneListIsEmpty"
+        matTooltipPosition="right"
+        (click)="this.undoRedoService.redo()"
+    >
+        <mat-icon [class.active]="!this.redoneListIsEmpty">redo</mat-icon>
     </button>
 </div>

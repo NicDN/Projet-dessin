@@ -4,7 +4,6 @@ import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 
@@ -13,34 +12,22 @@ import { Subscription } from 'rxjs';
 })
 export class EllipseDrawingService extends Shape {
     subscription: Subscription;
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        private undoRedoService: UndoRedoService,
-        private shapeService: ShapeService,
-    ) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ellipse');
-        this.listenToNewEllipseDrawingCommands();
-    }
-
-    listenToNewEllipseDrawingCommands(): void {
-        this.subscription = this.shapeService.newEllipseDrawing().subscribe((shapePropreties) => {
-            this.drawEllipse(shapePropreties);
-        });
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         ellipseCommand.execute();
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         ellipseCommand.execute();
         this.undoRedoService.addCommand(ellipseCommand);
     }
 
-    drawEllipse(ellipsePropreties: ShapePropreties): void {
+    drawShape(ellipsePropreties: ShapePropreties): void {
         const actualEndCoords: Vec2 = this.getTrueEndCoords(
             ellipsePropreties.beginCoords,
             ellipsePropreties.endCoords,

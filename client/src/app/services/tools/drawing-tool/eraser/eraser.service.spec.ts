@@ -1,13 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
-import { DrawingToolService } from '../drawing-tool.service';
 import { EraserService } from './eraser.service';
 
 describe('EraserService', () => {
@@ -18,7 +16,6 @@ describe('EraserService', () => {
     let previewCtxStub: CanvasRenderingContext2D;
     let mouseEvent: MouseEvent;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
-    let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;
     // let drawLineSpy: jasmine.Spy;
     let singleClickSpy: jasmine.Spy;
     let imageDataBefore: ImageData;
@@ -39,17 +36,11 @@ describe('EraserService', () => {
     const pathArrayStub: Vec2[] = [pathStub, pathStub];
     const colorStub: Color = { rgbValue: 'white', opacity: 1 };
 
-    let drawingToolPropretiesStub: DrawingToolPropreties;
+    let drawingToolPropretiesStub: TraceToolPropreties;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
-        drawingToolServiceSpyObj = jasmine.createSpyObj('DrawingToolService', [
-            'listenToNewDrawingPencilNotifications',
-            'listenToNewDrawingEraserNotifications',
-            'listenToNewDrawingLineNotifications',
-            'sendDrawingEraserNotifs',
-        ]);
 
         drawingToolPropretiesStub = {
             traceToolType: TraceToolType.Eraser,
@@ -59,15 +50,10 @@ describe('EraserService', () => {
             drawingColor: colorStub,
         };
 
-        drawingToolServiceSpyObj.listenToNewDrawingPencilNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingEraserNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingLineNotifications.and.returnValue(of(drawingToolPropretiesStub));
-
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
-                { provide: DrawingToolService, useValue: drawingToolServiceSpyObj },
             ],
         });
         service = TestBed.inject(EraserService);
@@ -158,16 +144,16 @@ describe('EraserService', () => {
         expect(baseCtxStub.globalAlpha).toEqual(1);
     });
 
-    it('#executeErase should erase on the canvas if there is a single click', () => {
+    it('#drawTrace should erase on the canvas if there is a single click', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.executeErase(drawingToolPropretiesStub);
+        service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         imageData.data[3] = imageData.data[3] + 1;
         expect(imageData).toEqual(imageDataBefore);
     });
 
-    it('#executeErase should erase on mouse move', () => {
+    it('#drawTrace should erase on mouse move', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
         const singleClickStub = false;
@@ -178,7 +164,7 @@ describe('EraserService', () => {
             { x: 1, y: 1 },
         ];
         drawingToolPropretiesStub.drawingPath = path2;
-        service.executeErase(drawingToolPropretiesStub);
+        service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         expect(imageData).toEqual(imageDataBefore);
     });
@@ -192,8 +178,7 @@ describe('EraserService', () => {
     });
 
     it('#sendCommandAction should call execute of eraser and add the command to the stack of undo-redo', () => {
-        const eraserSpy = spyOn(service, 'executeErase');
-        service.listenToNewDrawingEraserCommands();
+        const eraserSpy = spyOn(service, 'drawTrace');
         service.sendCommandAction();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(eraserSpy).toHaveBeenCalled();

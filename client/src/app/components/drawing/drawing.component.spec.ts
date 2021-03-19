@@ -4,24 +4,20 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
 import { SelectionService } from '@app/services/tools/selection/selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH, DrawingComponent, HALF_RATIO, SIDE_BAR_SIZE } from './drawing.component';
+import { DrawingComponent } from './drawing.component';
 
 const MOUSE_POSITION_DEFAULT = 1000;
 const mouseEventClick = { pageX: MOUSE_POSITION_DEFAULT, pageY: MOUSE_POSITION_DEFAULT, button: 0 } as MouseEvent;
 const keyBoardEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 const OVER_MINIMUM_WIDTH = 1000;
 const OVER_MINIMUM_HEIGHT = 1000;
-const UNDER_MINIMUM_WIDTH = 600;
-const UNDER_MINIMUM_HEIGHT = 400;
 
 // tslint:disable: no-string-literal
 describe('DrawingComponent', () => {
@@ -32,8 +28,6 @@ describe('DrawingComponent', () => {
     let colorServiceStub: ColorService;
     let drawingStub: DrawingService;
     // let boxSizeStub: BoxSize;
-    let onLoadCanvasWidth: number;
-    let onLoadCanvasHeight: number;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
@@ -67,7 +61,7 @@ describe('DrawingComponent', () => {
 
         colorServiceStub = TestBed.inject(ColorService);
         drawingStub = TestBed.inject(DrawingService);
-        toolsServiceSpy.currentTool = new PencilService(drawingStub, colorServiceStub, undoRedoServiceSpyObj, new DrawingToolService());
+        toolsServiceSpy.currentTool = new PencilService(drawingStub, colorServiceStub, undoRedoServiceSpyObj);
 
         fixture.detectChanges();
     });
@@ -135,7 +129,7 @@ describe('DrawingComponent', () => {
 
     it('#onMouseUp is instance of line should not call enableUndoRedo from undoRedoService ', () => {
         component['canDraw'] = true;
-        toolsServiceSpy.currentTool = new LineService(drawingStub, colorServiceStub, undoRedoServiceSpyObj, new DrawingToolService());
+        toolsServiceSpy.currentTool = new LineService(drawingStub, colorServiceStub, undoRedoServiceSpyObj);
         component.onMouseUp(mouseEventClick);
         expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();
     });
@@ -144,7 +138,7 @@ describe('DrawingComponent', () => {
         component['canDraw'] = true;
         toolsServiceSpy.currentTool = new RectangleSelectionService(
             drawingStub,
-            new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj, new ShapeService()),
+            new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
             undoRedoServiceSpyObj,
             new SelectionService(),
         );
@@ -191,32 +185,6 @@ describe('DrawingComponent', () => {
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
-    });
-
-    it('#setDimensions should return default canvas width if workspace size is under the minimum workspace size allowed', () => {
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: UNDER_MINIMUM_WIDTH });
-        component.setCanvasDimensions();
-        expect(component['canvasWidth']).toEqual(DEFAULT_WIDTH);
-    });
-
-    it('#setDimensions should return default canvas height if workspace size is under the minimum workspace size allowed', () => {
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: UNDER_MINIMUM_HEIGHT });
-        component.setCanvasDimensions();
-        expect(component['canvasHeight']).toEqual(DEFAULT_HEIGHT);
-    });
-
-    it('#setDimensions should return the loaded canvas width if workspace size is above the minimum workspace size allowed', () => {
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_WIDTH });
-        onLoadCanvasWidth = (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO;
-        component.setCanvasDimensions();
-        expect(component['canvasWidth']).toEqual(onLoadCanvasWidth);
-    });
-
-    it('#setDimensions should return the loaded canvas height if workspace size is above the minimum workspace size allowed', () => {
-        Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: OVER_MINIMUM_HEIGHT });
-        onLoadCanvasHeight = window.innerHeight * HALF_RATIO;
-        component.setCanvasDimensions();
-        expect(component['canvasHeight']).toEqual(onLoadCanvasHeight);
     });
 
     it('#ngAfterViewInit should not HandleNewDrawing a second time if newImage is undefined', () => {

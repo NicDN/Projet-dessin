@@ -4,7 +4,6 @@ import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 @Injectable({
@@ -12,28 +11,16 @@ import { Subscription } from 'rxjs';
 })
 export class RectangleDrawingService extends Shape {
     subscription: Subscription;
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        public undoRedoService: UndoRedoService,
-        private shapeService: ShapeService,
-    ) {
+    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Rectangle');
-        this.listenToNewRectangleDrawingCommands();
-    }
-
-    listenToNewRectangleDrawingCommands(): void {
-        this.subscription = this.shapeService.newRectangleDrawing().subscribe((shapePropreties) => {
-            this.drawRectangle(shapePropreties);
-        });
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         rectangleCommand.execute();
     }
 
-    drawRectangle(shapePropreties: ShapePropreties): void {
+    drawShape(shapePropreties: ShapePropreties): void {
         const trueEndCoords: Vec2 = this.getTrueEndCoords(shapePropreties.beginCoords, shapePropreties.endCoords, shapePropreties.isAlternateShape);
         const sideLengths: Vec2 = {
             x: trueEndCoords.x - shapePropreties.beginCoords.x,
@@ -60,7 +47,7 @@ export class RectangleDrawingService extends Shape {
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         rectangleCommand.execute();
         this.undoRedoService.addCommand(rectangleCommand);
     }

@@ -1,7 +1,7 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 
 export enum TraceToolType {
     Pencil = 1,
@@ -9,7 +9,7 @@ export enum TraceToolType {
     Line = 3,
 }
 
-export interface DrawingToolPropreties {
+export interface TraceToolPropreties {
     traceToolType: TraceToolType;
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
@@ -19,21 +19,11 @@ export interface DrawingToolPropreties {
     junctionDiameter?: number;
 }
 
-export class DrawingToolCommand extends AbstractCommand {
-    constructor(private drawingToolPropreties: DrawingToolPropreties, private drawingToolService: DrawingToolService) {
+export class TraceToolCommand extends AbstractCommand {
+    constructor(private drawingToolPropreties: TraceToolPropreties, private traceTool: TraceTool) {
         super();
     }
     execute(): void {
-        if (this.drawingToolPropreties.traceToolType === TraceToolType.Pencil) {
-            this.drawingToolService.sendDrawingPencilNotifs(this.drawingToolPropreties);
-        }
-
-        if (this.drawingToolPropreties.traceToolType === TraceToolType.Eraser) {
-            this.drawingToolService.sendDrawingEraserNotifs(this.drawingToolPropreties);
-        }
-
-        if (this.drawingToolPropreties.traceToolType === TraceToolType.Line) {
-            this.drawingToolService.sendDrawingLineNotifs(this.drawingToolPropreties);
-        }
+        this.traceTool.drawTrace(this.drawingToolPropreties);
     }
 }

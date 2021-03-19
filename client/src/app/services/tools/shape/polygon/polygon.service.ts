@@ -4,7 +4,6 @@ import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 
@@ -13,24 +12,12 @@ import { Subscription } from 'rxjs';
 })
 export class PolygonService extends Shape {
     subscription: Subscription;
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        public undoRedoService: UndoRedoService,
-        private shapeService: ShapeService,
-    ) {
+    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Polygone');
-        this.listenToNewPolygonDrawingCommands();
-    }
-
-    listenToNewPolygonDrawingCommands(): void {
-        this.subscription = this.shapeService.newPolygonDrawing().subscribe((shapePropreties) => {
-            this.drawPolygon(shapePropreties);
-        });
     }
 
     executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const polygonCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         polygonCommand.execute();
         this.undoRedoService.addCommand(polygonCommand);
     }
@@ -51,11 +38,11 @@ export class PolygonService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const polygonCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         polygonCommand.execute();
     }
 
-    drawPolygon(shapePropreties: ShapePropreties): void {
+    drawShape(shapePropreties: ShapePropreties): void {
         if (shapePropreties.numberOfSides === undefined) return;
 
         shapePropreties.drawingContext.save();

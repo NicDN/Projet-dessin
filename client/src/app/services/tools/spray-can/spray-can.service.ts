@@ -147,4 +147,8 @@ export class SprayCanService extends TraceTool {
         }
         return tmpArray;
     }
+
+    drawTrace(): void {
+        // Nothing yet
+    }
 }

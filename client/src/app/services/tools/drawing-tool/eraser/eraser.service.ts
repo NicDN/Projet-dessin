@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { DrawingToolCommand, DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolCommand, TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
@@ -16,44 +15,26 @@ export class EraserService extends PencilService {
 
     readonly MINTHICKNESS: number = 5;
 
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        undoRedoService: UndoRedoService,
-        protected drawingToolService: DrawingToolService,
-    ) {
-        super(drawingService, colorService, undoRedoService, drawingToolService);
+    constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
+        super(drawingService, colorService, undoRedoService);
         this.thickness = this.MINTHICKNESS;
         this.minThickness = this.MINTHICKNESS;
         this.toolName = 'Efface';
         this.isEraser = true;
-        this.listenToNewDrawingEraserCommands();
-    }
-
-    listenToNewDrawingEraserCommands(): void {
-        this.subscription = this.drawingToolService.listenToNewDrawingEraserNotifications().subscribe((drawingToolPropreties) => {
-            this.executeErase(drawingToolPropreties);
-        });
     }
 
     sendCommandAction(): void {
-        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
-            this.drawingToolService,
-        );
-        erraserCommand.execute();
-        this.undoRedoService.addCommand(erraserCommand);
+        const eraserCommand: TraceToolCommand = new TraceToolCommand(this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData), this);
+        eraserCommand.execute();
+        this.undoRedoService.addCommand(eraserCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
-            this.drawingToolService,
-        );
-        erraserCommand.execute();
+        const eraserCommand: TraceToolCommand = new TraceToolCommand(this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData), this);
+        eraserCommand.execute();
     }
 
-    executeErase(drawingToolPropreties: DrawingToolPropreties): void {
+    drawTrace(drawingToolPropreties: TraceToolPropreties): void {
         if (this.singleClick(drawingToolPropreties.drawingPath)) {
             this.eraseSquare(
                 drawingToolPropreties.drawingContext,
@@ -81,7 +62,7 @@ export class EraserService extends PencilService {
         }
     }
 
-    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
+    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             traceToolType: TraceToolType.Eraser,
             drawingContext: ctx,

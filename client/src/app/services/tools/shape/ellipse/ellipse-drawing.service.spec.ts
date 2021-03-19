@@ -6,9 +6,7 @@ import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
 import { EllipseDrawingService } from './ellipse-drawing.service';
 
 // tslint:disable: no-string-literal
@@ -18,7 +16,6 @@ describe('EllipseDrawingService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
-    let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -45,13 +42,6 @@ describe('EllipseDrawingService', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
 
-        shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
-            'newRectangleDrawing',
-            'newEllipseDrawing',
-            'newPolygonDrawing',
-            'sendDrawEllipseNotifs',
-        ]);
-
         const canvasStub: HTMLCanvasElement = document.createElement('canvas');
         let canvasCtxStub: CanvasRenderingContext2D;
         const stubWidthAndHeight = 100;
@@ -72,17 +62,12 @@ describe('EllipseDrawingService', () => {
             traceType: TraceType.FilledAndBordered,
         };
 
-        shapeServiceSpyObj.newRectangleDrawing.and.returnValue(of(shapePropretiesStub));
-        shapeServiceSpyObj.newEllipseDrawing.and.returnValue(of(shapePropretiesStub));
-        shapeServiceSpyObj.newPolygonDrawing.and.returnValue(of(shapePropretiesStub));
-
         TestBed.configureTestingModule({
             providers: [
                 EllipseDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
-                { provide: ShapeService, useValue: shapeServiceSpyObj },
             ],
         });
 
@@ -108,14 +93,14 @@ describe('EllipseDrawingService', () => {
         expect(drawingServiceSpyObj.baseCtx.lineCap).toEqual('round');
     });
 
-    it('#drawEllipse should draw an ellipse on the canvas at the right position and using the right colours', () => {
+    it('#drawShape should draw an ellipse on the canvas at the right position and using the right colours', () => {
         // service.thickness = THICKNESS_STUB;
         // service.traceType = TraceType.FilledAndBordered;
         // service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         shapePropretiesStub.traceType = TraceType.FilledAndBordered;
         shapePropretiesStub.drawingContext = baseCtxStub;
-        service.drawEllipse(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         const borderPoint: Vec2 = { x: 2, y: 10 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
@@ -137,7 +122,7 @@ describe('EllipseDrawingService', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
         shapePropretiesStub.drawingContext = baseCtxStub;
 
-        service.drawEllipse(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         const borderPoint: Vec2 = { x: 1, y: 1 };
         const centerPoint: Vec2 = { x: 20, y: 10 };
@@ -161,7 +146,7 @@ describe('EllipseDrawingService', () => {
         shapePropretiesStub.isAlternateShape = true;
         shapePropretiesStub.drawingContext = baseCtxStub;
 
-        service.drawEllipse(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         const borderPoint: Vec2 = { x: 10, y: 2 };
         const centerPoint: Vec2 = { x: 12, y: 10 };
@@ -177,10 +162,7 @@ describe('EllipseDrawingService', () => {
 
     it('#draw should loadUp propreties and call drawEllipse', () => {
         const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
-        spyOn(service, 'drawEllipse');
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
-        expect(shapeServiceSpyObj.sendDrawEllipseNotifs).toHaveBeenCalled();
         expect(loadUpSpy).toHaveBeenCalled();
     });
 
@@ -199,8 +181,7 @@ describe('EllipseDrawingService', () => {
 
     it('#executeShapeCommand should call execute of ellipse and add the command to the stack of undoRedo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
-        const ellipseSpy = spyOn(service, 'drawEllipse');
-        service.listenToNewEllipseDrawingCommands();
+        const ellipseSpy = spyOn(service, 'drawShape');
         service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(ellipseSpy).toHaveBeenCalled();

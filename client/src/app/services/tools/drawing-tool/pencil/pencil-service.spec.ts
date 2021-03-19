@@ -1,14 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
-import { DrawingToolService } from '../drawing-tool.service';
 import { PencilService } from './pencil.service';
 
 // tslint:disable: no-string-literal
@@ -19,7 +17,6 @@ describe('PencilService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
-    let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
@@ -32,7 +29,7 @@ describe('PencilService', () => {
     const pathArrayStub: Vec2[] = [pathStub, pathStub];
     const colorStub: Color = { rgbValue: 'red', opacity: 1 };
 
-    const drawingToolPropretiesStub: DrawingToolPropreties = {
+    const drawingToolPropretiesStub: TraceToolPropreties = {
         traceToolType: TraceToolType.Pencil,
         drawingContext: canvasCtxStub,
         drawingPath: pathArrayStub,
@@ -55,23 +52,12 @@ describe('PencilService', () => {
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'sendCommandAction']);
-        drawingToolServiceSpyObj = jasmine.createSpyObj('DrawingToolService', [
-            'listenToNewDrawingPencilNotifications',
-            'listenToNewDrawingEraserNotifications',
-            'listenToNewDrawingLineNotifications',
-            'sendDrawingPencilNotifs',
-        ]);
-
-        drawingToolServiceSpyObj.listenToNewDrawingPencilNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingEraserNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingLineNotifications.and.returnValue(of(drawingToolPropretiesStub));
 
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
-                { provide: DrawingToolService, useValue: drawingToolServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -156,8 +142,6 @@ describe('PencilService', () => {
     });
 
     it('#executeDrawLine should change the pixel of the canvas ', () => {
-        service.executeDrawLine(drawingToolPropretiesStub);
-
         const expectedRedColor = 255;
         const thirdPosition = 3;
 
@@ -215,8 +199,7 @@ describe('PencilService', () => {
     });
 
     it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
-        const pencilSpy = spyOn(service, 'executeDrawLine');
-        service.listenToNewDrawingPencilCommands();
+        const pencilSpy = spyOn(service, 'drawTrace');
         service.sendCommandAction();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(pencilSpy).toHaveBeenCalled();
@@ -224,7 +207,6 @@ describe('PencilService', () => {
 
     it('#sendCommandAction should return if we are erasing', () => {
         service.isEraser = true;
-        service.listenToNewDrawingPencilCommands();
         service.sendCommandAction();
         expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
     });

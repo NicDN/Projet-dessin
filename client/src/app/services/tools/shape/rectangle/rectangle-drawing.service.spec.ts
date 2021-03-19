@@ -6,9 +6,7 @@ import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
 import { RectangleDrawingService } from './rectangle-drawing.service';
 
 // tslint:disable: no-string-literal
@@ -18,7 +16,6 @@ describe('RectangleDrawingService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
-    let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let shapePropretiesStub: ShapePropreties;
@@ -45,12 +42,6 @@ describe('RectangleDrawingService', () => {
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
-        shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', [
-            'newRectangleDrawing',
-            'newEllipseDrawing',
-            'newPolygonDrawing',
-            'sendDrawRectangleNotifs',
-        ]);
 
         const canvasStub: HTMLCanvasElement = document.createElement('canvas');
         let canvasCtxStub: CanvasRenderingContext2D;
@@ -71,17 +62,12 @@ describe('RectangleDrawingService', () => {
             traceType: TraceType.FilledAndBordered,
         };
 
-        shapeServiceSpyObj.newRectangleDrawing.and.returnValue(of(shapePropretiesStub));
-        shapeServiceSpyObj.newEllipseDrawing.and.returnValue(of(shapePropretiesStub));
-        shapeServiceSpyObj.newPolygonDrawing.and.returnValue(of(shapePropretiesStub));
-
         TestBed.configureTestingModule({
             providers: [
                 RectangleDrawingService,
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
-                { provide: ShapeService, useValue: shapeServiceSpyObj },
             ],
         });
 
@@ -110,7 +96,7 @@ describe('RectangleDrawingService', () => {
 
     it('#drawRectangle should draw a rectangle on the canvas at the right position and using the right colours', () => {
         drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
-        service.drawRectangle(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         // const borderPoint: Vec2 = { x: 2, y: 10 };
         // const centerPoint: Vec2 = { x: 20, y: 10 };
@@ -127,7 +113,7 @@ describe('RectangleDrawingService', () => {
     it('#drawRectangle without border should draw a rectangle on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
         drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
-        service.drawRectangle(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         // const borderPoint: Vec2 = { x: 3, y: 3 };
         const centerPoint: Vec2 = { x: 25, y: 15 };
@@ -146,7 +132,7 @@ describe('RectangleDrawingService', () => {
         shapePropretiesStub.traceType = TraceType.Bordered;
         drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
 
-        service.drawRectangle(shapePropretiesStub);
+        service.drawShape(shapePropretiesStub);
 
         // const borderPoint: Vec2 = { x: 2, y: 2 };
         const centerPoint: Vec2 = { x: 22, y: 12 };
@@ -163,10 +149,7 @@ describe('RectangleDrawingService', () => {
     it('#draw should loadUp propreties and call drawRectangle', () => {
         const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
-        // expect(shapeServiceSpyObj.newRectangleDrawing).toHaveBeenCalled();
         expect(loadUpSpy).toHaveBeenCalled();
-        expect(shapeServiceSpyObj.sendDrawRectangleNotifs).toHaveBeenCalled();
     });
 
     it('#adjustToBorder should adjust the begin coords and length appropriately', () => {
@@ -214,8 +197,7 @@ describe('RectangleDrawingService', () => {
 
     it('#executeShapeCommand should call execute of rectangle and add the command to the stack of undoRedo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
-        const rectangleSpy = spyOn(service, 'drawRectangle');
-        service.listenToNewRectangleDrawingCommands();
+        const rectangleSpy = spyOn(service, 'drawShape');
         service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
 
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();

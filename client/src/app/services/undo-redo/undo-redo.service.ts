@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
@@ -11,10 +11,28 @@ export class UndoRedoService {
     canUndoRedo: boolean = true;
     subscription: Subscription;
 
+    updateUndoRedoComponent: Subject<void> = new Subject<void>();
+
     constructor(private drawingService: DrawingService) {
         this.subscription = this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
             this.setBaseLine(baseLineCommand);
         });
+    }
+
+    sendUndoRedoNotif(): void {
+        this.updateUndoRedoComponent.next();
+    }
+
+    newUndoRedoSignals(): Observable<void> {
+        return this.updateUndoRedoComponent.asObservable();
+    }
+
+    commandListIsEmpty(): boolean {
+        return this.commandList.length === 1;
+    }
+
+    redoListIsEmpty(): boolean {
+        return this.undoneList.length === 0;
     }
 
     disableUndoRedo(): void {
@@ -28,6 +46,7 @@ export class UndoRedoService {
     addCommand(command: AbstractCommand): void {
         this.undoneList = [];
         this.commandList.push(command);
+        this.sendUndoRedoNotif();
     }
 
     undo(): void {
@@ -39,6 +58,7 @@ export class UndoRedoService {
             this.undoneList.push(undoAction);
             this.executeAllCommands();
         }
+        this.sendUndoRedoNotif();
     }
 
     redo(): void {
@@ -50,6 +70,7 @@ export class UndoRedoService {
                 this.executeAllCommands();
             }
         }
+        this.sendUndoRedoNotif();
     }
 
     setBaseLine(baseLineCommand: AbstractCommand): void {

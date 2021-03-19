@@ -1,7 +1,8 @@
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { EllipseSelectionService } from '@app/services/tools/selection/ellipse-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { EllipseSelectionService } from './../../services/tools/selection/ellipse-selection.service';
 import { SelectionOptionsComponent } from './selection-options.component';
 
 describe('SelectionOptionsComponent', () => {
@@ -23,6 +24,7 @@ describe('SelectionOptionsComponent', () => {
                 { provide: RectangleSelectionService, useValue: rectangleSelectionServiceSpyObj },
                 { provide: EllipseSelectionService, useValue: ellipseSelectionServiceSpyObj },
             ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

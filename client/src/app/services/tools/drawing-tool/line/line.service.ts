@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { DrawingToolCommand, DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolCommand, TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
 
@@ -29,23 +28,11 @@ export class LineService extends TraceTool {
     pathData: Vec2[];
     mousePosition: Vec2;
 
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        private undoRedoService: UndoRedoService,
-        private drawingToolService: DrawingToolService,
-    ) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
         this.clearPath();
         this.drawWithJunction = false;
         this.junctionDiameter = this.INITIAL_JUNCTION_DIAMETER_PX;
-        this.listenToNewDrawingLineCommands();
-    }
-
-    listenToNewDrawingLineCommands(): void {
-        this.subscription = this.drawingToolService.listenToNewDrawingLineNotifications().subscribe((drawingToolPropreties) => {
-            this.drawLineExecute(drawingToolPropreties);
-        });
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -135,10 +122,7 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        const lineCommand: DrawingToolCommand = new DrawingToolCommand(
-            this.loadUpProprities(this.drawingService.baseCtx, this.pathData),
-            this.drawingToolService,
-        );
+        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpProprities(this.drawingService.baseCtx, this.pathData), this);
         lineCommand.execute();
 
         this.undoRedoService.addCommand(lineCommand);
@@ -166,11 +150,11 @@ export class LineService extends TraceTool {
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const lineCommand: DrawingToolCommand = new DrawingToolCommand(this.loadUpProprities(ctx, path), this.drawingToolService);
+        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpProprities(ctx, path), this);
         lineCommand.execute();
     }
 
-    drawLineExecute(drawingToolPropreties: DrawingToolPropreties): void {
+    drawTrace(drawingToolPropreties: TraceToolPropreties): void {
         if (drawingToolPropreties.junctionDiameter === undefined) return;
         this.setContext(drawingToolPropreties.drawingContext, drawingToolPropreties);
         drawingToolPropreties.drawingContext.beginPath();
@@ -187,7 +171,7 @@ export class LineService extends TraceTool {
         drawingToolPropreties.drawingContext.stroke();
     }
 
-    setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: DrawingToolPropreties): void {
+    setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: TraceToolPropreties): void {
         if (drawingToolPropreties.drawingColor === undefined) return;
         ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
         ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
@@ -195,7 +179,7 @@ export class LineService extends TraceTool {
         ctx.lineJoin = drawingToolPropreties.drawingContext.lineCap = 'round';
     }
 
-    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
+    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             traceToolType: TraceToolType.Line,
             drawingContext: ctx,

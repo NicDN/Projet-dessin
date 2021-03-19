@@ -3,12 +3,17 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CanvasTestHelper } from './canvas-test-helper';
+import { ShapePropreties } from './commands/shape-command/shape-command';
 import { Shape, TraceType } from './shape';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 
 export class ShapeStub extends Shape {
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Stub');
+    }
+
+    drawShape(shapePropreties: ShapePropreties): void {
+        return;
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
