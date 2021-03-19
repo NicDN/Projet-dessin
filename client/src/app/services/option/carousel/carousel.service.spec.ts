@@ -136,6 +136,22 @@ describe('CarouselService', () => {
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.BAD_GATEWAY });
     });
 
+    it('should handle http error safely when receiving a get request that return BAD_GATEWAY code', () => {
+        service.requestDrawingsFromServer(TAGS_MOCK, index).subscribe(
+            (response: DrawingForm[]) => {
+                expect(response).toBeUndefined();
+            },
+            (error) => {
+                expect(error).toBe("Erreur lors de l'accès à la base de données.");
+            },
+            fail,
+        );
+
+        const req = httpMock.expectOne((request) => request.params.has('tags') && request.params.has('index'));
+        expect(req.request.method).toBe('GET');
+        req.error(new ErrorEvent('No response'), { status: Httpstatus.StatusCodes.BAD_GATEWAY });
+    });
+
     it('should handle http error safely when receiving a get request and the server does not respond', () => {
         service.requestDrawingsFromServer(TAGS_MOCK, index).subscribe(
             (response: DrawingForm[]) => {
