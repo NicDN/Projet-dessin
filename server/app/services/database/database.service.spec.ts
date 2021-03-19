@@ -17,7 +17,6 @@ describe('Database service', () => {
     beforeEach(async () => {
         databaseService = new DatabaseService();
         mongoServer = new MongoMemoryServer();
-        // await mongoServer.getUri();
     });
 
     afterEach(async () => {
@@ -25,7 +24,6 @@ describe('Database service', () => {
             await databaseService['client'].close();
         }
     });
-
 
     it('#start without passing url should still connect to the databse', async () => {
         await databaseService.start();

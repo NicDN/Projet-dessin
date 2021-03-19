@@ -1,73 +1,192 @@
-// import 'reflect-metadata';
-// import { testingContainer } from '../../../test/test-utils';
-// import { TYPES } from '../../types';
-// import { DrawingsService } from './drawings.service';
+// tslint:disable: no-string-literal
+// tslint:disable: no-unused-expression
+import { DrawingForm } from '@common/communication/drawing-form';
+import { expect } from 'chai';
+import * as fs from 'fs';
+// import { taggedConstraint } from 'inversify';
+// import { Db } from 'mongodb';
+// import { MongoMemoryServer } from 'mongodb-memory-server';
+import 'reflect-metadata';
+import { restore, spy } from 'sinon';
+// import { isMainThread } from 'worker_threads';
+import { Stubbed, testingContainer } from '../../../test/test-utils';
+import { TYPES } from '../../types';
+import { DatabaseService } from '../database/database.service';
+import { DatabaseServiceMock } from '../database/database.service.mock';
+import { DrawingsService } from './drawings.service';
 
-// describe('Index service', () => {
-//     let drawingsService: DrawingsService;
+describe('Drawings service', () => {
+    let databaseService: Stubbed<DatabaseService>;
+    let drawingsService: DrawingsService;
+    let databaseServiceMock: DatabaseServiceMock;
 
-//     beforeEach(async () => {
-//         const [container, sandbox] = await testingContainer();
-//         container.rebind(TYPES.DrawingsService).toConstantValue({
-//             currentTime: sandbox.stub().resolves({
-//                 title: 'Time',
-//                 body: new Date(2020, 0, 10).toString(),
-//             }),
-//         });
-//         drawingsService = container.get(TYPES.DrawingsService);
-//     });
+    beforeEach(async () => {
+        databaseServiceMock = new DatabaseServiceMock();
+        // il faut stub this.databaseService.database.collection(DATABASE_COLLECTION)
+        const [container, sandbox] = await testingContainer();
+        container.rebind(TYPES.DatabaseService).toConstantValue({
+            start: sandbox.stub().resolves(databaseServiceMock.start()),
+            closeConnection: sandbox.stub().resolves(databaseServiceMock.closeConnection()),
+            database: sandbox.stub().resolves(databaseServiceMock.database),
+        });
+        databaseService = container.get(TYPES.DrawingsService);
 
-//     // it('should return a simple message if #about is called', () => {
-//     //     const expectedTitle = 'Basic Server About Page';
-//     //     const expectedBody = 'Try calling helloWorld to get the time';
-//     //     const aboutMessage = indexService.about();
-//     //     expect(aboutMessage.title).to.equals(expectedTitle);
-//     //     expect(aboutMessage.body).to.equals(expectedBody);
-//     // });
+        drawingsService = new DrawingsService(databaseService);
+    });
 
-//     // it('should return Hello World as title', (done: Mocha.Done) => {
-//     //     indexService.helloWorld().then((result: Message) => {
-//     //         expect(result.title).to.equals('Hello world');
-//     //         done();
-//     //     });
-//     // });
+    afterEach(async () => {
+        restore();
+    });
 
-//     // it('should have a body that starts with "Time is"', (done: Mocha.Done) => {
-//     //     indexService.helloWorld().then((result: Message) => {
-//     //         expect(result.body)
-//     //             .to.be.a('string')
-//     //             .and.satisfy((body: string) => body.startsWith('Time is'));
-//     //         done();
-//     //     });
-//     // });
+    it('should return this.databaseService.database.collection when #collection is called', async () => {
+        expect(drawingsService.collection).to.eql([]);
+    });
 
-//     // it('should handle an error from DateService', (done: Mocha.Done) => {
-//     //     dateService.currentTime.rejects(new Error('error in the service'));
-//     //     indexService
-//     //         .helloWorld()
-//     //         .then((result: Message) => {
-//     //             expect(result.title).to.equals('Error');
-//     //             done();
-//     //         })
-//     //         .catch((error: unknown) => {
-//     //             done(error);
-//     //         });
-//     // });
+    it('should throw an error when #storeDrawing doesnt have a valid DrawingForm', async () => {});
 
-//     // it('should store a message', (done: Mocha.Done) => {
-//     //     const newMessage: Message = { title: 'Hello', body: 'World' };
-//     //     indexService.storeMessage(newMessage);
-//     //     expect(indexService.clientMessages[0]).to.equals(newMessage);
-//     //     done();
-//     // });
+    it('should store the drawing when #storeDrawing have a valid DrawingForm', async () => {});
 
-//     // it('should get all messages', (done: Mocha.Done) => {
-//     //     const newMessage: Message = { title: 'Hello', body: 'World' };
-//     //     const newMessage2: Message = { title: 'Hello', body: 'Again' };
-//     //     indexService.clientMessages.push(newMessage);
-//     //     indexService.clientMessages.push(newMessage2);
-//     //     const messages = indexService.getAllMessages();
-//     //     expect(messages).to.equals(indexService.clientMessages);
-//     //     done();
-//     // });
-// });
+    it('should throw an error when #storeDrawing doesnt have a valid directory', async () => {});
+
+    it('should throw an error when #storeDrawing cant communicate with the database', async () => {});
+
+    it('should return all the validDrawings when #getDrawings is called', async () => {});
+
+    it('should return an empty array when #getDrawings is called an theres no drawing in the collection', async () => {});
+
+    it('should throw an error when #getDrawings have a connection problem with the database', async () => {});
+
+    it('should filter by tags when #getDrawings get at least one tag', async () => {});
+
+    it('#filterDrawingsByTags should return every DrawingForms with a valid tag one time', async () => {
+        const EXPECTED_FORM: DrawingForm = { id: '', name: 'Agatha', tags: ['jesus', 'pain naan'], drawingData: '' };
+        const FORMS: DrawingForm[] = [{ id: '', name: 'OogaBooga', tags: ['houlala', 'bongo'], drawingData: '' }, EXPECTED_FORM];
+        const SEARCH_TAGS = ['jesus'];
+
+        expect(drawingsService['filterDrawingsByTags'](FORMS, SEARCH_TAGS)).to.eql([EXPECTED_FORM]);
+    });
+
+    it('#filterDrawingsByTags should return every DrawingForms with at least one of the valid tags one time', async () => {
+        const EXPECTED_FORMS: DrawingForm[] = [
+            { id: '', name: 'OogaBooga', tags: ['houlala', 'bongo'], drawingData: '' },
+            { id: '', name: 'Agatha', tags: ['jesus', 'pain naan'], drawingData: '' },
+        ];
+        const SEARCH_TAGS = ['jesus', 'houlala'];
+
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql(EXPECTED_FORMS);
+    });
+
+    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm', async () => {
+        const EXPECTED_FORMS: DrawingForm[] = [];
+        const SEARCH_TAGS = ['jesus', 'houlala'];
+
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
+    });
+
+    it('#filterDrawingsByTags should return an empty array if theres no DrawingForm with a valid tag', async () => {
+        const EXPECTED_FORMS: DrawingForm[] = [
+            { id: '', name: 'OogaBooga', tags: ['houlaa', 'bgo'], drawingData: '' },
+            { id: '', name: 'Agatha', tags: ['jeus', 'painan'], drawingData: '' },
+        ];
+        const SEARCH_TAGS = ['jesus', 'houlala'];
+
+        expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
+    });
+
+    it('#getValidDrawings should return an array of 3 DrawingForms', async () => {});
+
+    it('#getValidDrawings should return nothing if it cant read one of the drawingForms in the directory', async () => {});
+
+    it('should delete a drawing on the server when #deleteDrawing have a valid id', async () => {});
+
+    it('should throw an error when #deleteDrawing cant find the file to delete', async () => {});
+
+    it('#deleteDrawing should throw an error when the infos of the drawing to delete arent on the database', async () => {});
+
+    it('#deleteDrawing should throw an error when theres an problem with the database', async () => {});
+
+    it('should return true when #validateDrawing get a valid drawing', async () => {
+        const drawingForm: DrawingForm = { id: '', name: 'OogaBooga', tags: [], drawingData: '' };
+        expect(drawingsService['validateDrawing'](drawingForm)).to.be.true;
+    });
+
+    it('should return false when #validateDrawing get a drawing with an unvalid tag', async () => {
+        const drawingForm: DrawingForm = { id: '', name: 'OogaBooga', tags: ['a'], drawingData: '' };
+        expect(drawingsService['validateDrawing'](drawingForm)).to.be.false;
+    });
+
+    it('should return false when #validateDrawing get a drawing without a name', async () => {
+        const drawingForm: DrawingForm = { id: '', name: '', tags: [], drawingData: '' };
+        expect(drawingsService['validateDrawing'](drawingForm)).to.be.false;
+    });
+
+    it('should return true when #validateTags have only valid tags', async () => {
+        const tags: string[] = ['ans', 'babushka'];
+        expect(drawingsService['validateTags'](tags)).to.be.true;
+    });
+
+    it('should return true when #validateTags has no tags', async () => {
+        const tags: string[] = [];
+        expect(drawingsService['validateTags'](tags)).to.be.true;
+    });
+
+    it('should return false when #validateTags have at least one too long tag', async () => {
+        const tags: string[] = ['a'];
+        expect(drawingsService['validateTags'](tags)).to.be.false;
+    });
+
+    it('should return false when #validateTags have at least one too short tag', async () => {
+        const tags: string[] = ['abcdefghijklmnopqrstuvwxyz'];
+        expect(drawingsService['validateTags'](tags)).to.be.false;
+    });
+
+    it('should return false when #validateTags have at least one tag with numbers', async () => {
+        const tags: string[] = ['xXx.N00bM@st3r69.xXx'];
+        expect(drawingsService['validateTags'](tags)).to.be.false;
+    });
+
+    it('should write a file in the local directory when #writeFile get a valid fileName and string', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const CONTENT = 'adsf';
+        const fsWriteFileSpy = spy(fs, 'writeFile');
+
+        await drawingsService['writeFile'](FILENAME, CONTENT);
+        fs.unlinkSync(FILENAME);
+        expect(fsWriteFileSpy.calledOnce);
+    });
+
+    it('should throw an error when #writeFile cant write the file', async () => {
+        const FILENAME = 'D:`//..w.`w.e2-e-2e0=932-0r32fdsfdsc';
+        const CONTENT = 'adsf';
+        const fsWriteFileSpy = spy(fs, 'writeFile');
+
+        try {
+            await drawingsService['writeFile'](FILENAME, CONTENT);
+        } catch {
+            expect(fsWriteFileSpy.calledOnce);
+        }
+    });
+
+    it('should return a valid string when #readFile get a valid name', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const CONTENT = 'adsf';
+        fs.writeFileSync(FILENAME, CONTENT);
+
+        const file = await drawingsService['readFile'](FILENAME);
+        fs.unlinkSync(FILENAME);
+        expect(file).to.eql(CONTENT);
+    });
+
+    it('should return nothing if #readFile cant read the asked file', async () => {
+        const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
+        const fsReadFileSpy = spy(fs, 'readFile');
+        let file = '';
+
+        try {
+            file = await drawingsService['readFile'](FILENAME);
+        } catch {
+            expect(file).to.eql('');
+            expect(fsReadFileSpy.calledOnce);
+        }
+    });
+});
