@@ -49,9 +49,12 @@ describe('Database service', () => {
     });
 
     it('#start should throw an error when connection fail', async () => {
-        const clientConnectStub = stub(MongoClient, 'connect').returns();
+        const clientConnectStub = stub(MongoClient, 'connect').callsFake(() => {
+            throw new Error('error');
+        });
         const startSpy = spy(databaseService, 'start');
         expect(startSpy).to.throw();
+        expect(clientConnectStub.calledOnce);
     });
 
     it('should no longer be connected if close is called', async () => {
@@ -60,6 +63,4 @@ describe('Database service', () => {
         // tslint:disable-next-line: no-unused-expression
         expect(databaseService['client'].isConnected()).to.be.false;
     });
-
-    it('should return this.db when #database is called', async () => {});
 });
