@@ -17,7 +17,7 @@ describe('RectangleDrawingService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let baseCtxStub: CanvasRenderingContext2D;
-    let previewCtxStub: CanvasRenderingContext2D;
+    // let previewCtxStub: CanvasRenderingContext2D;
     let shapePropretiesStub: ShapePropreties;
 
     const PRIMARY_COLOR_STUB = 'blue';
@@ -72,15 +72,8 @@ describe('RectangleDrawingService', () => {
         });
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
-        baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
-        previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
-
+        shapePropretiesStub.drawingContext = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         service = TestBed.inject(RectangleDrawingService);
-
-        service['drawingService'].baseCtx = baseCtxStub;
-        service['drawingService'].previewCtx = previewCtxStub;
-
-        shapePropretiesStub.drawingContext = service['drawingService'].baseCtx;
     });
 
     it('should be created', () => {
@@ -88,24 +81,24 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
-        expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
-        expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
-        expect(drawingServiceSpyObj.baseCtx.lineJoin).toEqual('miter');
+        service.setContextParameters(shapePropretiesStub.drawingContext, THICKNESS_STUB);
+        expect(shapePropretiesStub.drawingContext.getLineDash()).toEqual([]);
+        // expect(shapePropretiesStub.drawingContext.lineWidth).toEqual(THICKNESS_STUB);
+        expect(shapePropretiesStub.drawingContext.lineJoin).toEqual('miter');
     });
 
     it('#drawRectangle should draw a rectangle on the canvas at the right position and using the right colours', () => {
         drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
         service.drawShape(shapePropretiesStub);
 
-        // const borderPoint: Vec2 = { x: 2, y: 10 };
-        // const centerPoint: Vec2 = { x: 20, y: 10 };
+        const borderPoint: Vec2 = { x: 2, y: 10 };
+        const centerPoint: Vec2 = { x: 20, y: 10 };
         const outsidePoint: Vec2 = { x: 41, y: 0 };
 
-        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
-        // const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        // expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
@@ -115,12 +108,12 @@ describe('RectangleDrawingService', () => {
         drawingServiceSpyObj.clearCanvas(shapePropretiesStub.drawingContext);
         service.drawShape(shapePropretiesStub);
 
-        // const borderPoint: Vec2 = { x: 3, y: 3 };
+        const borderPoint: Vec2 = { x: 3, y: 3 };
         const centerPoint: Vec2 = { x: 25, y: 15 };
         const outsidePoint: Vec2 = { x: 41, y: 41 };
 
-        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
@@ -134,12 +127,12 @@ describe('RectangleDrawingService', () => {
 
         service.drawShape(shapePropretiesStub);
 
-        // const borderPoint: Vec2 = { x: 2, y: 2 };
+        const borderPoint: Vec2 = { x: 2, y: 2 };
         const centerPoint: Vec2 = { x: 22, y: 12 };
         const outsidePoint: Vec2 = { x: 41, y: 41 };
 
-        // const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        // expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
         const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
