@@ -30,10 +30,10 @@ export class SaveService {
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
                 return throwError("Impossible d'accéder au serveur.");
             }
-            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
                 return throwError('La sauvegarde du dessin sur le serveur a échouée.');
             }
-            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
+            if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
                 return throwError('La sauvegarde des informations sur la base de données a échouée');
             }
             return of(result as T);

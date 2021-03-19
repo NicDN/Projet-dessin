@@ -34,13 +34,13 @@ export class CarouselService {
                 return throwError("Impossible d'accéder au serveur.");
             }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
-                return throwError('Impossible de supprimer le dessin sur le serveur.');
+                return throwError('Le dessin est inexistant sur le serveur.');
             }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
-                return throwError('Impossible de supprimer les informations du dessin sur la base de données.');
+                return throwError('Les informations du dessin sont inexistantes sur la base de données');
             }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
-                return throwError('La suppression sur la base de donnée a échouée.');
+                return throwError("Erreur lors de l'accès à la base de données.");
             }
             return of(result as T);
         };

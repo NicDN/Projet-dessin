@@ -14,8 +14,8 @@ const MIN_LENGTH = 2;
 
 const DRAWINGS_MAX_COUNT = 3;
 
-const LAST_INDEX = -3;
-const BEFORE_LAST_INDEX = -4;
+const LAST_INDEX = -3; // TODO:  not clear, rename
+const BEFORE_LAST_INDEX = -4; // TODO:  not clear, rename
 
 @injectable()
 export class DrawingsService {
@@ -61,6 +61,9 @@ export class DrawingsService {
                     // tslint:disable-next-line: no-string-literal
                     drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
                 });
+            })
+            .catch(() => {
+                throw new Error('DATABASE_ERROR');
             });
 
         if (tags.length > 0) {

@@ -96,7 +96,7 @@ describe('CarouselService', () => {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                expect(error).toBe('Impossible de supprimer le dessin sur le serveur.');
+                expect(error).toBe('Le dessin est inexistant sur le serveur.');
             },
             fail,
         );
@@ -111,7 +111,7 @@ describe('CarouselService', () => {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                expect(error).toBe('Impossible de supprimer les informations du dessin sur la base de données.');
+                expect(error).toBe('Les informations du dessin sont inexistantes sur la base de données');
             },
             fail,
         );
@@ -126,7 +126,7 @@ describe('CarouselService', () => {
             // tslint:disable-next-line: no-empty
             () => {},
             (error) => {
-                expect(error).toBe('La suppression sur la base de donnée a échouée.');
+                expect(error).toBe("Erreur lors de l'accès à la base de données.");
             },
             fail,
         );
