@@ -25,8 +25,9 @@ describe('PencilService', () => {
     let canvasCtxStub: CanvasRenderingContext2D;
     canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
 
-    const pathStub: Vec2 = { x: 1, y: 1 };
-    const pathArrayStub: Vec2[] = [pathStub, pathStub];
+    const pathStub: Vec2 = { x: 0, y: 0 };
+    const pathStub2: Vec2 = { x: 2, y: 2 };
+    const pathArrayStub: Vec2[] = [pathStub, pathStub2];
     const colorStub: Color = { rgbValue: 'red', opacity: 1 };
 
     const drawingToolPropretiesStub: TraceToolPropreties = {
@@ -77,6 +78,8 @@ describe('PencilService', () => {
             button: MouseButton.Left,
             buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
+
+        drawingToolPropretiesStub.drawingColor = colorStub;
     });
 
     it('should be created', () => {
@@ -141,16 +144,16 @@ describe('PencilService', () => {
         expect(drawLineSpy).not.toHaveBeenCalled();
     });
 
-    it('#executeDrawLine should change the pixel of the canvas ', () => {
+    it('#drawTrace should change the pixel of the canvas ', () => {
         const expectedRedColor = 255;
-        const thirdPosition = 3;
-
+        const globalAlpha = 3;
+        console.log(drawingToolPropretiesStub);
+        service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
-
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
-        expect(imageData.data[thirdPosition]).not.toEqual(0); // A
+        expect(imageData.data[globalAlpha]).not.toEqual(0); // A
     });
 
     it('#drawLine should load propreties', () => {

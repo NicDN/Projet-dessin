@@ -187,19 +187,12 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it('#ngAfterViewInit should not HandleNewDrawing a second time if newImage is undefined', () => {
-        component.drawingService.newImage = undefined;
-        const handleNewDrawing = spyOn(component.drawingService, 'handleNewDrawing');
-        component.ngAfterViewInit();
-        expect(handleNewDrawing).toHaveBeenCalledTimes(1);
-    });
-
-    it('#ngAfterViewInit should HandleNewDrawing a second time if newImage is not undefined', () => {
+    it('#ngAfterViewInit should HandleNewDrawing a with an image', () => {
         const imageStub = new Image();
         imageStub.src = component.drawingService.canvas.toDataURL();
         component.drawingService.newImage = imageStub;
         const handleNewDrawing = spyOn(component.drawingService, 'handleNewDrawing');
         component.ngAfterViewInit();
-        expect(handleNewDrawing).toHaveBeenCalledTimes(2);
+        expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
     });
 });

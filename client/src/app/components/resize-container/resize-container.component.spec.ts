@@ -44,7 +44,7 @@ describe('ResizeContainerComponent', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        component.box.nativeElement = document.createElement('div');
+        // component.box.nativeElement = document.createElement('div');
     });
 
     it('should create', () => {
@@ -109,7 +109,7 @@ describe('ResizeContainerComponent', () => {
         expect(component.status).toEqual(Status.RESIZE_VERTICAL);
     });
 
-    it('#resize resize-container should resize with the appropriate dimensions', () => {
+    it('#resize-container should resize with the appropriate dimensions', () => {
         const MIDDLE = 1100;
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: MIDDLE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: MIDDLE });
@@ -121,7 +121,7 @@ describe('ResizeContainerComponent', () => {
         expect(component.box.nativeElement.style.height.slice(0, -2)).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
-    it('#resize should not resize if position is under 250px', () => {
+    it('#resize-container should not resize if position is under 250px', () => {
         const MIDDLE = 1100;
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: MIDDLE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: MIDDLE });
@@ -137,18 +137,27 @@ describe('ResizeContainerComponent', () => {
         expect(component.box.nativeElement.style.height.slice(0, -2)).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
-    it('#resize should resize when status is something else than NOT_RESIZING', () => {
+    it('#resize-container should resize when status is something else than NOT_RESIZING', () => {
         const calledResizeFunction: jasmine.Spy = spyOn(component, 'resizeContainer');
         component.status = Status.RESIZE_DIAGONAL;
         window.dispatchEvent(new MouseEvent('mousemove'));
         expect(calledResizeFunction).toHaveBeenCalled();
     });
 
-    it('#resize should not resize when status is NOT_RESIZING', () => {
+    it('#resize-container should not resize when status is NOT_RESIZING', () => {
         const calledResizeFunction: jasmine.Spy = spyOn(component, 'resizeContainer');
         component.status = Status.NOT_RESIZING;
         window.dispatchEvent(new MouseEvent('mousemove'));
         expect(calledResizeFunction).not.toHaveBeenCalled();
+    });
+
+    it('#resizeContainer should not go through if this.box is undefined', () => {
+        // tslint:disable-next-line: prefer-const
+        let undefinedElementRef: any;
+        component.box = undefinedElementRef;
+        spyOn(component, 'isValidWidth');
+        component.resizeContainer(mouseEventClick);
+        expect(component.isValidWidth).not.toHaveBeenCalled();
     });
 
     it('#resizeCanvas should resize the canvas surface', () => {
@@ -206,6 +215,15 @@ describe('ResizeContainerComponent', () => {
         component.setStatus(Status.RESIZE_DIAGONAL);
         component.onMouseUpContainer();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+    });
+
+    it('#onMouseUp container should not go through if component.box is undefined', () => {
+        // tslint:disable-next-line: prefer-const
+        let undefinedBox: any;
+        component.box = undefinedBox;
+        spyOn(component, 'setStatus');
+        component.onMouseUpContainer();
+        expect(component.setStatus).not.toHaveBeenCalled();
     });
 
     it('#WindowWidthIsOverMinimum should return true if width size of workspace is over 500', () => {

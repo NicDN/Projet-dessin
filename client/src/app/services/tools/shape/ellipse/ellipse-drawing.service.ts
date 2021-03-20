@@ -19,12 +19,9 @@ export class EllipseDrawingService extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         ellipseCommand.execute();
-    }
-
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
-        ellipseCommand.execute();
-        this.undoRedoService.addCommand(ellipseCommand);
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(ellipseCommand);
+        }
     }
 
     drawShape(ellipsePropreties: ShapePropreties): void {

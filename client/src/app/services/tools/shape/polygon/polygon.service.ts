@@ -16,12 +16,6 @@ export class PolygonService extends Shape {
         super(drawingService, colorService, 'Polygone');
     }
 
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
-        polygonCommand.execute();
-        this.undoRedoService.addCommand(polygonCommand);
-    }
-
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             shapeType: ShapeType.Polygon,
@@ -40,6 +34,10 @@ export class PolygonService extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const polygonCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         polygonCommand.execute();
+
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(polygonCommand);
+        }
     }
 
     drawShape(shapePropreties: ShapePropreties): void {

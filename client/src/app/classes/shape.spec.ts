@@ -158,16 +158,16 @@ describe('Shape', () => {
     });
 
     it('#onMouseUp should draw on base context and clear preview context', () => {
-        const drawSpy = spyOn(shape, 'executeShapeCommand');
+        const drawSpy = spyOn(shape, 'draw');
+        drawingServiceSpyObj.baseCtx = baseCtxStub;
         shape.mouseDown = true;
-
         shape.onMouseUp(mouseEvent);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawSpy).toHaveBeenCalled();
     });
 
     it('#onMouseUp should not draw on base context nor clear preview context if mouseDown is not true (edge case, necessary)', () => {
-        const drawSpy = spyOn(shape, 'executeShapeCommand');
+        const drawSpy = spyOn(shape, 'draw');
         shape.mouseDown = false;
 
         shape.onMouseUp(mouseEvent);

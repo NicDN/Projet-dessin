@@ -6,7 +6,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { of } from 'rxjs';
 import { UndoRedoService } from './undo-redo.service';
 
-class TestCommand extends AbstractCommand {
+export class TestCommand extends AbstractCommand {
     proprety: number = 0;
     id: number;
     execute(): void {
@@ -59,6 +59,8 @@ describe('UndoRedoService', () => {
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
         service = TestBed.inject(UndoRedoService);
+        service.commandList = [];
+        service.undoneList = [];
     });
 
     it('should be created', () => {
@@ -87,7 +89,7 @@ describe('UndoRedoService', () => {
     it('#addCommand should add a command to the commandList', () => {
         const command1: TestCommand = new TestCommand();
         service.commandList.push(command1);
-        expect(service.commandList.length).toEqual(2);
+        expect(service.commandList.length).toEqual(1);
     });
 
     it('#undo should add the latest command executed to the undoneList', () => {
@@ -113,7 +115,7 @@ describe('UndoRedoService', () => {
     it('#undo should not undo if the number of elements in the commad list is under the start commands', () => {
         const executeAllCmdSpy = spyOn(service, 'executeAllCommands');
         service.undo();
-        expect(service.commandList.length).toEqual(1);
+        expect(service.commandList.length).toEqual(0);
         expect(executeAllCmdSpy).not.toHaveBeenCalled();
     });
 
@@ -184,5 +186,29 @@ describe('UndoRedoService', () => {
         service.executeAllCommands();
         expect(command1.proprety).toEqual(1);
         expect(command2.proprety).toEqual(1);
+    });
+
+    it('#commandListIsEmpty should return true if the command list is empty', () => {
+        const baseLineCommandTmp: TestCommand = new TestCommand();
+        service.addCommand(baseLineCommandTmp);
+        expect(service.commandListIsEmpty()).toBeTrue();
+    });
+
+    it('#commandListIsEmpty should return false if the command list is not empty', () => {
+        const baseLineCommandTmp: TestCommand = new TestCommand();
+        service.addCommand(baseLineCommandTmp);
+        service.addCommand(baseLineCommandTmp);
+        expect(service.commandListIsEmpty()).toBeFalse();
+    });
+
+    it('#redoListIsEmpty should return true if the redo list is empty', () => {
+        expect(service.redoListIsEmpty()).toBeTrue();
+    });
+
+    it('#redoListIsEmpty should return false if the redo list is not empty', () => {
+        const baseLineCommandTmp: TestCommand = new TestCommand();
+        service.undoneList.push(baseLineCommandTmp);
+        service.undoneList.push(baseLineCommandTmp);
+        expect(service.redoListIsEmpty()).toBeFalse();
     });
 });

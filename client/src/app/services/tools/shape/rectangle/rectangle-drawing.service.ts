@@ -18,6 +18,9 @@ export class RectangleDrawingService extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         rectangleCommand.execute();
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(rectangleCommand);
+        }
     }
 
     drawShape(shapePropreties: ShapePropreties): void {
@@ -44,12 +47,6 @@ export class RectangleDrawingService extends Shape {
             shapePropreties.drawingContext.stroke();
         }
         shapePropreties.drawingContext.restore();
-    }
-
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
-        rectangleCommand.execute();
-        this.undoRedoService.addCommand(rectangleCommand);
     }
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {

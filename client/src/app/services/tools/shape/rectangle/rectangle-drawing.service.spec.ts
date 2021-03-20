@@ -10,12 +10,13 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { RectangleDrawingService } from './rectangle-drawing.service';
 
 // tslint:disable: no-string-literal
-fdescribe('RectangleDrawingService', () => {
+describe('RectangleDrawingService', () => {
     let service: RectangleDrawingService;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let canvasTestHelper: CanvasTestHelper;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    // tslint:disable-next-line: prefer-const
     let baseCtxStub: CanvasRenderingContext2D;
     // let previewCtxStub: CanvasRenderingContext2D;
     let shapePropretiesStub: ShapePropreties;
@@ -26,6 +27,7 @@ fdescribe('RectangleDrawingService', () => {
     const THICKNESS_STUB = 4;
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
+
     const SIDE_LENGTHS_STUB: Vec2 = {
         x: BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x,
         y: BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y,
@@ -77,7 +79,7 @@ fdescribe('RectangleDrawingService', () => {
         expect(shapePropretiesStub.drawingContext.lineJoin).toEqual('miter');
     });
 
-    it('#drawThis should draw a rectangle on the canvas at the right position and using the right colours', () => {
+    it('#drawShape should draw a rectangle on the canvas at the right position and using the right colours', () => {
         drawingServiceSpyObj.fillWithWhite(shapePropretiesStub.drawingContext);
         service.drawShape(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 2, y: 2 };
@@ -92,7 +94,7 @@ fdescribe('RectangleDrawingService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawRectangle without border should draw a rectangle on the canvas at the right position and using the right colours', () => {
+    it('#drawShape without border should draw a rectangle on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
         drawingServiceSpyObj.fillWithWhite(shapePropretiesStub.drawingContext);
         service.drawShape(shapePropretiesStub);
@@ -112,7 +114,6 @@ fdescribe('RectangleDrawingService', () => {
     it('#drawShape when using alternate shape should draw a square on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.isAlternateShape = true;
         drawingServiceSpyObj.fillWithWhite(shapePropretiesStub.drawingContext);
-        console.log(shapePropretiesStub);
         service.drawShape(shapePropretiesStub);
 
         const borderPoint: Vec2 = { x: 2, y: 2 };
@@ -182,10 +183,11 @@ fdescribe('RectangleDrawingService', () => {
         expect(shapePropreties.traceType).toEqual(service.traceType);
     });
 
-    it('#executeShapeCommand should call execute of rectangle and add the command to the stack of undoRedo', () => {
+    it('#draw should call execute of rectangle and add the command to the stack of undoRedo if it is the base ctx', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
         const rectangleSpy = spyOn(service, 'drawShape');
-        service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
+        drawingServiceSpyObj.baseCtx = baseCtxStub;
+        service.draw(baseCtxStub, beginAndEnd, beginAndEnd);
 
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(rectangleSpy).toHaveBeenCalled();

@@ -9,18 +9,18 @@ import { Subscription } from 'rxjs';
 })
 export class UndoRedoComponent implements OnInit {
     constructor(public undoRedoService: UndoRedoService) {
-        this.listenToResizeNotifications();
+        this.listenToUndoRedoNotification();
     }
     subscription: Subscription;
     commandListIsEmpty: boolean = true;
-    redoneListIsEmpty: boolean = true;
+    redoListIsEmpty: boolean = true;
 
     ngOnInit(): void {
         this.commandListIsEmpty = true;
-        this.redoneListIsEmpty = true;
+        this.redoListIsEmpty = true;
     }
 
-    listenToResizeNotifications(): void {
+    listenToUndoRedoNotification(): void {
         this.subscription = this.undoRedoService.newUndoRedoSignals().subscribe(() => {
             this.updateUndoRedoValues();
         });
@@ -28,6 +28,6 @@ export class UndoRedoComponent implements OnInit {
 
     updateUndoRedoValues(): void {
         this.commandListIsEmpty = this.undoRedoService.commandListIsEmpty();
-        this.redoneListIsEmpty = this.undoRedoService.redoListIsEmpty();
+        this.redoListIsEmpty = this.undoRedoService.redoListIsEmpty();
     }
 }

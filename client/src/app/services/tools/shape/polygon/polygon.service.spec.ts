@@ -167,9 +167,10 @@ describe('PolygonService', () => {
         expect(drawPolygonSpy).toHaveBeenCalled();
     });
 
-    it('#executeShapeCommand should call execute of polygon and add the command to the stack of undoRedo', () => {
+    it('#draw should call execute of polygon and add the command to the stack of undoRedo if ctx is baseCtx', () => {
         const polygonSpy = spyOn(service, 'drawShape');
-        service.executeShapeCommand(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        drawingServiceSpyObj.baseCtx = baseCtxStub;
+        service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(polygonSpy).toHaveBeenCalled();
     });

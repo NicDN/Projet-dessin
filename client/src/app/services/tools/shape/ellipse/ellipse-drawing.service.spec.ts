@@ -181,8 +181,9 @@ describe('EllipseDrawingService', () => {
 
     it('#executeShapeCommand should call execute of ellipse and add the command to the stack of undoRedo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
+        drawingServiceSpyObj.baseCtx = baseCtxStub;
         const ellipseSpy = spyOn(service, 'drawShape');
-        service.executeShapeCommand(baseCtxStub, beginAndEnd, beginAndEnd);
+        service.draw(baseCtxStub, beginAndEnd, beginAndEnd);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(ellipseSpy).toHaveBeenCalled();
     });

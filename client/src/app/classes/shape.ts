@@ -37,8 +37,7 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.executeShapeCommand(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
-            // this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -147,5 +146,5 @@ export abstract class Shape extends DrawingTool {
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
     abstract drawShape(shapePropreties: ShapePropreties): void;
-    abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    // abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

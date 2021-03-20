@@ -284,28 +284,27 @@ describe('LineService', () => {
         expect(service.pathData.length).toEqual(1);
     });
 
-    // it('#finishLine shouldnt change the last point if it isnt near the first', () => {
-    //     const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
-    //     service.junctionDiameter = 1;
-    //     spyOn(service, 'loadUpProprities').and.returnValues();
-    //     service.finishLine();
-    //     expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-    //     expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-    //     expect(clearPathSpy).toHaveBeenCalled();
-    //     expect(updatePreviewSpy).toHaveBeenCalled();
-    // });
+    it('#finishLine shouldnt change the last point if it isnt near the first', () => {
+        const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
+        spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
+        service.finishLine();
+        expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(clearPathSpy).toHaveBeenCalled();
+        expect(updatePreviewSpy).toHaveBeenCalled();
+    });
 
-    // it('#finishLine should change the last point if it is near the first', () => {
-    //     const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
-    //     service.mousePosition = { x: 20, y: 20 };
-    //     service.junctionDiameter = 1;
-    //     spyOn(service, 'loadUpProprities').and.returnValues();
-    //     service.finishLine();
-    //     expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
-    //     expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-    //     expect(clearPathSpy).toHaveBeenCalled();
-    //     expect(updatePreviewSpy).toHaveBeenCalled();
-    // });
+    it('#finishLine should change the last point if it is near the first', () => {
+        const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
+        service.mousePosition = { x: 20, y: 20 };
+        service.junctionDiameter = 1;
+        spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
+        service.finishLine();
+        expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(clearPathSpy).toHaveBeenCalled();
+        expect(updatePreviewSpy).toHaveBeenCalled();
+    });
 
     it('#updatePreview should update the previews', () => {
         spyOn(service['drawingService'], 'clearCanvas').and.stub();
@@ -386,13 +385,26 @@ describe('LineService', () => {
         expect(loadUpSpy).toHaveBeenCalled();
     });
 
-    // it('#drawLine should return if junction diameter is undefined', () => {
-    //     drawingToolPropretiesStub.junctionDiameter = undefined;
-    //     const beginPathSpy = spyOn(drawingToolPropretiesStub.drawingContext, 'beginPath');
-    //     service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+    it('#drawTrace should return if junction diameter is undefined', () => {
+        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
+        drawingToolPropretiesStub.junctionDiameter = undefined;
+        const beginPathSpy = spyOn(drawingToolPropretiesStub.drawingContext, 'beginPath');
+        service.drawTrace(drawingToolPropretiesStub);
 
-    //     expect(beginPathSpy).not.toHaveBeenCalled();
-    // });
+        expect(beginPathSpy).not.toHaveBeenCalled();
+    });
+
+    it('#loadUpPropreties should return the correct propreties', () => {
+        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
+        const drawingToolPropreties: TraceToolPropreties = service.loadUpProprities(baseCtxStub, pathArrayStub);
+        expect(drawingToolPropreties.traceToolType).toEqual(TraceToolType.Line);
+        expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
+        expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
+        expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
+        expect(drawingToolPropreties.drawingColor).toEqual(colorServiceSpyObj.mainColor);
+        expect(drawingToolPropreties.junctionDiameter).toEqual(service.junctionDiameter);
+        expect(drawingToolPropreties.drawWithJunction).toEqual(service.drawWithJunction);
+    });
 
     it('#setContext should return if drawing color is undefined', () => {
         drawingToolPropretiesStub.drawingColor = undefined;
