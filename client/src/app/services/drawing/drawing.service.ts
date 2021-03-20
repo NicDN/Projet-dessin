@@ -108,8 +108,7 @@ export class DrawingService {
 
     fillWithWhite(context: CanvasRenderingContext2D): void {
         context.fillStyle = 'white';
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // context.drawImage(this.previewCanvas, 0, 0);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     }
 
     changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
