@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 import * as Httpstatus from 'http-status-codes';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class SaveService {
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
-        return (error: Error): Observable<never> => {
+        return (error: Error): Observable<T> => {
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
                 return throwError("Impossible d'accéder au serveur.");
             }
@@ -36,7 +36,10 @@ export class SaveService {
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
                 return throwError('La sauvegarde des informations sur la base de données a échouée');
             }
-            return throwError("Une erreur s'est produite");
+            if ((error as HttpErrorResponse).status != 201) {
+                return throwError("Une erreur s'est produite");
+            }
+            return of(result as T);
         };
     }
 }

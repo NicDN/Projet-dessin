@@ -1,4 +1,5 @@
 import { DrawingForm } from '@common/communication/drawing-form';
+
 import * as fs from 'fs';
 import { inject, injectable } from 'inversify';
 import { Collection, ObjectId } from 'mongodb';
@@ -13,9 +14,6 @@ const MAX_LENGTH = 10;
 const MIN_LENGTH = 2;
 
 const DRAWINGS_MAX_COUNT = 3;
-
-const LAST_INDEX = -3; // TODO:  not clear, rename
-const BEFORE_LAST_INDEX = -4; // TODO:  not clear, rename
 
 @injectable()
 export class DrawingsService {
@@ -86,17 +84,20 @@ export class DrawingsService {
     }
 
     private async getValidDrawings(drawingForms: DrawingForm[], index: number): Promise<DrawingForm[]> {
+        const LAST_INDEX_VALID_FORMS = -3;
+        const BEFORE_LAST_INDEX_VALID_FORMS = -4;
+
         const validForms: DrawingForm[] = [];
 
         for (const form of drawingForms) {
             const id = form.id;
             await this.readFile(`${this.DRAWINGS_DIRECTORY}/` + id)
-                .then((image) => {
-                    form.drawingData = image;
+                .then((drawingData) => {
+                    form.drawingData = drawingData;
                     validForms.push(form);
                 })
                 .catch(() => {
-                    return;
+                    return [];
                 });
         }
         index = Math.abs(index % validForms.length);
@@ -104,8 +105,8 @@ export class DrawingsService {
 
         validForms.push(validForms[0]);
         validForms.push(validForms[1]);
-        validForms.unshift(validForms[LAST_INDEX]);
-        validForms.unshift(validForms[BEFORE_LAST_INDEX]);
+        validForms.unshift(validForms[LAST_INDEX_VALID_FORMS]);
+        validForms.unshift(validForms[BEFORE_LAST_INDEX_VALID_FORMS]);
 
         index += 2;
         return validForms.splice(index, drawingMaxCount);
@@ -125,8 +126,9 @@ export class DrawingsService {
                     throw new Error('NOT_ON_DATABASE');
                 }
             })
-            .catch(() => {
-                throw new Error('FAILED_TO_DELETE_DRAWING');
+            .catch((error) => {
+                if (error.message === 'NOT_ON_DATABASE') throw new Error('NOT_ON_DATABASE');
+                else throw new Error('FAILED_TO_DELETE_DRAWING');
             });
     }
 

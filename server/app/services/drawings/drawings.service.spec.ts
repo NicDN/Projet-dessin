@@ -1,62 +1,172 @@
-// tslint:disable: no-string-literal
-// tslint:disable: no-unused-expression
 import { DrawingForm } from '@common/communication/drawing-form';
+import * as chai from 'chai';
+// tslint:disable-next-line: no-duplicate-imports
 import { expect } from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as fs from 'fs';
-// import { taggedConstraint } from 'inversify';
-// import { Db } from 'mongodb';
-// import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoClient } from 'mongodb';
 import 'reflect-metadata';
-import { restore, spy } from 'sinon';
-// import { isMainThread } from 'worker_threads';
-import { Stubbed, testingContainer } from '../../../test/test-utils';
-import { TYPES } from '../../types';
-import { DatabaseService } from '../database/database.service';
+import { restore, spy, stub } from 'sinon';
+import { DrawingData } from '../../../classes/drawingData';
 import { DatabaseServiceMock } from '../database/database.service.mock';
 import { DrawingsService } from './drawings.service';
+chai.use(chaiAsPromised);
 
+// tslint:disable: no-any
+// tslint:disable: no-string-literal
+// tslint:disable: no-unused-expression
 describe('Drawings service', () => {
-    let databaseService: Stubbed<DatabaseService>;
     let drawingsService: DrawingsService;
     let databaseServiceMock: DatabaseServiceMock;
+    let client: MongoClient;
+    let testDrawingData: DrawingData;
+    let baseDrawingForm: DrawingForm;
+    let testID: string;
+
+    const DRAWINGS_EXPECTED_LENGTH = 3;
+    const DRAWINGS_INSERTED: DrawingForm[] = [
+        {
+            id: '0',
+            name: 'Gabriel',
+            tags: ['hello', 'world'],
+            drawingData: '',
+        },
+        {
+            id: '1',
+            name: 'Nicolas',
+            tags: ['Bonjour', 'hiii'],
+            drawingData: '',
+        },
+        {
+            id: '2',
+            name: 'Josquin',
+            tags: ['wazza', 'yooooo'],
+            drawingData: '',
+        },
+        {
+            id: '3',
+            name: 'Adnane',
+            tags: ['Danke', 'Schon'],
+            drawingData: '',
+        },
+    ];
 
     beforeEach(async () => {
         databaseServiceMock = new DatabaseServiceMock();
-        // il faut stub this.databaseService.database.collection(DATABASE_COLLECTION)
-        const [container, sandbox] = await testingContainer();
-        container.rebind(TYPES.DatabaseService).toConstantValue({
-            start: sandbox.stub().resolves(databaseServiceMock.start()),
-            closeConnection: sandbox.stub().resolves(databaseServiceMock.closeConnection()),
-            database: sandbox.stub().resolves(databaseServiceMock.database),
-        });
-        databaseService = container.get(TYPES.DrawingsService);
+        // databaseServiceMock['db'] = new Db();
+        client = (await databaseServiceMock.start()) as MongoClient;
 
-        drawingsService = new DrawingsService(databaseService);
+        testDrawingData = {
+            name: 'test',
+            tags: ['hello', 'world'],
+        };
+
+        baseDrawingForm = {
+            id: '-1',
+            name: 'base drawing',
+            tags: ['base', 'drawing'],
+            drawingData: '',
+        };
+
+        drawingsService = new DrawingsService(databaseServiceMock as any);
+
+        await drawingsService.collection.insertOne(testDrawingData).then(async (data) => {
+            testID = data.insertedId.toString();
+        });
     });
 
     afterEach(async () => {
         restore();
+        await databaseServiceMock.closeConnection();
     });
 
-    it('should return this.databaseService.database.collection when #collection is called', async () => {
-        expect(drawingsService.collection).to.eql([]);
+    it('should store a drawing correctly if the drawing has a valid name and tag', async () => {
+        const newDrawing: DrawingForm = {
+            id: '-1',
+            name: 'new Drawing',
+            tags: ['new', 'drawing'],
+            drawingData: '',
+        };
+        await drawingsService.storeDrawing(newDrawing);
+        const drawings = await drawingsService.collection.find({}).toArray();
+        expect(drawings.length).to.equal(2);
     });
 
-    it('should throw an error when #storeDrawing doesnt have a valid DrawingForm', async () => {});
+    it('should not store a new drawing if it does not have a valid name and tags', async () => {
+        const newDrawing: DrawingForm = {
+            id: '-1',
+            name: '', // invalid name
+            tags: ['12345', 'a'], // invalid tags
+            drawingData: '',
+        };
 
-    it('should store the drawing when #storeDrawing have a valid DrawingForm', async () => {});
+        try {
+            await drawingsService.storeDrawing(newDrawing);
+        } catch {
+            const drawings = await drawingsService.collection.find({}).toArray();
+            expect(drawings.length).to.equal(1);
+        }
+    });
 
-    it('should throw an error when #storeDrawing doesnt have a valid directory', async () => {});
+    it('#storeDrawing should throw an error when #writeFile throws a error', async () => {
+        const failedToSaveDrawingError: Error = new Error('FAILED_TO_SAVE_DRAWING');
 
-    it('should throw an error when #storeDrawing cant communicate with the database', async () => {});
+        stub(drawingsService, 'writeFile' as any).rejects(failedToSaveDrawingError);
+        try {
+            await drawingsService.storeDrawing(baseDrawingForm);
+        } catch (error) {
+            expect(error.message).to.deep.equal('FAILED_TO_SAVE_DRAWING');
+        }
+    });
 
-    it('should return all the validDrawings when #getDrawings is called', async () => {});
+    it('#storeDrawing should throw an error when #insertOne throws a error', async () => {
+        await client.close();
+        try {
+            await drawingsService.storeDrawing(baseDrawingForm);
+        } catch (error) {
+            expect(error.message).to.eql('DATABASE_ERROR');
+        }
+    });
 
-    it('should return an empty array when #getDrawings is called an theres no drawing in the collection', async () => {});
+    it('should get all drawings from DB', async () => {
+        stub(drawingsService, 'getValidDrawings' as any).resolvesArg(0);
+        const drawings: DrawingForm[] = await drawingsService.getDrawings([], 0);
+        expect(drawings.length).to.equal(1);
+        expect(drawings[0].name).to.deep.equal(testDrawingData.name);
+        expect(drawings[0].tags).to.deep.equal(testDrawingData.tags);
+    });
 
-    it('should throw an error when #getDrawings have a connection problem with the database', async () => {});
+    it('should return an empty array when #getDrawings is called an theres no drawing in the collection', async () => {
+        databaseServiceMock = new DatabaseServiceMock();
 
-    it('should filter by tags when #getDrawings get at least one tag', async () => {});
+        drawingsService = new DrawingsService(databaseServiceMock as any);
+        await databaseServiceMock.start();
+
+        stub(drawingsService, 'getValidDrawings' as any).resolvesArg(0);
+        const drawings: DrawingForm[] = await drawingsService.getDrawings([], 0);
+        expect(drawings.length).to.equal(0);
+    });
+
+    it('#getDrawings should throw an error  when #find throws a error', async () => {
+        client.close();
+        try {
+            stub(drawingsService, 'getValidDrawings' as any).resolvesArg(0);
+            await drawingsService.getDrawings([], 0);
+        } catch (error) {
+            expect(error.message).to.eql('DATABASE_ERROR');
+        }
+    });
+
+    it('should filter by tags when the tags provided contains at least one tag', async () => {
+        stub(drawingsService, 'getValidDrawings' as any).resolvesArg(0);
+        const filterDrawingsByTagsStub = stub(drawingsService, 'filterDrawingsByTags' as any).returnsArg(0);
+        const drawings: DrawingForm[] = await drawingsService.getDrawings(['tag'], 0);
+
+        expect(filterDrawingsByTagsStub.callCount === 1).to.be.true;
+        expect(drawings.length).to.equal(1);
+        expect(drawings[0].name).to.deep.equal(testDrawingData.name);
+        expect(drawings[0].tags).to.deep.equal(testDrawingData.tags);
+    });
 
     it('#filterDrawingsByTags should return every DrawingForms with a valid tag one time', async () => {
         const EXPECTED_FORM: DrawingForm = { id: '', name: 'Agatha', tags: ['jesus', 'pain naan'], drawingData: '' };
@@ -85,25 +195,110 @@ describe('Drawings service', () => {
 
     it('#filterDrawingsByTags should return an empty array if theres no DrawingForm with a valid tag', async () => {
         const EXPECTED_FORMS: DrawingForm[] = [
-            { id: '', name: 'OogaBooga', tags: ['houlaa', 'bgo'], drawingData: '' },
-            { id: '', name: 'Agatha', tags: ['jeus', 'painan'], drawingData: '' },
+            { id: '', name: 'Roger', tags: ['autre', 'mauvais'], drawingData: '' },
+            { id: '', name: 'jean', tags: ['Hallah', 'pas bon'], drawingData: '' },
         ];
         const SEARCH_TAGS = ['jesus', 'houlala'];
 
         expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
     });
 
-    it('#getValidDrawings should return an array of 3 DrawingForms', async () => {});
+    it('#getValidDrawings should return the correct array of valid drawings at index 0', async () => {
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
 
-    it('#getValidDrawings should return nothing if it cant read one of the drawingForms in the directory', async () => {});
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 0);
 
-    it('should delete a drawing on the server when #deleteDrawing have a valid id', async () => {});
+        expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
+        expect(validDrawings[0]).to.equal(DRAWINGS_INSERTED[0]);
+        expect(validDrawings[1]).to.equal(DRAWINGS_INSERTED[1]);
+        expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[2]);
+    });
 
-    it('should throw an error when #deleteDrawing cant find the file to delete', async () => {});
+    it('#getValidDrawings should return the correct array of valid drawings at index 1', async () => {
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
 
-    it('#deleteDrawing should throw an error when the infos of the drawing to delete arent on the database', async () => {});
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 1);
 
-    it('#deleteDrawing should throw an error when theres an problem with the database', async () => {});
+        expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
+        expect(validDrawings[0]).to.equal(DRAWINGS_INSERTED[1]);
+        expect(validDrawings[1]).to.equal(DRAWINGS_INSERTED[2]);
+        // tslint:disable-next-line: no-magic-numbers
+        expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[3]);
+    });
+
+    it('#getValidDrawings should return the correct array of valid drawings at index length - 1', async () => {
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
+
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, DRAWINGS_INSERTED.length - 1);
+
+        expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
+        // tslint:disable-next-line: no-magic-numbers
+        expect(validDrawings[0]).to.equal(DRAWINGS_INSERTED[3]);
+        expect(validDrawings[1]).to.equal(DRAWINGS_INSERTED[0]);
+        expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[1]);
+    });
+
+    it('#getValidDrawings should return an array of less then 3 drawings if theres not enough drawings in the server or database', async () => {
+        const drawingsLength2 = [DRAWINGS_INSERTED[0]];
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
+
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](drawingsLength2, 0);
+
+        expect(validDrawings.length).to.equal(1);
+        expect(drawingsLength2[0]).to.equal(DRAWINGS_INSERTED[0]);
+    });
+
+    it('#getValidDrawings should return an empty array if it get no drawings', async () => {
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
+
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings']([], 0);
+
+        expect(validDrawings).to.deep.equal([]);
+    });
+
+    it('#getValidDrawings should not return valid drawings if #readFile theow a error', async () => {
+        stub(drawingsService, 'readFile' as any).rejects();
+        let validDrawings: DrawingForm[] = DRAWINGS_INSERTED;
+
+        validDrawings = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 0);
+
+        expect(validDrawings).to.deep.equal([]);
+    });
+
+    it('should delete a drawing on the server when the drawing exist on database', async () => {
+        const unlinkSyncStub = stub(fs, 'unlinkSync');
+        await drawingsService.deleteDrawing(testID); // existing id
+        const drawings = await drawingsService.collection.find({}).toArray();
+        expect(unlinkSyncStub.calledOnce).to.be.true;
+        expect(drawings.length).to.equal(0);
+    });
+
+    it('should throw an error when #deleteDrawing cant find the file to delete', async () => {
+        try {
+            await drawingsService.deleteDrawing(testID);
+        } catch (error) {
+            expect(error.message).to.deep.equal('FILE_NOT_FOUND');
+        }
+    });
+
+    it('#deleteDrawing should throw an error when the drawing does not exist on the the database', async () => {
+        stub(fs, 'unlinkSync');
+        try {
+            await drawingsService.deleteDrawing('60564adf6dd63e715fb8d8fa'); // non existing id
+        } catch (error) {
+            expect(error.message).to.eql('NOT_ON_DATABASE');
+        }
+    });
+
+    it('#deleteDrawing should throw an error when #findOneAndDelete throws a error', async () => {
+        client.close();
+        stub(fs, 'unlinkSync');
+        try {
+            await drawingsService.deleteDrawing(testID);
+        } catch (error) {
+            expect(error.message).to.eql('FAILED_TO_DELETE_DRAWING');
+        }
+    });
 
     it('should return true when #validateDrawing get a valid drawing', async () => {
         const drawingForm: DrawingForm = { id: '', name: 'OogaBooga', tags: [], drawingData: '' };
@@ -177,7 +372,7 @@ describe('Drawings service', () => {
         expect(file).to.eql(CONTENT);
     });
 
-    it('should return nothing if #readFile cant read the asked file', async () => {
+    it('should return empty string if #readFile cant read the asked file', async () => {
         const FILENAME = drawingsService['DRAWINGS_DIRECTORY'] + '/bruh';
         const fsReadFileSpy = spy(fs, 'readFile');
         let file = '';

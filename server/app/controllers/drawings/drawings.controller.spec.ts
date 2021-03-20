@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-// import { response } from 'express';
 import 'reflect-metadata';
 import * as supertest from 'supertest';
 import { DrawingForm } from '../../../../common/communication/drawing-form';
