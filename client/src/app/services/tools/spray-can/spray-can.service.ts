@@ -18,14 +18,14 @@ export class SprayCanService extends TraceTool {
     readonly ONESECMS: number = 1000;
     readonly CIRCLENUMBER: number = 40;
 
-    emissionRate: number = this.MIN_EMISSION_RATE;
-    sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
-    dropletsDiameter: number = this.MIN_DROPLETS_DIAMETER;
     private timer: ReturnType<typeof setInterval>;
     private cleanPathData: Vec2[] = [];
     private pathData: Vec2[] = [];
-
     private randomStoring: RandomStoring = { angleArray: [], radiusArray: [] };
+
+    emissionRate: number = this.MIN_EMISSION_RATE;
+    sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
+    dropletsDiameter: number = this.MIN_DROPLETS_DIAMETER;
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Aérosol');

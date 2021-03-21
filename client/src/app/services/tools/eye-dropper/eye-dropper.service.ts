@@ -8,16 +8,19 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class EyeDropperService extends Tool {
-    constructor(drawingService: DrawingService) {
-        super(drawingService, 'Pipette');
-    }
-    currentPixelData: ImageData;
-    currentGridOfPixelData: ImageData;
+    private subject: Subject<void> = new Subject<void>();
+
+    // initialize default imageData
+    currentPixelData: ImageData = new ImageData(1, 1);
+    currentGridOfPixelData: ImageData = new ImageData(1, 1);
+
     leftClick: boolean = false;
     preview: boolean = false;
     gridDrawn: boolean = false;
 
-    private subject: Subject<void> = new Subject<void>();
+    constructor(drawingService: DrawingService) {
+        super(drawingService, 'Pipette');
+    }
 
     sendNotifColor(): void {
         this.subject.next();
@@ -48,7 +51,6 @@ export class EyeDropperService extends Tool {
 
     onMouseOut(event: MouseEvent): void {
         this.preview = false;
-        this.gridDrawn = false;
     }
 
     getImageData(mousePosition: Vec2): void {
