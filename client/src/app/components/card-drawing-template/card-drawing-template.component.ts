@@ -15,12 +15,12 @@ export class CardDrawingTemplateComponent {
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
     @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();
 
-    deletingState: boolean = false; // boolean set to true while deleting the drawing
+    deletingState: boolean = false;
 
     constructor(
         private carouselService: CarouselService,
         private snackBarService: SnackBarService,
-        public drawingService: DrawingService,
+        private drawingService: DrawingService,
         private router: Router,
     ) {}
 
@@ -32,10 +32,8 @@ export class CardDrawingTemplateComponent {
             this.router.navigate(['editor']);
             this.drawingService.newImage = image;
             this.closeCarousel.emit();
-        } else {
-            if (this.drawingService.handleNewDrawing(image)) {
-                this.closeCarousel.emit();
-            }
+        } else if (this.drawingService.handleNewDrawing(image)) {
+            this.closeCarousel.emit();
         }
     }
 

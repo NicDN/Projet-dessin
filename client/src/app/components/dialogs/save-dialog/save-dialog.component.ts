@@ -16,10 +16,11 @@ export class SaveDialogComponent {
 
     private readonly TAG_MAX_LENGTH: number = 10;
     private readonly TAG_MIN_LENGTH: number = 2;
+
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
     tags: string[] = [];
-    savingState: boolean = false; // boolean set to true while saving
+    savingState: boolean = false;
     uniqueTagError: boolean = false;
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);

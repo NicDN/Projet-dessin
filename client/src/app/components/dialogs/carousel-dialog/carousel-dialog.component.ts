@@ -24,9 +24,9 @@ export class CarouselDialogComponent implements OnInit {
     private startIndex: number = 0;
 
     constructor(
-        public carouselService: CarouselService,
+        private carouselService: CarouselService,
         private snackBarService: SnackBarService,
-        public dialogRef: MatDialogRef<CarouselDialogComponent>,
+        private dialogRef: MatDialogRef<CarouselDialogComponent>,
     ) {}
 
     ngOnInit(): void {
@@ -57,12 +57,12 @@ export class CarouselDialogComponent implements OnInit {
             : (this.chipList.errorState = false);
     }
 
-    async forwardDrawings(): Promise<void> {
+    forwardDrawings(): void {
         this.startIndex++;
         this.requestDrawings();
     }
 
-    async backwardDrawings(): Promise<void> {
+    backwardDrawings(): void {
         this.startIndex--;
         this.requestDrawings();
     }

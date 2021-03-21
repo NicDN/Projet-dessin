@@ -55,7 +55,7 @@ describe('SaveDialogComponent', () => {
     });
 
     it('#postDrawing should save a drawing correctly if no error occured', () => {
-        let subject: Subject<void> = new Subject();
+        const subject: Subject<void> = new Subject();
         saveServiceSpy.postDrawing.and.returnValue(subject);
 
         component.postDrawing(FILE_NAME);

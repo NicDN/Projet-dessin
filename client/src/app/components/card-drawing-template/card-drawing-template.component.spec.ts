@@ -93,7 +93,7 @@ describe('CardDrawingTemplateComponent', () => {
     });
 
     it('#deleteDrawing should delete a drawing correctly if no error occured', () => {
-        let subject: Subject<any> = new Subject();
+        const subject: Subject<{}> = new Subject();
 
         carouselServiceSpy.deleteDrawingFromServer.and.returnValue(subject);
 

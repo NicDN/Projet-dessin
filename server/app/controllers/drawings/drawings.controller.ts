@@ -61,7 +61,7 @@ export class DrawingsController {
             this.drawingsService
                 .storeDrawing(drawingForm)
                 .then(() => {
-                    res.sendStatus(HTTP_STATUS_CREATED);
+                    res.status(HTTP_STATUS_CREATED).send();
                 })
                 .catch((error: Error) => {
                     if (error.message === 'FAILED_TO_SAVE_DRAWING') {

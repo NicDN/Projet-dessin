@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core';
 import { DrawingForm } from '@common/communication/drawing-form';
 import * as Httpstatus from 'http-status-codes';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -42,10 +42,7 @@ export class CarouselService {
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
                 return throwError("Erreur lors de l'accès à la base de données.");
             }
-            if ((error as HttpErrorResponse).status != 201) {
-                return throwError("Une erreur s'est produite");
-            }
-            return of(result as T);
+            return throwError("Une erreur s'est produite");
         };
     }
 }

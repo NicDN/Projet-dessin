@@ -47,6 +47,7 @@ describe('OptionBarComponent', () => {
         component.optionBarElements[2].action();
         expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(DialogType.Export);
 
+        // tslint:disable-next-line: no-magic-numbers
         component.optionBarElements[3].action();
         expect(dialogServiceSpy.openDialog).toHaveBeenCalledWith(DialogType.Carousel);
     });

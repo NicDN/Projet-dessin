@@ -53,7 +53,7 @@ describe('Drawings service', () => {
 
     beforeEach(async () => {
         databaseServiceMock = new DatabaseServiceMock();
-        // databaseServiceMock['db'] = new Db();
+
         client = (await databaseServiceMock.start()) as MongoClient;
 
         testDrawingData = {
@@ -87,6 +87,7 @@ describe('Drawings service', () => {
             tags: ['new', 'drawing'],
             drawingData: '',
         };
+        stub(drawingsService, 'writeFile' as any).resolves();
         await drawingsService.storeDrawing(newDrawing);
         const drawings = await drawingsService.collection.find({}).toArray();
         expect(drawings.length).to.equal(2);
@@ -384,4 +385,5 @@ describe('Drawings service', () => {
             expect(fsReadFileSpy.calledOnce);
         }
     });
+    // tslint:disable-next-line: max-file-line-count
 });
