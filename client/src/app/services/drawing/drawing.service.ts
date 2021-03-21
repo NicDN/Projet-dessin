@@ -76,7 +76,6 @@ export class DrawingService {
     reloadToBlankDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        // this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
 
         this.blankHTMLImage.width = this.canvas.width;
@@ -90,7 +89,7 @@ export class DrawingService {
     }
 
     canvasIsEmpty(): boolean {
-        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
+        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case the eraser preview box or something else is using the preview
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 

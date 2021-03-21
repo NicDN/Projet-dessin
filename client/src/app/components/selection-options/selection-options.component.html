@@ -3,19 +3,19 @@
         <mat-icon class="active">select_all</mat-icon>
     </button>
 
-    <button [disabled]="!this.selectionIsActive()" mat-button matTooltip="Copier la sélection (Ctrl-C)">
-        <mat-icon [class.active]="this.selectionIsActive()">content_copy</mat-icon>
+    <button [disabled]="true" mat-button matTooltip="Copier la sélection (Ctrl-C)">
+        <mat-icon [class.active]="false">content_copy</mat-icon>
     </button>
 
-    <button [disabled]="!this.selectionIsActive()" mat-button matTooltip="Couper la sélection (Ctrl-X)">
-        <mat-icon [class.active]="this.selectionIsActive()">content_cut</mat-icon>
+    <button [disabled]="true" mat-button matTooltip="Couper la sélection (Ctrl-X)">
+        <mat-icon [class.active]="false">content_cut</mat-icon>
     </button>
 
-    <button [disabled]="!this.selectionIsActive()" mat-button matTooltip="Coller la sélection (Ctrl-V)">
-        <mat-icon [class.active]="this.selectionIsActive()">content_paste</mat-icon>
+    <button [disabled]="true" mat-button matTooltip="Coller la sélection (Ctrl-V)">
+        <mat-icon [class.active]="false">content_paste</mat-icon>
     </button>
 
-    <button [disabled]="!this.selectionIsActive()" mat-button matTooltip="Supprimer la sélection (Delete)">
-        <mat-icon [class.active]="this.selectionIsActive()">delete</mat-icon>
+    <button [disabled]="true" mat-button matTooltip="Supprimer la sélection (Delete)">
+        <mat-icon [class.active]="false">delete</mat-icon>
     </button>
 </div>

@@ -27,7 +27,6 @@ describe('DrawingComponent', () => {
     // tslint:disable-next-line: prefer-const
     let colorServiceStub: ColorService;
     let drawingStub: DrawingService;
-    // let boxSizeStub: BoxSize;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
 
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;

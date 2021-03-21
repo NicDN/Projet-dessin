@@ -10,10 +10,10 @@ import { ColorService } from '@app/services/color/color.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { RectangleSelectionService } from './../tools/selection/rectangle-selection.service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal

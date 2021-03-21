@@ -15,7 +15,6 @@ interface RGBInput {
 })
 export class ColorPanelComponent {
     readonly OPACITY_AJUSTMENT: number = 100;
-    readonly MAX_RGB_VALUE: number = 255;
     readonly CONCATENATE_OFFSET: number = 4;
 
     rgbInputs: RGBInput[] = [

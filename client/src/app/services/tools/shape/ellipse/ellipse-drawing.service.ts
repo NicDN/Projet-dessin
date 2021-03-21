@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -57,7 +57,6 @@ export class EllipseDrawingService extends Shape {
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
-            shapeType: ShapeType.Ellipse,
             drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,

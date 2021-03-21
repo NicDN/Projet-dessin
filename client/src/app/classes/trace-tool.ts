@@ -1,6 +1,6 @@
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { TraceToolPropreties } from './commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties } from './commands/trace-tool-command/trace-tool-command';
 import { DrawingTool } from './drawing-tool';
 import { Vec2 } from './vec2';
 

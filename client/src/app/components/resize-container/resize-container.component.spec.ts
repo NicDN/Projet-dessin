@@ -3,10 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BoxSize } from '@app/classes/box-size';
+import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, SIDE_BAR_SIZE } from '../drawing/drawing.component';
 import { ResizeContainerComponent, Status } from './resize-container.component';
 
 // tslint:disable: no-any no-string-literal
@@ -44,7 +44,6 @@ describe('ResizeContainerComponent', () => {
         fixture = TestBed.createComponent(ResizeContainerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        // component.box.nativeElement = document.createElement('div');
     });
 
     it('should create', () => {
@@ -117,8 +116,8 @@ describe('ResizeContainerComponent', () => {
         const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
         const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
         component.resizeContainer(mouseEventClick);
-        expect(component.box.nativeElement.style.width.slice(0, -2)).toEqual(`${EXPECTED_WIDTH}`);
-        expect(component.box.nativeElement.style.height.slice(0, -2)).toEqual(`${EXPECTED_HEIGHT}`);
+        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_WIDTH}`);
+        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
     it('#resize-container should not resize if position is under 250px', () => {
@@ -133,8 +132,8 @@ describe('ResizeContainerComponent', () => {
 
         component.resizeContainer(mouseEventClick);
         component.resizeContainer(mouseEventUnder250px);
-        expect(component.box.nativeElement.style.width.slice(0, -2)).toEqual(`${EXPECTED_WIDTH}`);
-        expect(component.box.nativeElement.style.height.slice(0, -2)).toEqual(`${EXPECTED_HEIGHT}`);
+        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_WIDTH}`);
+        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
     it('#resize-container should resize when status is something else than NOT_RESIZING', () => {
@@ -166,8 +165,8 @@ describe('ResizeContainerComponent', () => {
         component.box.nativeElement.style.height = tmpSize;
         const boxSize = { widthBox: 1, heightBox: 1 };
         component.resizeCanvas(boxSize.widthBox, boxSize.heightBox);
-        expect(component.box.nativeElement.style.width.slice(0, -2)).toEqual(`${boxSize.widthBox}`);
-        expect(component.box.nativeElement.style.height.slice(0, -2)).toEqual(`${boxSize.heightBox}`);
+        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${boxSize.widthBox}`);
+        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${boxSize.heightBox}`);
         expect(drawingServiceSpyObj.onSizeChange).toHaveBeenCalledWith(boxSize);
     });
 

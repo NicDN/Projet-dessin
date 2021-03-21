@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -43,7 +43,6 @@ describe('EraserService', () => {
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
 
         drawingToolPropretiesStub = {
-            traceToolType: TraceToolType.Eraser,
             drawingContext: canvasCtxStub,
             drawingPath: pathArrayStub,
             drawingThickness: 4,
@@ -78,13 +77,12 @@ describe('EraserService', () => {
 
         singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
 
-        // If decide to raw in white instead , decomment this.
-        baseCtxStub.fillStyle = 'white'; //
-        baseCtxStub.rect(0, 0, 1, 1); //
-        baseCtxStub.fill(); //
+        baseCtxStub.fillStyle = 'white';
+        baseCtxStub.rect(0, 0, 1, 1);
+        baseCtxStub.fill();
         imageDataBefore = baseCtxStub.getImageData(0, 0, 1, 1);
 
-        baseCtxStub.fillStyle = 'black'; //
+        baseCtxStub.fillStyle = 'black';
         baseCtxStub.rect(0, 0, 1, 1);
         baseCtxStub.fill();
         imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
@@ -146,10 +144,10 @@ describe('EraserService', () => {
 
     it('#drawTrace should erase on the canvas if there is a single click', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
-
+        const alphaValue = 3;
         service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
-        imageData.data[3] = imageData.data[3] + 1;
+        imageData.data[alphaValue] = imageData.data[alphaValue] + 1;
         expect(imageData).toEqual(imageDataBefore);
     });
 
@@ -182,5 +180,12 @@ describe('EraserService', () => {
         service.sendCommandAction();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(eraserSpy).toHaveBeenCalled();
+    });
+
+    it('#loadUpEraserPropreties should return the correct propreties', () => {
+        const drawingToolPropreties: TraceToolPropreties = service.loadUpEraserPropreties(baseCtxStub, pathArrayStub);
+        expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
+        expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
+        expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
     });
 });

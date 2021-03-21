@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -31,7 +31,6 @@ describe('PencilService', () => {
     const colorStub: Color = { rgbValue: 'red', opacity: 1 };
 
     const drawingToolPropretiesStub: TraceToolPropreties = {
-        traceToolType: TraceToolType.Pencil,
         drawingContext: canvasCtxStub,
         drawingPath: pathArrayStub,
         drawingThickness: 1,
@@ -192,15 +191,6 @@ describe('PencilService', () => {
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
     });
 
-    it('#setContext should set the context for drawing', () => {
-        service['setContext'](drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub);
-        expect(drawingToolPropretiesStub.drawingContext.lineCap).toEqual('round');
-        expect(drawingToolPropretiesStub.drawingContext.lineJoin).toEqual('round');
-        expect(drawingToolPropretiesStub.drawingContext.lineWidth).toEqual(service.thickness);
-        expect(drawingToolPropretiesStub.drawingContext.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
-        expect(drawingToolPropretiesStub.drawingContext.strokeStyle).toEqual('#ff0000');
-    });
-
     it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
         const pencilSpy = spyOn(service, 'drawTrace');
         service.sendCommandAction();
@@ -214,9 +204,27 @@ describe('PencilService', () => {
         expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
     });
 
+    it('#setContext should set the context for drawing', () => {
+        service['setContext'](drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub);
+        expect(drawingToolPropretiesStub.drawingContext.lineCap).toEqual('round');
+        expect(drawingToolPropretiesStub.drawingContext.lineJoin).toEqual('round');
+        expect(drawingToolPropretiesStub.drawingContext.lineWidth).toEqual(service.thickness);
+        expect(drawingToolPropretiesStub.drawingContext.globalAlpha).toEqual(colorServiceSpyObj.mainColor.opacity);
+        expect(drawingToolPropretiesStub.drawingContext.strokeStyle).toEqual('#ff0000');
+    });
+
     it('#setContext should return if drawing color is undefined', () => {
         drawingToolPropretiesStub.drawingColor = undefined;
         service['setContext'](baseCtxStub, drawingToolPropretiesStub);
         expect(baseCtxStub.lineJoin).not.toEqual('round');
+    });
+
+    it('#loadUpPropreties should return the correct propreties', () => {
+        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
+        const drawingToolPropreties: TraceToolPropreties = service.loadUpPropreties(baseCtxStub, pathArrayStub);
+        expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
+        expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
+        expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
+        expect(drawingToolPropreties.drawingColor).toEqual(colorServiceSpyObj.mainColor);
     });
 });

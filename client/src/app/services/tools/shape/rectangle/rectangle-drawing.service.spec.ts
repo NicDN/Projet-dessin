@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -56,7 +56,6 @@ describe('RectangleDrawingService', () => {
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         service = TestBed.inject(RectangleDrawingService);
         shapePropretiesStub = {
-            shapeType: ShapeType.Rectangle,
             drawingContext: canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D,
             beginCoords: { x: 0, y: 0 },
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
@@ -80,6 +79,7 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#drawShape should draw a rectangle on the canvas at the right position and using the right colours', () => {
+        shapePropretiesStub.traceType = TraceType.FilledAndBordered;
         drawingServiceSpyObj.fillWithWhite(shapePropretiesStub.drawingContext);
         service.drawShape(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 2, y: 2 };
@@ -107,6 +107,23 @@ describe('RectangleDrawingService', () => {
         expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
         const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX));
+        const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
+        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+    });
+
+    it('#drawShape when borderd only should draw on the borders', () => {
+        shapePropretiesStub.traceType = TraceType.Bordered;
+        drawingServiceSpyObj.fillWithWhite(shapePropretiesStub.drawingContext);
+        service.drawShape(shapePropretiesStub);
+
+        const borderPoint: Vec2 = { x: 2, y: 2 };
+        const centerPoint: Vec2 = { x: 20, y: 10 };
+        const outsidePoint: Vec2 = { x: 41, y: 41 };
+
+        const imageDataBorder: ImageData = shapePropretiesStub.drawingContext.getImageData(borderPoint.x, borderPoint.y, 1, 1);
+        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, 0, RGB_MAX));
+        const imageDataCenter: ImageData = shapePropretiesStub.drawingContext.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         const imageDataOutside: ImageData = shapePropretiesStub.drawingContext.getImageData(outsidePoint.x, outsidePoint.y, 1, 1);
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
@@ -175,7 +192,6 @@ describe('RectangleDrawingService', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
 
         const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
-        expect(shapePropreties.shapeType).toEqual(ShapeType.Rectangle), expect(shapePropreties.drawingContext).toEqual(baseCtxStub);
         expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
         expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
         expect(shapePropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);
@@ -185,11 +201,20 @@ describe('RectangleDrawingService', () => {
 
     it('#draw should call execute of rectangle and add the command to the stack of undoRedo if it is the base ctx', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
-        const rectangleSpy = spyOn(service, 'drawShape');
+        const drawShapeSpy = spyOn(service, 'drawShape');
         drawingServiceSpyObj.baseCtx = baseCtxStub;
         service.draw(baseCtxStub, beginAndEnd, beginAndEnd);
 
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-        expect(rectangleSpy).toHaveBeenCalled();
+        expect(drawShapeSpy).toHaveBeenCalled();
+    });
+
+    it('#draw should not add the command to the stack of undoRedo if ctx is not baseCtx', () => {
+        const drawShapeSpy = spyOn(service, 'drawShape');
+        const notBaseCanvasStub = document.createElement('canvas');
+        const notBaseCanvasCtxStub = notBaseCanvasStub.getContext('2d') as CanvasRenderingContext2D;
+        service.draw(notBaseCanvasCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
+        expect(drawShapeSpy).toHaveBeenCalled();
     });
 });

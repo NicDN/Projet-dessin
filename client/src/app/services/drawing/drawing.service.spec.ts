@@ -100,8 +100,9 @@ describe('DrawingService', () => {
     });
 
     it('#changeDrawing should change the current drawing on canvas', () => {
+        const fillTmpValue = 4;
         const image1 = new Image();
-        service.baseCtx.fillRect(0, 0, 4, 4);
+        service.baseCtx.fillRect(0, 0, fillTmpValue, fillTmpValue);
         image1.src = service.canvas.toDataURL();
 
         service.changeDrawing(image1);
@@ -211,11 +212,11 @@ describe('DrawingService', () => {
         expect(imageData.data).toEqual(Uint8ClampedArray.of(WHITE_VALUE, WHITE_VALUE, WHITE_VALUE, WHITE_VALUE));
     });
 
-    it('canvasIsEmpty should return true if the canvas is empty', () => {
+    it('#canvasIsEmpty should return true if the canvas is empty', () => {
         expect(service.canvasIsEmpty()).toBeTrue();
     });
 
-    it('canvasIsEmpty should return false if the canvas is not empty', () => {
+    it('#canvasIsEmpty should return false if the canvas is not empty', () => {
         service.baseCtx.fillRect(0, 0, 1, 1);
         expect(service.canvasIsEmpty()).toBeFalse();
     });

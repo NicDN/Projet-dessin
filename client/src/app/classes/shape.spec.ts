@@ -19,9 +19,6 @@ export class ShapeStub extends Shape {
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         return;
     }
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        return;
-    }
 }
 
 // tslint:disable: no-string-literal

@@ -20,9 +20,9 @@ export const enum Status {
 })
 export class ResizeContainerComponent {
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
-
     @ViewChild('box') box: ElementRef;
 
+    readonly REMOVE_PX: number = -2;
     readonly MOUSE_OFFSET: number = 5;
 
     status: Status = Status.NOT_RESIZING;
@@ -56,7 +56,10 @@ export class ResizeContainerComponent {
         if (this.box === undefined) return;
         if (this.status !== Status.NOT_RESIZING) {
             const resizeCommand: ResizeCommand = new ResizeCommand(
-                { widthBox: this.box.nativeElement.style.width.slice(0, -2), heightBox: this.box.nativeElement.style.height.slice(0, -2) },
+                {
+                    widthBox: this.box.nativeElement.style.width.slice(0, this.REMOVE_PX),
+                    heightBox: this.box.nativeElement.style.height.slice(0, this.REMOVE_PX),
+                },
                 this.drawingService,
             );
             this.undoRedoService.addCommand(resizeCommand);

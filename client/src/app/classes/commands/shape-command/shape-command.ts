@@ -10,7 +10,6 @@ export enum ShapeType {
 }
 
 export interface ShapePropreties {
-    shapeType: ShapeType;
     drawingContext: CanvasRenderingContext2D;
     beginCoords: Vec2;
     endCoords: Vec2;

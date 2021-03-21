@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -41,7 +41,6 @@ describe('PolygonService', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
         shapePropretiesStub = {
-            shapeType: ShapeType.Polygon,
             drawingContext: baseCtxStub,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
@@ -96,7 +95,7 @@ describe('PolygonService', () => {
         expect(canvasSpyObj.stroke).toHaveBeenCalled();
     });
 
-    it('#drawPolygon should draw a Polygon on the canvas at the right position and using the right colours', () => {
+    it('#drawShape should draw a Polygon on the canvas at the right position and using the right colours', () => {
         service.drawShape(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 25, y: 2 };
         const centerPoint: Vec2 = { x: 25, y: 25 };
@@ -110,7 +109,7 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawPolygon  without border should draw a Polygon on the canvas at the right position and using the right colours', () => {
+    it('#drawShape  without border should draw a Polygon on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
         service.drawShape(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 25, y: 1 };
@@ -125,7 +124,7 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawPolygon without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
+    it('#drawShape without fill should draw a Polygon on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.Bordered;
         service.drawShape(shapePropretiesStub);
         const borderPoint: Vec2 = { x: 25, y: 1 };
@@ -140,7 +139,7 @@ describe('PolygonService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawPolygon should return if number of sides is undefined', () => {
+    it('#drawShape should return if number of sides is undefined', () => {
         shapePropretiesStub.numberOfSides = undefined;
         const getCenterCoordsSpy = spyOn(service, 'getCenterCoords');
         service.drawShape(shapePropretiesStub);
@@ -149,7 +148,6 @@ describe('PolygonService', () => {
 
     it('#loadUpPropreties should set the ShapePropreties to current service so it can be used in the redo', () => {
         const polygonPropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-        expect(polygonPropreties.shapeType).toEqual(ShapeType.Polygon);
         expect(polygonPropreties.drawingContext).toEqual(baseCtxStub);
         expect(polygonPropreties.beginCoords).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(polygonPropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
@@ -172,6 +170,15 @@ describe('PolygonService', () => {
         drawingServiceSpyObj.baseCtx = baseCtxStub;
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(polygonSpy).toHaveBeenCalled();
+    });
+
+    it('#draw should not add the command to the stack of undoRedo if ctx is not baseCtx', () => {
+        const polygonSpy = spyOn(service, 'drawShape');
+        const notBaseCanvasStub = document.createElement('canvas');
+        const notBaseCanvasCtxStub = notBaseCanvasStub.getContext('2d') as CanvasRenderingContext2D;
+        service.draw(notBaseCanvasCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
         expect(polygonSpy).toHaveBeenCalled();
     });
 });

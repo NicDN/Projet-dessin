@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TraceToolCommand, TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolCommand, TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -13,12 +13,12 @@ import { Subscription } from 'rxjs';
 export class EraserService extends PencilService {
     subscription: Subscription;
 
-    readonly MINTHICKNESS: number = 5;
+    readonly MIN_THICKNESS: number = 5;
 
     constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
         super(drawingService, colorService, undoRedoService);
-        this.thickness = this.MINTHICKNESS;
-        this.minThickness = this.MINTHICKNESS;
+        this.thickness = this.MIN_THICKNESS;
+        this.minThickness = this.MIN_THICKNESS;
         this.toolName = 'Efface';
         this.isEraser = true;
     }
@@ -64,7 +64,6 @@ export class EraserService extends PencilService {
 
     loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
-            traceToolType: TraceToolType.Eraser,
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,
@@ -84,7 +83,6 @@ export class EraserService extends PencilService {
     }
 
     eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
-        // ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
         // If we want to draw in white:
         ctx.fillStyle = 'white';
         ctx.globalAlpha = 1;

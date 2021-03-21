@@ -146,5 +146,4 @@ export abstract class Shape extends DrawingTool {
 
     abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
     abstract drawShape(shapePropreties: ShapePropreties): void;
-    // abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 }

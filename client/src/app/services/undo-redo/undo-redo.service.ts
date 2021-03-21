@@ -77,6 +77,7 @@ export class UndoRedoService {
         this.commandList = [];
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
+        this.sendUndoRedoNotif();
     }
 
     executeAllCommands(): void {

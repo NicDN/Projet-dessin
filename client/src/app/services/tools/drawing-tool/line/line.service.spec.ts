@@ -3,7 +3,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -34,7 +34,6 @@ describe('LineService', () => {
     const colorStub: Color = { rgbValue: 'red', opacity: 1 };
 
     const drawingToolPropretiesStub: TraceToolPropreties = {
-        traceToolType: TraceToolType.Line,
         drawingContext: canvasCtxStub,
         drawingPath: pathArrayStub,
         drawingThickness: 1,
@@ -286,7 +285,7 @@ describe('LineService', () => {
 
     it('#finishLine shouldnt change the last point if it isnt near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
-        spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
+        spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
@@ -298,7 +297,7 @@ describe('LineService', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
         service.mousePosition = { x: 20, y: 20 };
         service.junctionDiameter = 1;
-        spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
+        spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
         service.finishLine();
         expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
@@ -330,7 +329,7 @@ describe('LineService', () => {
         expect(service.calculateAngle(lastSelectedPoint) > 0).toBeTrue();
     });
 
-    it('#drawLineExecute should not draw anything if theres no point in the path', () => {
+    it('#drawTrace should not draw anything if theres no point in the path', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
@@ -345,7 +344,7 @@ describe('LineService', () => {
         expect(baseCtxStub.fill).not.toHaveBeenCalled();
     });
 
-    it('#drawLineExecute should not draw junctions if drawWithJunction isnt set', () => {
+    it('#drawTrace should not draw junctions if drawWithJunction isnt set', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
@@ -361,7 +360,7 @@ describe('LineService', () => {
         expect(baseCtxStub.fill).not.toHaveBeenCalled();
     });
 
-    it('#drawLineExecute should draw junctions if drawWithJunction is set', () => {
+    it('#drawTrace should draw junctions if drawWithJunction is set', () => {
         spyOn(baseCtxStub, 'beginPath');
         spyOn(baseCtxStub, 'lineTo');
         spyOn(baseCtxStub, 'fill');
@@ -377,14 +376,6 @@ describe('LineService', () => {
         expect(baseCtxStub.fill).toHaveBeenCalledTimes(EXPECTED_NUMBER_OF_CALLS);
     });
 
-    it('#drawLine should load propreties', () => {
-        const loadUpSpy = spyOn(service, 'loadUpProprities').and.returnValue(drawingToolPropretiesStub);
-        drawingToolPropretiesStub.drawingPath = service.pathData;
-        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
-
-        expect(loadUpSpy).toHaveBeenCalled();
-    });
-
     it('#drawTrace should return if junction diameter is undefined', () => {
         colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
         drawingToolPropretiesStub.junctionDiameter = undefined;
@@ -394,11 +385,19 @@ describe('LineService', () => {
         expect(beginPathSpy).not.toHaveBeenCalled();
     });
 
+    it('#drawLine should load propreties', () => {
+        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        drawingToolPropretiesStub.drawingPath = service.pathData;
+        service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
+
+        expect(loadUpSpy).toHaveBeenCalled();
+    });
+
     it('#loadUpPropreties should return the correct propreties', () => {
         colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
-        const drawingToolPropreties: TraceToolPropreties = service.loadUpProprities(baseCtxStub, pathArrayStub);
-        expect(drawingToolPropreties.traceToolType).toEqual(TraceToolType.Line);
+        const drawingToolPropreties: TraceToolPropreties = service.loadUpPropreties(baseCtxStub, pathArrayStub);
         expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
+        console.log(drawingToolPropreties.drawingPath);
         expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
         expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
         expect(drawingToolPropreties.drawingColor).toEqual(colorServiceSpyObj.mainColor);

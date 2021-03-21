@@ -10,7 +10,6 @@ export enum TraceToolType {
 }
 
 export interface TraceToolPropreties {
-    traceToolType: TraceToolType;
     drawingContext: CanvasRenderingContext2D;
     drawingPath: Vec2[];
     drawingThickness: number;

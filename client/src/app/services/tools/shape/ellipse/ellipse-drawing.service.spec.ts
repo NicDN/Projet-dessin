@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
@@ -51,7 +51,6 @@ describe('EllipseDrawingService', () => {
         canvasCtxStub.fillStyle = 'black';
 
         shapePropretiesStub = {
-            shapeType: ShapeType.Ellipse,
             drawingContext: canvasCtxStub,
             beginCoords: TOP_LEFT_CORNER_COORDS,
             endCoords: BOTTOM_RIGHT_CORNER_COORDS,
@@ -94,10 +93,6 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#drawShape should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        // service.thickness = THICKNESS_STUB;
-        // service.traceType = TraceType.FilledAndBordered;
-        // service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
         shapePropretiesStub.traceType = TraceType.FilledAndBordered;
         shapePropretiesStub.drawingContext = baseCtxStub;
         service.drawShape(shapePropretiesStub);
@@ -114,11 +109,7 @@ describe('EllipseDrawingService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawEllipse without border should draw an ellipse on the canvas at the right position and using the right colours', () => {
-        // service.thickness = THICKNESS_STUB;
-        // service.traceType = TraceType.FilledNoBordered;
-        // service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
+    it('#drawShape without border should draw an ellipse on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
         shapePropretiesStub.drawingContext = baseCtxStub;
 
@@ -136,12 +127,7 @@ describe('EllipseDrawingService', () => {
         expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
     });
 
-    it('#drawEllipse when using alternate shape should draw a circle on the canvas at the right position and using the right colours', () => {
-        // service.thickness = THICKNESS_STUB;
-        // service.traceType = TraceType.Bordered;
-        // service['alternateShape'] = true;
-        // service.draw(drawingServiceSpyObj.baseCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
+    it('#drawShape when using alternate shape should draw a circle on the canvas at the right position and using the right colours', () => {
         shapePropretiesStub.traceType = TraceType.Bordered;
         shapePropretiesStub.isAlternateShape = true;
         shapePropretiesStub.drawingContext = baseCtxStub;
@@ -170,7 +156,6 @@ describe('EllipseDrawingService', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
 
         const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
-        expect(shapePropreties.shapeType).toEqual(ShapeType.Ellipse);
         expect(shapePropreties.drawingContext).toEqual(baseCtxStub);
         expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
         expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
@@ -179,12 +164,12 @@ describe('EllipseDrawingService', () => {
         expect(shapePropreties.traceType).toEqual(service.traceType);
     });
 
-    it('#executeShapeCommand should call execute of ellipse and add the command to the stack of undoRedo', () => {
-        const beginAndEnd: Vec2 = { x: 1, y: 2 };
-        drawingServiceSpyObj.baseCtx = baseCtxStub;
+    it('#draw should not add the command to the stack of undoRedo if ctx is not baseCtx', () => {
         const ellipseSpy = spyOn(service, 'drawShape');
-        service.draw(baseCtxStub, beginAndEnd, beginAndEnd);
-        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        const notBaseCanvasStub = document.createElement('canvas');
+        const notBaseCanvasCtxStub = notBaseCanvasStub.getContext('2d') as CanvasRenderingContext2D;
+        service.draw(notBaseCanvasCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
         expect(ellipseSpy).toHaveBeenCalled();
     });
 });

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TraceToolCommand, TraceToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolCommand, TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -104,7 +104,6 @@ export class PencilService extends TraceTool {
 
     loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
-            traceToolType: TraceToolType.Pencil,
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,
