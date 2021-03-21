@@ -7,9 +7,9 @@
                     <mat-icon>navigate_before</mat-icon>
                 </button>
                 <h1 class="filter-error" *ngIf="this.chipList.errorState">Aucun dessin trouvé</h1>
-                <app-card-drawing-template *ngFor="let drawing of drawings" [drawingForm]="drawing"
+                <app-card-drawing *ngFor="let drawing of drawings" [drawingForm]="drawing"
                     (closeCarousel)="this.closeDialog()" (requestDrawings)="this.requestDrawings()">
-                </app-card-drawing-template>
+                </app-card-drawing>
                 <button id="arrow" mat-icon-button class="next" (click)="this.forwardDrawings()">
                     <mat-icon>navigate_next</mat-icon>
                 </button>

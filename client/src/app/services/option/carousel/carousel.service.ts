@@ -10,7 +10,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class CarouselService {
     private readonly NO_SERVER_RESPONSE: number = 0;
-    private readonly BASE_URL: string = 'http://localhost:3000/api/database';
+    private readonly BASE_URL: string = 'http://localhost:3000/api/server';
 
     constructor(private http: HttpClient) {}
 
@@ -24,7 +24,7 @@ export class CarouselService {
     }
 
     deleteDrawingFromServer(id: string): Observable<{}> {
-        const url = `${this.BASE_URL}/delete/${id}`;
+        const url = `${this.BASE_URL}/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
     }
 

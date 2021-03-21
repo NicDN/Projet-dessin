@@ -11,7 +11,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class SaveService {
     private readonly NO_SERVER_RESPONSE: number = 0;
-    private readonly BASE_URL: string = 'http://localhost:3000/api/database';
+    private readonly BASE_URL: string = 'http://localhost:3000/api/server';
 
     constructor(private httpClient: HttpClient, private drawingService: DrawingService) {}
 
@@ -22,7 +22,7 @@ export class SaveService {
             tags,
             drawingData: this.drawingService.canvas.toDataURL(),
         };
-        return this.httpClient.post<void>(this.BASE_URL + '/upload', drawingForm).pipe(catchError(this.handleError<void>('postDrawing')));
+        return this.httpClient.post<void>(this.BASE_URL, drawingForm).pipe(catchError(this.handleError<void>('postDrawing')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

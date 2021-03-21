@@ -10,11 +10,11 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 import { Subject, throwError } from 'rxjs';
 
-import { CardDrawingTemplateComponent } from './card-drawing-template.component';
+import { CardDrawingComponent } from './card-drawing.component';
 
-describe('CardDrawingTemplateComponent', () => {
-    let component: CardDrawingTemplateComponent;
-    let fixture: ComponentFixture<CardDrawingTemplateComponent>;
+describe('CardDrawingComponent', () => {
+    let component: CardDrawingComponent;
+    let fixture: ComponentFixture<CardDrawingComponent>;
 
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
@@ -40,7 +40,7 @@ describe('CardDrawingTemplateComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, MatSnackBarModule, RouterTestingModule],
-            declarations: [CardDrawingTemplateComponent],
+            declarations: [CardDrawingComponent],
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: SnackBarService, useValue: snackbarServiceSpy },
@@ -52,7 +52,7 @@ describe('CardDrawingTemplateComponent', () => {
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(CardDrawingTemplateComponent);
+        fixture = TestBed.createComponent(CardDrawingComponent);
         component = fixture.componentInstance;
         component.drawingForm = drawingFormMock;
         // @ts-ignore

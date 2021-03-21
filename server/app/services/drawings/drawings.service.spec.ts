@@ -24,6 +24,7 @@ describe('Drawings service', () => {
     let testID: string;
 
     const DRAWINGS_EXPECTED_LENGTH = 3;
+
     const DRAWINGS_INSERTED: DrawingForm[] = [
         {
             id: '0',
@@ -204,10 +205,8 @@ describe('Drawings service', () => {
         expect(drawingsService['filterDrawingsByTags'](EXPECTED_FORMS.reverse(), SEARCH_TAGS)).to.eql([]);
     });
 
-    it('#getValidDrawings should return the correct array of valid drawings at index 0', async () => {
-        stub(drawingsService, 'readFile' as any).resolves('abcd');
-
-        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 0);
+    it('#carouselEffect should return the correct array of valid drawings at index 0', async () => {
+        const validDrawings: DrawingForm[] = drawingsService['carouselEffect'](DRAWINGS_INSERTED, 0);
 
         expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
         expect(validDrawings[0]).to.equal(DRAWINGS_INSERTED[0]);
@@ -215,10 +214,8 @@ describe('Drawings service', () => {
         expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[2]);
     });
 
-    it('#getValidDrawings should return the correct array of valid drawings at index 1', async () => {
-        stub(drawingsService, 'readFile' as any).resolves('abcd');
-
-        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 1);
+    it('#carouselEffect should return the correct array of valid drawings at index 1', async () => {
+        const validDrawings: DrawingForm[] = drawingsService['carouselEffect'](DRAWINGS_INSERTED, 1);
 
         expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
         expect(validDrawings[0]).to.equal(DRAWINGS_INSERTED[1]);
@@ -227,10 +224,8 @@ describe('Drawings service', () => {
         expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[3]);
     });
 
-    it('#getValidDrawings should return the correct array of valid drawings at index length - 1', async () => {
-        stub(drawingsService, 'readFile' as any).resolves('abcd');
-
-        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, DRAWINGS_INSERTED.length - 1);
+    it('#carouselEffect should return the correct array of valid drawings at index length - 1', async () => {
+        const validDrawings: DrawingForm[] = drawingsService['carouselEffect'](DRAWINGS_INSERTED, DRAWINGS_INSERTED.length - 1);
 
         expect(validDrawings.length).to.equal(DRAWINGS_EXPECTED_LENGTH);
         // tslint:disable-next-line: no-magic-numbers
@@ -239,26 +234,53 @@ describe('Drawings service', () => {
         expect(validDrawings[2]).to.equal(DRAWINGS_INSERTED[1]);
     });
 
-    it('#getValidDrawings should return an array of less then 3 drawings if theres not enough drawings in the server or database', async () => {
+    it('#carouselEffect should return an array of less then 3 drawings if theres not enough drawings provided to the function', async () => {
         const drawingsLength2 = [DRAWINGS_INSERTED[0]];
-        stub(drawingsService, 'readFile' as any).resolves('abcd');
 
-        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](drawingsLength2, 0);
+        const validDrawings: DrawingForm[] = drawingsService['carouselEffect'](drawingsLength2, 0);
 
         expect(validDrawings.length).to.equal(1);
         expect(drawingsLength2[0]).to.equal(DRAWINGS_INSERTED[0]);
     });
 
-    it('#getValidDrawings should return an empty array if it get no drawings', async () => {
+    it('#carouselEffect should return an empty array if it gets no drawings', async () => {
+        const validDrawings: DrawingForm[] = drawingsService['carouselEffect']([], 0);
+
+        expect(validDrawings).to.deep.equal([]);
+    });
+
+    it('#getValidDrawings should return the correct array', async () => {
         stub(drawingsService, 'readFile' as any).resolves('abcd');
+        stub(drawingsService, 'carouselEffect' as any).returnsArg(0);
+
+        const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 0);
+
+        expect(validDrawings.length).to.equal(4);
+
+        expect(validDrawings[0].name).to.deep.equal(DRAWINGS_INSERTED[0].name);
+        expect(validDrawings[1].name).to.deep.equal(DRAWINGS_INSERTED[1].name);
+        expect(validDrawings[2].name).to.deep.equal(DRAWINGS_INSERTED[2].name);
+        expect(validDrawings[3].name).to.deep.equal(DRAWINGS_INSERTED[3].name);
+
+        expect(validDrawings[0].drawingData).to.deep.equal('abcd');
+        expect(validDrawings[1].drawingData).to.deep.equal('abcd');
+        expect(validDrawings[2].drawingData).to.deep.equal('abcd');
+        expect(validDrawings[3].drawingData).to.deep.equal('abcd');
+    });
+
+    it('#getValidDrawings should return an empty array if it gets no drawings', async () => {
+        stub(drawingsService, 'readFile' as any).resolves('abcd');
+        stub(drawingsService, 'carouselEffect' as any).returnsArg(0);
 
         const validDrawings: DrawingForm[] = await drawingsService['getValidDrawings']([], 0);
 
         expect(validDrawings).to.deep.equal([]);
     });
 
-    it('#getValidDrawings should not return valid drawings if #readFile theow a error', async () => {
+    it('#getValidDrawings should not return valid drawings if #readFile throws a error', async () => {
         stub(drawingsService, 'readFile' as any).rejects();
+        stub(drawingsService, 'carouselEffect' as any).returnsArg(0);
+
         let validDrawings: DrawingForm[] = DRAWINGS_INSERTED;
 
         validDrawings = await drawingsService['getValidDrawings'](DRAWINGS_INSERTED, 0);

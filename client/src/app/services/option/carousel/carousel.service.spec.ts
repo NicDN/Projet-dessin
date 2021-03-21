@@ -60,7 +60,7 @@ describe('CarouselService', () => {
         // tslint:disable-next-line: no-empty
         service.deleteDrawingFromServer(ID).subscribe(() => {}, fail);
 
-        const req = httpMock.expectOne(baseUrl + '/delete/' + ID);
+        const req = httpMock.expectOne(baseUrl + '/' + ID);
         expect(req.request.method).toBe('DELETE');
     });
 
@@ -90,7 +90,7 @@ describe('CarouselService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/delete/' + ID);
+        const req = httpMock.expectOne(baseUrl + '/' + ID);
 
         expect(req.request.method).toBe('DELETE');
         req.error(new ErrorEvent('No response'), { status: NO_SERVER_RESPONSE });
@@ -105,7 +105,7 @@ describe('CarouselService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/delete/' + ID);
+        const req = httpMock.expectOne(baseUrl + '/' + ID);
 
         expect(req.request.method).toBe('DELETE');
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR });
@@ -120,7 +120,7 @@ describe('CarouselService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/delete/' + ID);
+        const req = httpMock.expectOne(baseUrl + '/' + ID);
 
         expect(req.request.method).toBe('DELETE');
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.NOT_FOUND });
@@ -135,7 +135,7 @@ describe('CarouselService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/delete/' + ID);
+        const req = httpMock.expectOne(baseUrl + '/' + ID);
 
         expect(req.request.method).toBe('DELETE');
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.BAD_GATEWAY });
