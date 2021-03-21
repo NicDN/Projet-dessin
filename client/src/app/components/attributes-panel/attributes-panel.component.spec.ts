@@ -41,7 +41,7 @@ describe('AttributesPanelComponent', () => {
     it('#subscribe assings current tool correctly ', async(() => {
         const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
-        component.subscribe();
+        component['subscribe']();
         fixture.detectChanges();
         expect(component.currentTool).toBe(expectedCurrentTool);
     }));

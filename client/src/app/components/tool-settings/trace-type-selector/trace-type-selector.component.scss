@@ -19,18 +19,16 @@ p {
 }
 
 .active {
-    background-color:lightslategray ;
+    background-color: lightslategray;
 }
 
-.trace-container{
-   display: flex;
-   display: inline-block;
-}
-mat-button{
+.trace-container {
+    display: flex;
     display: inline-block;
 }
-.container{
+mat-button {
+    display: inline-block;
+}
+.container {
     margin: 11px;
 }
-
-

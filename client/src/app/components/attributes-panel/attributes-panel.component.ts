@@ -26,7 +26,7 @@ export class AttributesPanelComponent implements OnInit {
         this.initializeSettings();
     }
 
-    initializeSettings(): void {
+    private initializeSettings(): void {
         this.thicknessSetting = {
             title: 'Épaisseur du trait',
             unit: 'pixels',
@@ -54,7 +54,7 @@ export class AttributesPanelComponent implements OnInit {
         };
     }
 
-    subscribe(): void {
+    private subscribe(): void {
         this.toolsService.getCurrentTool().subscribe((currentTool: Tool) => (this.currentTool = currentTool));
     }
 
