@@ -9,7 +9,8 @@ import { Observable, Subject } from 'rxjs';
 })
 export class EyeDropperService extends Tool {
     private subject: Subject<void> = new Subject<void>();
-
+    readonly SIDE_BAR_SIZE: number = 400;
+    readonly OFFSET: number = 6;
     currentPixelData: ImageData = new ImageData(1, 1);
     currentGridOfPixelData: ImageData = new ImageData(1, 1);
 
@@ -35,6 +36,7 @@ export class EyeDropperService extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
+        this.previewIsDisplayed = this.mouseMoveIsInCanvas(event);
         const sizePreview = 11;
         this.currentGridOfPixelData = this.drawingService.baseCtx.getImageData(
             this.getPositionFromMouse(event).x - Math.floor(sizePreview / 2),
@@ -44,16 +46,25 @@ export class EyeDropperService extends Tool {
         );
     }
 
-    onMouseEnter(): void {
-        this.previewIsDisplayed = true;
-    }
+    // onMouseEnter(): void {
+    //     this.previewIsDisplayed = true;
+    // }
 
-    onMouseOut(): void {
-        this.previewIsDisplayed = false;
-    }
+    // onMouseOut(): void {
+    //     this.previewIsDisplayed = false;
+    // }
 
     private getImageData(mousePosition: Vec2): void {
         this.currentPixelData = this.drawingService.baseCtx.getImageData(mousePosition.x, mousePosition.y, 1, 1);
         this.sendNotifColor();
+    }
+
+    private mouseMoveIsInCanvas(event: MouseEvent): boolean {
+        return (
+            event.pageX > this.SIDE_BAR_SIZE &&
+            event.pageX < this.SIDE_BAR_SIZE + this.OFFSET + this.drawingService.canvas.width &&
+            event.pageY > 0 &&
+            event.pageY < this.drawingService.canvas.height + this.OFFSET
+        );
     }
 }
