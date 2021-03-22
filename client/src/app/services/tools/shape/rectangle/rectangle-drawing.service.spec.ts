@@ -145,6 +145,7 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#draw should loadUp propreties and call drawRectangle', () => {
+        // tslint:disable-next-line: no-any
         const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(loadUpSpy).toHaveBeenCalled();
