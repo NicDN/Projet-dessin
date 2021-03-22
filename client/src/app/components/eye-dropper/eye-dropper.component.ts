@@ -39,7 +39,7 @@ export class EyeDropperComponent implements OnInit {
         });
     }
 
-    newColorNotification(): void {
+    private newColorNotification(): void {
         const red = this.eyeDropperService.currentPixelData.data[this.POSITION_0];
         const green = this.eyeDropperService.currentPixelData.data[this.POSITION_1];
         const blue = this.eyeDropperService.currentPixelData.data[this.POSITION_2];
@@ -48,7 +48,7 @@ export class EyeDropperComponent implements OnInit {
         this.changeColor(updateColor);
     }
 
-    changeColor(color: Color): void {
+    private changeColor(color: Color): void {
         if (this.eyeDropperService.leftClick) this.colorService.updateColor(this.colorService.mainColor, color);
         else this.colorService.updateColor(this.colorService.secondaryColor, color);
     }
@@ -64,7 +64,7 @@ export class EyeDropperComponent implements OnInit {
         }
     }
 
-    buildImage(): void {
+    private buildImage(): void {
         this.eyeDropperCtx.save();
         this.setContextForPreview();
         this.eyeDropperCtx.clearRect(0, 0, this.CANVAS_SIZE, this.CANVAS_SIZE);
@@ -74,7 +74,7 @@ export class EyeDropperComponent implements OnInit {
         this.eyeDropperCtx.restore();
     }
 
-    makeImageForPreview(): HTMLCanvasElement {
+    private makeImageForPreview(): HTMLCanvasElement {
         const image = document.createElement('canvas');
         image.width = this.CANVAS_SIZE;
         image.height = this.CANVAS_SIZE;
@@ -82,12 +82,12 @@ export class EyeDropperComponent implements OnInit {
         return image;
     }
 
-    setContextForPreview(): void {
+    private setContextForPreview(): void {
         this.eyeDropperCtx.imageSmoothingEnabled = false;
         this.eyeDropperCtx.scale(this.SCALING, this.SCALING);
     }
 
-    drawGrid(): void {
+    private drawGrid(): void {
         this.gridCtx.clearRect(0, 0, this.CANVAS_SIZE, this.CANVAS_SIZE);
 
         this.drawBlackCircleAroundPreview();
@@ -105,19 +105,19 @@ export class EyeDropperComponent implements OnInit {
         this.gridCtx.restore();
     }
 
-    makePreviewCircular(size: number, ctx: CanvasRenderingContext2D): void {
+    private makePreviewCircular(size: number, ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
         ctx.ellipse(size / 2, size / 2, size / 2, size / 2, 0, 0, 2 * Math.PI);
         ctx.clip();
     }
 
-    setGridContext(): void {
+    private setGridContext(): void {
         this.gridCtx.strokeStyle = 'black';
         this.gridCtx.lineWidth = 1;
         this.gridCtx.globalAlpha = this.GRID_ALPHA;
     }
 
-    drawBlackCircleAroundPreview(): void {
+    private drawBlackCircleAroundPreview(): void {
         this.gridCtx.save();
         this.gridCtx.globalAlpha = 1;
         this.gridCtx.lineWidth = this.LINE_GRID_WIDTH;

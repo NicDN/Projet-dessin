@@ -163,7 +163,7 @@ describe('SprayCanService', () => {
     });
 
     it('#setContext should set the context for the spray', () => {
-        service.setContext(baseCtxStub, { rgbValue: '#ff0000', opacity: 1 });
+        service['setContext'](baseCtxStub, { rgbValue: '#ff0000', opacity: 1 });
         expect(baseCtxStub.lineCap).toEqual('round');
         expect(baseCtxStub.lineJoin).toEqual('round');
         expect(baseCtxStub.fillStyle).toEqual('#ff0000');
@@ -172,12 +172,12 @@ describe('SprayCanService', () => {
     it('#getRandomNumber should return a value between the min and the max', () => {
         const min = 1;
         const max = 30;
-        const randomNumberStub = service.getRandomNumber(min, max);
+        const randomNumberStub = service['getRandomNumber'](min, max);
         expect(randomNumberStub > min && randomNumberStub < max).toBeTruthy();
     });
 
     it('#drawline should start the interval that calls drawSpray after a period of time', () => {
-        const drawSpraySpy = spyOn(service, 'drawSpray').and.stub();
+        const drawSpraySpy = spyOn<any>(service, 'drawSpray').and.stub();
         jasmine.clock().install();
         service.drawLine(baseCtxStub, service['pathData']);
         expect(drawSpraySpy).not.toHaveBeenCalled();
@@ -188,8 +188,8 @@ describe('SprayCanService', () => {
 
     it('#drawSpray should call setContext to make the context ready for drawing', () => {
         const pathStub1: Vec2[] = [{ x: 25, y: 25 }];
-        const setContextSpy = spyOn(service, 'setContext').and.stub();
-        service.drawSpray(baseCtxStub, pathStub1);
+        const setContextSpy = spyOn<any>(service, 'setContext').and.stub();
+        service['drawSpray'](baseCtxStub, pathStub1);
         expect(setContextSpy).toHaveBeenCalled();
     });
 
@@ -206,7 +206,7 @@ describe('SprayCanService', () => {
         service.emissionRate = bigParameterStub;
         // tslint:disable-next-line: no-shadowed-variable
         const pathStub = [{ x: 0, y: 0 }];
-        service.drawSpray(baseCtxStub, pathStub);
+        service['drawSpray'](baseCtxStub, pathStub);
         const imageDataAfter = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataAfter).not.toEqual(imageDataBefore);
     });
@@ -214,7 +214,7 @@ describe('SprayCanService', () => {
     it('#generateRandomArray should return an array with random value between min and max', () => {
         const min = 0;
         const max = 10;
-        const arrayStub1: number[] = service.generateRandomArray(min, max);
+        const arrayStub1: number[] = service['generateRandomArray'](min, max);
         for (const index of arrayStub1) {
             expect(index > min && index < max).toBeTruthy();
         }
@@ -222,14 +222,14 @@ describe('SprayCanService', () => {
 
     it('#storeRandom should call generateRandomArray 2 times', () => {
         const numberOfCallsStub = 2;
-        const generateRandomSpy = spyOn(service, 'generateRandomArray').and.stub();
-        service.storeRandom();
+        const generateRandomSpy = spyOn<any>(service, 'generateRandomArray').and.stub();
+        service['storeRandom']();
         expect(generateRandomSpy).toHaveBeenCalledTimes(numberOfCallsStub);
     });
 
     it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
         const drawingPathStub: Vec2[] = [{ x: 1, y: 2 }];
-        const sprayCanPropreties: SprayCanPropreties = service.loadProprities(baseCtxStub, drawingPathStub);
+        const sprayCanPropreties: SprayCanPropreties = service['loadProprities'](baseCtxStub, drawingPathStub);
         expect(sprayCanPropreties.drawingCtx).toEqual(baseCtxStub);
         expect(sprayCanPropreties.drawingPath).toEqual(drawingPathStub);
         expect(sprayCanPropreties.mainColor.rgbValue).toEqual(PRIMARY_COLOR_STUB);

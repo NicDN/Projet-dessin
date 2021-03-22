@@ -53,7 +53,7 @@ export class EyeDropperService extends Tool {
         this.preview = false;
     }
 
-    getImageData(mousePosition: Vec2): void {
+    private getImageData(mousePosition: Vec2): void {
         this.currentPixelData = this.drawingService.baseCtx.getImageData(mousePosition.x, mousePosition.y, 1, 1);
         this.sendNotifColor();
     }

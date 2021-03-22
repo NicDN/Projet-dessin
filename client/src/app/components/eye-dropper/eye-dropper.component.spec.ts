@@ -8,7 +8,7 @@ import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.s
 import { of } from 'rxjs';
 import { EyeDropperComponent } from './eye-dropper.component';
 
-// tslint:disable: no-string-literal
+// tslint:disable: no-string-literal no-any
 describe('EyeDropperComponent', () => {
     let component: EyeDropperComponent;
     let fixture: ComponentFixture<EyeDropperComponent>;
@@ -86,68 +86,68 @@ describe('EyeDropperComponent', () => {
     });
 
     it('#newColorNotification should call changeColor', () => {
-        spyOn(component, 'changeColor').and.stub();
-        component.newColorNotification();
-        expect(component.changeColor).toHaveBeenCalled();
+        spyOn<any>(component, 'changeColor').and.stub();
+        component['newColorNotification']();
+        expect(component['changeColor']).toHaveBeenCalled();
     });
 
     it('#onMouseMove should call drawGrid and draw the preview if the mouse is on the canvas region', () => {
-        spyOn(component, 'buildImage').and.stub();
-        spyOn(component, 'drawGrid').and.stub();
+        spyOn<any>(component, 'buildImage').and.stub();
+        spyOn<any>(component, 'drawGrid').and.stub();
         component['eyeDropperService'].preview = true;
         component.onMouseMove(mouseEvent);
 
-        expect(component.buildImage).toHaveBeenCalled();
-        expect(component.drawGrid).toHaveBeenCalled();
+        expect(component['buildImage']).toHaveBeenCalled();
+        expect(component['drawGrid']).toHaveBeenCalled();
     });
 
     it('#onMouseMove should not call drawGrid and buildImage if the mouse is not on the canvas region', () => {
-        spyOn(component, 'buildImage').and.stub();
-        spyOn(component, 'drawGrid').and.stub();
+        spyOn<any>(component, 'buildImage').and.stub();
+        spyOn<any>(component, 'drawGrid').and.stub();
         component['eyeDropperService'].preview = false;
         component.onMouseMove(mouseEvent);
 
-        expect(component.buildImage).not.toHaveBeenCalled();
-        expect(component.drawGrid).not.toHaveBeenCalled();
+        expect(component['buildImage']).not.toHaveBeenCalled();
+        expect(component['drawGrid']).not.toHaveBeenCalled();
     });
 
     it('#changerColor should call updateColor with the primary color on right click', () => {
         const COLOR_STUB = { rgbValue: 'black', opacity: 1 };
         component['eyeDropperService'].leftClick = true;
-        component.changeColor(COLOR_STUB);
+        component['changeColor'](COLOR_STUB);
         expect(colorServiceSpyObj.updateColor).toHaveBeenCalledWith(component['colorService'].mainColor, COLOR_STUB);
     });
 
     it('#changerColor should call updateColor with the primary color on right click', () => {
         const COLOR_STUB = { rgbValue: 'black', opacity: 1 };
         component['eyeDropperService'].leftClick = false;
-        component.changeColor(COLOR_STUB);
+        component['changeColor'](COLOR_STUB);
         expect(colorServiceSpyObj.updateColor).toHaveBeenCalledWith(component['colorService'].secondaryColor, COLOR_STUB);
     });
 
     it('#setContextForPreview should set the context for the preview', () => {
-        component.setContextForPreview();
+        component['setContextForPreview']();
         expect(component['eyeDropperCtx'].imageSmoothingEnabled).toEqual(false);
     });
 
     it('#setGridContext should set the context of the grid so it is ready to draw', () => {
         const GRID_ALPHA = 0.25;
-        component.setGridContext();
+        component['setGridContext']();
         expect(component['gridCtx'].strokeStyle).toEqual('#000000');
         expect(component['gridCtx'].lineWidth).toEqual(1);
         expect(component['gridCtx'].globalAlpha).toEqual(GRID_ALPHA);
     });
 
     it('#buildImage should call setContextForPreview, makeImageForPreview and makePreviewCircular', () => {
-        spyOn(component, 'setContextForPreview').and.stub();
-        spyOn(component, 'makeImageForPreview').and.returnValue(document.createElement('canvas'));
-        spyOn(component, 'makePreviewCircular').and.stub();
+        spyOn<any>(component, 'setContextForPreview').and.stub();
+        spyOn<any>(component, 'makeImageForPreview').and.returnValue(document.createElement('canvas'));
+        spyOn<any>(component, 'makePreviewCircular').and.stub();
 
-        component.buildImage();
+        component['buildImage']();
 
-        expect(component.setContextForPreview).toHaveBeenCalled();
-        expect(component.makeImageForPreview).toHaveBeenCalled();
-        expect(component.makePreviewCircular).toHaveBeenCalled();
+        expect(component['setContextForPreview']).toHaveBeenCalled();
+        expect(component['makeImageForPreview']).toHaveBeenCalled();
+        expect(component['makePreviewCircular']).toHaveBeenCalled();
     });
 
     it('#makeImageForPreview should return an HTMLCanvasElement containing the imageDate for the preview', () => {
@@ -156,21 +156,21 @@ describe('EyeDropperComponent', () => {
         imageStub.height = component.CANVAS_SIZE;
         (imageStub.getContext('2d') as CanvasRenderingContext2D).putImageData(component['eyeDropperService'].currentGridOfPixelData, 0, 0);
 
-        expect(component.makeImageForPreview()).toEqual(imageStub);
+        expect(component['makeImageForPreview']()).toEqual(imageStub);
     });
 
     it('#drawGrid should draw the grid on the preview context', () => {
-        spyOn(component, 'drawBlackCircleAroundPreview').and.callThrough();
-        spyOn(component, 'makePreviewCircular').and.callThrough();
-        spyOn(component, 'setGridContext').and.callThrough();
+        spyOn<any>(component, 'drawBlackCircleAroundPreview').and.callThrough();
+        spyOn<any>(component, 'makePreviewCircular').and.callThrough();
+        spyOn<any>(component, 'setGridContext').and.callThrough();
 
         const imageStubBefore = component['gridCtx'].getImageData(0, 0, component.CANVAS_SIZE, component.CANVAS_SIZE);
-        component.drawGrid();
+        component['drawGrid']();
         const imageStubAfter = component['gridCtx'].getImageData(0, 0, component.CANVAS_SIZE, component.CANVAS_SIZE);
 
-        expect(component.drawBlackCircleAroundPreview).toHaveBeenCalled();
-        expect(component.makePreviewCircular).toHaveBeenCalled();
-        expect(component.setGridContext).toHaveBeenCalled();
+        expect(component['drawBlackCircleAroundPreview']).toHaveBeenCalled();
+        expect(component['makePreviewCircular']).toHaveBeenCalled();
+        expect(component['setGridContext']).toHaveBeenCalled();
         expect(imageStubBefore).not.toEqual(imageStubAfter);
     });
 

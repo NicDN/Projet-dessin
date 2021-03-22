@@ -5,7 +5,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EyeDropperService } from './eye-dropper.service';
 
-// tslint:disable: no-string-literal
+// tslint:disable: no-string-literal no-any
 describe('EyeDropperService', () => {
     let service: EyeDropperService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -42,7 +42,7 @@ describe('EyeDropperService', () => {
     });
 
     it('#onMouseDown should set the value of leftclick to true if there was a mousedown', () => {
-        const getImageDataSpy = spyOn(service, 'getImageData').and.stub();
+        const getImageDataSpy = spyOn<any>(service, 'getImageData').and.stub();
         service.leftClick = false;
         service.onMouseDown(mouseEvent);
         expect(service.leftClick).toEqual(true);
@@ -77,10 +77,10 @@ describe('EyeDropperService', () => {
     });
 
     it('#getImageDate should get the pixel data under the current mouse position and send it to currentPixelData and call sendNotifColor', () => {
-        const sendNotifColorSpy = spyOn(service, 'sendNotifColor').and.callThrough();
+        const sendNotifColorSpy = spyOn<any>(service, 'sendNotifColor').and.callThrough();
         service['drawingService'].baseCtx.fillRect(MOUSEVALUE, MOUSEVALUE, 1, 1);
         const currentPixelDataStub = service['drawingService'].baseCtx.getImageData(MOUSEVALUE, MOUSEVALUE, 1, 1);
-        service.getImageData({ x: MOUSEVALUE, y: MOUSEVALUE });
+        service['getImageData']({ x: MOUSEVALUE, y: MOUSEVALUE });
         expect(service.currentPixelData).toEqual(currentPixelDataStub);
         expect(sendNotifColorSpy).toHaveBeenCalled();
     });
