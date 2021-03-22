@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 
 interface RGBInput {
     color: string;
@@ -37,7 +38,7 @@ export class ColorPanelComponent {
 
     private rgbArray: string[]; // represents R/G/B decimal values
 
-    constructor(public colorService: ColorService) {
+    constructor(public colorService: ColorService, public hotKeyService: HotkeyService) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }

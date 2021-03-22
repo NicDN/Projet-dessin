@@ -12,7 +12,7 @@ import { Subject, throwError } from 'rxjs';
 import { SaveDialogComponent } from './save-dialog.component';
 
 // tslint:disable: no-string-literal
-fdescribe('SaveDialogComponent', () => {
+describe('SaveDialogComponent', () => {
     let component: SaveDialogComponent;
     let fixture: ComponentFixture<SaveDialogComponent>;
 

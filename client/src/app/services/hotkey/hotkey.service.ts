@@ -38,7 +38,7 @@ type ShortcutManager = {
 })
 export class HotkeyService {
     private shortCutManager: ShortcutManager;
-    private listenToKeyEvents: boolean = true;
+    listenToKeyEvents: boolean = true;
 
     constructor(
         public router: Router,

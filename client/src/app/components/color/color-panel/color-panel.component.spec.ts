@@ -1,7 +1,9 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 import { ColorPanelComponent } from './color-panel.component';
@@ -14,15 +16,18 @@ describe('ColorPanelComponent', () => {
     const DEFAULT_COLOR: Color = { rgbValue: 'rgb(1,2,3)', opacity: 1 };
     const DEFAULT_RGB_ARRAY = ['1', '2', '3'];
     let colorService: ColorService;
+    let routerSpy: jasmine.SpyObj<Router>;
 
     const CHANGED_RGB_VALUE = 'rgb(5,2,12)';
     let RGB_INDEX = 1;
 
     beforeEach(async(() => {
+        routerSpy = jasmine.createSpyObj('Router', ['']);
         TestBed.configureTestingModule({
             declarations: [ColorPanelComponent],
-            providers: [ColorService],
-            schemas: [NO_ERRORS_SCHEMA],
+            imports: [MatDialogModule],
+            providers: [ColorService, { provide: Router, useValue: routerSpy }],
+            schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));
 

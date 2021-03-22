@@ -39,7 +39,10 @@
                         }}</mat-label>
                     <input type="text" class="rgb-input" maxlength="2" [value]="getRGB(index)"
                         (input)="applyRGBInput($event.target.value, index)"
-                        [ngStyle]="rgbInput.inputError && { color: 'red' }" matInput />
+                        [ngStyle]="rgbInput.inputError && { color: 'red' }" matInput 
+                        (focusout)="this.hotKeyService.listenToKeyEvents=true"
+                        (focusin)="this.hotKeyService.listenToKeyEvents=false"
+                        />
                 </mat-form-field>
             </form>
 
