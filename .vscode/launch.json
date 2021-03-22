@@ -13,6 +13,20 @@
             "sourceMaps": true,
             "localRoot": "${workspaceFolder}/server",
             "type": "pwa-node"
+        },
+
+        {
+            "cwd": "${workspaceFolder}/server",
+            "env": {
+                "TS_NODE_PROJECT": "./tsconfig.test.json"
+            },
+            "args": ["--config", "test/.mocharc.json", "--node-env", "test"],
+            "internalConsoleOptions": "openOnSessionStart",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/server/node_modules/mocha/bin/_mocha",
+            "request": "launch",
+            "skipFiles": ["<node_internals>/**"],
+            "type": "pwa-node"
         }
     ]
 }

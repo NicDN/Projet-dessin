@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core';
 import { DrawingForm } from '@common/communication/drawing-form';
 import * as Httpstatus from 'http-status-codes';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class CarouselService {
     private readonly NO_SERVER_RESPONSE: number = 0;
-    private readonly BASE_URL: string = 'http://localhost:3000/api/database';
+    private readonly BASE_URL: string = 'http://localhost:3000/api/server';
 
     constructor(private http: HttpClient) {}
 
@@ -24,27 +24,25 @@ export class CarouselService {
     }
 
     deleteDrawingFromServer(id: string): Observable<{}> {
-        const url = `${this.BASE_URL}/delete/${id}`;
+        const url = `${this.BASE_URL}/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return (error: Error): Observable<T> => {
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
-                return throwError('NO_SERVER_RESPONSE');
+                return throwError("Impossible d'accéder au serveur.");
             }
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR) {
-                return throwError('INTERNAL_SERVER_ERROR');
+                return throwError('Le dessin est inexistant sur le serveur.');
             }
-
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.NOT_FOUND) {
-                return throwError('NOT_ON_DATABASE');
+                return throwError('Les informations du dessin sont inexistantes sur la base de données');
             }
-
             if ((error as HttpErrorResponse).status === Httpstatus.StatusCodes.BAD_GATEWAY) {
-                return throwError('FAILED_TO_DELETE_DRAWING');
+                return throwError("Erreur lors de l'accès à la base de données.");
             }
-            return of(result as T);
+            return throwError("Une erreur s'est produite");
         };
     }
 }

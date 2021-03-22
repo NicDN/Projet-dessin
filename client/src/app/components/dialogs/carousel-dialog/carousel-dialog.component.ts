@@ -2,8 +2,8 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { MatChipInputEvent, MatChipList } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
@@ -12,18 +12,21 @@ import { DrawingForm } from '@common/communication/drawing-form';
     styleUrls: ['./carousel-dialog.component.scss'],
 })
 export class CarouselDialogComponent implements OnInit {
-    @ViewChild('chipList') chipList: MatChipList;
+    @ViewChild('tagList') tagList: MatChipList;
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
     drawings: DrawingForm[] = [];
-
     searchedTags: string[] = [];
     loading: boolean = false;
 
     private startIndex: number = 0;
 
-    constructor(public carouselService: CarouselService, private snackBar: MatSnackBar, public dialogRef: MatDialogRef<CarouselDialogComponent>) {}
+    constructor(
+        private carouselService: CarouselService,
+        private snackBarService: SnackBarService,
+        private dialogRef: MatDialogRef<CarouselDialogComponent>,
+    ) {}
 
     ngOnInit(): void {
         this.requestDrawings();
@@ -39,55 +42,53 @@ export class CarouselDialogComponent implements OnInit {
                 this.validateFilter();
             },
             (error) => {
-                if (error === 'NO_SERVER_RESPONSE') this.openSnackBar("Impossible d'accéder au serveur.", 'Fermer');
+                this.snackBarService.openSnackBar(error, 'Fermer');
                 this.loading = false;
-                // if (error === 'INTERNAL_SERVER_ERROR') this.openSnackBar("Erreur du serveur lors de l'accès aux dessins.", 'Fermer');
-                // TODO: no need for this line ?
             },
         );
     }
 
     private validateFilter(): void {
-        this.searchedTags.length !== 0
-            ? this.drawings.length === 0
-                ? (this.chipList.errorState = true)
-                : (this.chipList.errorState = false)
-            : (this.chipList.errorState = false);
+        if (this.searchedTags.length === 0) {
+            this.tagList.errorState = false;
+            return;
+        }
+
+        if (this.drawings.length === 0) {
+            this.tagList.errorState = true;
+        } else {
+            this.tagList.errorState = false;
+        }
     }
 
-    async forwardDrawings(): Promise<void> {
+    forwardDrawings(): void {
         this.startIndex++;
-        await this.requestDrawings();
+        this.requestDrawings();
     }
 
-    async backwardDrawings(): Promise<void> {
+    backwardDrawings(): void {
         this.startIndex--;
-        await this.requestDrawings();
+        this.requestDrawings();
     }
 
     removeTag(tag: string): void {
         const index = this.searchedTags.indexOf(tag);
         if (index >= 0) {
             this.searchedTags.splice(index, 1);
+            this.requestDrawings();
         }
-
-        this.requestDrawings();
     }
 
     addTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
 
-        // add tag to searchedTags array
-        if ((value || '').trim()) {
+        if (value.trim()) {
             this.searchedTags.push(value);
-        }
-        // Reset the input value
-        if (input) {
-            input.value = '';
+            this.requestDrawings();
         }
 
-        this.requestDrawings();
+        input.value = '';
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -103,14 +104,8 @@ export class CarouselDialogComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    clearTags(): void {
+    clearSearchedTags(): void {
         this.searchedTags = [];
         this.requestDrawings();
-    }
-
-    private openSnackBar(message: string, action: string): void {
-        this.snackBar.open(message, action, {
-            duration: 2000,
-        });
     }
 }

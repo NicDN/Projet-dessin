@@ -1,23 +1,5 @@
-<div>
-    <div class="divider">
-        <p>Nombre d'émissions par secondes</p>
-        <p>{{ tool.emissionRate }}</p>
-    </div>
-    <mat-slider [min]="tool.MIN_EMISSION_RATE" max="70" [value]="tool.emissionRate" (input)="updateEmissionRate($event)"></mat-slider>
-</div>
+<app-generic-slider [sliderSetting]="this.sprayCanSettings[0]"></app-generic-slider>
 <mat-divider></mat-divider>
-<div>
-    <div class="divider">
-        <p>Diamètre du jet</p>
-        <p>{{ tool.sprayDiameter }} pixels</p>
-    </div>
-    <mat-slider [min]="tool.MIN_SPRAY_DIAMETER" max="70" [value]="tool.sprayDiameter" (input)="updateSprayDiameter($event)"></mat-slider>
-</div>
+<app-generic-slider [sliderSetting]="this.sprayCanSettings[1]"></app-generic-slider>
 <mat-divider></mat-divider>
-<div>
-    <div class="divider">
-        <p>Diamètre des goutelettes</p>
-        <p>{{ tool.dropletsDiameter }} pixels</p>
-    </div>
-    <mat-slider [min]="tool.MIN_DROPLETS_DIAMETER" max="15" [value]="tool.dropletsDiameter" (input)="updateDropletsDiameter($event)"></mat-slider>
-</div>
+<app-generic-slider [sliderSetting]="this.sprayCanSettings[2]"></app-generic-slider>

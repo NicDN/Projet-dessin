@@ -14,9 +14,9 @@ export class DatabaseService {
         useUnifiedTopology: true,
     };
 
-    async start(): Promise<MongoClient | null> {
+    async start(url: string = DATABASE_URL): Promise<MongoClient | null> {
         try {
-            const client = await MongoClient.connect(DATABASE_URL, this.options);
+            const client = await MongoClient.connect(url, this.options);
             this.client = client;
             this.db = client.db(DATABASE_NAME);
         } catch {

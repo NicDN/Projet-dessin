@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 
@@ -14,7 +14,6 @@ interface TraceTypeOption {
     styleUrls: ['./trace-type-selector.component.scss'],
 })
 export class TraceTypeSelectorComponent {
-    @Output() traceType: EventEmitter<number> = new EventEmitter<number>();
     @Input() tool: Shape;
 
     constructor(public colorService: ColorService) {}
@@ -31,7 +30,7 @@ export class TraceTypeSelectorComponent {
     ];
 
     setActiveTraceType(traceType: TraceType): void {
-        this.traceType.emit(traceType);
+        this.tool.traceType = traceType;
     }
 
     getColor(toolTipContent: string): string {

@@ -6,10 +6,10 @@
                 <button id="arrow" mat-icon-button class="before" (click)="this.backwardDrawings()">
                     <mat-icon>navigate_before</mat-icon>
                 </button>
-                <h1 class="filter-error" *ngIf="this.chipList.errorState">Aucun dessin trouvé</h1>
-                <app-card-drawing-template *ngFor="let drawing of drawings" [drawingForm]="drawing"
+                <h1 class="filter-error" *ngIf="this.tagList.errorState">Aucun dessin trouvé</h1>
+                <app-card-drawing *ngFor="let drawing of drawings" [drawingForm]="drawing"
                     (closeCarousel)="this.closeDialog()" (requestDrawings)="this.requestDrawings()">
-                </app-card-drawing-template>
+                </app-card-drawing>
                 <button id="arrow" mat-icon-button class="next" (click)="this.forwardDrawings()">
                     <mat-icon>navigate_next</mat-icon>
                 </button>
@@ -17,21 +17,21 @@
         </div>
         <mat-form-field>
             <mat-label>Filtrer avec étiquettes</mat-label>
-            <mat-chip-list #chipList>
+            <mat-chip-list #tagList>
                 <mat-chip *ngFor="let tag of searchedTags" selectable="true" removable="true"
                     (removed)="this.removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input placeholder="Entrez une étiquette" [matChipInputFor]="chipList"
+                <input placeholder="Entrez une étiquette" [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
                     (matChipInputTokenEnd)="this.addTag($event)" />
             </mat-chip-list>
 
-            <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearTags()">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchedTags()">
                 <mat-icon>close</mat-icon>
             </button>
-            <mat-error *ngIf="chipList.errorState">Aucun dessin trouvé</mat-error>
+            <mat-error *ngIf="tagList.errorState">Aucun dessin trouvé</mat-error>
         </mat-form-field>
         <button mat-flat-button color="primary" class="close-btn" (click)="this.closeDialog()">Fermer</button>
 </div>
