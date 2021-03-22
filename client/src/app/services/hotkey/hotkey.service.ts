@@ -41,8 +41,8 @@ export class HotkeyService {
     private listenToKeyEvents: boolean = true;
 
     constructor(
-        public router: Router,
-        public drawingService: DrawingService,
+        private router: Router,
+        private drawingService: DrawingService,
         private toolService: ToolsService,
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
@@ -52,7 +52,7 @@ export class HotkeyService {
         this.observeDialogService();
     }
 
-    initializeShorcutManager(): void {
+    private initializeShorcutManager(): void {
         this.shortCutManager = {
             KeyR: {
                 action: () => this.toolService.setCurrentTool(this.toolService.rectangleSelectionService),
@@ -81,7 +81,7 @@ export class HotkeyService {
         };
     }
 
-    observeDialogService(): void {
+    private observeDialogService(): void {
         this.dialogService.listenToKeyEvents().subscribe((listenToKeyEvents) => {
             this.listenToKeyEvents = listenToKeyEvents;
         });
@@ -103,16 +103,16 @@ export class HotkeyService {
         event.returnValue = true; // To accept default web shortCutManager
     }
 
-    handleSelectAll(): void {
+    private handleSelectAll(): void {
         this.toolService.setCurrentTool(this.toolService.rectangleSelectionService);
         this.rectangleSelectionService.selectAll();
     }
 
-    handleCtrlO(): void {
+    private handleCtrlO(): void {
         this.currentRouteIsEditor(this.router.url) ? this.drawingService.handleNewDrawing() : this.router.navigate(['editor']);
     }
 
-    currentRouteIsEditor(url: string): boolean {
+    private currentRouteIsEditor(url: string): boolean {
         return url === '/editor';
     }
 }

@@ -2,6 +2,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Color } from './color';
+import { ShapePropreties } from './commands/shape-command/shape-command';
 import { MouseButton } from './tool';
 import { Vec2 } from './vec2';
 
@@ -15,9 +16,8 @@ export abstract class Shape extends DrawingTool {
     private endCoord: Vec2;
 
     traceType: TraceType;
-    alternateShape: boolean;
-    readonly dashSize: number = 2;
-    numberOfSides: number = 3;
+    alternateShape: boolean = false;
+    readonly DASH_SIZE: number = 2;
 
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
         super(drawingService, colorService, toolName);
@@ -36,8 +36,7 @@ export abstract class Shape extends DrawingTool {
         if (this.mouseDown) {
             this.endCoord = this.getPositionFromMouse(event);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.executeShapeCommand(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
-            // this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
+            this.draw(this.drawingService.baseCtx, this.beginCoord, this.endCoord);
         }
         this.mouseDown = false;
     }
@@ -69,7 +68,7 @@ export abstract class Shape extends DrawingTool {
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
-        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+        ctx.setLineDash([this.DASH_SIZE * 2, this.DASH_SIZE]);
 
         ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
         ctx.stroke();
@@ -85,14 +84,14 @@ export abstract class Shape extends DrawingTool {
 
         ctx.lineWidth = 1;
         ctx.strokeStyle = 'black';
-        ctx.setLineDash([this.dashSize * 2, this.dashSize]);
+        ctx.setLineDash([this.DASH_SIZE * 2, this.DASH_SIZE]);
 
         ctx.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
         ctx.stroke();
         ctx.restore();
     }
 
-    drawPreview(): void {
+    private drawPreview(): void {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
         this.draw(this.drawingService.previewCtx, this.beginCoord, this.endCoord);
@@ -110,12 +109,12 @@ export abstract class Shape extends DrawingTool {
         return { x: endCoordX, y: endCoordY };
     }
 
-    setFillColor(ctx: CanvasRenderingContext2D, color: Color): void {
+    private setFillColor(ctx: CanvasRenderingContext2D, color: Color): void {
         ctx.fillStyle = color.rgbValue;
         ctx.globalAlpha = color.opacity;
     }
 
-    setStrokeColor(ctx: CanvasRenderingContext2D, color: Color): void {
+    private setStrokeColor(ctx: CanvasRenderingContext2D, color: Color): void {
         ctx.strokeStyle = color.rgbValue;
         ctx.globalAlpha = color.opacity;
     }
@@ -124,11 +123,11 @@ export abstract class Shape extends DrawingTool {
         return { x: (end.x + begin.x) / 2, y: (end.y + begin.y) / 2 };
     }
 
-    getRadius(begin: number, end: number): number {
+    protected getRadius(begin: number, end: number): number {
         return Math.abs(end - begin) / 2;
     }
 
-    adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: number): void {
+    protected adjustToBorder(ctx: CanvasRenderingContext2D, radiuses: Vec2, begin: Vec2, end: Vec2, traceType: number): void {
         const thicknessAdjustment: number = traceType !== TraceType.FilledNoBordered ? ctx.lineWidth / 2 : 0;
         radiuses.x -= thicknessAdjustment;
         radiuses.y -= thicknessAdjustment;
@@ -144,6 +143,18 @@ export abstract class Shape extends DrawingTool {
         }
     }
 
-    abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
-    abstract executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    protected drawTraceType(shapePropreties: ShapePropreties): void {
+        if (shapePropreties.traceType !== TraceType.Bordered) {
+            this.setFillColor(shapePropreties.drawingContext, shapePropreties.mainColor);
+            shapePropreties.drawingContext.fill();
+        }
+        if (shapePropreties.traceType !== TraceType.FilledNoBordered) {
+            this.setStrokeColor(shapePropreties.drawingContext, shapePropreties.secondaryColor);
+            shapePropreties.drawingContext.stroke();
+        }
+        shapePropreties.drawingContext.restore();
+    }
+
+    protected abstract draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
+    abstract drawShape(shapePropreties: ShapePropreties): void;
 }

@@ -15,7 +15,7 @@ export const VERTICAL_OFFSET = 2;
 export abstract class Tool {
     mouseDownCoord: Vec2;
     mouseDown: boolean = false;
-    toolName: string;
+    toolName: string = '';
 
     constructor(protected drawingService: DrawingService, toolName: string) {
         this.toolName = toolName;

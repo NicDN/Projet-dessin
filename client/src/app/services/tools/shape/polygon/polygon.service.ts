@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { PolygonCommand, PolygonPropreties } from '@app/classes/commands/polygon-command/polygon-command';
-import { Shape, TraceType } from '@app/classes/shape';
+import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -13,18 +13,15 @@ export class PolygonService extends Shape {
     readonly MAX_SIDES: number = 12;
     readonly MIN_SIDES: number = 3;
 
-    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
+    numberOfSides: number = 3;
+
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Polygone');
     }
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand = new PolygonCommand(this, this.loadUpPropreties(ctx, begin, end));
-        polygonCommand.execute();
-        this.undoRedoService.addCommand(polygonCommand);
-    }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): PolygonPropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
-            drawingCtx: ctx,
+            drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,
             drawingThickness: this.thickness,
@@ -37,12 +34,18 @@ export class PolygonService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const polygonCommand: PolygonCommand = new PolygonCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const polygonCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         polygonCommand.execute();
+
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(polygonCommand);
+        }
     }
 
-    drawPolygon(polygonPropreties: PolygonPropreties): void {
-        polygonPropreties.drawingCtx.save();
+    drawShape(polygonPropreties: ShapePropreties): void {
+        if (polygonPropreties.numberOfSides === undefined) return;
+
+        polygonPropreties.drawingContext.save();
         polygonPropreties.isAlternateShape = true;
 
         const actualEndCoords: Vec2 = this.getTrueEndCoords(
@@ -55,28 +58,21 @@ export class PolygonService extends Shape {
             x: this.getRadius(polygonPropreties.beginCoords.x, actualEndCoords.x),
             y: this.getRadius(polygonPropreties.beginCoords.y, actualEndCoords.y),
         };
+
         const angle: number = (2 * Math.PI) / polygonPropreties.numberOfSides;
 
-        this.setContextParameters(polygonPropreties.drawingCtx, polygonPropreties.drawingThickness);
-        polygonPropreties.drawingCtx.beginPath();
-        this.adjustToBorder(polygonPropreties.drawingCtx, radiuses, polygonPropreties.beginCoords, actualEndCoords, polygonPropreties.traceType);
+        this.setContextParameters(polygonPropreties.drawingContext, polygonPropreties.drawingThickness);
+        polygonPropreties.drawingContext.beginPath();
+        this.adjustToBorder(polygonPropreties.drawingContext, radiuses, polygonPropreties.beginCoords, actualEndCoords, polygonPropreties.traceType);
+
         for (let i = 0; i <= polygonPropreties.numberOfSides; i++) {
-            polygonPropreties.drawingCtx.lineTo(center.x - radiuses.x * Math.sin(i * angle), center.y - radiuses.y * Math.cos(i * angle));
+            polygonPropreties.drawingContext.lineTo(center.x - radiuses.x * Math.sin(i * angle), center.y - radiuses.y * Math.cos(i * angle));
         }
 
-        if (polygonPropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(polygonPropreties.drawingCtx, polygonPropreties.mainColor);
-            polygonPropreties.drawingCtx.fill();
-        }
-
-        if (polygonPropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(polygonPropreties.drawingCtx, polygonPropreties.secondaryColor);
-            polygonPropreties.drawingCtx.stroke();
-        }
-        polygonPropreties.drawingCtx.restore();
+        this.drawTraceType(polygonPropreties);
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineJoin = 'round';

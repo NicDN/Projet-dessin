@@ -4,8 +4,8 @@ import { By } from '@angular/platform-browser';
 import { Tool } from '@app/classes/tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/pencil/pencil-service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ToolBarComponent } from './tool-bar.component';
 
@@ -15,6 +15,7 @@ describe('ToolBarComponent', () => {
     let toolsService: ToolsService;
     let undoRedoServiceStub: UndoRedoService;
     let tool: Tool;
+
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
@@ -38,8 +39,7 @@ describe('ToolBarComponent', () => {
 
     it('should call #toggleActive when a tool bar element is clicked', () => {
         const toolBarElement = fixture.debugElement.query(By.css('.list-item'));
-        spyOn(toolsService, 'setCurrentTool');
         toolBarElement.triggerEventHandler('click', tool);
-        expect(toolsService.setCurrentTool).toHaveBeenCalledWith(tool);
+        expect(toolsService.currentTool).toBeInstanceOf(PencilService);
     });
 });

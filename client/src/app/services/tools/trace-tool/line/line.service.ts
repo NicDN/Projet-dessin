@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LineCommand, LinePropreties } from '@app/classes/commands/line-command/line-command';
+import { TraceToolCommand, TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -14,17 +14,19 @@ const QUARTER_CIRCLE = 90;
     providedIn: 'root',
 })
 export class LineService extends TraceTool {
-    readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
-    readonly MAX_JUNCTION_DIAMETER: number = 5;
+    private readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
+    private readonly FORTHY_FIVE_DEGREE: number = 45;
+    private readonly HALF_FF_DEGREE: number = 22.5;
+    private readonly FULL_CIRCLE: number = 360;
 
-    isShiftDown: boolean = false;
-    canDoubleClick: boolean = false;
+    private isShiftDown: boolean = false;
+    private canDoubleClick: boolean = false;
 
     drawWithJunction: boolean;
     junctionDiameter: number;
 
-    pathData: Vec2[];
-    mousePosition: Vec2;
+    private pathData: Vec2[] = [];
+    private mousePosition: Vec2;
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
@@ -94,12 +96,12 @@ export class LineService extends TraceTool {
         }
     }
 
-    addPoint(): void {
+    private addPoint(): void {
         this.pathData.push(this.mousePosition);
         this.updatePreview();
     }
 
-    removePoint(): void {
+    private removePoint(): void {
         const MIN_LENGTH_FOR_REMOVING_DOT = 2;
         if (this.pathData.length > MIN_LENGTH_FOR_REMOVING_DOT) {
             this.pathData.pop();
@@ -108,7 +110,7 @@ export class LineService extends TraceTool {
         }
     }
 
-    finishLine(): void {
+    private finishLine(): void {
         const MAX_OFFSET = 20;
         const firstPos = this.pathData[0];
         const dx = Math.abs(firstPos.x - this.mousePosition.x);
@@ -120,7 +122,7 @@ export class LineService extends TraceTool {
             this.pathData.push(this.pathData[0]);
         }
 
-        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(this.drawingService.baseCtx, this.pathData));
+        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpPropreties(this.drawingService.baseCtx, this.pathData), this);
         lineCommand.execute();
 
         this.undoRedoService.addCommand(lineCommand);
@@ -135,47 +137,47 @@ export class LineService extends TraceTool {
         this.drawLine(this.drawingService.previewCtx, this.pathData);
     }
 
-    calculateAngle(point: Vec2): number {
-        const FULL_CIRCLE = 360;
-
+    private calculateAngle(point: Vec2): number {
         const dx = this.mousePosition.x - point.x;
         const dy = this.mousePosition.y - point.y;
         const rads = Math.atan2(dx, dy);
         let degrees = (rads * HALF_CIRCLE) / Math.PI;
 
-        while (degrees < 0) degrees += FULL_CIRCLE;
+        while (degrees < 0) degrees += this.FULL_CIRCLE;
         return degrees;
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const lineCommand: LineCommand = new LineCommand(this, this.loadUpProprities(ctx, path));
+        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpPropreties(ctx, path), this);
         lineCommand.execute();
     }
 
-    drawLineExecute(linePropreties: LinePropreties): void {
-        this.setContext(linePropreties.drawingContext, linePropreties);
-        linePropreties.drawingContext.beginPath();
+    drawTrace(drawingToolPropreties: TraceToolPropreties): void {
+        if (drawingToolPropreties.junctionDiameter === undefined) return;
+        this.setContext(drawingToolPropreties.drawingContext, drawingToolPropreties);
+        drawingToolPropreties.drawingContext.beginPath();
 
-        for (const point of linePropreties.drawingPath) {
-            linePropreties.drawingContext.lineWidth = linePropreties.drawingThickness;
-            linePropreties.drawingContext.lineTo(point.x, point.y);
-            if (linePropreties.drawWithJunction) {
+        for (const point of drawingToolPropreties.drawingPath) {
+            drawingToolPropreties.drawingContext.lineWidth = drawingToolPropreties.drawingThickness;
+            drawingToolPropreties.drawingContext.lineTo(point.x, point.y);
+            if (drawingToolPropreties.drawWithJunction) {
                 const circle = new Path2D();
-                circle.arc(point.x, point.y, linePropreties.junctionDiameter, 0, 2 * Math.PI);
-                linePropreties.drawingContext.fill(circle);
+                circle.arc(point.x, point.y, drawingToolPropreties.junctionDiameter, 0, 2 * Math.PI);
+                drawingToolPropreties.drawingContext.fill(circle);
             }
         }
-        linePropreties.drawingContext.stroke();
+        drawingToolPropreties.drawingContext.stroke();
     }
 
-    private setContext(ctx: CanvasRenderingContext2D, linePropreties: LinePropreties): void {
-        ctx.globalAlpha = linePropreties.drawingColor.opacity;
-        ctx.strokeStyle = linePropreties.drawingColor.rgbValue;
-        ctx.fillStyle = linePropreties.drawingColor.rgbValue;
-        ctx.lineJoin = linePropreties.drawingContext.lineCap = 'round';
+    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: TraceToolPropreties): void {
+        if (drawingToolPropreties.drawingColor === undefined) return;
+        ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
+        ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
+        ctx.fillStyle = drawingToolPropreties.drawingColor.rgbValue;
+        ctx.lineJoin = drawingToolPropreties.drawingContext.lineCap = 'round';
     }
 
-    loadUpProprities(ctx: CanvasRenderingContext2D, path: Vec2[]): LinePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,
@@ -186,10 +188,8 @@ export class LineService extends TraceTool {
         };
     }
 
-    lockLine(): void {
-        const FORTHY_FIVE_DEGREE = 45;
-        const HALF_FF_DEGREE = 22.5;
-
+    private lockLine(): void {
+        if (this.pathData.length < 2) return;
         const lastSelectedPoint = this.pathData[this.pathData.length - 2];
         const angle = this.calculateAngle(lastSelectedPoint);
 
@@ -198,13 +198,13 @@ export class LineService extends TraceTool {
         const dx = this.mousePosition.x - lastSelectedPoint.x;
 
         const quarterAngle = Math.abs(Math.abs(angle - HALF_CIRCLE) - QUARTER_CIRCLE);
-        const diagonalAngle = Math.abs(Math.abs(angle - HALF_CIRCLE - FORTHY_FIVE_DEGREE) - QUARTER_CIRCLE);
+        const diagonalAngle = Math.abs(Math.abs(angle - HALF_CIRCLE - this.FORTHY_FIVE_DEGREE) - QUARTER_CIRCLE);
 
-        if (quarterAngle <= HALF_FF_DEGREE) {
+        if (quarterAngle <= this.HALF_FF_DEGREE) {
             tempMousePosition.y = lastSelectedPoint.y;
-        } else if (quarterAngle >= QUARTER_CIRCLE - HALF_FF_DEGREE) {
+        } else if (quarterAngle >= QUARTER_CIRCLE - this.HALF_FF_DEGREE) {
             tempMousePosition.x = lastSelectedPoint.x;
-        } else if (diagonalAngle <= HALF_FF_DEGREE) {
+        } else if (diagonalAngle <= this.HALF_FF_DEGREE) {
             tempMousePosition.y = lastSelectedPoint.y - dx;
         } else {
             tempMousePosition.y = lastSelectedPoint.y + dx;

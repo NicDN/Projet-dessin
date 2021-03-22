@@ -3,14 +3,14 @@ import { Tool } from '@app/classes/tool';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { Observable, Subject } from 'rxjs';
-import { EraserService } from './eraser/eraser.service';
-import { LineService } from './line/line.service';
-import { PencilService } from './pencil/pencil-service';
 import { EllipseSelectionService } from './selection/ellipse-selection.service';
 import { RectangleSelectionService } from './selection/rectangle-selection.service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from './shape/polygon/polygon.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';
+import { EraserService } from './trace-tool/eraser/eraser.service';
+import { LineService } from './trace-tool/line/line.service';
+import { PencilService } from './trace-tool/pencil/pencil.service';
 @Injectable({
     providedIn: 'root',
 })
