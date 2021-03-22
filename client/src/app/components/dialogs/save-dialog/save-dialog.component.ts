@@ -1,5 +1,5 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -12,8 +12,6 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
     styleUrls: ['./save-dialog.component.scss'],
 })
 export class SaveDialogComponent {
-    @ViewChild('chipList') chipList: ElementRef;
-
     private readonly TAG_MAX_LENGTH: number = 10;
     private readonly TAG_MIN_LENGTH: number = 2;
 

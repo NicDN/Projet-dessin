@@ -31,7 +31,7 @@ describe('CarouselDialogComponent', () => {
         { id: '3', name: 'drawingThree', tags: TAGS_MOCK, drawingData: 'base64' },
     ];
 
-    const chipList: MatChipList = {
+    const tagList: MatChipList = {
         errorState: false,
     } as MatChipList;
 
@@ -60,7 +60,7 @@ describe('CarouselDialogComponent', () => {
         component['startIndex'] = 0;
         component.searchedTags = ['one', 'two', 'three', 'four', 'five', 'six'];
 
-        component.chipList = chipList;
+        component.tagList = tagList;
 
         fixture.detectChanges();
     });
@@ -115,25 +115,25 @@ describe('CarouselDialogComponent', () => {
 
     it('#validateFilter removes the error state of the filter form field if there is no tag to filter', () => {
         component.searchedTags = [];
-        component.chipList.errorState = true;
+        component.tagList.errorState = true;
         component['validateFilter']();
-        expect(component.chipList.errorState).toBeFalse();
+        expect(component.tagList.errorState).toBeFalse();
     });
 
     it('#validateFilter removes the error state of the filter form field there are filtered drawings displayed', () => {
         component.searchedTags.length = 1; // filter with one tag
         component.drawings.length = 1; // one drawing filtered is displayed
-        component.chipList.errorState = true;
+        component.tagList.errorState = true;
         component['validateFilter']();
-        expect(component.chipList.errorState).toBeFalse();
+        expect(component.tagList.errorState).toBeFalse();
     });
 
     it('#validateFilter removes the error state of the filter form field if there are no filtered drawings to dislay', () => {
         component.searchedTags.length = 1; // filter with one tag
         component.drawings.length = 0; // no drawing filtered is displayed
-        component.chipList.errorState = false;
+        component.tagList.errorState = false;
         component['validateFilter']();
-        expect(component.chipList.errorState).toBeTrue();
+        expect(component.tagList.errorState).toBeTrue();
     });
 
     it('#removeTag should remove a tag correctly if the tag to be removed is in the array of tags', () => {

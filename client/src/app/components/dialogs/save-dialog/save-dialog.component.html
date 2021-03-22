@@ -10,7 +10,7 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Ajoutez des étiquettes</mat-label>
-            <mat-chip-list #chipList ngDefaultControl>
+            <mat-chip-list #tagList ngDefaultControl>
                 <mat-chip *ngFor="let tag of tags" selectable="true" removable="true" (removed)="this.removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
@@ -19,7 +19,7 @@
                     pattern="[a-zA-Z ]*"
                     placeholder="Ajoutez des étiquettes"
                     type="text"
-                    [matChipInputFor]="chipList"
+                    [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     [matChipInputAddOnBlur]="true"
                     (matChipInputTokenEnd)="addTag($event)"
