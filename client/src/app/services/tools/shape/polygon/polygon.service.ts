@@ -5,13 +5,14 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class PolygonService extends Shape {
-    subscription: Subscription;
+    readonly MAX_SIDES: number = 12;
+    readonly MIN_SIDES: number = 3;
+
     constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Polygone');
     }

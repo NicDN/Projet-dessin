@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
@@ -19,6 +18,7 @@ import { HotkeyService } from './hotkey.service';
 // tslint:disable: no-string-literal
 describe('HotkeyService', () => {
     let service: HotkeyService;
+
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
     let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
@@ -62,8 +62,10 @@ describe('HotkeyService', () => {
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
-        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
+        rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
+
+        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         dialogServiceSpyObj['listenToKeyEvents'].and.returnValue(of(booleanStub));
 
@@ -204,9 +206,9 @@ describe('HotkeyService', () => {
         expect(service.onKeyDown(notAssignedKeyboardEvent3)).toBeFalsy();
     });
 
-    it('#handleSelectAll should set current tool to rectangleSelectionService and call the selectAll method from it', () => {
+    it('#handleSelectAll should call appriopriate function to select all drawing', () => {
         service.handleSelectAll();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleSelectionService);
         expect(rectangleSelectionServiceSpyObj.selectAll).toHaveBeenCalled();
     });
 });

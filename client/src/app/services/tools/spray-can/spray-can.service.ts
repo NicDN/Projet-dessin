@@ -15,12 +15,18 @@ export class SprayCanService extends TraceTool {
     readonly MIN_DROPLETS_DIAMETER: number = 3;
     readonly MIN_SPRAY_DIAMETER: number = 15;
     readonly MIN_EMISSION_RATE: number = 25;
+
+    readonly MAX_DROPLETS_DIAMETER: number = 15;
+    readonly MAX_SPRAY_DIAMETER: number = 70;
+    readonly MAX_EMISSION_RATE: number = 70;
+
     readonly ONESECMS: number = 1000;
     readonly CIRCLENUMBER: number = 40;
 
     emissionRate: number = this.MIN_EMISSION_RATE;
     sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
     dropletsDiameter: number = this.MIN_DROPLETS_DIAMETER;
+
     private timer: ReturnType<typeof setInterval>;
     private cleanPathData: Vec2[] = [];
     private pathData: Vec2[] = [];

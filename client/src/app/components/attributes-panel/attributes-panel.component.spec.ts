@@ -1,11 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingTool } from '@app/classes/drawing-tool';
-import { Shape, TraceType } from '@app/classes/shape';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -19,13 +17,6 @@ describe('AttributesPanelComponent', () => {
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
-    const ellipseDrawingService: EllipseDrawingService = new EllipseDrawingService(
-        new DrawingService(),
-        new ColorService(),
-        new UndoRedoService(new DrawingService()),
-    );
-
     const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
@@ -40,7 +31,7 @@ describe('AttributesPanelComponent', () => {
         fixture = TestBed.createComponent(AttributesPanelComponent);
         component = fixture.componentInstance;
         toolsService = TestBed.inject(ToolsService);
-        component.currentTool = new DrawingTool(new DrawingService(), new ColorService(), 'drawing tool for testing');
+        component.currentTool = drawingTool;
         fixture.detectChanges();
     });
     it('should create', () => {
@@ -55,43 +46,8 @@ describe('AttributesPanelComponent', () => {
         expect(component.currentTool).toBe(expectedCurrentTool);
     }));
 
-    it('#setThickness should set the thickness correctly', () => {
-        const EXPECTED_THICKNESS = 10;
-        component.setThickness(EXPECTED_THICKNESS);
-        expect((component.currentTool as DrawingTool).thickness).toBe(EXPECTED_THICKNESS);
-    });
-
-    it('#setTraceType should set the trace type correctly', () => {
-        component.currentTool = ellipseDrawingService;
-        const expectedTraceType: TraceType = TraceType.Bordered;
-        component.setTraceType(expectedTraceType);
-        expect((component.currentTool as Shape).traceType).toBe(expectedTraceType);
-    });
-
-    it('#setLineJunctionDiameter should set the line junction diameter correctly', () => {
-        component.currentTool = lineService;
-        const EXPECTED_LINE_DIAMETER = 10;
-        component.setLineJunctionDiameter(EXPECTED_LINE_DIAMETER);
-        expect((component.currentTool as LineService).junctionDiameter).toBe(EXPECTED_LINE_DIAMETER);
-    });
-
-    it('#setJunctionChecked should set the type of line junction correctly', () => {
-        component.currentTool = lineService;
-        const expectedJunction = false;
-        (component.currentTool as LineService).drawWithJunction = !expectedJunction;
-        component.setJunctionChecked(expectedJunction);
-        expect((component.currentTool as LineService).drawWithJunction).toBe(expectedJunction);
-    });
-
-    it('#setNumberOfSides should set the number of sides of a polygon correctly', () => {
-        component.currentTool = polygonService;
-        const expectedNumberOfSides = 3;
-        component.setNumberOfSides(expectedNumberOfSides);
-        expect((component.currentTool as Shape).numberOfSides).toBe(expectedNumberOfSides);
-    });
-
     it('#shapeIsActive should verify that a shape is active', () => {
-        component.currentTool = ellipseDrawingService;
+        component.currentTool = polygonService;
         expect(component.shapeIsActive()).toBeTrue();
     });
 
@@ -101,9 +57,33 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#needsTraceThickness should verify that the tool needs a thickness', () => {
-        component.currentTool = drawingTool;
         expect(component.needsTraceThickness()).toBeTrue();
         component.currentTool = toolsService.sprayCanService;
         expect(component.needsTraceThickness()).toBeFalse();
+    });
+
+    it('thicknessSetting should call  #getAttribute correctly ', () => {
+        const EXPECTED_THICKNESS = 10;
+        (component.currentTool as DrawingTool).thickness = EXPECTED_THICKNESS;
+        expect(component.thicknessSetting.getAttribute()).toBe(EXPECTED_THICKNESS);
+    });
+
+    it('polygonSetting should call  #getAttribute correctly ', () => {
+        component.currentTool = polygonService;
+        const EXPECTED_NUMBER_OF_SIDES = 10;
+        (component.currentTool as PolygonService).numberOfSides = EXPECTED_NUMBER_OF_SIDES;
+        expect(component.polygonSetting.getAttribute()).toBe(EXPECTED_NUMBER_OF_SIDES);
+    });
+
+    it('thicknessSetting should call  #action correctly ', () => {
+        const EXPECTED_VALUE = 10;
+        component.thicknessSetting.action(EXPECTED_VALUE);
+        expect((component.currentTool as DrawingTool).thickness).toBe(EXPECTED_VALUE);
+    });
+
+    it('polygonSetting should call  #action correctly ', () => {
+        const EXPECTED_VALUE = 10;
+        component.polygonSetting.action(EXPECTED_VALUE);
+        expect((component.currentTool as PolygonService).numberOfSides).toBe(EXPECTED_VALUE);
     });
 });

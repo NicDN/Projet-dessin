@@ -28,7 +28,7 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
-import { CardDrawingTemplateComponent } from './components/card-drawing-template/card-drawing-template.component';
+import { CardDrawingComponent } from './components/card-drawing/card-drawing.component';
 import { ColorPaletteComponent } from './components/color/color-palette/color-palette.component';
 import { ColorPanelComponent } from './components/color/color-panel/color-panel.component';
 import { ColorSliderComponent } from './components/color/color-slider/color-slider.component';
@@ -45,10 +45,9 @@ import { ResizeContainerComponent } from './components/resize-container/resize-c
 import { SelectionOptionsComponent } from './components/selection-options/selection-options.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
-import { PolygonSidesSelectorComponent } from './components/tool-settings/polygon-sides-selector/polygon-sides-selector.component';
+import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
-import { ThicknessSelectorComponent } from './components/tool-settings/thickness-selector/thickness-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 
@@ -65,7 +64,6 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ResizeContainerComponent,
         ToolBarComponent,
         OptionBarComponent,
-        ThicknessSelectorComponent,
         TraceTypeSelectorComponent,
         LineSettingsSelectorComponent,
         ColorSliderComponent,
@@ -73,14 +71,13 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         SprayCanSettingsSelectorComponent,
         UndoRedoComponent,
         EyeDropperComponent,
-
-        PolygonSidesSelectorComponent,
         CarouselDialogComponent,
         SaveDialogComponent,
         ExportDialogComponent,
-        CardDrawingTemplateComponent,
+        CardDrawingComponent,
         SelectionSelectorComponent,
         SelectionOptionsComponent,
+        GenericSliderComponent,
     ],
     imports: [
         BrowserModule,
