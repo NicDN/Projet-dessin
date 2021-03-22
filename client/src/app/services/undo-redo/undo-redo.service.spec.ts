@@ -3,7 +3,7 @@ import { BoxSize } from '@app/classes/box-size';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { UndoRedoService } from './undo-redo.service';
 
 export class TestCommand extends AbstractCommand {
@@ -202,5 +202,11 @@ describe('UndoRedoService', () => {
         service['undoneList'].push(baseLineCommandTmp);
         service['undoneList'].push(baseLineCommandTmp);
         expect(service.redoListIsEmpty()).toBeFalse();
+    });
+
+    it('#sendUndoRedoNotif should return an observable subject', () => {
+        const expectedSubject: Subject<void> = new Subject<void>();
+        service['updateUndoRedoComponent'] = expectedSubject;
+        expect(service.newUndoRedoSignals()).toEqual(expectedSubject.asObservable());
     });
 });
