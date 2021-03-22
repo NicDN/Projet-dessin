@@ -10,7 +10,7 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Ajoutez des étiquettes</mat-label>
-            <mat-chip-list #chipList ngDefaultControl>
+            <mat-chip-list #tagList ngDefaultControl>
                 <mat-chip *ngFor="let tag of tags" selectable="true" removable="true" (removed)="this.removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
@@ -19,7 +19,7 @@
                     pattern="[a-zA-Z ]*"
                     placeholder="Ajoutez des étiquettes"
                     type="text"
-                    [matChipInputFor]="chipList"
+                    [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     [matChipInputAddOnBlur]="true"
                     (matChipInputTokenEnd)="addTag($event)"
@@ -37,13 +37,13 @@
             <p>Règles pour avoir une étiquette valide:</p>
             <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum</mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum</mat-list-item>
-            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Ne doit pas contenir de chiffres</mat-list-item>
-            <mat-list-item [class.error]="tagFormControl.hasError('UniqueTagValidator')" role="listitem">Ne doit pas être une étiquette dupliquée</mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Doit contenir uniquement des lettres</mat-list-item>
+            <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée</mat-list-item>
         </mat-list>
     </div>
 
     <div class="bottom-div">
-        <button
+        <button 
             mat-flat-button
             color="primary"
             class="save-canvas-btn"

@@ -4,6 +4,7 @@ import * as cors from 'cors';
 import * as express from 'express';
 import { inject, injectable } from 'inversify';
 import * as logger from 'morgan';
+import 'reflect-metadata';
 import * as swaggerJSDoc from 'swagger-jsdoc';
 import * as swaggerUi from 'swagger-ui-express';
 import { DrawingsController } from './controllers/drawings/drawings.controller';
@@ -15,7 +16,7 @@ export class Application {
     private readonly swaggerOptions: swaggerJSDoc.Options;
     app: express.Application;
 
-    constructor(@inject(TYPES.DrawingsController) private databaseController: DrawingsController) {
+    constructor(@inject(TYPES.DrawingsController) private drawingsController: DrawingsController) {
         this.app = express();
 
         this.swaggerOptions = {
@@ -37,8 +38,8 @@ export class Application {
     private config(): void {
         // Middlewares configuration
         this.app.use(logger('dev'));
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(bodyParser.json({ limit: '50mb' }));
+        this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
         this.app.use(cookieParser());
         this.app.use(cors());
     }
@@ -46,7 +47,7 @@ export class Application {
     bindRoutes(): void {
         // Notre application utilise le routeur de notre API `Index`
         this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(this.swaggerOptions)));
-        this.app.use('/api/database', this.databaseController.router);
+        this.app.use('/api/server', this.drawingsController.router);
         this.errorHandling();
     }
 
