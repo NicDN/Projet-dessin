@@ -8,6 +8,11 @@ export abstract class TraceTool extends DrawingTool {
     constructor(drawingService: DrawingService, colorService: ColorService, toolName: string) {
         super(drawingService, colorService, toolName);
     }
-    protected abstract drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void;
-    abstract drawTrace(traceToolPropreties: TraceToolPropreties): void;
+    protected drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+        return;
+    }
+
+    drawTrace(traceToolPropreties: TraceToolPropreties): void {
+        return;
+    }
 }

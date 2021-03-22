@@ -3,6 +3,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { Subject } from 'rxjs';
 import { EyeDropperService } from './eye-dropper.service';
 
 // tslint:disable: no-string-literal no-any
@@ -83,5 +84,11 @@ describe('EyeDropperService', () => {
         service['getImageData']({ x: MOUSE_VALUE, y: MOUSE_VALUE });
         expect(service.currentPixelData).toEqual(currentPixelDataStub);
         expect(sendNotifColorSpy).toHaveBeenCalled();
+    });
+
+    it('#newIncomingColor should return a observable subject', () => {
+        const expectedSubject: Subject<void> = new Subject<void>();
+        service['subject'] = expectedSubject;
+        expect(service.newIncomingColor()).toEqual(expectedSubject.asObservable());
     });
 });
