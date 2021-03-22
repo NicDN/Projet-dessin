@@ -1,6 +1,6 @@
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ResizeCommand } from './resize-command/resize-command';
 
 export class BaseLineCommand extends AbstractCommand {
     constructor(private drawingService: DrawingService, private image: HTMLImageElement) {

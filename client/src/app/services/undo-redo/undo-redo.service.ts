@@ -1,20 +1,37 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class UndoRedoService {
-    commandList: AbstractCommand[] = [];
-    undoneList: AbstractCommand[] = [];
-    canUndoRedo: boolean = true;
-    subscription: Subscription;
+    private commandList: AbstractCommand[] = [];
+    private undoneList: AbstractCommand[] = [];
+    private canUndoRedo: boolean = true;
+
+    private updateUndoRedoComponent: Subject<void> = new Subject<void>();
 
     constructor(private drawingService: DrawingService) {
-        this.subscription = this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
+        this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
             this.setBaseLine(baseLineCommand);
         });
+    }
+
+    private sendUndoRedoNotif(): void {
+        this.updateUndoRedoComponent.next();
+    }
+
+    newUndoRedoSignals(): Observable<void> {
+        return this.updateUndoRedoComponent.asObservable();
+    }
+
+    commandListIsEmpty(): boolean {
+        return this.commandList.length === 1;
+    }
+
+    redoListIsEmpty(): boolean {
+        return this.undoneList.length === 0;
     }
 
     disableUndoRedo(): void {
@@ -28,6 +45,7 @@ export class UndoRedoService {
     addCommand(command: AbstractCommand): void {
         this.undoneList = [];
         this.commandList.push(command);
+        this.sendUndoRedoNotif();
     }
 
     undo(): void {
@@ -39,6 +57,7 @@ export class UndoRedoService {
             this.undoneList.push(undoAction);
             this.executeAllCommands();
         }
+        this.sendUndoRedoNotif();
     }
 
     redo(): void {
@@ -50,15 +69,17 @@ export class UndoRedoService {
                 this.executeAllCommands();
             }
         }
+        this.sendUndoRedoNotif();
     }
 
-    setBaseLine(baseLineCommand: AbstractCommand): void {
+    private setBaseLine(baseLineCommand: AbstractCommand): void {
         this.commandList = [];
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
+        this.sendUndoRedoNotif();
     }
 
-    executeAllCommands(): void {
+    private executeAllCommands(): void {
         this.drawingService.clearCanvas(this.drawingService.baseCtx);
         for (const command of this.commandList) {
             command.execute();

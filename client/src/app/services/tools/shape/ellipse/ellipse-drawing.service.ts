@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { EllipseCommand, EllipsePropreties } from '@app/classes/commands/ellipse-command/ellipse-command';
-import { Shape, TraceType } from '@app/classes/shape';
+import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -15,17 +15,14 @@ export class EllipseDrawingService extends Shape {
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
+        const ellipseCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         ellipseCommand.execute();
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(ellipseCommand);
+        }
     }
 
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const ellipseCommand: EllipseCommand = new EllipseCommand(this, this.loadUpPropreties(ctx, begin, end));
-        ellipseCommand.execute();
-        this.undoRedoService.addCommand(ellipseCommand);
-    }
-
-    drawEllipse(ellipsePropreties: EllipsePropreties): void {
+    drawShape(ellipsePropreties: ShapePropreties): void {
         const actualEndCoords: Vec2 = this.getTrueEndCoords(
             ellipsePropreties.beginCoords,
             ellipsePropreties.endCoords,
@@ -45,18 +42,10 @@ export class EllipseDrawingService extends Shape {
 
         ellipsePropreties.drawingContext.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
-        if (ellipsePropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(ellipsePropreties.drawingContext, ellipsePropreties.mainColor);
-            ellipsePropreties.drawingContext.fill();
-        }
-        if (ellipsePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(ellipsePropreties.drawingContext, ellipsePropreties.secondaryColor);
-            ellipsePropreties.drawingContext.stroke();
-        }
-        ellipsePropreties.drawingContext.restore();
+        this.drawTraceType(ellipsePropreties);
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): EllipsePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             drawingContext: ctx,
             beginCoords: begin,
@@ -69,7 +58,7 @@ export class EllipseDrawingService extends Shape {
         };
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineCap = 'round';

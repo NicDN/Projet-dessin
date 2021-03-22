@@ -1,9 +1,15 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
-import { EllipseDrawingService } from '@app/services/tools/shape/ellipse/ellipse-drawing.service';
 
-export interface EllipsePropreties {
+export enum ShapeType {
+    Rectangle = 1,
+    Ellipse = 2,
+    Polygon = 3,
+}
+
+export interface ShapePropreties {
     drawingContext: CanvasRenderingContext2D;
     beginCoords: Vec2;
     endCoords: Vec2;
@@ -12,14 +18,15 @@ export interface EllipsePropreties {
     secondaryColor: Color;
     isAlternateShape: boolean;
     traceType: number;
+    numberOfSides?: number;
 }
 
-export class EllipseCommand extends AbstractCommand {
-    constructor(private ellipseDrawingService: EllipseDrawingService, private ellipsePropreties: EllipsePropreties) {
+export class ShapeCommand extends AbstractCommand {
+    constructor(private shapePropreties: ShapePropreties, private shape: Shape) {
         super();
     }
 
     execute(): void {
-        this.ellipseDrawingService.drawEllipse(this.ellipsePropreties);
+        this.shape.drawShape(this.shapePropreties);
     }
 }
