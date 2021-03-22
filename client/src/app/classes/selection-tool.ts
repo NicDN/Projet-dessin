@@ -218,8 +218,8 @@ export abstract class SelectionTool extends Tool {
             x: Math.max(this.initialTopLeft.x, this.initialBottomRight.x),
             y: Math.max(this.initialTopLeft.y, this.initialBottomRight.y),
         };
-        this.initialTopLeft = this.finalTopLeft;
-        this.initialBottomRight = this.finalBottomRight;
+        this.initialTopLeft = { x: this.finalTopLeft.x, y: this.finalTopLeft.y };
+        this.initialBottomRight = { x: this.finalBottomRight.x, y: this.finalBottomRight.y };
     }
 
     adjustToDrawingBounds(): void {

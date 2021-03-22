@@ -13,16 +13,15 @@ export class DrawingService {
     previewCanvas: HTMLCanvasElement;
 
     newImage?: HTMLImageElement = undefined;
-    loadByDefault: boolean = true;
 
-    subject: Subject<BoxSize> = new Subject<BoxSize>();
-    baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
+    private subject: Subject<BoxSize> = new Subject<BoxSize>();
+    private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
     }
 
-    sendBaseLineCommand(image: HTMLImageElement): void {
+    private sendBaseLineCommand(image: HTMLImageElement): void {
         const baseLineCommand = new BaseLineCommand(this, image);
         this.clearCanvas(this.previewCtx);
         this.clearCanvas(this.baseCtx);
@@ -63,20 +62,19 @@ export class DrawingService {
         return confirm;
     }
 
-    changeDrawing(image: HTMLImageElement): void {
+    private changeDrawing(image: HTMLImageElement): void {
         this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
         this.baseCtx.drawImage(image, 0, 0);
         this.sendBaseLineCommand(image);
     }
 
-    confirmReload(): boolean {
+    private confirmReload(): boolean {
         return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
-    reloadToBlankDrawing(): void {
+    private reloadToBlankDrawing(): void {
         this.clearCanvas(this.baseCtx);
         this.clearCanvas(this.previewCtx);
-        // this.fillWithWhite(this.baseCtx);
         this.resetCanvas();
 
         this.blankHTMLImage.width = this.canvas.width;
@@ -84,13 +82,13 @@ export class DrawingService {
         this.sendBaseLineCommand(this.blankHTMLImage);
     }
 
-    resetCanvas(): void {
+    private resetCanvas(): void {
         const boxSize: BoxSize = { widthBox: -1, heightBox: -1 };
         this.sendNotifToResize(boxSize);
     }
 
-    canvasIsEmpty(): boolean {
-        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case there there is the eraser preview or something else
+    private canvasIsEmpty(): boolean {
+        this.fillWithWhite(this.previewCtx); // Necessary to clear preview in case the eraser preview box or something else is using the preview
         return this.canvas.toDataURL() === this.previewCanvas.toDataURL();
     }
 
@@ -108,11 +106,10 @@ export class DrawingService {
 
     fillWithWhite(context: CanvasRenderingContext2D): void {
         context.fillStyle = 'white';
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // context.drawImage(this.previewCanvas, 0, 0);
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     }
 
-    changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
+    private changeSizeOfCanvas(canvas: HTMLCanvasElement, boxsize: BoxSize): void {
         canvas.width = boxsize.widthBox;
         canvas.height = boxsize.heightBox;
     }

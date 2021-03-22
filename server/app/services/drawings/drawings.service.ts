@@ -1,11 +1,10 @@
 import { DrawingForm } from '@common/communication/drawing-form';
+
 import * as fs from 'fs';
-import * as Httpstatus from 'http-status-codes';
 import { inject, injectable } from 'inversify';
 import { Collection, ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import { DrawingData } from '../../../classes/drawingData';
-import { HttpException } from '../../../classes/http.exception';
 import { TYPES } from '../../types';
 import { DatabaseService } from '../database/database.service';
 
@@ -15,9 +14,6 @@ const MAX_LENGTH = 10;
 const MIN_LENGTH = 2;
 
 const DRAWINGS_MAX_COUNT = 3;
-
-const LAST_INDEX = -3;
-const BEFORE_LAST_INDEX = -4;
 
 @injectable()
 export class DrawingsService {
@@ -32,22 +28,30 @@ export class DrawingsService {
     async storeDrawing(drawingForm: DrawingForm): Promise<void> {
         if (this.validateDrawing(drawingForm)) {
             const drawingData: DrawingData = { name: drawingForm.name, tags: drawingForm.tags };
-            try {
-                await this.collection.insertOne(drawingData, (err, data) => {
+            await this.collection
+                .insertOne(drawingData)
+                .then(async (data) => {
                     drawingForm.id = data.insertedId.toString();
-                    this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData); // writing file mapped by id
+                    await this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData).catch(() => {
+                        throw new Error('FAILED_TO_SAVE_DRAWING');
+                    });
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'FAILED_TO_SAVE_DRAWING') {
+                        throw new Error('FAILED_TO_SAVE_DRAWING');
+                    } else {
+                        throw new Error('DATABASE_ERROR');
+                    }
                 });
-            } catch (error) {
-                throw new HttpException(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR, 'Failed to insert course');
-            }
         } else {
-            throw new Error('Invalid');
+            throw new Error('INVALID_DRAWING');
         }
     }
 
     async getDrawings(tags: string[], index: number): Promise<DrawingForm[]> {
         let drawingForms: DrawingForm[] = [];
 
+        // get drawings info from database
         await this.collection
             .find({})
             .toArray()
@@ -56,6 +60,9 @@ export class DrawingsService {
                     // tslint:disable-next-line: no-string-literal
                     drawingForms.push({ name: drawingData.name, tags: drawingData.tags, id: drawingData['_id'], drawingData: '' });
                 });
+            })
+            .catch(() => {
+                throw new Error('DATABASE_ERROR');
             });
 
         if (tags.length > 0) {
@@ -80,36 +87,48 @@ export class DrawingsService {
     private async getValidDrawings(drawingForms: DrawingForm[], index: number): Promise<DrawingForm[]> {
         const validForms: DrawingForm[] = [];
 
+        // get file from server
         for (const form of drawingForms) {
             const id = form.id;
             await this.readFile(`${this.DRAWINGS_DIRECTORY}/` + id)
-                .then((image) => {
-                    form.drawingData = image;
+                .then((drawingData) => {
+                    form.drawingData = drawingData;
                     validForms.push(form);
                 })
                 .catch(() => {
-                    return;
+                    return [];
                 });
         }
+
+        return this.carouselEffect(validForms, index);
+    }
+
+    private carouselEffect(drawingForms: DrawingForm[], index: number): DrawingForm[] {
+        const validForms = [...drawingForms];
+        const LAST_INDEX_VALID_FORMS = -3;
+        const BEFORE_LAST_INDEX_VALID_FORMS = -4;
+
         index = Math.abs(index % validForms.length);
         const drawingMaxCount = validForms.length >= DRAWINGS_MAX_COUNT ? DRAWINGS_MAX_COUNT : validForms.length;
 
         validForms.push(validForms[0]);
         validForms.push(validForms[1]);
-        validForms.unshift(validForms[LAST_INDEX]);
-        validForms.unshift(validForms[BEFORE_LAST_INDEX]);
+        validForms.unshift(validForms[LAST_INDEX_VALID_FORMS]);
+        validForms.unshift(validForms[BEFORE_LAST_INDEX_VALID_FORMS]);
 
         index += 2;
         return validForms.splice(index, drawingMaxCount);
     }
 
     async deleteDrawing(id: string): Promise<void> {
+        // delete file from server
         try {
             fs.unlinkSync(`${this.DRAWINGS_DIRECTORY}/` + id);
         } catch (error) {
             throw new Error('FILE_NOT_FOUND');
         }
 
+        // delete drawing infos from database
         return this.collection
             .findOneAndDelete({ _id: new ObjectId(id) })
             .then((deletedDrawing) => {
@@ -117,8 +136,9 @@ export class DrawingsService {
                     throw new Error('NOT_ON_DATABASE');
                 }
             })
-            .catch(() => {
-                throw new Error('FAILED_TO_DELETE_DRAWING');
+            .catch((error) => {
+                if (error.message === 'NOT_ON_DATABASE') throw new Error('NOT_ON_DATABASE');
+                else throw new Error('FAILED_TO_DELETE_DRAWING');
             });
     }
 

@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { Color } from '@app/classes/color';
-import { ShapeCommand, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapeCommand } from '@app/classes/commands/shape-command/shape-command';
 import { TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 
 // tslint:disable: no-string-literal
 describe('shape-command', () => {
     let shapeCommand: ShapeCommand;
-    let shapeServiceSpyObj: jasmine.SpyObj<ShapeService>;
+    let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
 
     const canvasStub: HTMLCanvasElement = document.createElement('canvas');
     let canvasCtxStub: CanvasRenderingContext2D;
@@ -27,7 +27,6 @@ describe('shape-command', () => {
     const secondaryColorStub: Color = { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB };
 
     const shapePropretiesStub = {
-        shapeType: ShapeType.Rectangle,
         drawingContext: canvasCtxStub,
         beginCoords: TOP_LEFT_CORNER_COORDS,
         endCoords: BOTTOM_RIGHT_CORNER_COORDS,
@@ -39,30 +38,15 @@ describe('shape-command', () => {
     };
 
     beforeEach(() => {
-        shapeServiceSpyObj = jasmine.createSpyObj('ShapeService', ['sendDrawRectangleNotifs', 'sendDrawEllipseNotifs', 'sendDrawPolygonNotifs']);
+        rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', ['drawShape']);
         TestBed.configureTestingModule({
-            providers: [{ provide: ShapeService, useValue: shapeServiceSpyObj }],
+            providers: [{ provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj }],
         });
-
-        shapeCommand = new ShapeCommand(shapePropretiesStub, shapeServiceSpyObj);
+        shapeCommand = new ShapeCommand(shapePropretiesStub, rectangleDrawingServiceSpyObj);
     });
 
-    it('#execute should call sendDrawRectangleNotifs if the shapetype is a rectangle', () => {
-        shapeCommand['shapePropreties'].shapeType = ShapeType.Rectangle;
+    it('#execute should call drawShape with the right shape propreties', () => {
         shapeCommand.execute();
-        expect(shapeServiceSpyObj.sendDrawRectangleNotifs).toHaveBeenCalledWith(shapeCommand['shapePropreties']);
-    });
-
-    it('#execute should call sendDrawEllipseNotifs if the shapetype is an ellipse', () => {
-        shapeCommand['shapePropreties'].shapeType = ShapeType.Ellipse;
-        shapeCommand.execute();
-
-        expect(shapeServiceSpyObj.sendDrawEllipseNotifs).toHaveBeenCalledWith(shapeCommand['shapePropreties']);
-    });
-
-    it('#execute should call sendDrawPolygonNotifs if the shapetype is a polygon', () => {
-        shapeCommand['shapePropreties'].shapeType = ShapeType.Polygon;
-        shapeCommand.execute();
-        expect(shapeServiceSpyObj.sendDrawPolygonNotifs).toHaveBeenCalledWith(shapeCommand['shapePropreties']);
+        expect(rectangleDrawingServiceSpyObj.drawShape).toHaveBeenCalledWith(shapePropretiesStub);
     });
 });

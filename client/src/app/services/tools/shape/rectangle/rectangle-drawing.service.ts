@@ -1,73 +1,50 @@
 import { Injectable } from '@angular/core';
-import { ShapeCommand, ShapePropreties, ShapeType } from '@app/classes/commands/shape-command/shape-command';
+import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
 import { Shape, TraceType } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class RectangleDrawingService extends Shape {
-    subscription: Subscription;
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        public undoRedoService: UndoRedoService,
-        private shapeService: ShapeService,
-    ) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Rectangle');
-        this.listenToNewRectangleDrawingCommands();
-    }
-
-    listenToNewRectangleDrawingCommands(): void {
-        this.subscription = this.shapeService.newRectangleDrawing().subscribe((shapePropreties) => {
-            this.drawRectangle(shapePropreties);
-        });
     }
 
     draw(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
+        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this);
         rectangleCommand.execute();
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(rectangleCommand);
+        }
     }
 
-    drawRectangle(shapePropreties: ShapePropreties): void {
-        const trueEndCoords: Vec2 = this.getTrueEndCoords(shapePropreties.beginCoords, shapePropreties.endCoords, shapePropreties.isAlternateShape);
+    drawShape(rectanglePropreties: ShapePropreties): void {
+        const trueEndCoords: Vec2 = this.getTrueEndCoords(
+            rectanglePropreties.beginCoords,
+            rectanglePropreties.endCoords,
+            rectanglePropreties.isAlternateShape,
+        );
         const sideLengths: Vec2 = {
-            x: trueEndCoords.x - shapePropreties.beginCoords.x,
-            y: trueEndCoords.y - shapePropreties.beginCoords.y,
+            x: trueEndCoords.x - rectanglePropreties.beginCoords.x,
+            y: trueEndCoords.y - rectanglePropreties.beginCoords.y,
         };
-        const adjustedBeginCoords: Vec2 = { x: shapePropreties.beginCoords.x, y: shapePropreties.beginCoords.y };
+        const adjustedBeginCoords: Vec2 = { x: rectanglePropreties.beginCoords.x, y: rectanglePropreties.beginCoords.y };
 
-        shapePropreties.drawingContext.save();
-        this.setContextParameters(shapePropreties.drawingContext, shapePropreties.drawingThickness);
-        shapePropreties.drawingContext.beginPath();
+        rectanglePropreties.drawingContext.save();
+        this.setContextParameters(rectanglePropreties.drawingContext, rectanglePropreties.drawingThickness);
+        rectanglePropreties.drawingContext.beginPath();
 
-        this.adjustToBorder(shapePropreties.drawingContext, sideLengths, adjustedBeginCoords, trueEndCoords, shapePropreties.traceType);
-        shapePropreties.drawingContext.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
+        this.adjustToBorder(rectanglePropreties.drawingContext, sideLengths, adjustedBeginCoords, trueEndCoords, rectanglePropreties.traceType);
+        rectanglePropreties.drawingContext.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
 
-        if (shapePropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(shapePropreties.drawingContext, shapePropreties.mainColor);
-            shapePropreties.drawingContext.fill();
-        }
-        if (shapePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(shapePropreties.drawingContext, shapePropreties.secondaryColor);
-            shapePropreties.drawingContext.stroke();
-        }
-        shapePropreties.drawingContext.restore();
+        this.drawTraceType(rectanglePropreties);
     }
 
-    executeShapeCommand(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const rectangleCommand: ShapeCommand = new ShapeCommand(this.loadUpPropreties(ctx, begin, end), this.shapeService);
-        rectangleCommand.execute();
-        this.undoRedoService.addCommand(rectangleCommand);
-    }
-
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
-            shapeType: ShapeType.Rectangle,
             drawingContext: ctx,
             beginCoords: begin,
             endCoords: end,
@@ -95,7 +72,7 @@ export class RectangleDrawingService extends Shape {
         sideLengths.y -= Math.sign(end.y - begin.y) * ctx.lineWidth;
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.lineWidth = thickness;
         ctx.lineJoin = 'miter';
     }

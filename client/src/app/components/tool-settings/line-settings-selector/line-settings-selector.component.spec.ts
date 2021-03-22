@@ -5,20 +5,14 @@ import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
+import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineSettingsSelectorComponent } from './line-settings-selector.component';
 
 describe('LineSettingsSelectorComponent', () => {
     let component: LineSettingsSelectorComponent;
     let fixture: ComponentFixture<LineSettingsSelectorComponent>;
-    const lineService: LineService = new LineService(
-        new DrawingService(),
-        new ColorService(),
-        new UndoRedoService(new DrawingService()),
-        new DrawingToolService(),
-    );
+    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
@@ -45,17 +39,6 @@ describe('LineSettingsSelectorComponent', () => {
         expect(component.updateDiameter).toHaveBeenCalled();
     });
 
-    it('#updateDiameter should raise junctionDiameter event', () => {
-        const SLIDER_EXPECTED_VALUE = 30;
-        const matSliderChange: MatSliderChange = new MatSliderChange();
-        matSliderChange.value = SLIDER_EXPECTED_VALUE;
-
-        spyOn(component.junctionDiameter, 'emit');
-        component.updateDiameter(matSliderChange);
-        expect(component.junctionDiameter.emit).toHaveBeenCalled();
-        expect(component.junctionDiameter.emit).toHaveBeenCalledWith(SLIDER_EXPECTED_VALUE);
-    });
-
     it('change from slide toggle should toggle #updateJunction', () => {
         spyOn(component, 'updateJunction');
         const slideToggle = fixture.debugElement.query(By.css('.slide-toggle'));
@@ -63,14 +46,19 @@ describe('LineSettingsSelectorComponent', () => {
         expect(component.updateJunction).toHaveBeenCalled();
     });
 
-    it('#updateJunction should raise junction event', () => {
+    it('#updateDiameter should update the tool diameter', () => {
+        const SLIDER_EXPECTED_VALUE = 30;
+        const matSliderChange: MatSliderChange = new MatSliderChange();
+        matSliderChange.value = SLIDER_EXPECTED_VALUE;
+        component.updateDiameter(matSliderChange);
+        expect(component.tool.junctionDiameter).toBe(SLIDER_EXPECTED_VALUE);
+    });
+
+    it('#updateJunction should update the type of junction', () => {
         const slideToggleExpectedValue = false;
         const slideToggle = fixture.debugElement.query(By.css('.slide-toggle'));
         const matSlideToggleChange: MatSlideToggleChange = new MatSlideToggleChange(slideToggle.nativeElement, slideToggleExpectedValue);
-
-        spyOn(component.junction, 'emit');
         component.updateJunction(matSlideToggleChange);
-        expect(component.junction.emit).toHaveBeenCalled();
-        expect(component.junction.emit).toHaveBeenCalledWith(slideToggleExpectedValue);
+        expect(component.tool.drawWithJunction).toBe(slideToggleExpectedValue);
     });
 });

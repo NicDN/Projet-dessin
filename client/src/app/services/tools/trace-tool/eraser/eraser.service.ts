@@ -1,59 +1,37 @@
 import { Injectable } from '@angular/core';
-import { DrawingToolCommand, DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolCommand, TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { DrawingToolService } from '@app/services/tools/drawing-tool/drawing-tool.service';
-import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
+import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EraserService extends PencilService {
-    subscription: Subscription;
+    readonly MIN_THICKNESS: number = 5;
 
-    readonly MINTHICKNESS: number = 5;
-
-    constructor(
-        drawingService: DrawingService,
-        colorService: ColorService,
-        undoRedoService: UndoRedoService,
-        protected drawingToolService: DrawingToolService,
-    ) {
-        super(drawingService, colorService, undoRedoService, drawingToolService);
-        this.thickness = this.MINTHICKNESS;
-        this.minThickness = this.MINTHICKNESS;
+    constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
+        super(drawingService, colorService, undoRedoService);
+        this.thickness = this.MIN_THICKNESS;
+        this.minThickness = this.MIN_THICKNESS;
         this.toolName = 'Efface';
         this.isEraser = true;
-        this.listenToNewDrawingEraserCommands();
-    }
-
-    listenToNewDrawingEraserCommands(): void {
-        this.subscription = this.drawingToolService.listenToNewDrawingEraserNotifications().subscribe((drawingToolPropreties) => {
-            this.executeErase(drawingToolPropreties);
-        });
     }
 
     sendCommandAction(): void {
-        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
-            this.drawingToolService,
-        );
-        erraserCommand.execute();
-        this.undoRedoService.addCommand(erraserCommand);
+        const eraserCommand: TraceToolCommand = new TraceToolCommand(this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData), this);
+        eraserCommand.execute();
+        this.undoRedoService.addCommand(eraserCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const erraserCommand: DrawingToolCommand = new DrawingToolCommand(
-            this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData),
-            this.drawingToolService,
-        );
-        erraserCommand.execute();
+        const eraserCommand: TraceToolCommand = new TraceToolCommand(this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData), this);
+        eraserCommand.execute();
     }
 
-    executeErase(drawingToolPropreties: DrawingToolPropreties): void {
+    drawTrace(drawingToolPropreties: TraceToolPropreties): void {
         if (this.singleClick(drawingToolPropreties.drawingPath)) {
             this.eraseSquare(
                 drawingToolPropreties.drawingContext,
@@ -81,29 +59,27 @@ export class EraserService extends PencilService {
         }
     }
 
-    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): DrawingToolPropreties {
+    private loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
-            traceToolType: TraceToolType.Eraser,
             drawingContext: ctx,
             drawingPath: path,
             drawingThickness: this.thickness,
         };
     }
 
-    distanceBetween(point1: Vec2, point2: Vec2): number {
+    private distanceBetween(point1: Vec2, point2: Vec2): number {
         return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
     }
 
-    angleBetween(point1: Vec2, point2: Vec2): number {
+    private angleBetween(point1: Vec2, point2: Vec2): number {
         return Math.atan2(point2.x - point1.x, point2.y - point1.y);
     }
 
-    singleClick(path: Vec2[]): boolean {
+    private singleClick(path: Vec2[]): boolean {
         return path.length === 2;
     }
 
-    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
-        // ctx.clearRect(point.x - Math.floor(this.thickness / 2), point.y - Math.floor(this.thickness / 2), this.thickness, this.thickness);
+    private eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
         // If we want to draw in white:
         ctx.fillStyle = 'white';
         ctx.globalAlpha = 1;
@@ -116,7 +92,7 @@ export class EraserService extends PencilService {
         this.displayPreview(event);
     }
 
-    displayPreview(event: MouseEvent): void {
+    private displayPreview(event: MouseEvent): void {
         const mousePosition = this.getPositionFromMouse(event);
         const ctx = this.drawingService.previewCtx;
         this.setAttributesDisplay(ctx);
@@ -134,7 +110,7 @@ export class EraserService extends PencilService {
         ctx.stroke();
     }
 
-    setAttributesDisplay(ctx: CanvasRenderingContext2D): void {
+    private setAttributesDisplay(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;

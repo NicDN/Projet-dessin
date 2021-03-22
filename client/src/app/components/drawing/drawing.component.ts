@@ -1,10 +1,10 @@
-import { AfterContentInit, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 export const DEFAULT_WIDTH = 250;
@@ -18,18 +18,16 @@ export const HALF_RATIO = 0.5;
     templateUrl: './drawing.component.html',
     styleUrls: ['./drawing.component.scss'],
 })
-export class DrawingComponent implements AfterViewInit, AfterContentInit {
+export class DrawingComponent implements AfterViewInit {
     @ViewChild('baseCanvas', { static: false }) baseCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('previewCanvas', { static: false }) previewCanvas: ElementRef<HTMLCanvasElement>;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
 
     private canDraw: boolean = true;
-    canvasWidth: number;
-    canvasHeight: number;
 
     constructor(
-        public drawingService: DrawingService,
+        private drawingService: DrawingService,
         public toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
@@ -42,23 +40,10 @@ export class DrawingComponent implements AfterViewInit, AfterContentInit {
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
         this.drawingService.fillWithWhite(this.drawingService.baseCtx);
 
-        const baseImage = new Image(this.canvasWidth, this.canvasHeight);
+        const baseImage = new Image(this.canvasSize.x, this.canvasSize.y);
         baseImage.src = this.drawingService.canvas.toDataURL();
         this.drawingService.blankHTMLImage = baseImage;
-        this.drawingService.handleNewDrawing(baseImage);
-
-        if (this.drawingService.newImage) {
-            this.drawingService.handleNewDrawing(this.drawingService.newImage);
-        }
-    }
-
-    ngAfterContentInit(): void {
-        this.setCanvasDimensions();
-    }
-
-    setCanvasDimensions(): void {
-        this.canvasWidth = window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.x : DEFAULT_WIDTH;
-        this.canvasHeight = window.innerHeight > MINIMUM_WORKSPACE_SIZE ? this.canvasSize.y : DEFAULT_HEIGHT;
+        this.drawingService.handleNewDrawing(this.drawingService.newImage ? this.drawingService.newImage : baseImage);
     }
 
     @HostListener('window:mousemove', ['$event'])

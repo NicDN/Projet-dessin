@@ -1,17 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
-import { DrawingToolPropreties, TraceToolType } from '@app/classes/commands/drawing-tool-command/drawing-tool-command';
+import { TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
-import { DrawingToolService } from '../drawing-tool.service';
 import { PencilService } from './pencil.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
@@ -19,7 +18,6 @@ describe('PencilService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
-    let drawingToolServiceSpyObj: jasmine.SpyObj<DrawingToolService>;
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
     let drawLineSpy: jasmine.Spy;
@@ -28,12 +26,12 @@ describe('PencilService', () => {
     let canvasCtxStub: CanvasRenderingContext2D;
     canvasCtxStub = canvasStub.getContext('2d') as CanvasRenderingContext2D;
 
-    const pathStub: Vec2 = { x: 1, y: 1 };
-    const pathArrayStub: Vec2[] = [pathStub, pathStub];
+    const pathStub: Vec2 = { x: 0, y: 0 };
+    const pathStub2: Vec2 = { x: 2, y: 2 };
+    const pathArrayStub: Vec2[] = [pathStub, pathStub2];
     const colorStub: Color = { rgbValue: 'red', opacity: 1 };
 
-    const drawingToolPropretiesStub: DrawingToolPropreties = {
-        traceToolType: TraceToolType.Pencil,
+    const drawingToolPropretiesStub: TraceToolPropreties = {
         drawingContext: canvasCtxStub,
         drawingPath: pathArrayStub,
         drawingThickness: 1,
@@ -55,23 +53,12 @@ describe('PencilService', () => {
 
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'sendCommandAction']);
-        drawingToolServiceSpyObj = jasmine.createSpyObj('DrawingToolService', [
-            'listenToNewDrawingPencilNotifications',
-            'listenToNewDrawingEraserNotifications',
-            'listenToNewDrawingLineNotifications',
-            'sendDrawingPencilNotifs',
-        ]);
-
-        drawingToolServiceSpyObj.listenToNewDrawingPencilNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingEraserNotifications.and.returnValue(of(drawingToolPropretiesStub));
-        drawingToolServiceSpyObj.listenToNewDrawingLineNotifications.and.returnValue(of(drawingToolPropretiesStub));
 
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
-                { provide: DrawingToolService, useValue: drawingToolServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -83,7 +70,7 @@ describe('PencilService', () => {
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
-        service.isEraser = false;
+        service['isEraser'] = false;
 
         mouseEvent = {
             pageX: MOUSE_POSITION.x + HORIZONTAL_OFFSET,
@@ -91,6 +78,8 @@ describe('PencilService', () => {
             button: MouseButton.Left,
             buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
+
+        drawingToolPropretiesStub.drawingColor = colorStub;
     });
 
     it('should be created', () => {
@@ -119,22 +108,22 @@ describe('PencilService', () => {
     });
 
     it('#onMouseUp should send action to the undoRedoService', () => {
-        spyOn(service, 'sendCommandAction');
+        spyOn<any>(service, 'sendCommandAction');
         service.mouseDownCoord = { x: 0, y: 0 };
         service.mouseDown = true;
         drawLineSpy.and.stub();
         service.onMouseUp(mouseEvent);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
-        expect(service.sendCommandAction).toHaveBeenCalled();
+        expect(service['sendCommandAction']).toHaveBeenCalled();
     });
 
     it('#onMouseUp should not call drawLine if mouse was not already down', () => {
-        spyOn(service, 'sendCommandAction');
+        spyOn<any>(service, 'sendCommandAction');
         service.mouseDown = false;
         service.mouseDownCoord = { x: 0, y: 0 };
 
         service.onMouseUp(mouseEvent);
-        expect(service.sendCommandAction).not.toHaveBeenCalled();
+        expect(service['sendCommandAction']).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should call drawLine if mouse was already down', () => {
@@ -155,22 +144,20 @@ describe('PencilService', () => {
         expect(drawLineSpy).not.toHaveBeenCalled();
     });
 
-    it('#executeDrawLine should change the pixel of the canvas ', () => {
-        service.executeDrawLine(drawingToolPropretiesStub);
-
+    it('#drawTrace should change the pixel of the canvas ', () => {
         const expectedRedColor = 255;
-        const thirdPosition = 3;
-
+        const globalAlpha = 3;
+        console.log(drawingToolPropretiesStub);
+        service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
-
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
         expect(imageData.data[1]).toEqual(0); // G
         expect(imageData.data[2]).toEqual(0); // B
-        expect(imageData.data[thirdPosition]).not.toEqual(0); // A
+        expect(imageData.data[globalAlpha]).not.toEqual(0); // A
     });
 
     it('#drawLine should load propreties', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
         service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
 
@@ -194,15 +181,28 @@ describe('PencilService', () => {
     });
 
     it('#should clear the canvas only if the tool is pencil service', () => {
-        service.isEraser = false;
-        service.clearPreviewIfNotEraser(service.isEraser);
+        service['isEraser'] = false;
+        service['clearPreviewIfNotEraser'](service['isEraser']);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#should not clear the canvas the tool is eraser service', () => {
-        service.isEraser = true;
-        service.clearPreviewIfNotEraser(service.isEraser);
+        service['isEraser'] = true;
+        service['clearPreviewIfNotEraser'](service['isEraser']);
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
+    });
+
+    it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
+        const pencilSpy = spyOn(service, 'drawTrace');
+        service['sendCommandAction']();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+        expect(pencilSpy).toHaveBeenCalled();
+    });
+
+    it('#sendCommandAction should return if we are erasing', () => {
+        service['isEraser'] = true;
+        service['sendCommandAction']();
+        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
     });
 
     it('#setContext should set the context for drawing', () => {
@@ -214,24 +214,18 @@ describe('PencilService', () => {
         expect(drawingToolPropretiesStub.drawingContext.strokeStyle).toEqual('#ff0000');
     });
 
-    it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
-        const pencilSpy = spyOn(service, 'executeDrawLine');
-        service.listenToNewDrawingPencilCommands();
-        service.sendCommandAction();
-        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-        expect(pencilSpy).toHaveBeenCalled();
-    });
-
-    it('#sendCommandAction should return if we are erasing', () => {
-        service.isEraser = true;
-        service.listenToNewDrawingPencilCommands();
-        service.sendCommandAction();
-        expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
-    });
-
     it('#setContext should return if drawing color is undefined', () => {
         drawingToolPropretiesStub.drawingColor = undefined;
         service['setContext'](baseCtxStub, drawingToolPropretiesStub);
         expect(baseCtxStub.lineJoin).not.toEqual('round');
+    });
+
+    it('#loadUpPropreties should return the correct propreties', () => {
+        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
+        const drawingToolPropreties: TraceToolPropreties = service['loadUpPropreties'](baseCtxStub, pathArrayStub);
+        expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
+        expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
+        expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
+        expect(drawingToolPropreties.drawingColor).toEqual(colorServiceSpyObj.mainColor);
     });
 });

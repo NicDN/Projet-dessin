@@ -18,29 +18,62 @@ export class DrawingsController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
             this.drawingsService
                 .deleteDrawing(req.params.id)
                 .then(() => {
                     res.sendStatus(Httpstatus.StatusCodes.NO_CONTENT);
                 })
                 .catch((error: Error) => {
-                    if (error.message === 'FILE_NOT_FOUND') res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
-                    if (error.message === 'NOT_ON_DATABASE') res.status(Httpstatus.StatusCodes.NOT_FOUND).send();
-                    if (error.message === 'FAILED_TO_DELETE_DRAWING') res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                    if (error.message === 'FILE_NOT_FOUND') {
+                        res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                        return;
+                    }
+                    if (error.message === 'NOT_ON_DATABASE') {
+                        res.status(Httpstatus.StatusCodes.NOT_FOUND).send();
+                        return;
+                    }
+                    if (error.message === 'FAILED_TO_DELETE_DRAWING') {
+                        res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                        return;
+                    }
+                    res.status(Httpstatus.StatusCodes.BAD_REQUEST).send();
                 });
         });
 
         this.router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-            this.drawingsService.getDrawings(JSON.parse(req.query.tags), Number(req.query.index)).then((forms) => {
-                res.json(forms);
-            });
+            this.drawingsService
+                .getDrawings(JSON.parse(req.query.tags || '[]'), Number(req.query.index || 0))
+                .then((drawingForm) => {
+                    res.json(drawingForm);
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'DATABASE_ERROR') {
+                        res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                        return;
+                    }
+                    res.status(Httpstatus.StatusCodes.BAD_REQUEST).send();
+                });
         });
 
-        this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
+        this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
             const drawingForm: DrawingForm = req.body;
-            this.drawingsService.storeDrawing(drawingForm);
-            res.sendStatus(HTTP_STATUS_CREATED);
+            this.drawingsService
+                .storeDrawing(drawingForm)
+                .then(() => {
+                    res.status(HTTP_STATUS_CREATED).send();
+                })
+                .catch((error: Error) => {
+                    if (error.message === 'FAILED_TO_SAVE_DRAWING') {
+                        res.status(Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR).send();
+                        return;
+                    }
+                    if (error.message === 'DATABASE_ERROR') {
+                        res.status(Httpstatus.StatusCodes.BAD_GATEWAY).send();
+                        return;
+                    }
+                    res.status(Httpstatus.StatusCodes.BAD_REQUEST).send();
+                });
         });
     }
 }

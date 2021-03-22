@@ -1,7 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-// import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
@@ -9,17 +8,18 @@ import { MainPageComponent } from '@app/components/main-page/main-page.component
 import { ColorService } from '@app/services/color/color.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { DrawingToolService } from '../tools/drawing-tool/drawing-tool.service';
-import { RectangleSelectionService } from './../tools/selection/rectangle-selection.service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
-fdescribe('HotkeyService', () => {
+// tslint:disable: no-any
+describe('HotkeyService', () => {
     let service: HotkeyService;
+
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
     let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
@@ -63,8 +63,10 @@ fdescribe('HotkeyService', () => {
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
-        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj, new DrawingToolService());
+        rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
+
+        toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         dialogServiceSpyObj['listenToKeyEvents'].and.returnValue(of(booleanStub));
 
@@ -100,8 +102,8 @@ fdescribe('HotkeyService', () => {
         '#initializeShorcutManager should initiate and be able to be called when on #onKey is pressed with the appropriate keyCode' +
             ' should call every function',
         () => {
-            spyOn(service, 'handleCtrlO');
-            spyOn(service, 'handleSelectAll');
+            spyOn<any>(service, 'handleCtrlO');
+            spyOn<any>(service, 'handleSelectAll');
             service['listenToKeyEvents'] = true;
 
             service.onKeyDown(keySCtrlStub);
@@ -111,7 +113,7 @@ fdescribe('HotkeyService', () => {
             expect(dialogServiceSpyObj.openDialog).toHaveBeenCalledWith(DialogType.Carousel);
 
             service.onKeyDown(keyOCtrlStub);
-            expect(service.handleCtrlO).toHaveBeenCalled();
+            expect(service['handleCtrlO']).toHaveBeenCalled();
 
             service.onKeyDown(keyAStub);
             expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.sprayCanService);
@@ -155,37 +157,37 @@ fdescribe('HotkeyService', () => {
             expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
 
             service.onKeyDown(keyCtrlAStub);
-            expect(service.handleSelectAll).toHaveBeenCalled();
+            expect(service['handleSelectAll']).toHaveBeenCalled();
         },
     );
 
     it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed and its on the editor component', () => {
-        spyOn(service, 'currentRouteIsEditor').and.returnValue(true);
-        service.handleCtrlO();
+        spyOn<any>(service, 'currentRouteIsEditor').and.returnValue(true);
+        service['handleCtrlO']();
         expect(drawingServiceSpyObj.handleNewDrawing).toHaveBeenCalled();
     });
 
     it('#handleCtrlO should rereoute to editor if it was not on that route', () => {
-        spyOn(service, 'currentRouteIsEditor').and.returnValue(false);
-        const navigateSpyObj = spyOn(service.router, 'navigate').and.returnValues();
-        service.handleCtrlO();
+        spyOn<any>(service, 'currentRouteIsEditor').and.returnValue(false);
+        const navigateSpyObj = spyOn(service['router'], 'navigate').and.returnValues();
+        service['handleCtrlO']();
         expect(navigateSpyObj).toHaveBeenCalled();
     });
 
     it('#handleCtrlO should not call #handleNewDrawing if ctrl key is not pressed', () => {
-        spyOn(service, 'currentRouteIsEditor').and.returnValue(true);
+        spyOn<any>(service, 'currentRouteIsEditor').and.returnValue(true);
         service.onKeyDown(noCtrlKeyOEvent);
         expect(drawingServiceSpyObj.handleNewDrawing).not.toHaveBeenCalled();
     });
 
     it('#currentRouteIsEditor should return true if current route is editor', () => {
         const urlStub = '/editor';
-        expect(service.currentRouteIsEditor(urlStub)).toBeTrue();
+        expect(service['currentRouteIsEditor'](urlStub)).toBeTrue();
     });
 
     it('#currentRouteIsEditor should return false if current route is editor', () => {
         const urlStub = '/notEditor';
-        expect(service.currentRouteIsEditor(urlStub)).toBeFalse();
+        expect(service['currentRouteIsEditor'](urlStub)).toBeFalse();
     });
 
     it('#onKeyDown should not go through if it is not listening to key events', () => {
@@ -205,9 +207,9 @@ fdescribe('HotkeyService', () => {
         expect(service.onKeyDown(notAssignedKeyboardEvent3)).toBeFalsy();
     });
 
-    it('#handleSelectAll should set current tool to rectangleSelectionService and call the selectAll method from it', () => {
-        service.handleSelectAll();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
+    it('#handleSelectAll should call appriopriate function to select all drawing', () => {
+        service['handleSelectAll']();
+        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleSelectionService);
         expect(rectangleSelectionServiceSpyObj.selectAll).toHaveBeenCalled();
     });
 });

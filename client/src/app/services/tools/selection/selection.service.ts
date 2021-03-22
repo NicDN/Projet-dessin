@@ -6,8 +6,6 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class SelectionService {
-    constructor() {}
-
     rectangleSubject: Subject<SelectionPropreties> = new Subject<SelectionPropreties>();
     ellipseSubject: Subject<SelectionPropreties> = new Subject<SelectionPropreties>();
 

@@ -1,10 +1,9 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
 import { BoxSize } from '@app/classes/box-size';
 import { ResizeCommand } from '@app/classes/commands/resize-command/resize-command';
 import { DEFAULT_HEIGHT, DEFAULT_WIDTH, HALF_RATIO, MINIMUM_WORKSPACE_SIZE, SIDE_BAR_SIZE } from '@app/components/drawing/drawing.component';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 export const enum Status {
     NOT_RESIZING = 0,
@@ -19,17 +18,13 @@ export const enum Status {
     styleUrls: ['./resize-container.component.scss'],
 })
 export class ResizeContainerComponent {
-    @Input() width: number;
-    @Input() height: number;
-
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
-
     @ViewChild('box') box: ElementRef;
 
+    readonly REMOVE_PX: number = -2;
     readonly MOUSE_OFFSET: number = 5;
 
     status: Status = Status.NOT_RESIZING;
-    subscription: Subscription;
 
     constructor(private drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         this.listenToResizeNotifications();
@@ -55,38 +50,50 @@ export class ResizeContainerComponent {
         this.usingButton.emit(true);
     }
 
-    onMouseUpContainer(): void {
+    private onMouseUpContainer(): void {
+        if (this.box === undefined) return;
         if (this.status !== Status.NOT_RESIZING) {
-            const resizeCommand: ResizeCommand = new ResizeCommand({ widthBox: this.width, heightBox: this.height }, this.drawingService);
+            const resizeCommand: ResizeCommand = new ResizeCommand(
+                {
+                    widthBox: this.box.nativeElement.style.width.slice(0, this.REMOVE_PX),
+                    heightBox: this.box.nativeElement.style.height.slice(0, this.REMOVE_PX),
+                },
+                this.drawingService,
+            );
             this.undoRedoService.addCommand(resizeCommand);
             resizeCommand.execute();
         }
         this.setStatus(Status.NOT_RESIZING);
     }
 
-    resizeContainer(event: MouseEvent): void {
+    private resizeContainer(event: MouseEvent): void {
+        this.undoRedoService.disableUndoRedo();
+        if (this.box === undefined) return;
         if (this.isValidWidth(event)) {
-            this.width = event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET;
+            this.box.nativeElement.style.width = `${event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET}px`;
         }
         if (this.isValidHeight(event)) {
-            this.height = event.pageY - this.MOUSE_OFFSET;
+            this.box.nativeElement.style.height = `${event.pageY - this.MOUSE_OFFSET}px`;
         }
     }
 
-    resizeCanvas(newWidth: number, newHeight: number): void {
-        this.width = newWidth;
-        this.height = newHeight;
+    private resizeCanvas(newWidth: number, newHeight: number): void {
+        if (this.box === undefined) return;
+        this.box.nativeElement.style.width = `${newWidth}px`;
+        this.box.nativeElement.style.height = `${newHeight}px`;
+
         const resizeBoxSize = { widthBox: newWidth, heightBox: newHeight };
         this.drawingService.onSizeChange(resizeBoxSize);
     }
 
-    listenToResizeNotifications(): void {
-        this.subscription = this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
+    private listenToResizeNotifications(): void {
+        this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
             this.resizeNotification(boxSize);
         });
     }
 
-    resizeNotification(boxSize: BoxSize): void {
+    private resizeNotification(boxSize: BoxSize): void {
+        this.undoRedoService.enableUndoRedo();
         let width: number;
         let height: number;
         if (boxSize.widthBox < 0 || boxSize.heightBox < 0) {
@@ -99,7 +106,7 @@ export class ResizeContainerComponent {
         this.resizeCanvas(width, height);
     }
 
-    isValidWidth(event: MouseEvent): boolean {
+    private isValidWidth(event: MouseEvent): boolean {
         return (
             (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_HORIZONTAL) &&
             this.xCoordinateIsOverMinimum(event) &&
@@ -107,7 +114,7 @@ export class ResizeContainerComponent {
         );
     }
 
-    isValidHeight(event: MouseEvent): boolean {
+    private isValidHeight(event: MouseEvent): boolean {
         return (
             (this.status === Status.RESIZE_DIAGONAL || this.status === Status.RESIZE_VERTICAL) &&
             this.yCoordinateIsOverMinimum(event) &&
@@ -115,29 +122,29 @@ export class ResizeContainerComponent {
         );
     }
 
-    xCoordinateIsOverMinimum(event: MouseEvent): boolean {
+    private xCoordinateIsOverMinimum(event: MouseEvent): boolean {
         return event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET >= DEFAULT_WIDTH;
     }
 
-    yCoordinateIsOverMinimum(event: MouseEvent): boolean {
+    private yCoordinateIsOverMinimum(event: MouseEvent): boolean {
         return event.pageY - this.MOUSE_OFFSET >= DEFAULT_HEIGHT;
     }
 
-    xCoordinateIsUnderMaximum(event: MouseEvent): boolean {
+    private xCoordinateIsUnderMaximum(event: MouseEvent): boolean {
         const offSetFactor = 2.5;
         return event.pageX + offSetFactor * this.MOUSE_OFFSET < window.innerWidth;
     }
 
-    yCoordinateIsUnderMaximum(event: MouseEvent): boolean {
+    private yCoordinateIsUnderMaximum(event: MouseEvent): boolean {
         const offSetFactor = 2.5;
         return event.pageY + offSetFactor * this.MOUSE_OFFSET < window.innerHeight;
     }
 
-    workspaceWidthIsOverMinimum(): boolean {
+    private workspaceWidthIsOverMinimum(): boolean {
         return window.innerWidth - SIDE_BAR_SIZE > MINIMUM_WORKSPACE_SIZE;
     }
 
-    workspaceHeightIsOverMinimum(): boolean {
+    private workspaceHeightIsOverMinimum(): boolean {
         return window.innerHeight > MINIMUM_WORKSPACE_SIZE;
     }
 }

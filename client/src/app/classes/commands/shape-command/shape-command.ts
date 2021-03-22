@@ -1,7 +1,7 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
-import { ShapeService } from '@app/services/tools/shape/shape.service';
 
 export enum ShapeType {
     Rectangle = 1,
@@ -10,7 +10,6 @@ export enum ShapeType {
 }
 
 export interface ShapePropreties {
-    shapeType: ShapeType;
     drawingContext: CanvasRenderingContext2D;
     beginCoords: Vec2;
     endCoords: Vec2;
@@ -23,13 +22,11 @@ export interface ShapePropreties {
 }
 
 export class ShapeCommand extends AbstractCommand {
-    constructor(private shapePropreties: ShapePropreties, private shapeService: ShapeService) {
+    constructor(private shapePropreties: ShapePropreties, private shape: Shape) {
         super();
     }
 
     execute(): void {
-        if (this.shapePropreties.shapeType === ShapeType.Rectangle) this.shapeService.sendDrawRectangleNotifs(this.shapePropreties);
-        if (this.shapePropreties.shapeType === ShapeType.Ellipse) this.shapeService.sendDrawEllipseNotifs(this.shapePropreties);
-        if (this.shapePropreties.shapeType === ShapeType.Polygon) this.shapeService.sendDrawPolygonNotifs(this.shapePropreties);
+        this.shape.drawShape(this.shapePropreties);
     }
 }
