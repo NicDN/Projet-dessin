@@ -1,6 +1,6 @@
 <br />
 <br />
-<div id="eye-dropper-canvas-container" *ngIf="this['eyeDropperService'].preview">
+<div id="eye-dropper-canvas-container" *ngIf="this['eyeDropperService'].previewIsDisplayed">
     <canvas id="grid-canvas" #gridCanvas [attr.width]="250" [attr.height]="250"></canvas>
     <canvas id="eye-dropper-canvas" #eyeDropperCanvas [attr.width]="250" [attr.height]="250"></canvas>
 </div>
