@@ -10,6 +10,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { PencilService } from './pencil.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('PencilService', () => {
     let service: PencilService;
     let mouseEvent: MouseEvent;
@@ -69,7 +70,7 @@ describe('PencilService', () => {
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].previewCtx = previewCtxStub;
-        service.isEraser = false;
+        service['isEraser'] = false;
 
         mouseEvent = {
             pageX: MOUSE_POSITION.x + HORIZONTAL_OFFSET,
@@ -107,22 +108,22 @@ describe('PencilService', () => {
     });
 
     it('#onMouseUp should send action to the undoRedoService', () => {
-        spyOn(service, 'sendCommandAction');
+        spyOn<any>(service, 'sendCommandAction');
         service.mouseDownCoord = { x: 0, y: 0 };
         service.mouseDown = true;
         drawLineSpy.and.stub();
         service.onMouseUp(mouseEvent);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
-        expect(service.sendCommandAction).toHaveBeenCalled();
+        expect(service['sendCommandAction']).toHaveBeenCalled();
     });
 
     it('#onMouseUp should not call drawLine if mouse was not already down', () => {
-        spyOn(service, 'sendCommandAction');
+        spyOn<any>(service, 'sendCommandAction');
         service.mouseDown = false;
         service.mouseDownCoord = { x: 0, y: 0 };
 
         service.onMouseUp(mouseEvent);
-        expect(service.sendCommandAction).not.toHaveBeenCalled();
+        expect(service['sendCommandAction']).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should call drawLine if mouse was already down', () => {
@@ -156,7 +157,7 @@ describe('PencilService', () => {
     });
 
     it('#drawLine should load propreties', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
         service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
 
@@ -180,27 +181,27 @@ describe('PencilService', () => {
     });
 
     it('#should clear the canvas only if the tool is pencil service', () => {
-        service.isEraser = false;
-        service.clearPreviewIfNotEraser(service.isEraser);
+        service['isEraser'] = false;
+        service['clearPreviewIfNotEraser'](service['isEraser']);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#should not clear the canvas the tool is eraser service', () => {
-        service.isEraser = true;
-        service.clearPreviewIfNotEraser(service.isEraser);
+        service['isEraser'] = true;
+        service['clearPreviewIfNotEraser'](service['isEraser']);
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
     });
 
     it('#sendCommandAction should call execute of pencil and add the command to the stack of undo-redo', () => {
         const pencilSpy = spyOn(service, 'drawTrace');
-        service.sendCommandAction();
+        service['sendCommandAction']();
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(pencilSpy).toHaveBeenCalled();
     });
 
     it('#sendCommandAction should return if we are erasing', () => {
-        service.isEraser = true;
-        service.sendCommandAction();
+        service['isEraser'] = true;
+        service['sendCommandAction']();
         expect(undoRedoServiceSpyObj.addCommand).not.toHaveBeenCalled();
     });
 
@@ -221,7 +222,7 @@ describe('PencilService', () => {
 
     it('#loadUpPropreties should return the correct propreties', () => {
         colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
-        const drawingToolPropreties: TraceToolPropreties = service.loadUpPropreties(baseCtxStub, pathArrayStub);
+        const drawingToolPropreties: TraceToolPropreties = service['loadUpPropreties'](baseCtxStub, pathArrayStub);
         expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
         expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
         expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);

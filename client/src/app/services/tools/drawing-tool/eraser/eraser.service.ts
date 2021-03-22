@@ -5,14 +5,11 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EraserService extends PencilService {
-    subscription: Subscription;
-
     readonly MIN_THICKNESS: number = 5;
 
     constructor(drawingService: DrawingService, colorService: ColorService, undoRedoService: UndoRedoService) {
@@ -62,7 +59,7 @@ export class EraserService extends PencilService {
         }
     }
 
-    loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
+    private loadUpEraserPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,
@@ -70,19 +67,19 @@ export class EraserService extends PencilService {
         };
     }
 
-    distanceBetween(point1: Vec2, point2: Vec2): number {
+    private distanceBetween(point1: Vec2, point2: Vec2): number {
         return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
     }
 
-    angleBetween(point1: Vec2, point2: Vec2): number {
+    private angleBetween(point1: Vec2, point2: Vec2): number {
         return Math.atan2(point2.x - point1.x, point2.y - point1.y);
     }
 
-    singleClick(path: Vec2[]): boolean {
+    private singleClick(path: Vec2[]): boolean {
         return path.length === 2;
     }
 
-    eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
+    private eraseSquare(ctx: CanvasRenderingContext2D, point: Vec2, thickness: number): void {
         // If we want to draw in white:
         ctx.fillStyle = 'white';
         ctx.globalAlpha = 1;
@@ -95,7 +92,7 @@ export class EraserService extends PencilService {
         this.displayPreview(event);
     }
 
-    displayPreview(event: MouseEvent): void {
+    private displayPreview(event: MouseEvent): void {
         const mousePosition = this.getPositionFromMouse(event);
         const ctx = this.drawingService.previewCtx;
         this.setAttributesDisplay(ctx);
@@ -113,7 +110,7 @@ export class EraserService extends PencilService {
         ctx.stroke();
     }
 
-    setAttributesDisplay(ctx: CanvasRenderingContext2D): void {
+    private setAttributesDisplay(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;

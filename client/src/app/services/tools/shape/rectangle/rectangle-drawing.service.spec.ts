@@ -18,7 +18,6 @@ describe('RectangleDrawingService', () => {
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     // tslint:disable-next-line: prefer-const
     let baseCtxStub: CanvasRenderingContext2D;
-    // let previewCtxStub: CanvasRenderingContext2D;
     let shapePropretiesStub: ShapePropreties;
 
     const PRIMARY_COLOR_STUB = 'blue';
@@ -72,7 +71,7 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(shapePropretiesStub.drawingContext, THICKNESS_STUB);
+        service['setContextParameters'](shapePropretiesStub.drawingContext, THICKNESS_STUB);
         expect(shapePropretiesStub.drawingContext.getLineDash()).toEqual([]);
         expect(shapePropretiesStub.drawingContext.lineWidth).toEqual(THICKNESS_STUB);
         expect(shapePropretiesStub.drawingContext.lineJoin).toEqual('miter');
@@ -146,7 +145,7 @@ describe('RectangleDrawingService', () => {
     });
 
     it('#draw should loadUp propreties and call drawRectangle', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(loadUpSpy).toHaveBeenCalled();
     });
@@ -191,7 +190,7 @@ describe('RectangleDrawingService', () => {
     it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
 
-        const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
+        const shapePropreties: ShapePropreties = service['loadUpPropreties'](baseCtxStub, beginAndEnd, beginAndEnd);
         expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
         expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
         expect(shapePropreties.secondaryColor.rgbValue).toEqual(colorServiceSpyObj.secondaryColor.rgbValue);

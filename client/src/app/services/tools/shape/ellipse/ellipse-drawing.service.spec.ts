@@ -86,7 +86,7 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
+        service['setContextParameters'](drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.lineCap).toEqual('round');
@@ -147,7 +147,8 @@ describe('EllipseDrawingService', () => {
     });
 
     it('#draw should loadUp propreties and call drawEllipse', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        // tslint:disable-next-line: no-any
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(loadUpSpy).toHaveBeenCalled();
     });
@@ -155,7 +156,7 @@ describe('EllipseDrawingService', () => {
     it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
 
-        const shapePropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, beginAndEnd, beginAndEnd);
+        const shapePropreties: ShapePropreties = service['loadUpPropreties'](baseCtxStub, beginAndEnd, beginAndEnd);
         expect(shapePropreties.drawingContext).toEqual(baseCtxStub);
         expect(shapePropreties.beginCoords).toEqual(beginAndEnd);
         expect(shapePropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);

@@ -3,6 +3,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { CanvasTestHelper } from './canvas-test-helper';
+import { Color } from './color';
 import { ShapePropreties } from './commands/shape-command/shape-command';
 import { Shape, TraceType } from './shape';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
@@ -22,15 +23,19 @@ export class ShapeStub extends Shape {
 }
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('Shape', () => {
     let shape: Shape;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
+    let shapePropretiesStub: ShapePropreties;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
+    const PRIMARY_COLOR_STUB = 'blue';
+    const SECONDARY_COLOR_STUB = 'black';
 
     const COLOR_STUB = '#0000ff';
     const OPACITY_STUB = 0.4;
@@ -43,12 +48,26 @@ describe('Shape', () => {
     const LEFT_BUTTON_PRESSED = 1;
     const NO_BUTTON_PRESSED = 0;
 
+    const mainColorStub: Color = { rgbValue: PRIMARY_COLOR_STUB, opacity: OPACITY_STUB };
+    const secondaryColorStub: Color = { rgbValue: SECONDARY_COLOR_STUB, opacity: OPACITY_STUB };
+
     beforeEach(() => {
         colorServiceSpyObj = jasmine.createSpyObj('ColorService', [], {
             mainColor: { rgbValue: COLOR_STUB, opacity: OPACITY_STUB },
             secondaryColor: { rgbValue: COLOR_STUB, opacity: OPACITY_STUB },
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
+
+        shapePropretiesStub = {
+            drawingContext: baseCtxStub,
+            beginCoords: TOP_LEFT_CORNER_COORDS,
+            endCoords: BOTTOM_RIGHT_CORNER_COORDS,
+            drawingThickness: THICKNESS_STUB,
+            mainColor: mainColorStub,
+            secondaryColor: secondaryColorStub,
+            isAlternateShape: true,
+            traceType: TraceType.FilledAndBordered,
+        };
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
@@ -74,13 +93,13 @@ describe('Shape', () => {
     });
 
     it('#setFillColor should change the right ctx parameters', () => {
-        shape.setFillColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
+        shape['setFillColor'](drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
         expect(drawingServiceSpyObj.baseCtx.fillStyle).toEqual(COLOR_STUB);
         expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(OPACITY_STUB);
     });
 
     it('#setStrokeColor should change the right ctx parameters', () => {
-        shape.setStrokeColor(drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
+        shape['setStrokeColor'](drawingServiceSpyObj.baseCtx, colorServiceSpyObj.mainColor);
         expect(drawingServiceSpyObj.baseCtx.strokeStyle).toEqual(COLOR_STUB);
         expect(drawingServiceSpyObj.baseCtx.globalAlpha).toEqual(OPACITY_STUB);
     });
@@ -123,7 +142,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseMove should call drawPreview', () => {
-        const drawPreviewSpy = spyOn(shape, 'drawPreview');
+        const drawPreviewSpy = spyOn<any>(shape, 'drawPreview');
 
         shape.mouseDown = true;
         shape.mouseDownCoord = { x: 0, y: 0 };
@@ -133,7 +152,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseMove should set endCoords correctly', () => {
-        const drawPreviewSpy = spyOn(shape, 'drawPreview');
+        const drawPreviewSpy = spyOn<any>(shape, 'drawPreview');
         drawPreviewSpy.and.stub();
         shape.mouseDown = true;
         shape.mouseDownCoord = { x: 0, y: 0 };
@@ -155,7 +174,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseUp should draw on base context and clear preview context', () => {
-        const drawSpy = spyOn(shape, 'draw');
+        const drawSpy = spyOn<any>(shape, 'draw');
         drawingServiceSpyObj.baseCtx = baseCtxStub;
         shape.mouseDown = true;
         shape.onMouseUp(mouseEvent);
@@ -164,7 +183,7 @@ describe('Shape', () => {
     });
 
     it('#onMouseUp should not draw on base context nor clear preview context if mouseDown is not true (edge case, necessary)', () => {
-        const drawSpy = spyOn(shape, 'draw');
+        const drawSpy = spyOn<any>(shape, 'draw');
         shape.mouseDown = false;
 
         shape.onMouseUp(mouseEvent);
@@ -197,7 +216,7 @@ describe('Shape', () => {
     });
 
     it('#onKeyDown should draw the preview if mouseDown is true', () => {
-        const drawPreviewSpy = spyOn(shape, 'drawPreview');
+        const drawPreviewSpy = spyOn<any>(shape, 'drawPreview');
         const leftShiftEvent = {
             code: 'ShiftLeft',
         } as KeyboardEvent;
@@ -225,7 +244,7 @@ describe('Shape', () => {
     });
 
     it('#onKeyUp should draw the preview if mouseDown is true', () => {
-        const drawPreviewSpy = spyOn(shape, 'drawPreview');
+        const drawPreviewSpy = spyOn<any>(shape, 'drawPreview');
         const leftShiftEvent = {
             code: 'ShiftLeft',
         } as KeyboardEvent;
@@ -247,10 +266,10 @@ describe('Shape', () => {
         const expectedYRadius = 10;
         shape.traceType = TraceType.FilledNoBordered;
 
-        expect(shape.getRadius(TOP_LEFT_CORNER_COORDS.x, BOTTOM_RIGHT_CORNER_COORDS.x)).toEqual(expectedXRadius);
-        expect(shape.getRadius(TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
-        expect(shape.getRadius(BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
-        expect(shape.getRadius(BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+        expect(shape['getRadius'](TOP_LEFT_CORNER_COORDS.x, BOTTOM_RIGHT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(shape['getRadius'](TOP_LEFT_CORNER_COORDS.y, BOTTOM_RIGHT_CORNER_COORDS.y)).toEqual(expectedYRadius);
+        expect(shape['getRadius'](BOTTOM_RIGHT_CORNER_COORDS.x, TOP_LEFT_CORNER_COORDS.x)).toEqual(expectedXRadius);
+        expect(shape['getRadius'](BOTTOM_RIGHT_CORNER_COORDS.y, TOP_LEFT_CORNER_COORDS.y)).toEqual(expectedYRadius);
     });
 
     it('#adjustToWidth should adjust radiuses if polygon or ellipse have a certain border width', () => {
@@ -260,7 +279,7 @@ describe('Shape', () => {
         drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
         shape.traceType = TraceType.FilledAndBordered;
 
-        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.Bordered);
+        shape['adjustToBorder'](drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.Bordered);
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -272,7 +291,13 @@ describe('Shape', () => {
         drawingServiceSpyObj.baseCtx.lineWidth = THICKNESS_STUB;
         shape.traceType = TraceType.FilledNoBordered;
 
-        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radiuses, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.FilledNoBordered);
+        shape['adjustToBorder'](
+            drawingServiceSpyObj.baseCtx,
+            radiuses,
+            TOP_LEFT_CORNER_COORDS,
+            BOTTOM_RIGHT_CORNER_COORDS,
+            TraceType.FilledNoBordered,
+        );
         expect(radiuses.x).toEqual(expectedXRadius);
         expect(radiuses.y).toEqual(expectedYRadius);
     });
@@ -282,7 +307,13 @@ describe('Shape', () => {
         const radius: Vec2 = { x: -5, y: -15 };
         drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
 
-        shape.adjustToBorder(drawingServiceSpyObj.baseCtx, radius, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS, TraceType.FilledAndBordered);
+        shape['adjustToBorder'](
+            drawingServiceSpyObj.baseCtx,
+            radius,
+            TOP_LEFT_CORNER_COORDS,
+            BOTTOM_RIGHT_CORNER_COORDS,
+            TraceType.FilledAndBordered,
+        );
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toBeLessThan(initialWidth);
         expect(radius.x).toBeGreaterThan(0);
         expect(radius.y).toBeGreaterThan(0);
@@ -293,7 +324,7 @@ describe('Shape', () => {
         const radius: Vec2 = { x: 0, y: 0 };
         drawingServiceSpyObj.baseCtx.lineWidth = initialWidth;
 
-        shape.adjustToBorder(
+        shape['adjustToBorder'](
             drawingServiceSpyObj.baseCtx,
             radius,
             BOTTOM_RIGHT_CORNER_COORDS,
@@ -317,10 +348,33 @@ describe('Shape', () => {
 
     it('#drawPreview should clear the canvas, draw the perimeter and draw the shape on the canvas', () => {
         const drawPerimeterSpy = spyOn(shape, 'drawPerimeter');
-        const drawSpy = spyOn(shape, 'draw');
-        shape.drawPreview();
+        const drawSpy = spyOn<any>(shape, 'draw');
+        shape['drawPreview']();
         expect(drawPerimeterSpy).toHaveBeenCalled();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalledWith(previewCtxStub);
         expect(drawSpy).toHaveBeenCalledWith(previewCtxStub, shape.mouseDownCoord, shape['endCoord']);
     });
+
+    it('#drawTraceType should draw with Border', () => {
+        shapePropretiesStub.traceType = TraceType.Bordered;
+        shapePropretiesStub.drawingContext.fillStyle = 'white';
+        shape['drawTraceType'](shapePropretiesStub);
+        spyOn<any>(shape, 'setStrokeColor');
+        spyOn(shapePropretiesStub.drawingContext, 'stroke');
+        shape['drawTraceType'](shapePropretiesStub);
+        expect(shape['setStrokeColor']).toHaveBeenCalled();
+        expect(shapePropretiesStub.drawingContext.stroke).toHaveBeenCalled();
+    });
+
+    it('#drawTraceType should draw with FilleNoBordered', () => {
+        shapePropretiesStub.traceType = TraceType.FilledNoBordered;
+        shapePropretiesStub.drawingContext.fillStyle = 'white';
+        shape['drawTraceType'](shapePropretiesStub);
+        spyOn<any>(shape, 'setFillColor');
+        spyOn(shapePropretiesStub.drawingContext, 'fill');
+        shape['drawTraceType'](shapePropretiesStub);
+        expect(shape['setFillColor']).toHaveBeenCalled();
+        expect(shapePropretiesStub.drawingContext.fill).toHaveBeenCalled();
+    });
+    // tslint:disable-next-line: max-file-line-count
 });

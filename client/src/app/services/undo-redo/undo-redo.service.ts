@@ -1,25 +1,24 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class UndoRedoService {
-    commandList: AbstractCommand[] = [];
-    undoneList: AbstractCommand[] = [];
-    canUndoRedo: boolean = true;
-    subscription: Subscription;
+    private commandList: AbstractCommand[] = [];
+    private undoneList: AbstractCommand[] = [];
+    private canUndoRedo: boolean = true;
 
-    updateUndoRedoComponent: Subject<void> = new Subject<void>();
+    private updateUndoRedoComponent: Subject<void> = new Subject<void>();
 
     constructor(private drawingService: DrawingService) {
-        this.subscription = this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
+        this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
             this.setBaseLine(baseLineCommand);
         });
     }
 
-    sendUndoRedoNotif(): void {
+    private sendUndoRedoNotif(): void {
         this.updateUndoRedoComponent.next();
     }
 
@@ -73,14 +72,14 @@ export class UndoRedoService {
         this.sendUndoRedoNotif();
     }
 
-    setBaseLine(baseLineCommand: AbstractCommand): void {
+    private setBaseLine(baseLineCommand: AbstractCommand): void {
         this.commandList = [];
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
         this.sendUndoRedoNotif();
     }
 
-    executeAllCommands(): void {
+    private executeAllCommands(): void {
         this.drawingService.clearCanvas(this.drawingService.baseCtx);
         for (const command of this.commandList) {
             command.execute();

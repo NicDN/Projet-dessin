@@ -5,13 +5,11 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class RectangleDrawingService extends Shape {
-    subscription: Subscription;
-    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Rectangle');
     }
 
@@ -23,33 +21,29 @@ export class RectangleDrawingService extends Shape {
         }
     }
 
-    drawShape(shapePropreties: ShapePropreties): void {
-        const trueEndCoords: Vec2 = this.getTrueEndCoords(shapePropreties.beginCoords, shapePropreties.endCoords, shapePropreties.isAlternateShape);
+    drawShape(rectanglePropreties: ShapePropreties): void {
+        const trueEndCoords: Vec2 = this.getTrueEndCoords(
+            rectanglePropreties.beginCoords,
+            rectanglePropreties.endCoords,
+            rectanglePropreties.isAlternateShape,
+        );
         const sideLengths: Vec2 = {
-            x: trueEndCoords.x - shapePropreties.beginCoords.x,
-            y: trueEndCoords.y - shapePropreties.beginCoords.y,
+            x: trueEndCoords.x - rectanglePropreties.beginCoords.x,
+            y: trueEndCoords.y - rectanglePropreties.beginCoords.y,
         };
-        const adjustedBeginCoords: Vec2 = { x: shapePropreties.beginCoords.x, y: shapePropreties.beginCoords.y };
+        const adjustedBeginCoords: Vec2 = { x: rectanglePropreties.beginCoords.x, y: rectanglePropreties.beginCoords.y };
 
-        shapePropreties.drawingContext.save();
-        this.setContextParameters(shapePropreties.drawingContext, shapePropreties.drawingThickness);
-        shapePropreties.drawingContext.beginPath();
+        rectanglePropreties.drawingContext.save();
+        this.setContextParameters(rectanglePropreties.drawingContext, rectanglePropreties.drawingThickness);
+        rectanglePropreties.drawingContext.beginPath();
 
-        this.adjustToBorder(shapePropreties.drawingContext, sideLengths, adjustedBeginCoords, trueEndCoords, shapePropreties.traceType);
-        shapePropreties.drawingContext.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
+        this.adjustToBorder(rectanglePropreties.drawingContext, sideLengths, adjustedBeginCoords, trueEndCoords, rectanglePropreties.traceType);
+        rectanglePropreties.drawingContext.rect(adjustedBeginCoords.x, adjustedBeginCoords.y, sideLengths.x, sideLengths.y);
 
-        if (shapePropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(shapePropreties.drawingContext, shapePropreties.mainColor);
-            shapePropreties.drawingContext.fill();
-        }
-        if (shapePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(shapePropreties.drawingContext, shapePropreties.secondaryColor);
-            shapePropreties.drawingContext.stroke();
-        }
-        shapePropreties.drawingContext.restore();
+        this.drawTraceType(rectanglePropreties);
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             drawingContext: ctx,
             beginCoords: begin,
@@ -78,7 +72,7 @@ export class RectangleDrawingService extends Shape {
         sideLengths.y -= Math.sign(end.y - begin.y) * ctx.lineWidth;
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.lineWidth = thickness;
         ctx.lineJoin = 'miter';
     }

@@ -1,17 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
-import { Shape, TraceType } from '@app/classes/shape';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EllipseDrawingService extends Shape {
-    subscription: Subscription;
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ellipse');
     }
@@ -44,18 +42,10 @@ export class EllipseDrawingService extends Shape {
 
         ellipsePropreties.drawingContext.ellipse(center.x, center.y, radiuses.x, radiuses.y, 0, 0, 2 * Math.PI);
 
-        if (ellipsePropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(ellipsePropreties.drawingContext, ellipsePropreties.mainColor);
-            ellipsePropreties.drawingContext.fill();
-        }
-        if (ellipsePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(ellipsePropreties.drawingContext, ellipsePropreties.secondaryColor);
-            ellipsePropreties.drawingContext.stroke();
-        }
-        ellipsePropreties.drawingContext.restore();
+        this.drawTraceType(ellipsePropreties);
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             drawingContext: ctx,
             beginCoords: begin,
@@ -68,7 +58,7 @@ export class EllipseDrawingService extends Shape {
         };
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineCap = 'round';

@@ -72,8 +72,8 @@ describe('DrawingComponent', () => {
         component.ngAfterViewInit();
         expect(component['drawingService'].baseCtx).toBe(component.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
         expect(component['drawingService'].previewCtx).toBe(component.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
-        expect(component.drawingService.canvas).toBe(component.baseCanvas.nativeElement);
-        expect(component.drawingService.previewCanvas).toBe(component.previewCanvas.nativeElement);
+        expect(component['drawingService'].canvas).toBe(component.baseCanvas.nativeElement);
+        expect(component['drawingService'].previewCanvas).toBe(component.previewCanvas.nativeElement);
     });
 
     it('#disableDrawing Should disable drawing if the resize button is being used', () => {
@@ -187,9 +187,9 @@ describe('DrawingComponent', () => {
 
     it('#ngAfterViewInit should HandleNewDrawing a with an image', () => {
         const imageStub = new Image();
-        imageStub.src = component.drawingService.canvas.toDataURL();
-        component.drawingService.newImage = imageStub;
-        const handleNewDrawing = spyOn(component.drawingService, 'handleNewDrawing');
+        imageStub.src = component['drawingService'].canvas.toDataURL();
+        component['drawingService'].newImage = imageStub;
+        const handleNewDrawing = spyOn(component['drawingService'], 'handleNewDrawing');
         component.ngAfterViewInit();
         expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
     });

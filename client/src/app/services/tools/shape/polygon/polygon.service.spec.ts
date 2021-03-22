@@ -10,6 +10,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { PolygonService } from './polygon.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('PolygonService', () => {
     let service: PolygonService;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
@@ -78,7 +79,7 @@ describe('PolygonService', () => {
     });
 
     it('#setContextParameters should change the right ctx parameters', () => {
-        service.setContextParameters(drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
+        service['setContextParameters'](drawingServiceSpyObj.baseCtx, THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.getLineDash()).toEqual([]);
         expect(drawingServiceSpyObj.baseCtx.lineWidth).toEqual(THICKNESS_STUB);
         expect(drawingServiceSpyObj.baseCtx.lineCap).toEqual('round');
@@ -147,7 +148,7 @@ describe('PolygonService', () => {
     });
 
     it('#loadUpPropreties should set the ShapePropreties to current service so it can be used in the redo', () => {
-        const polygonPropreties: ShapePropreties = service.loadUpPropreties(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        const polygonPropreties: ShapePropreties = service['loadUpPropreties'](baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(polygonPropreties.drawingContext).toEqual(baseCtxStub);
         expect(polygonPropreties.beginCoords).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(polygonPropreties.mainColor.rgbValue).toEqual(colorServiceSpyObj.mainColor.rgbValue);
@@ -157,7 +158,7 @@ describe('PolygonService', () => {
     });
 
     it('#draw should loadUpPropreties and call drawPolygon', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(shapePropretiesStub);
         const drawPolygonSpy = spyOn(service, 'drawShape');
         service.draw(baseCtxStub, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 

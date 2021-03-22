@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ShapeCommand, ShapePropreties } from '@app/classes/commands/shape-command/shape-command';
-import { Shape, TraceType } from '@app/classes/shape';
+import { Shape } from '@app/classes/shape';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -13,11 +13,13 @@ export class PolygonService extends Shape {
     readonly MAX_SIDES: number = 12;
     readonly MIN_SIDES: number = 3;
 
-    constructor(drawingService: DrawingService, colorService: ColorService, public undoRedoService: UndoRedoService) {
+    numberOfSides: number = 3;
+
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Polygone');
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): ShapePropreties {
         return {
             drawingContext: ctx,
             beginCoords: begin,
@@ -40,41 +42,37 @@ export class PolygonService extends Shape {
         }
     }
 
-    drawShape(shapePropreties: ShapePropreties): void {
-        if (shapePropreties.numberOfSides === undefined) return;
+    drawShape(polygonPropreties: ShapePropreties): void {
+        if (polygonPropreties.numberOfSides === undefined) return;
 
-        shapePropreties.drawingContext.save();
-        shapePropreties.isAlternateShape = true;
+        polygonPropreties.drawingContext.save();
+        polygonPropreties.isAlternateShape = true;
 
-        const actualEndCoords: Vec2 = this.getTrueEndCoords(shapePropreties.beginCoords, shapePropreties.endCoords, shapePropreties.isAlternateShape);
-        const center: Vec2 = this.getCenterCoords(shapePropreties.beginCoords, actualEndCoords);
+        const actualEndCoords: Vec2 = this.getTrueEndCoords(
+            polygonPropreties.beginCoords,
+            polygonPropreties.endCoords,
+            polygonPropreties.isAlternateShape,
+        );
+        const center: Vec2 = this.getCenterCoords(polygonPropreties.beginCoords, actualEndCoords);
         const radiuses: Vec2 = {
-            x: this.getRadius(shapePropreties.beginCoords.x, actualEndCoords.x),
-            y: this.getRadius(shapePropreties.beginCoords.y, actualEndCoords.y),
+            x: this.getRadius(polygonPropreties.beginCoords.x, actualEndCoords.x),
+            y: this.getRadius(polygonPropreties.beginCoords.y, actualEndCoords.y),
         };
 
-        const angle: number = (2 * Math.PI) / shapePropreties.numberOfSides;
+        const angle: number = (2 * Math.PI) / polygonPropreties.numberOfSides;
 
-        this.setContextParameters(shapePropreties.drawingContext, shapePropreties.drawingThickness);
-        shapePropreties.drawingContext.beginPath();
-        this.adjustToBorder(shapePropreties.drawingContext, radiuses, shapePropreties.beginCoords, actualEndCoords, shapePropreties.traceType);
-        for (let i = 0; i <= shapePropreties.numberOfSides; i++) {
-            shapePropreties.drawingContext.lineTo(center.x - radiuses.x * Math.sin(i * angle), center.y - radiuses.y * Math.cos(i * angle));
+        this.setContextParameters(polygonPropreties.drawingContext, polygonPropreties.drawingThickness);
+        polygonPropreties.drawingContext.beginPath();
+        this.adjustToBorder(polygonPropreties.drawingContext, radiuses, polygonPropreties.beginCoords, actualEndCoords, polygonPropreties.traceType);
+
+        for (let i = 0; i <= polygonPropreties.numberOfSides; i++) {
+            polygonPropreties.drawingContext.lineTo(center.x - radiuses.x * Math.sin(i * angle), center.y - radiuses.y * Math.cos(i * angle));
         }
 
-        if (shapePropreties.traceType !== TraceType.Bordered) {
-            this.setFillColor(shapePropreties.drawingContext, shapePropreties.mainColor);
-            shapePropreties.drawingContext.fill();
-        }
-
-        if (shapePropreties.traceType !== TraceType.FilledNoBordered) {
-            this.setStrokeColor(shapePropreties.drawingContext, shapePropreties.secondaryColor);
-            shapePropreties.drawingContext.stroke();
-        }
-        shapePropreties.drawingContext.restore();
+        this.drawTraceType(polygonPropreties);
     }
 
-    setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
+    private setContextParameters(ctx: CanvasRenderingContext2D, thickness: number): void {
         ctx.setLineDash([]);
         ctx.lineWidth = thickness;
         ctx.lineJoin = 'round';

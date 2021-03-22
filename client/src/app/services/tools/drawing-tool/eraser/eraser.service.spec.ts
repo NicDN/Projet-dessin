@@ -8,6 +8,8 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EraserService } from './eraser.service';
 
+// tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('EraserService', () => {
     let service: EraserService;
     let canvasTestHelper: CanvasTestHelper;
@@ -16,7 +18,6 @@ describe('EraserService', () => {
     let previewCtxStub: CanvasRenderingContext2D;
     let mouseEvent: MouseEvent;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
-    // let drawLineSpy: jasmine.Spy;
     let singleClickSpy: jasmine.Spy;
     let imageDataBefore: ImageData;
     let imageDataAfter: ImageData;
@@ -24,8 +25,6 @@ describe('EraserService', () => {
 
     const point1: Vec2 = { x: 0, y: 0 };
     const point2: Vec2 = { x: 3, y: 4 };
-    // const mouseEventStart = { pageX: 405, pageY: 3, button: 0 } as MouseEvent;
-    // const mouseEventEnd = { pageX: 406, pageY: 3, button: 0 } as MouseEvent;
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const LEFT_BUTTON_PRESSED = 1;
 
@@ -58,7 +57,6 @@ describe('EraserService', () => {
         service = TestBed.inject(EraserService);
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
-        // drawLineSpy = spyOn(service, 'drawLine').and.callThrough();
         canvasStub = canvasTestHelper.canvas;
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
@@ -75,7 +73,7 @@ describe('EraserService', () => {
             buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
 
-        singleClickSpy = spyOn(service, 'singleClick').and.callThrough();
+        singleClickSpy = spyOn<any>(service, 'singleClick').and.callThrough();
 
         baseCtxStub.fillStyle = 'white';
         baseCtxStub.rect(0, 0, 1, 1);
@@ -94,12 +92,12 @@ describe('EraserService', () => {
 
     it('#distanceBetween should return the distance between 2 points', () => {
         const expectedValue = 5;
-        expect(service.distanceBetween(point1, point2)).toEqual(expectedValue);
+        expect(service['distanceBetween'](point1, point2)).toEqual(expectedValue);
     });
 
     it('#angleBetween should return the angle between 2 points', () => {
         const expectedValue = 0.6435011087932844;
-        expect(service.angleBetween(point1, point2)).toEqual(expectedValue);
+        expect(service['angleBetween'](point1, point2)).toEqual(expectedValue);
     });
 
     it('#singleClick should return if there is a single click', () => {
@@ -107,19 +105,19 @@ describe('EraserService', () => {
             { x: 0, y: 0 },
             { x: 0, y: 0 },
         ];
-        expect(service.singleClick(path1)).toEqual(true);
+        expect(service['singleClick'](path1)).toEqual(true);
 
         const path2 = [
             { x: 0, y: 0 },
             { x: 2, y: 0 },
             { x: 1, y: 1 },
         ];
-        expect(service.singleClick(path2)).toEqual(false);
+        expect(service['singleClick'](path2)).toEqual(false);
     });
 
     it('#onMoveMove should call the mouseMove from pencilService and display the preview', () => {
-        const everyMouseMoveSpy: jasmine.Spy = spyOn(service, 'everyMouseMove').and.callThrough();
-        const displayPreviewSpy: jasmine.Spy = spyOn(service, 'displayPreview').and.callThrough();
+        const everyMouseMoveSpy: jasmine.Spy = spyOn<any>(service, 'everyMouseMove').and.callThrough();
+        const displayPreviewSpy: jasmine.Spy = spyOn<any>(service, 'displayPreview').and.callThrough();
         service.onMouseMove(mouseEvent);
         expect(everyMouseMoveSpy).toHaveBeenCalled();
         expect(displayPreviewSpy).toHaveBeenCalled();
@@ -129,13 +127,13 @@ describe('EraserService', () => {
     it('#eraseSquare should erase part off the context', () => {
         expect(imageDataBefore).not.toEqual(imageDataAfter);
 
-        service.eraseSquare(baseCtxStub, { x: 0, y: 0 }, 1);
+        service['eraseSquare'](baseCtxStub, { x: 0, y: 0 }, 1);
         const imageDataErased: ImageData = baseCtxStub.getImageData(0, 0, 1, 1);
         expect(imageDataBefore).toEqual(imageDataErased);
     });
 
     it('#setAttributesDisplay should set the context to the right attributes', () => {
-        service.setAttributesDisplay(baseCtxStub);
+        service['setAttributesDisplay'](baseCtxStub);
         expect(baseCtxStub.fillStyle).toEqual('#ffffff');
         expect(baseCtxStub.strokeStyle).toEqual('#000000');
         expect(baseCtxStub.lineWidth).toEqual(1);
@@ -168,7 +166,7 @@ describe('EraserService', () => {
     });
 
     it('#drawLine should load propreties', () => {
-        const loadUpSpy = spyOn(service, 'loadUpEraserPropreties').and.returnValue(drawingToolPropretiesStub);
+        const loadUpSpy = spyOn<any>(service, 'loadUpEraserPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
         service.drawLine(drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub.drawingPath);
 
@@ -183,7 +181,7 @@ describe('EraserService', () => {
     });
 
     it('#loadUpEraserPropreties should return the correct propreties', () => {
-        const drawingToolPropreties: TraceToolPropreties = service.loadUpEraserPropreties(baseCtxStub, pathArrayStub);
+        const drawingToolPropreties: TraceToolPropreties = service['loadUpEraserPropreties'](baseCtxStub, pathArrayStub);
         expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
         expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
         expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);

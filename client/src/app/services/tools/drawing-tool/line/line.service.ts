@@ -6,7 +6,6 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 const HALF_CIRCLE = 180;
 const QUARTER_CIRCLE = 90;
@@ -15,21 +14,19 @@ const QUARTER_CIRCLE = 90;
     providedIn: 'root',
 })
 export class LineService extends TraceTool {
-    subscription: Subscription;
-    readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
-    readonly MAX_JUNCTION_DIAMETER: number = 5;
-    readonly FORTHY_FIVE_DEGREE: number = 45;
-    readonly HALF_FF_DEGREE: number = 22.5;
-    readonly FULL_CIRCLE: number = 360;
+    private readonly INITIAL_JUNCTION_DIAMETER_PX: number = 5;
+    private readonly FORTHY_FIVE_DEGREE: number = 45;
+    private readonly HALF_FF_DEGREE: number = 22.5;
+    private readonly FULL_CIRCLE: number = 360;
 
-    isShiftDown: boolean = false;
-    canDoubleClick: boolean = false;
+    private isShiftDown: boolean = false;
+    private canDoubleClick: boolean = false;
 
     drawWithJunction: boolean;
     junctionDiameter: number;
 
-    pathData: Vec2[];
-    mousePosition: Vec2;
+    private pathData: Vec2[] = [];
+    private mousePosition: Vec2;
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
@@ -99,12 +96,12 @@ export class LineService extends TraceTool {
         }
     }
 
-    addPoint(): void {
+    private addPoint(): void {
         this.pathData.push(this.mousePosition);
         this.updatePreview();
     }
 
-    removePoint(): void {
+    private removePoint(): void {
         const MIN_LENGTH_FOR_REMOVING_DOT = 2;
         if (this.pathData.length > MIN_LENGTH_FOR_REMOVING_DOT) {
             this.pathData.pop();
@@ -113,7 +110,7 @@ export class LineService extends TraceTool {
         }
     }
 
-    finishLine(): void {
+    private finishLine(): void {
         const MAX_OFFSET = 20;
         const firstPos = this.pathData[0];
         const dx = Math.abs(firstPos.x - this.mousePosition.x);
@@ -140,7 +137,7 @@ export class LineService extends TraceTool {
         this.drawLine(this.drawingService.previewCtx, this.pathData);
     }
 
-    calculateAngle(point: Vec2): number {
+    private calculateAngle(point: Vec2): number {
         const dx = this.mousePosition.x - point.x;
         const dy = this.mousePosition.y - point.y;
         const rads = Math.atan2(dx, dy);
@@ -172,7 +169,7 @@ export class LineService extends TraceTool {
         drawingToolPropreties.drawingContext.stroke();
     }
 
-    setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: TraceToolPropreties): void {
+    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: TraceToolPropreties): void {
         if (drawingToolPropreties.drawingColor === undefined) return;
         ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
         ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
@@ -180,7 +177,7 @@ export class LineService extends TraceTool {
         ctx.lineJoin = drawingToolPropreties.drawingContext.lineCap = 'round';
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,
@@ -191,7 +188,7 @@ export class LineService extends TraceTool {
         };
     }
 
-    lockLine(): void {
+    private lockLine(): void {
         const lastSelectedPoint = this.pathData[this.pathData.length - 2];
         const angle = this.calculateAngle(lastSelectedPoint);
 

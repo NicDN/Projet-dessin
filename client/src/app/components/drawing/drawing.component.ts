@@ -27,7 +27,7 @@ export class DrawingComponent implements AfterViewInit {
     private canDraw: boolean = true;
 
     constructor(
-        public drawingService: DrawingService,
+        private drawingService: DrawingService,
         public toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,

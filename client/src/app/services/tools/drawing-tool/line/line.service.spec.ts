@@ -1,5 +1,6 @@
 // tslint:disable: no-string-literal
 // tslint:disable: max-file-line-count
+// tslint:disable: no-any
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
@@ -58,14 +59,14 @@ describe('LineService', () => {
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
 
-        updatePreviewSpy = spyOn(service, 'updatePreview').and.stub();
-        calculateAngleSpy = spyOn(service, 'calculateAngle').and.stub();
-        lockLineSpy = spyOn(service, 'lockLine').and.stub();
+        updatePreviewSpy = spyOn<any>(service, 'updatePreview').and.stub();
+        calculateAngleSpy = spyOn<any>(service, 'calculateAngle').and.stub();
+        lockLineSpy = spyOn<any>(service, 'lockLine').and.stub();
         clearPathSpy = spyOn(service, 'clearPath').and.stub();
-        removePointSpy = spyOn(service, 'removePoint').and.stub();
+        removePointSpy = spyOn<any>(service, 'removePoint').and.stub();
         colorServiceSpyObj.mainColor = colorStub;
-        service.mousePosition = DEFAULT_MOUSE_POSITION;
-        service.pathData = [
+        service['mousePosition'] = DEFAULT_MOUSE_POSITION;
+        service['pathData'] = [
             { x: 10, y: 10 },
             { x: 10, y: 15 },
             { x: 15, y: 10 },
@@ -95,89 +96,89 @@ describe('LineService', () => {
 
     it('#onMouseUp should return if Left isnt pressed', () => {
         service.mouseDown = false;
-        service.canDoubleClick = false;
+        service['canDoubleClick'] = false;
         mouseEvent = {} as MouseEvent;
-        spyOn(service, 'addPoint');
-        spyOn(service, 'finishLine');
+        spyOn<any>(service, 'addPoint');
+        spyOn<any>(service, 'finishLine');
 
         service.onMouseUp(mouseEvent);
         expect(service.mouseDown).toBeFalse();
-        expect(service.canDoubleClick).toBeFalse();
-        expect(service.addPoint).not.toHaveBeenCalled();
-        expect(service.finishLine).not.toHaveBeenCalled();
+        expect(service['canDoubleClick']).toBeFalse();
+        expect(service['addPoint']).not.toHaveBeenCalled();
+        expect(service['finishLine']).not.toHaveBeenCalled();
     });
 
     it('#onMouseUp should add a point with a simple left click', () => {
         mouseEvent = {} as MouseEvent;
         service.mouseDown = true;
-        service.canDoubleClick = false;
-        spyOn(service, 'addPoint');
-        spyOn(service, 'finishLine');
+        service['canDoubleClick'] = false;
+        spyOn<any>(service, 'addPoint');
+        spyOn<any>(service, 'finishLine');
 
         service.onMouseUp(mouseEvent);
-        expect(service.canDoubleClick).toBeTrue();
+        expect(service['canDoubleClick']).toBeTrue();
         expect(service.mouseDown).toBeFalse();
-        expect(service.addPoint).toHaveBeenCalled();
-        expect(service.finishLine).not.toHaveBeenCalled();
+        expect(service['addPoint']).toHaveBeenCalled();
+        expect(service['finishLine']).not.toHaveBeenCalled();
     });
 
     it('#onMouseUp should finish the line with a double left click and a line to draw', () => {
         service.mouseDown = true;
-        service.canDoubleClick = true;
+        service['canDoubleClick'] = true;
         mouseEvent = {} as MouseEvent;
-        spyOn(service, 'addPoint');
-        spyOn(service, 'finishLine');
+        spyOn<any>(service, 'addPoint');
+        spyOn<any>(service, 'finishLine');
 
         service.onMouseUp(mouseEvent);
         expect(service.mouseDown).toBeFalse();
-        expect(service.canDoubleClick).toBeTrue();
-        expect(service.addPoint).not.toHaveBeenCalled();
-        expect(service.finishLine).toHaveBeenCalled();
+        expect(service['canDoubleClick']).toBeTrue();
+        expect(service['addPoint']).not.toHaveBeenCalled();
+        expect(service['finishLine']).toHaveBeenCalled();
     });
 
     it('#onMouseUp should call nothing with a double left click if theres no line', () => {
         mouseEvent = { button: MouseButton.Left } as MouseEvent;
-        service.pathData = [];
+        service['pathData'] = [];
         service.mouseDown = true;
-        service.canDoubleClick = true;
-        spyOn(service, 'finishLine');
-        spyOn(service, 'addPoint');
+        service['canDoubleClick'] = true;
+        spyOn<any>(service, 'finishLine');
+        spyOn<any>(service, 'addPoint');
 
         service.onMouseUp(mouseEvent);
-        expect(service.finishLine).not.toHaveBeenCalled();
-        expect(service.addPoint).not.toHaveBeenCalled();
+        expect(service['finishLine']).not.toHaveBeenCalled();
+        expect(service['addPoint']).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should lock the line when shift is pressed', () => {
-        service.isShiftDown = true;
+        service['isShiftDown'] = true;
         mouseEvent = {} as MouseEvent;
         spyOn(service, 'getPositionFromMouse').and.returnValue(DEFAULT_MOUSE_POSITION);
 
         service.onMouseMove(mouseEvent);
-        expect(service.mousePosition).toEqual(DEFAULT_MOUSE_POSITION);
-        expect(service.pathData[service.pathData.length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['mousePosition']).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(lockLineSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).not.toHaveBeenCalled();
     });
 
     it('#onMouseMove should lock the line when shift is pressed', () => {
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
         mouseEvent = {} as MouseEvent;
         spyOn(service, 'getPositionFromMouse').and.returnValue(DEFAULT_MOUSE_POSITION);
 
         service.onMouseMove(mouseEvent);
-        expect(service.mousePosition).toEqual(DEFAULT_MOUSE_POSITION);
-        expect(service.pathData[service.pathData.length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['mousePosition']).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(lockLineSpy).not.toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
     });
 
     it('#onKeyDown should clear the path when Escape is pressed', () => {
         keyboardEvent = { code: 'Escape' } as KeyboardEvent;
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
 
         service.onKeyDown(keyboardEvent);
-        expect(service.isShiftDown).toBeFalse();
+        expect(service['isShiftDown']).toBeFalse();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(removePointSpy).not.toHaveBeenCalled();
         expect(lockLineSpy).not.toHaveBeenCalled();
@@ -186,10 +187,10 @@ describe('LineService', () => {
 
     it('#onKeyDown should remove a point when Backspace is pressed', () => {
         keyboardEvent = { code: 'Backspace' } as KeyboardEvent;
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
 
         service.onKeyDown(keyboardEvent);
-        expect(service.isShiftDown).toBeFalse();
+        expect(service['isShiftDown']).toBeFalse();
         expect(clearPathSpy).not.toHaveBeenCalled();
         expect(removePointSpy).toHaveBeenCalled();
         expect(lockLineSpy).not.toHaveBeenCalled();
@@ -198,10 +199,10 @@ describe('LineService', () => {
 
     it('#onKeyDown should lock the line when ShiftRight is pressed', () => {
         keyboardEvent = { code: 'ShiftRight' } as KeyboardEvent;
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
 
         service.onKeyDown(keyboardEvent);
-        expect(service.isShiftDown).toBeTrue();
+        expect(service['isShiftDown']).toBeTrue();
         expect(clearPathSpy).not.toHaveBeenCalled();
         expect(removePointSpy).not.toHaveBeenCalled();
         expect(lockLineSpy).toHaveBeenCalled();
@@ -210,10 +211,10 @@ describe('LineService', () => {
 
     it('#onKeyDown should lock the line when ShiftLeft is pressed', () => {
         keyboardEvent = { code: 'ShiftLeft' } as KeyboardEvent;
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
 
         service.onKeyDown(keyboardEvent);
-        expect(service.isShiftDown).toBeTrue();
+        expect(service['isShiftDown']).toBeTrue();
         expect(clearPathSpy).not.toHaveBeenCalled();
         expect(removePointSpy).not.toHaveBeenCalled();
         expect(lockLineSpy).toHaveBeenCalled();
@@ -222,10 +223,10 @@ describe('LineService', () => {
 
     it('#onKeyDown should just update the preview when nothing is pressed', () => {
         keyboardEvent = {} as KeyboardEvent;
-        service.isShiftDown = false;
+        service['isShiftDown'] = false;
 
         service.onKeyDown(keyboardEvent);
-        expect(service.isShiftDown).toBeFalse();
+        expect(service['isShiftDown']).toBeFalse();
         expect(clearPathSpy).not.toHaveBeenCalled();
         expect(removePointSpy).not.toHaveBeenCalled();
         expect(lockLineSpy).not.toHaveBeenCalled();
@@ -233,61 +234,61 @@ describe('LineService', () => {
     });
 
     it('#onKeyUp should replace the preview when ShiftLeft is pressed', () => {
-        service.isShiftDown = true;
+        service['isShiftDown'] = true;
         keyboardEvent = { code: 'ShiftLeft' } as KeyboardEvent;
 
         service.onKeyUp(keyboardEvent);
-        expect(service.isShiftDown).toBeFalse();
-        expect(service.pathData[service.pathData.length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['isShiftDown']).toBeFalse();
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(updatePreviewSpy).toHaveBeenCalled();
     });
 
     it('#onKeyUp should replace the preview when ShiftRight is pressed', () => {
-        service.isShiftDown = true;
+        service['isShiftDown'] = true;
         keyboardEvent = { code: 'ShiftRight' } as KeyboardEvent;
 
         service.onKeyUp(keyboardEvent);
-        expect(service.isShiftDown).toBeFalse();
-        expect(service.pathData[service.pathData.length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['isShiftDown']).toBeFalse();
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(updatePreviewSpy).toHaveBeenCalled();
     });
 
     it('#onKeyUp shouldnt replace the preview when nothing is pressed', () => {
-        service.isShiftDown = true;
+        service['isShiftDown'] = true;
         keyboardEvent = {} as KeyboardEvent;
 
         service.onKeyUp(keyboardEvent);
-        expect(service.isShiftDown).toBeTrue();
-        expect(service.pathData[service.pathData.length - 1]).not.toEqual(DEFAULT_MOUSE_POSITION);
+        expect(service['isShiftDown']).toBeTrue();
+        expect(service['pathData'][service['pathData'].length - 1]).not.toEqual(DEFAULT_MOUSE_POSITION);
         expect(updatePreviewSpy).not.toHaveBeenCalled();
     });
 
     it('#addPoint should add a point in pathData', () => {
-        service.addPoint();
-        expect(service.pathData[service.pathData.length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
+        service['addPoint']();
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
     });
 
     it('#removePoint should remove a point', () => {
         const EXPECTED_LENGTH = 3;
         removePointSpy.and.callThrough();
 
-        service.removePoint();
-        expect(service.pathData.length).toEqual(EXPECTED_LENGTH);
+        service['removePoint']();
+        expect(service['pathData'].length).toEqual(EXPECTED_LENGTH);
     });
 
     it('#removePoint shouldnt remove a point if there are not enough', () => {
-        service.pathData = [{ x: 5, y: 5 }];
+        service['pathData'] = [{ x: 5, y: 5 }];
         removePointSpy.and.callThrough();
 
-        service.removePoint();
-        expect(service.pathData.length).toEqual(1);
+        service['removePoint']();
+        expect(service['pathData'].length).toEqual(1);
     });
 
     it('#finishLine shouldnt change the last point if it isnt near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 5, y: 5 };
-        spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
-        service.finishLine();
-        expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
+        spyOn<any>(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        service['finishLine']();
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(EXPECTED_LAST_POINT);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
@@ -295,11 +296,11 @@ describe('LineService', () => {
 
     it('#finishLine should change the last point if it is near the first', () => {
         const EXPECTED_LAST_POINT: Vec2 = { x: 10, y: 10 };
-        service.mousePosition = { x: 20, y: 20 };
+        service['mousePosition'] = { x: 20, y: 20 };
         service.junctionDiameter = 1;
-        spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
-        service.finishLine();
-        expect(service.pathData[service.pathData.length - 1]).toEqual(EXPECTED_LAST_POINT);
+        spyOn<any>(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        service['finishLine']();
+        expect(service['pathData'][service['pathData'].length - 1]).toEqual(EXPECTED_LAST_POINT);
         expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
         expect(clearPathSpy).toHaveBeenCalled();
         expect(updatePreviewSpy).toHaveBeenCalled();
@@ -320,13 +321,13 @@ describe('LineService', () => {
         const lastSelectedPoint = { x: 55, y: 65 };
         calculateAngleSpy.and.callThrough();
 
-        expect(service.calculateAngle(lastSelectedPoint)).toEqual(EXPECTED_ANGLE);
+        expect(service['calculateAngle'](lastSelectedPoint)).toEqual(EXPECTED_ANGLE);
     });
 
     it('#calculateAngle should keep the angle in degrees above 0', () => {
         const lastSelectedPoint = { x: 55, y: 10 };
         calculateAngleSpy.and.callThrough();
-        expect(service.calculateAngle(lastSelectedPoint) > 0).toBeTrue();
+        expect(service['calculateAngle'](lastSelectedPoint) > 0).toBeTrue();
     });
 
     it('#drawTrace should not draw anything if theres no point in the path', () => {
@@ -352,7 +353,7 @@ describe('LineService', () => {
         drawingToolPropretiesStub.drawingContext = baseCtxStub;
         drawingToolPropretiesStub.drawWithJunction = false;
         drawingToolPropretiesStub.junctionDiameter = 1;
-        drawingToolPropretiesStub.drawingPath = service.pathData;
+        drawingToolPropretiesStub.drawingPath = service['pathData'];
 
         service.drawTrace(drawingToolPropretiesStub);
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
@@ -368,7 +369,7 @@ describe('LineService', () => {
         drawingToolPropretiesStub.drawingContext = baseCtxStub;
         drawingToolPropretiesStub.junctionDiameter = 1;
         drawingToolPropretiesStub.drawWithJunction = true;
-        drawingToolPropretiesStub.drawingPath = service.pathData;
+        drawingToolPropretiesStub.drawingPath = service['pathData'];
 
         service.drawTrace(drawingToolPropretiesStub);
         expect(baseCtxStub.beginPath).toHaveBeenCalled();
@@ -385,15 +386,15 @@ describe('LineService', () => {
     });
 
     it('#drawLine should load propreties', () => {
-        const loadUpSpy = spyOn(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
-        drawingToolPropretiesStub.drawingPath = service.pathData;
+        const loadUpSpy = spyOn<any>(service, 'loadUpPropreties').and.returnValue(drawingToolPropretiesStub);
+        drawingToolPropretiesStub.drawingPath = service['pathData'];
         service.drawLine(baseCtxStub, drawingToolPropretiesStub.drawingPath);
 
         expect(loadUpSpy).toHaveBeenCalled();
     });
 
     it('#loadUpPropreties should return the correct propreties', () => {
-        const drawingToolPropreties: TraceToolPropreties = service.loadUpPropreties(baseCtxStub, pathArrayStub);
+        const drawingToolPropreties: TraceToolPropreties = service['loadUpPropreties'](baseCtxStub, pathArrayStub);
         expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
         expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
         expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
@@ -439,8 +440,8 @@ describe('LineService', () => {
         calculateAngleSpy.and.returnValue(DEFAULT_ANGLE);
         lockLineSpy.and.callThrough();
 
-        service.lockLine();
-        expect(service.pathData[service.pathData.length - 1].y).toEqual(EXPECTED_Y_POSITION);
+        service['lockLine']();
+        expect(service['pathData'][service['pathData'].length - 1].y).toEqual(EXPECTED_Y_POSITION);
     });
 
     it('#lockLine should lock the line near the y axis', () => {
@@ -449,8 +450,8 @@ describe('LineService', () => {
         calculateAngleSpy.and.returnValue(DEFAULT_ANGLE);
         lockLineSpy.and.callThrough();
 
-        service.lockLine();
-        expect(service.pathData[service.pathData.length - 1].x).toEqual(EXPECTED_X_POSITION);
+        service['lockLine']();
+        expect(service['pathData'][service['pathData'].length - 1].x).toEqual(EXPECTED_X_POSITION);
     });
 
     it('#lockLine should lock the line near the first diagonal', () => {
@@ -459,8 +460,8 @@ describe('LineService', () => {
         calculateAngleSpy.and.returnValue(DEFAULT_ANGLE);
         lockLineSpy.and.callThrough();
 
-        service.lockLine();
-        expect(service.pathData[service.pathData.length - 1].y).toEqual(EXPECTED_Y_POSITION);
+        service['lockLine']();
+        expect(service['pathData'][service['pathData'].length - 1].y).toEqual(EXPECTED_Y_POSITION);
     });
 
     it('#lockLine should lock the line near the second diagonal', () => {
@@ -469,13 +470,13 @@ describe('LineService', () => {
         calculateAngleSpy.and.returnValue(DEFAULT_ANGLE);
         lockLineSpy.and.callThrough();
 
-        service.lockLine();
-        expect(service.pathData[service.pathData.length - 1].y).toEqual(EXPECTED_Y_POSITION);
+        service['lockLine']();
+        expect(service['pathData'][service['pathData'].length - 1].y).toEqual(EXPECTED_Y_POSITION);
     });
 
     it('#clearPath should clear pathData', () => {
         clearPathSpy.and.callThrough();
         service.clearPath();
-        expect(service.pathData).toEqual([]);
+        expect(service['pathData']).toEqual([]);
     });
 });
