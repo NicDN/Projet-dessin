@@ -18,8 +18,8 @@ describe('UndoRedoComponent', () => {
             'sendUndoRedoNotif',
         ]);
         // tslint:disable-next-line: prefer-const no-any
-        let something: any;
-        undoRedoServiceSpyObj.newUndoRedoSignals.and.returnValue(of(something));
+        let randomMsg: any;
+        undoRedoServiceSpyObj.newUndoRedoSignals.and.returnValue(of(randomMsg));
         TestBed.configureTestingModule({
             declarations: [UndoRedoComponent],
             providers: [{ provide: UndoRedoService, useValue: undoRedoServiceSpyObj }],
