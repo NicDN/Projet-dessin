@@ -20,8 +20,8 @@ export class SprayCanService extends TraceTool {
     readonly MAX_SPRAY_DIAMETER: number = 70;
     readonly MAX_EMISSION_RATE: number = 70;
 
-    readonly ONESECMS: number = 1000;
-    readonly CIRCLENUMBER: number = 40;
+    private readonly ONE_SEC_MS: number = 1000;
+    private readonly CIRCLE_NUMBER: number = 40;
 
     private timer: ReturnType<typeof setInterval>;
     private cleanPathData: Vec2[] = [];
@@ -52,7 +52,7 @@ export class SprayCanService extends TraceTool {
         }
     }
 
-    onMouseUp(event: MouseEvent): void {
+    onMouseUp(): void {
         if (this.mouseDown) {
             this.mouseDown = false;
             this.clearPath();
@@ -83,7 +83,7 @@ export class SprayCanService extends TraceTool {
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
         const self = this;
-        this.timer = setInterval(() => self.drawSpray(ctx, path), this.ONESECMS / this.emissionRate);
+        this.timer = setInterval(() => self.drawSpray(ctx, path), this.ONE_SEC_MS / this.emissionRate);
     }
 
     private getRandomNumber(min: number, max: number): number {
@@ -123,7 +123,8 @@ export class SprayCanService extends TraceTool {
     sprayOnCanvas(sprayCanPropreties: SprayCanPropreties, pointToDraw: Vec2, isUsingUndoRedo: boolean): void {
         sprayCanPropreties.drawingCtx.save();
         this.setContext(sprayCanPropreties.drawingCtx, sprayCanPropreties.mainColor);
-        for (let i = this.CIRCLENUMBER; i !== 0; i--) {
+
+        for (let i = this.CIRCLE_NUMBER; i !== 0; i--) {
             sprayCanPropreties.drawingCtx.globalAlpha = sprayCanPropreties.mainColor.opacity;
             sprayCanPropreties.drawingCtx.beginPath();
             sprayCanPropreties.drawingCtx.arc(
@@ -135,7 +136,9 @@ export class SprayCanService extends TraceTool {
             );
             sprayCanPropreties.drawingCtx.fill();
         }
+
         sprayCanPropreties.drawingCtx.restore();
+
         if (!isUsingUndoRedo) {
             this.cleanPathData.push(pointToDraw);
         }
@@ -143,7 +146,7 @@ export class SprayCanService extends TraceTool {
 
     private generateRandomArray(min: number, max: number): number[] {
         const tmpArray: number[] = [];
-        for (let i = 0; i < this.CIRCLENUMBER; i++) {
+        for (let i = 0; i < this.CIRCLE_NUMBER; i++) {
             tmpArray.push(this.getRandomNumber(min, max));
         }
         return tmpArray;

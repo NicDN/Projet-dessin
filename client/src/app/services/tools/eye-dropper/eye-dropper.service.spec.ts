@@ -15,7 +15,7 @@ describe('EyeDropperService', () => {
 
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const LEFT_BUTTON_PRESSED = 1;
-    const MOUSEVALUE = 25;
+    const MOUSE_VALUE = 25;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
@@ -43,9 +43,9 @@ describe('EyeDropperService', () => {
 
     it('#onMouseDown should set the value of leftclick to true if there was a mousedown', () => {
         const getImageDataSpy = spyOn<any>(service, 'getImageData').and.stub();
-        service.leftClick = false;
+        service.isLeftClick = false;
         service.onMouseDown(mouseEvent);
-        expect(service.leftClick).toEqual(true);
+        expect(service.isLeftClick).toEqual(true);
         expect(getImageDataSpy).toHaveBeenCalled();
     });
 
@@ -65,22 +65,22 @@ describe('EyeDropperService', () => {
     });
 
     it('#onMouseEnter should set the value of preview to true', () => {
-        service.preview = false;
-        service.onMouseEnter(mouseEvent);
-        expect(service.preview).toEqual(true);
+        service.previewIsDisplayed = false;
+        service.onMouseEnter();
+        expect(service.previewIsDisplayed).toEqual(true);
     });
 
     it('#onMouseOut should set the value of preview to false', () => {
-        service.preview = true;
-        service.onMouseOut(mouseEvent);
-        expect(service.preview).toEqual(false);
+        service.previewIsDisplayed = true;
+        service.onMouseOut();
+        expect(service.previewIsDisplayed).toEqual(false);
     });
 
     it('#getImageDate should get the pixel data under the current mouse position and send it to currentPixelData and call sendNotifColor', () => {
         const sendNotifColorSpy = spyOn<any>(service, 'sendNotifColor').and.callThrough();
-        service['drawingService'].baseCtx.fillRect(MOUSEVALUE, MOUSEVALUE, 1, 1);
-        const currentPixelDataStub = service['drawingService'].baseCtx.getImageData(MOUSEVALUE, MOUSEVALUE, 1, 1);
-        service['getImageData']({ x: MOUSEVALUE, y: MOUSEVALUE });
+        service['drawingService'].baseCtx.fillRect(MOUSE_VALUE, MOUSE_VALUE, 1, 1);
+        const currentPixelDataStub = service['drawingService'].baseCtx.getImageData(MOUSE_VALUE, MOUSE_VALUE, 1, 1);
+        service['getImageData']({ x: MOUSE_VALUE, y: MOUSE_VALUE });
         expect(service.currentPixelData).toEqual(currentPixelDataStub);
         expect(sendNotifColorSpy).toHaveBeenCalled();
     });

@@ -21,8 +21,8 @@ describe('SprayCanService', () => {
 
     let sprayCanPropretiesStub: SprayCanPropreties;
 
-    const pathStub: Vec2[] = [{ x: 25, y: 25 }];
-    const arrayStub: number[] = [1, 2];
+    const PATH_STUB: Vec2[] = [{ x: 25, y: 25 }];
+    const ARRAY_STUB: number[] = [1, 2];
     const PRIMARY_COLOR_STUB = 'red';
     const OPACITY_STUB = 1;
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
@@ -62,13 +62,13 @@ describe('SprayCanService', () => {
 
         sprayCanPropretiesStub = {
             drawingCtx: drawingServiceSpyObj.baseCtx,
-            drawingPath: pathStub,
+            drawingPath: PATH_STUB,
             mainColor: { rgbValue: 'black', opacity: 1 },
             dropletsDiameter: 1,
             sprayDiameter: 1,
             emissionRate: 1,
-            angleArray: arrayStub,
-            radiusArray: arrayStub,
+            angleArray: ARRAY_STUB,
+            radiusArray: ARRAY_STUB,
         };
     });
 
@@ -112,18 +112,18 @@ describe('SprayCanService', () => {
 
     it('#onMouseUp should set mouseDown to false', () => {
         service.mouseDown = true;
-        service.onMouseUp(mouseEvent);
+        service.onMouseUp();
         expect(service.mouseDown).toEqual(false);
     });
 
     it('#onMouseUp should call clearPath', () => {
         const clearPathSpy = spyOn<any>(service, 'clearPath').and.stub();
         service.mouseDown = true;
-        service.onMouseUp(mouseEvent);
+        service.onMouseUp();
         expect(clearPathSpy).toHaveBeenCalled();
         clearPathSpy.calls.reset();
         service.mouseDown = false;
-        service.onMouseUp(mouseEvent);
+        service.onMouseUp();
         expect(clearPathSpy).not.toHaveBeenCalled();
     });
 
@@ -181,7 +181,7 @@ describe('SprayCanService', () => {
         jasmine.clock().install();
         service.drawLine(baseCtxStub, service['pathData']);
         expect(drawSpraySpy).not.toHaveBeenCalled();
-        jasmine.clock().tick(service.ONESECMS / service.emissionRate + 1);
+        jasmine.clock().tick(service['ONE_SEC_MS'] / service.emissionRate + 1);
         expect(drawSpraySpy).toHaveBeenCalled();
         jasmine.clock().uninstall();
     });

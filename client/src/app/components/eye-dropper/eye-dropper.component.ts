@@ -2,7 +2,6 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-eye-dropper',
@@ -13,28 +12,26 @@ export class EyeDropperComponent implements OnInit {
     @ViewChild('eyeDropperCanvas', { static: false }) eyeDropperCanvasRef: ElementRef<HTMLCanvasElement>;
     @ViewChild('gridCanvas', { static: false }) gridCanvasRef: ElementRef<HTMLCanvasElement>;
 
-    readonly CANVAS_SIZE: number = 250;
-    readonly POSITION_0: number = 0;
-    readonly POSITION_1: number = 1;
-    readonly POSITION_2: number = 2;
-    readonly POSITION_3: number = 3;
-    readonly GRID_ALPHA: number = 0.25;
-    readonly MAX_RGB_VALUE: number = 255;
-    readonly SCALING: number = 22.72727272;
-    readonly SIZE_PREVIEW: number = 11;
-    readonly CENTER_POSITION: number = 5;
-    readonly LINE_GRID_WIDTH: number = 4;
+    private readonly CANVAS_SIZE: number = 250;
+    private readonly POSITION_0: number = 0;
+    private readonly POSITION_1: number = 1;
+    private readonly POSITION_2: number = 2;
+    private readonly POSITION_3: number = 3;
+    private readonly GRID_ALPHA: number = 0.25;
+    private readonly MAX_RGB_VALUE: number = 255;
+    private readonly SCALING: number = 22.72727272;
+    private readonly SIZE_PREVIEW: number = 11;
+    private readonly CENTER_POSITION: number = 5;
+    private readonly LINE_GRID_WIDTH: number = 4;
 
     private eyeDropperCanvas: HTMLCanvasElement;
     private eyeDropperCtx: CanvasRenderingContext2D;
     private gridCtx: CanvasRenderingContext2D;
 
-    subscription: Subscription;
-
     constructor(private eyeDropperService: EyeDropperService, private colorService: ColorService) {}
 
     ngOnInit(): void {
-        this.subscription = this.eyeDropperService.newIncomingColor().subscribe(() => {
+        this.eyeDropperService.newIncomingColor().subscribe(() => {
             this.newColorNotification();
         });
     }
@@ -49,13 +46,14 @@ export class EyeDropperComponent implements OnInit {
     }
 
     private changeColor(color: Color): void {
-        if (this.eyeDropperService.leftClick) this.colorService.updateColor(this.colorService.mainColor, color);
-        else this.colorService.updateColor(this.colorService.secondaryColor, color);
+        this.eyeDropperService.isLeftClick
+            ? this.colorService.updateColor(this.colorService.mainColor, color)
+            : this.colorService.updateColor(this.colorService.secondaryColor, color);
     }
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.eyeDropperService.preview) {
+        if (this.eyeDropperService.previewIsDisplayed) {
             this.eyeDropperCanvas = this.eyeDropperCanvasRef.nativeElement;
             this.eyeDropperCtx = this.eyeDropperCanvas.getContext('2d') as CanvasRenderingContext2D;
             this.gridCtx = this.gridCanvasRef.nativeElement.getContext('2d') as CanvasRenderingContext2D;

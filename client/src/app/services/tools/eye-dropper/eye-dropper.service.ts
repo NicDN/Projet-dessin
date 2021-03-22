@@ -10,12 +10,11 @@ import { Observable, Subject } from 'rxjs';
 export class EyeDropperService extends Tool {
     private subject: Subject<void> = new Subject<void>();
 
-    // initialize default imageData
     currentPixelData: ImageData = new ImageData(1, 1);
     currentGridOfPixelData: ImageData = new ImageData(1, 1);
 
-    leftClick: boolean = false;
-    preview: boolean = false;
+    isLeftClick: boolean = false;
+    previewIsDisplayed: boolean = false;
     gridDrawn: boolean = false;
 
     constructor(drawingService: DrawingService) {
@@ -31,7 +30,7 @@ export class EyeDropperService extends Tool {
     }
 
     onMouseDown(event: MouseEvent): void {
-        this.leftClick = event.button === MouseButton.Left;
+        this.isLeftClick = event.button === MouseButton.Left;
         this.getImageData(this.getPositionFromMouse(event));
     }
 
@@ -45,12 +44,12 @@ export class EyeDropperService extends Tool {
         );
     }
 
-    onMouseEnter(event: MouseEvent): void {
-        this.preview = true;
+    onMouseEnter(): void {
+        this.previewIsDisplayed = true;
     }
 
-    onMouseOut(event: MouseEvent): void {
-        this.preview = false;
+    onMouseOut(): void {
+        this.previewIsDisplayed = false;
     }
 
     private getImageData(mousePosition: Vec2): void {

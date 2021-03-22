@@ -6,6 +6,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { of } from 'rxjs';
+import { Subject } from 'rxjs/internal/Subject';
 import { EyeDropperComponent } from './eye-dropper.component';
 
 // tslint:disable: no-string-literal no-any
@@ -94,7 +95,7 @@ describe('EyeDropperComponent', () => {
     it('#onMouseMove should call drawGrid and draw the preview if the mouse is on the canvas region', () => {
         spyOn<any>(component, 'buildImage').and.stub();
         spyOn<any>(component, 'drawGrid').and.stub();
-        component['eyeDropperService'].preview = true;
+        component['eyeDropperService'].previewIsDisplayed = true;
         component.onMouseMove(mouseEvent);
 
         expect(component['buildImage']).toHaveBeenCalled();
@@ -104,7 +105,7 @@ describe('EyeDropperComponent', () => {
     it('#onMouseMove should not call drawGrid and buildImage if the mouse is not on the canvas region', () => {
         spyOn<any>(component, 'buildImage').and.stub();
         spyOn<any>(component, 'drawGrid').and.stub();
-        component['eyeDropperService'].preview = false;
+        component['eyeDropperService'].previewIsDisplayed = false;
         component.onMouseMove(mouseEvent);
 
         expect(component['buildImage']).not.toHaveBeenCalled();
@@ -113,14 +114,14 @@ describe('EyeDropperComponent', () => {
 
     it('#changerColor should call updateColor with the primary color on right click', () => {
         const COLOR_STUB = { rgbValue: 'black', opacity: 1 };
-        component['eyeDropperService'].leftClick = true;
+        component['eyeDropperService'].isLeftClick = true;
         component['changeColor'](COLOR_STUB);
         expect(colorServiceSpyObj.updateColor).toHaveBeenCalledWith(component['colorService'].mainColor, COLOR_STUB);
     });
 
     it('#changerColor should call updateColor with the primary color on right click', () => {
         const COLOR_STUB = { rgbValue: 'black', opacity: 1 };
-        component['eyeDropperService'].leftClick = false;
+        component['eyeDropperService'].isLeftClick = false;
         component['changeColor'](COLOR_STUB);
         expect(colorServiceSpyObj.updateColor).toHaveBeenCalledWith(component['colorService'].secondaryColor, COLOR_STUB);
     });
@@ -152,8 +153,8 @@ describe('EyeDropperComponent', () => {
 
     it('#makeImageForPreview should return an HTMLCanvasElement containing the imageDate for the preview', () => {
         const imageStub = document.createElement('canvas');
-        imageStub.width = component.CANVAS_SIZE;
-        imageStub.height = component.CANVAS_SIZE;
+        imageStub.width = component['CANVAS_SIZE'];
+        imageStub.height = component['CANVAS_SIZE'];
         (imageStub.getContext('2d') as CanvasRenderingContext2D).putImageData(component['eyeDropperService'].currentGridOfPixelData, 0, 0);
 
         expect(component['makeImageForPreview']()).toEqual(imageStub);
@@ -164,9 +165,9 @@ describe('EyeDropperComponent', () => {
         spyOn<any>(component, 'makePreviewCircular').and.callThrough();
         spyOn<any>(component, 'setGridContext').and.callThrough();
 
-        const imageStubBefore = component['gridCtx'].getImageData(0, 0, component.CANVAS_SIZE, component.CANVAS_SIZE);
+        const imageStubBefore = component['gridCtx'].getImageData(0, 0, component['CANVAS_SIZE'], component['CANVAS_SIZE']);
         component['drawGrid']();
-        const imageStubAfter = component['gridCtx'].getImageData(0, 0, component.CANVAS_SIZE, component.CANVAS_SIZE);
+        const imageStubAfter = component['gridCtx'].getImageData(0, 0, component['CANVAS_SIZE'], component['CANVAS_SIZE']);
 
         expect(component['drawBlackCircleAroundPreview']).toHaveBeenCalled();
         expect(component['makePreviewCircular']).toHaveBeenCalled();
@@ -174,14 +175,12 @@ describe('EyeDropperComponent', () => {
         expect(imageStubBefore).not.toEqual(imageStubAfter);
     });
 
-    // fit('#newColorNotification should be called whenever there is a new color in the service', () => {
-    //     // let anything: any;
-    //     component.ngOnInit();
-    //     spyOn(component, 'changeColor').and.stub();
-    //     console.log("if there is an hello there after this, means we're in the test");
-    //     spyOn(component, 'newColorNotification').and.stub();
-    //     component['eyeDropperService'].sendNotifColor();
-    //     eyeDropperServiceSpyObj.sendNotifColor();
-    //     expect(component.newColorNotification).toHaveBeenCalled();
-    // });
+    it('#newColorNotification should be called whenever there is a new color in the service', () => {
+        const subject: Subject<void> = new Subject();
+        eyeDropperServiceSpyObj.newIncomingColor.and.returnValue(subject);
+        spyOn<any>(component, 'newColorNotification');
+        component.ngOnInit();
+        subject.next();
+        expect(component['newColorNotification']).toHaveBeenCalled();
+    });
 });
