@@ -69,6 +69,7 @@ export class ResizeContainerComponent {
     }
 
     resizeContainer(event: MouseEvent): void {
+        this.undoRedoService.disableUndoRedo();
         if (this.box === undefined) return;
         if (this.isValidWidth(event)) {
             this.box.nativeElement.style.width = `${event.pageX - SIDE_BAR_SIZE - this.MOUSE_OFFSET}px`;
@@ -94,6 +95,7 @@ export class ResizeContainerComponent {
     }
 
     resizeNotification(boxSize: BoxSize): void {
+        this.undoRedoService.enableUndoRedo();
         let width: number;
         let height: number;
         if (boxSize.widthBox < 0 || boxSize.heightBox < 0) {

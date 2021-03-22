@@ -27,7 +27,7 @@ describe('ResizeContainerComponent', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['onSizeChange', 'newIncomingResizeSignals', 'sendNotifToResize']);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
 
-        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
             providers: [

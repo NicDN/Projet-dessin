@@ -63,7 +63,7 @@ describe('LineService', () => {
         lockLineSpy = spyOn(service, 'lockLine').and.stub();
         clearPathSpy = spyOn(service, 'clearPath').and.stub();
         removePointSpy = spyOn(service, 'removePoint').and.stub();
-
+        colorServiceSpyObj.mainColor = colorStub;
         service.mousePosition = DEFAULT_MOUSE_POSITION;
         service.pathData = [
             { x: 10, y: 10 },
@@ -377,7 +377,6 @@ describe('LineService', () => {
     });
 
     it('#drawTrace should return if junction diameter is undefined', () => {
-        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
         drawingToolPropretiesStub.junctionDiameter = undefined;
         const beginPathSpy = spyOn(drawingToolPropretiesStub.drawingContext, 'beginPath');
         service.drawTrace(drawingToolPropretiesStub);
@@ -394,10 +393,8 @@ describe('LineService', () => {
     });
 
     it('#loadUpPropreties should return the correct propreties', () => {
-        colorServiceSpyObj.mainColor = { rgbValue: 'red', opacity: 1 };
         const drawingToolPropreties: TraceToolPropreties = service.loadUpPropreties(baseCtxStub, pathArrayStub);
         expect(drawingToolPropreties.drawingContext).toEqual(baseCtxStub);
-        console.log(drawingToolPropreties.drawingPath);
         expect(drawingToolPropreties.drawingPath).toEqual(pathArrayStub);
         expect(drawingToolPropreties.drawingThickness).toEqual(service.thickness);
         expect(drawingToolPropreties.drawingColor).toEqual(colorServiceSpyObj.mainColor);
@@ -410,6 +407,30 @@ describe('LineService', () => {
         drawingToolPropretiesStub.drawingContext.lineJoin = 'miter';
         service['setContext'](drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub);
         expect(drawingToolPropretiesStub.drawingContext.lineJoin).not.toEqual('round');
+    });
+
+    it('#setContext should set the context for drawing', () => {
+        const canvasStubTmp: HTMLCanvasElement = document.createElement('canvas');
+        let canvasCtxStubTmp: CanvasRenderingContext2D;
+        canvasCtxStubTmp = canvasStubTmp.getContext('2d') as CanvasRenderingContext2D;
+        const drawingToolPropretiesStubTmp: TraceToolPropreties = {
+            drawingContext: canvasCtxStubTmp,
+            drawingPath: pathArrayStub,
+            drawingThickness: 1,
+            drawingColor: colorStub,
+            drawWithJunction: true,
+            junctionDiameter: 1,
+        };
+        service['setContext'](drawingToolPropretiesStubTmp.drawingContext, drawingToolPropretiesStubTmp);
+        expect(drawingToolPropretiesStubTmp.drawingContext.lineCap).toEqual('round');
+
+        expect(drawingToolPropretiesStubTmp.drawingContext.lineJoin).toEqual('round');
+
+        if (drawingToolPropretiesStubTmp.drawingColor !== undefined) {
+            expect(drawingToolPropretiesStubTmp.drawingContext.globalAlpha).toEqual(drawingToolPropretiesStubTmp.drawingColor?.opacity);
+        }
+
+        expect(drawingToolPropretiesStubTmp.drawingContext.strokeStyle).toEqual('#ff0000');
     });
 
     it('#lockLine should lock the line near the x axis', () => {
