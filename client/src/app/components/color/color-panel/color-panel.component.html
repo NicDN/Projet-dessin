@@ -1,5 +1,5 @@
 <!--  Reference: https://malcoded.com/posts/angular-color-picker/ -->
-<div class="color-panel">
+<div class="color-panel" (clickOutside)="this.closeColorPicker()">
     <div class="color-container">
         <button mat-fab
             [ngStyle]="{ 'background-color': colorService.mainColor.rgbValue, opacity: colorService.mainColor.opacity }"
@@ -39,14 +39,14 @@
                         }}</mat-label>
                     <input type="text" class="rgb-input" maxlength="2" [value]="getRGB(index)"
                         (input)="applyRGBInput($event.target.value, index)"
-                        [ngStyle]="rgbInput.inputError && { color: 'red' }"
-                        matInput />
+                        [ngStyle]="rgbInput.inputError && { color: 'red' }" matInput />
                 </mat-form-field>
             </form>
 
             <span class="preview-color"
                 [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"></span>
-            <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)" [disabled]="rgbInputHasErrors()">
+            <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)"
+                [disabled]="rgbInputHasErrors()">
                 <fa-icon icon="check" class="check"></fa-icon>
             </button>
         </div>

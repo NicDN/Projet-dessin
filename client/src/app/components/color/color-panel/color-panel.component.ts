@@ -29,6 +29,7 @@ export class ColorPanelComponent {
 
     selectedColor: Color = {} as Color;
     openColorPicker: boolean = false;
+    clickedOutise: boolean = false;
 
     rgbValue: string = '';
     hue: string = '';
@@ -95,7 +96,7 @@ export class ColorPanelComponent {
         this.closeColorPicker();
     }
 
-    private closeColorPicker(): void {
+    closeColorPicker(): void {
         if (this.openColorPicker) {
             this.openColorPicker = false;
         }

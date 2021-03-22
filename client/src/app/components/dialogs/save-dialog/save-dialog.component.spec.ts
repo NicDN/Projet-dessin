@@ -12,13 +12,15 @@ import { Subject, throwError } from 'rxjs';
 import { SaveDialogComponent } from './save-dialog.component';
 
 // tslint:disable: no-string-literal
-describe('SaveDialogComponent', () => {
+fdescribe('SaveDialogComponent', () => {
     let component: SaveDialogComponent;
     let fixture: ComponentFixture<SaveDialogComponent>;
 
     let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<SaveDialogComponent>>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let saveServiceSpy: jasmine.SpyObj<SaveService>;
+
+    let keyboardEvent: KeyboardEvent;
 
     const input = document.createElement('input');
     const FILE_NAME = 'test name';
@@ -46,6 +48,7 @@ describe('SaveDialogComponent', () => {
         fixture = TestBed.createComponent(SaveDialogComponent);
         component = fixture.componentInstance;
         component.tags = TAGS_MOCK;
+        keyboardEvent = { key: 'Enter' } as KeyboardEvent;
 
         fixture.detectChanges();
     });
@@ -131,5 +134,38 @@ describe('SaveDialogComponent', () => {
         const correctForm: FormControl = new FormControl(UNIQUE_TAG);
         expect(component['uniqueTagValidator'](correctForm)).toEqual(null);
         expect(component.uniqueTagError).toBeFalse();
+    });
+
+    it('#onKeyDown should call #postDrawing', () => {
+        spyOn(component, 'postDrawing');
+        component.saveButton.disabled = false;
+        component.inputFocus = false;
+        component.onKeyDown(keyboardEvent);
+        expect(component.postDrawing).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not call #postDrawing if the key pressed is not enter', () => {
+        keyboardEvent = { key: 'ArrowDown' } as KeyboardEvent;
+        spyOn(component, 'postDrawing');
+        component.saveButton.disabled = false;
+        component.inputFocus = false;
+        component.onKeyDown(keyboardEvent);
+        expect(component.postDrawing).not.toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not call #postDrawing if the saveButton is disabled', () => {
+        spyOn(component, 'postDrawing');
+        component.saveButton.disabled = true;
+        component.inputFocus = false;
+        component.onKeyDown(keyboardEvent);
+        expect(component.postDrawing).not.toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not call #postDrawing if the saveButton is disabled', () => {
+        spyOn(component, 'postDrawing');
+        component.saveButton.disabled = false;
+        component.inputFocus = true;
+        component.onKeyDown(keyboardEvent);
+        expect(component.postDrawing).not.toHaveBeenCalled();
     });
 });

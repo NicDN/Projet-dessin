@@ -6,11 +6,11 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
 
 @Component({
-    selector: 'app-card-drawing-template',
-    templateUrl: './card-drawing-template.component.html',
-    styleUrls: ['./card-drawing-template.component.scss'],
+    selector: 'app-card-drawing',
+    templateUrl: './card-drawing.component.html',
+    styleUrls: ['./card-drawing.component.scss'],
 })
-export class CardDrawingTemplateComponent {
+export class CardDrawingComponent {
     @Input() drawingForm: DrawingForm;
     @Output() closeCarousel: EventEmitter<void> = new EventEmitter<void>();
     @Output() requestDrawings: EventEmitter<void> = new EventEmitter<void>();

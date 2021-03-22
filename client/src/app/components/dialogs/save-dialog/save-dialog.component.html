@@ -2,7 +2,12 @@
     <h2 mat-dialog-title>Sauvegarder les dessin</h2>
     <form>
         <mat-form-field class="file-name">
-            <input matInput  #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required />
+            <input matInput  #fileName 
+                   placeholder="Nom du fichier" 
+                   [formControl]="fileNameFormControl" 
+                   required 
+                   (focusout)="this.inputFocus=false"
+                   (focusin)="this.inputFocus=true"/>
             <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
                 <mat-icon>close</mat-icon>
             </button>
@@ -10,20 +15,22 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Ajoutez des étiquettes</mat-label>
-            <mat-chip-list #chipList ngDefaultControl>
+            <mat-chip-list #tagList ngDefaultControl>
                 <mat-chip *ngFor="let tag of tags" selectable="true" removable="true" (removed)="this.removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input
+                <input #tagInput
                     pattern="[a-zA-Z ]*"
                     placeholder="Ajoutez des étiquettes"
                     type="text"
-                    [matChipInputFor]="chipList"
+                    [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     [matChipInputAddOnBlur]="true"
                     (matChipInputTokenEnd)="addTag($event)"
                     [formControl]="tagFormControl"
+                    (focusout)="this.inputFocus=false"
+                    (focusin)="this.inputFocus=true"
                 />
             </mat-chip-list>
 
@@ -44,6 +51,7 @@
 
     <div class="bottom-div">
         <button 
+            #saveButton
             mat-flat-button
             color="primary"
             class="save-canvas-btn"

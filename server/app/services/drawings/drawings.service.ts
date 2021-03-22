@@ -51,6 +51,7 @@ export class DrawingsService {
     async getDrawings(tags: string[], index: number): Promise<DrawingForm[]> {
         let drawingForms: DrawingForm[] = [];
 
+        // get drawings info from database
         await this.collection
             .find({})
             .toArray()
@@ -84,11 +85,9 @@ export class DrawingsService {
     }
 
     private async getValidDrawings(drawingForms: DrawingForm[], index: number): Promise<DrawingForm[]> {
-        const LAST_INDEX_VALID_FORMS = -3;
-        const BEFORE_LAST_INDEX_VALID_FORMS = -4;
-
         const validForms: DrawingForm[] = [];
 
+        // get file from server
         for (const form of drawingForms) {
             const id = form.id;
             await this.readFile(`${this.DRAWINGS_DIRECTORY}/` + id)
@@ -100,6 +99,15 @@ export class DrawingsService {
                     return [];
                 });
         }
+
+        return this.carouselEffect(validForms, index);
+    }
+
+    private carouselEffect(drawingForms: DrawingForm[], index: number): DrawingForm[] {
+        const validForms = [...drawingForms];
+        const LAST_INDEX_VALID_FORMS = -3;
+        const BEFORE_LAST_INDEX_VALID_FORMS = -4;
+
         index = Math.abs(index % validForms.length);
         const drawingMaxCount = validForms.length >= DRAWINGS_MAX_COUNT ? DRAWINGS_MAX_COUNT : validForms.length;
 
@@ -113,12 +121,14 @@ export class DrawingsService {
     }
 
     async deleteDrawing(id: string): Promise<void> {
+        // delete file from server
         try {
             fs.unlinkSync(`${this.DRAWINGS_DIRECTORY}/` + id);
         } catch (error) {
             throw new Error('FILE_NOT_FOUND');
         }
 
+        // delete drawing infos from database
         return this.collection
             .findOneAndDelete({ _id: new ObjectId(id) })
             .then((deletedDrawing) => {

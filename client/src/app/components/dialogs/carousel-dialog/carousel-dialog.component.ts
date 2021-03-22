@@ -12,12 +12,11 @@ import { DrawingForm } from '@common/communication/drawing-form';
     styleUrls: ['./carousel-dialog.component.scss'],
 })
 export class CarouselDialogComponent implements OnInit {
-    @ViewChild('chipList') chipList: MatChipList;
+    @ViewChild('tagList') tagList: MatChipList;
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
     drawings: DrawingForm[] = [];
-
     searchedTags: string[] = [];
     loading: boolean = false;
 
@@ -50,11 +49,16 @@ export class CarouselDialogComponent implements OnInit {
     }
 
     private validateFilter(): void {
-        this.searchedTags.length !== 0
-            ? this.drawings.length === 0
-                ? (this.chipList.errorState = true)
-                : (this.chipList.errorState = false)
-            : (this.chipList.errorState = false);
+        if (this.searchedTags.length === 0) {
+            this.tagList.errorState = false;
+            return;
+        }
+
+        if (this.drawings.length === 0) {
+            this.tagList.errorState = true;
+        } else {
+            this.tagList.errorState = false;
+        }
     }
 
     forwardDrawings(): void {

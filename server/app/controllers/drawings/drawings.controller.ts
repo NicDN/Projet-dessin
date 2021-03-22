@@ -18,7 +18,7 @@ export class DrawingsController {
     private configureRouter(): void {
         this.router = Router();
 
-        this.router.delete('/delete/:id', async (req: Request, res: Response, next: NextFunction) => {
+        this.router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
             this.drawingsService
                 .deleteDrawing(req.params.id)
                 .then(() => {
@@ -56,7 +56,7 @@ export class DrawingsController {
                 });
         });
 
-        this.router.post('/upload', (req: Request, res: Response, next: NextFunction) => {
+        this.router.post('/', (req: Request, res: Response, next: NextFunction) => {
             const drawingForm: DrawingForm = req.body;
             this.drawingsService
                 .storeDrawing(drawingForm)

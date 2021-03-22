@@ -49,7 +49,7 @@ describe('SaveService', () => {
         // tslint:disable-next-line: no-empty
         service.postDrawing(FILE_NAME, TAGS).subscribe(() => {}, fail);
 
-        const req = httpMock.expectOne(baseUrl + '/upload');
+        const req = httpMock.expectOne(baseUrl);
         expect(req.request.method).toBe('POST');
 
         const drawingForm: DrawingForm = {
@@ -70,7 +70,7 @@ describe('SaveService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/upload');
+        const req = httpMock.expectOne(baseUrl);
 
         expect(req.request.method).toBe('POST');
         req.error(new ErrorEvent('No response'), { status: NO_SERVER_RESPONSE });
@@ -85,7 +85,7 @@ describe('SaveService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/upload');
+        const req = httpMock.expectOne(baseUrl);
 
         expect(req.request.method).toBe('POST');
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.BAD_GATEWAY });
@@ -100,7 +100,7 @@ describe('SaveService', () => {
             },
             fail,
         );
-        const req = httpMock.expectOne(baseUrl + '/upload');
+        const req = httpMock.expectOne(baseUrl);
 
         expect(req.request.method).toBe('POST');
         req.error(new ErrorEvent('error'), { status: Httpstatus.StatusCodes.INTERNAL_SERVER_ERROR });
@@ -118,7 +118,7 @@ describe('SaveService', () => {
             fail,
         );
 
-        const req = httpMock.expectOne(baseUrl + '/upload');
+        const req = httpMock.expectOne(baseUrl);
 
         expect(req.request.method).toBe('POST');
         req.error(new ErrorEvent('error'), { status: UNHANDLED_ERROR });
