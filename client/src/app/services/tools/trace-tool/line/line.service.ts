@@ -189,6 +189,7 @@ export class LineService extends TraceTool {
     }
 
     private lockLine(): void {
+        if (this.pathData.length < 2) return;
         const lastSelectedPoint = this.pathData[this.pathData.length - 2];
         const angle = this.calculateAngle(lastSelectedPoint);
 

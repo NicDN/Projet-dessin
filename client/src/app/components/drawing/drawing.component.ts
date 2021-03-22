@@ -3,8 +3,8 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { LineService } from '@app/services/tools/drawing-tool/line/line.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 export const DEFAULT_WIDTH = 250;

@@ -474,6 +474,13 @@ describe('LineService', () => {
         expect(service['pathData'][service['pathData'].length - 1].y).toEqual(EXPECTED_Y_POSITION);
     });
 
+    it('#lockLine should return if the last selected point is undefined ', () => {
+        service['pathData'].length = 0;
+        lockLineSpy.and.callThrough();
+        service['lockLine']();
+        expect(calculateAngleSpy).not.toHaveBeenCalled();
+    });
+
     it('#clearPath should clear pathData', () => {
         clearPathSpy.and.callThrough();
         service.clearPath();

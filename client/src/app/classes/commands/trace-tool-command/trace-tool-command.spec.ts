@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Color } from '@app/classes/color';
 import { Vec2 } from '@app/classes/vec2';
-import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
+import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { TraceToolCommand, TraceToolPropreties } from './trace-tool-command';
 
 // tslint:disable: no-string-literal

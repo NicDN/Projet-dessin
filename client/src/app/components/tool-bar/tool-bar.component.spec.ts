@@ -4,8 +4,8 @@ import { By } from '@angular/platform-browser';
 import { Tool } from '@app/classes/tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { PencilService } from '@app/services/tools/drawing-tool/pencil/pencil.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ToolBarComponent } from './tool-bar.component';
 
