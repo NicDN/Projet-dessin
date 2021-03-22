@@ -31,6 +31,8 @@ export class UndoRedoService {
     }
 
     undo(): void {
+        console.log('undo');
+
         if (!this.canUndoRedo) return;
         if (this.commandList.length <= 1) return;
 

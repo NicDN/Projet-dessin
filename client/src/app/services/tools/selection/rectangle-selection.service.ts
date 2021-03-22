@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -31,18 +31,6 @@ export class RectangleSelectionService extends SelectionTool {
             selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y,
         );
         selectionPropreties.selectionCtx.fill();
-    }
-
-    loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
-        return {
-            selectionType: SelectionType.Rectangle,
-            selectionCtx: ctx,
-            imageData: this.data,
-            topLeft: this.initialTopLeft,
-            bottomRight: this.initialBottomRight,
-            finalTopLeft: this.finalTopLeft,
-            finalBottomRight: this.finalBottomRight,
-        };
     }
 
     drawSelection(selectionPropreties: SelectionPropreties): void {

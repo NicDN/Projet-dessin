@@ -8,7 +8,6 @@ export enum SelectionType {
 }
 
 export interface SelectionPropreties {
-    selectionType: SelectionType;
     selectionCtx: CanvasRenderingContext2D;
     imageData: ImageData;
     topLeft: Vec2;
@@ -18,24 +17,12 @@ export interface SelectionPropreties {
 }
 
 export class SelectionCommand extends AbstractCommand {
-    constructor(
-        private selectionPropreties: SelectionPropreties,
-        // private selectionService: SelectionService,
-        private selectionTool: SelectionTool,
-    ) {
+    constructor(private selectionPropreties: SelectionPropreties, private selectionTool: SelectionTool) {
         super();
     }
 
     execute(): void {
         this.selectionTool.fillWithWhite(this.selectionPropreties);
         this.selectionTool.drawSelection(this.selectionPropreties);
-        // this.selectionTool.(this.selectionPropreties);
-
-        /*if (this.selectionPropreties.selectionType === SelectionType.Rectangle) {
-            this.selectionService.sendSelectionRectangleNotifs(this.selectionPropreties);
-        }
-        if (this.selectionPropreties.selectionType === SelectionType.Ellipse) {
-            this.selectionService.sendSelectionEllipseNotifs(this.selectionPropreties);
-        }*/
     }
 }

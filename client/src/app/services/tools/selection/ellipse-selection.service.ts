@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -60,17 +60,5 @@ export class EllipseSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.clip();
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
-    }
-
-    loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
-        return {
-            selectionType: SelectionType.Ellipse,
-            selectionCtx: ctx,
-            imageData: this.data,
-            topLeft: this.initialTopLeft,
-            bottomRight: this.initialBottomRight,
-            finalTopLeft: this.finalTopLeft,
-            finalBottomRight: this.finalBottomRight,
-        };
     }
 }

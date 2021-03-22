@@ -12,9 +12,11 @@ export abstract class SelectionTool extends Tool {
     }
 
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
-    movingSelection: boolean = false;
-    protected mouseMoveOffset: Vec2;
     selectionExists: boolean = false;
+    protected data: ImageData;
+
+    movingWithMouse: boolean = false;
+    protected mouseMoveOffset: Vec2;
 
     readonly arrowMoveDelta: number = 3;
     movingWithArrows: boolean = false;
@@ -22,41 +24,26 @@ export abstract class SelectionTool extends Tool {
     keyDownIsPressed: boolean = false;
     keyLeftIsPressed: boolean = false;
     keyRightIsPressed: boolean = false;
-
+    initialKeyPress: boolean = false;
+    intervalHandler: number;
     private timeoutHandler: number;
+    readonly INITIAL_ARROW_TIMER: number = 500;
+    readonly ARROW_INTERVAL: number = 100;
+
     protected initialTopLeft: Vec2 = { x: 0, y: 0 };
     protected initialBottomRight: Vec2 = { x: 0, y: 0 };
     protected finalTopLeft: Vec2 = { x: 0, y: 0 };
     protected finalBottomRight: Vec2 = { x: 0, y: 0 };
 
-    protected data: ImageData;
-
-    readonly pointWidth: number = 6;
-    readonly halfPointWidth: number = this.pointWidth / 2;
-
-    initialKeyDownTimer: boolean = false;
-    intervalHandler: number;
-    timoutHandler: number;
-
-    getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
-        return [
-            { x: begin.x - this.halfPointWidth, y: begin.y - this.halfPointWidth },
-            { x: begin.x - this.halfPointWidth, y: end.y - this.halfPointWidth },
-            { x: end.x - this.halfPointWidth, y: begin.y - this.halfPointWidth },
-            { x: end.x - this.halfPointWidth, y: end.y - this.halfPointWidth },
-            { x: (end.x + begin.x) / 2 - this.halfPointWidth, y: begin.y - this.halfPointWidth },
-            { x: (end.x + begin.x) / 2 - this.halfPointWidth, y: end.y - this.halfPointWidth },
-            { x: begin.x - this.halfPointWidth, y: (begin.y + end.y) / 2 - this.halfPointWidth },
-            { x: end.x - this.halfPointWidth, y: (begin.y + end.y) / 2 - this.halfPointWidth },
-        ];
-    }
+    readonly controlPointWidth: number = 6;
+    readonly halfControlPointWidth: number = this.controlPointWidth / 2;
 
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
         if (!this.mouseDown) return;
         if (this.isInsideSelection(this.getPositionFromMouse(event)) && this.selectionExists) {
             this.setOffSet(this.getPositionFromMouse(event));
-            this.movingSelection = true;
+            this.movingWithMouse = true;
             return;
         }
         this.cancelSelection();
@@ -71,9 +58,9 @@ export abstract class SelectionTool extends Tool {
         }
         if (!this.mouseDown) return;
 
-        if (this.movingSelection) {
+        if (this.movingWithMouse) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.moveSelection(this.drawingService.previewCtx, this.getPositionFromMouse(event));
+            this.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event));
             return;
         }
 
@@ -87,8 +74,8 @@ export abstract class SelectionTool extends Tool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
-        if (this.movingSelection) {
-            this.movingSelection = false;
+        if (this.movingWithMouse) {
+            this.movingWithMouse = false;
             return;
         }
 
@@ -106,23 +93,12 @@ export abstract class SelectionTool extends Tool {
     onKeyDown(event: KeyboardEvent): void {
         if (event.code === 'Escape') this.cancelSelection();
         if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyDown);
-        this.handleMovingArrows(event);
+        this.handleMovingArrowsKeyDown(event);
     }
 
     onKeyUp(event: KeyboardEvent): void {
         if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyUp);
-        this.updateArrowKeysNotPressed(event);
-
-        if (!this.checkIfAnyArrowIsPressed()) {
-            this.movingWithArrows = false;
-            clearInterval(this.intervalHandler);
-            this.intervalHandler = 0;
-        }
-        if (this.initialKeyDownTimer) {
-            this.initialKeyDownTimer = false;
-            clearTimeout(this.timeoutHandler);
-            this.timeoutHandler = 0;
-        }
+        this.handleMovingArrowsKeyUp(event);
     }
 
     handleLeftShift(event: KeyboardEvent, callback: (keyEvent: KeyboardEvent) => void): void {
@@ -131,55 +107,61 @@ export abstract class SelectionTool extends Tool {
         this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
     }
 
-    handleMovingArrows(event: KeyboardEvent): void {
-        this.updateArrowKeysPressed(event);
-        if (this.checkIfAnyArrowIsPressed() && !this.movingWithArrows && !this.initialKeyDownTimer)
-            this.handleArrowInitialTime(this.drawingService.previewCtx, 0, 0, event);
+    handleMovingArrowsKeyDown(event: KeyboardEvent): void {
+        this.updateArrowKeysPressed(event, true);
+        if (this.checkIfAnyArrowIsPressed() && !this.movingWithArrows && !this.initialKeyPress)
+            this.handleArrowInitialTime(this.drawingService.previewCtx, event);
     }
 
-    handleArrowInitialTime(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number, event: KeyboardEvent): void {
-        const INITIAL_TIMER = 500;
-        const CONTINUOUS_TIMER = 100;
-        deltaY = 0;
-        deltaX = 0;
+    handleMovingArrowsKeyUp(event: KeyboardEvent): void {
+        if (this.initialKeyPress) {
+            this.initialKeyPress = false;
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = 0;
+            const delta = this.calculateDelta();
+            this.moveSelectionWithArrows(this.drawingService.previewCtx, delta.x, delta.y);
+        }
+        this.updateArrowKeysPressed(event, false);
+
+        if (!this.checkIfAnyArrowIsPressed()) {
+            this.movingWithArrows = false;
+            clearInterval(this.intervalHandler);
+            this.intervalHandler = 0;
+        }
+    }
+
+    handleArrowInitialTime(ctx: CanvasRenderingContext2D, event: KeyboardEvent): void {
+        this.initialKeyPress = true;
+        this.timeoutHandler = setTimeout(() => {
+            if (this.initialKeyPress) {
+                this.movingWithArrows = true;
+                this.intervalHandler = setInterval(() => {
+                    const delta = this.calculateDelta();
+                    this.moveSelectionWithArrows(ctx, delta.x, delta.y);
+                }, this.ARROW_INTERVAL);
+            }
+        }, this.INITIAL_ARROW_TIMER);
+    }
+
+    calculateDelta(): Vec2 {
+        let deltaY = 0;
+        let deltaX = 0;
         if (this.keyUpIsPressed) deltaY -= this.arrowMoveDelta;
         if (this.keyDownIsPressed) deltaY += this.arrowMoveDelta;
         if (this.keyLeftIsPressed) deltaX -= this.arrowMoveDelta;
         if (this.keyRightIsPressed) deltaX += this.arrowMoveDelta;
-
-        this.initialKeyDownTimer = true;
-        this.timeoutHandler = setTimeout(() => {
-            if (this.initialKeyDownTimer) {
-                this.movingWithArrows = true;
-                console.log('New Interval');
-                this.intervalHandler = setInterval(() => {
-                    deltaY = 0;
-                    deltaX = 0;
-                    if (this.keyUpIsPressed) deltaY -= this.arrowMoveDelta;
-                    if (this.keyDownIsPressed) deltaY += this.arrowMoveDelta;
-                    if (this.keyLeftIsPressed) deltaX -= this.arrowMoveDelta;
-                    if (this.keyRightIsPressed) deltaX += this.arrowMoveDelta;
-                    this.moveSelectionWithArrows(ctx, deltaX, deltaY);
-                }, CONTINUOUS_TIMER);
-            }
-        }, INITIAL_TIMER);
+        return { x: deltaX, y: deltaY };
     }
 
     checkIfAnyArrowIsPressed(): boolean {
         return this.keyUpIsPressed || this.keyDownIsPressed || this.keyLeftIsPressed || this.keyRightIsPressed;
     }
 
-    updateArrowKeysPressed(event: KeyboardEvent): void {
-        if (event.code === 'ArrowUp') this.keyUpIsPressed = true;
-        if (event.code === 'ArrowDown') this.keyDownIsPressed = true;
-        if (event.code === 'ArrowLeft') this.keyLeftIsPressed = true;
-        if (event.code === 'ArrowRight') this.keyRightIsPressed = true;
-    }
-    updateArrowKeysNotPressed(event: KeyboardEvent): void {
-        if (event.code === 'ArrowUp') this.keyUpIsPressed = false;
-        if (event.code === 'ArrowDown') this.keyDownIsPressed = false;
-        if (event.code === 'ArrowLeft') this.keyLeftIsPressed = false;
-        if (event.code === 'ArrowRight') this.keyRightIsPressed = false;
+    updateArrowKeysPressed(event: KeyboardEvent, state: boolean): void {
+        if (event.code === 'ArrowUp') this.keyUpIsPressed = state;
+        if (event.code === 'ArrowDown') this.keyDownIsPressed = state;
+        if (event.code === 'ArrowLeft') this.keyLeftIsPressed = state;
+        if (event.code === 'ArrowRight') this.keyRightIsPressed = state;
     }
 
     moveSelectionWithArrows(ctx: CanvasRenderingContext2D, deltaX: number, deltaY: number): void {
@@ -193,80 +175,7 @@ export abstract class SelectionTool extends Tool {
         this.drawBox(ctx, this.finalTopLeft, this.finalBottomRight);
     }
 
-    createSelection(): void {
-        if (this.initialTopLeft.x === this.initialBottomRight.x || this.initialTopLeft.y === this.initialBottomRight.y) return;
-        this.saveSelection(this.drawingService.baseCtx);
-        this.draw(this.drawingService.previewCtx);
-        this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
-        this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
-        this.selectionExists = true;
-        this.undoRedoService.disableUndoRedo();
-    }
-
-    adjustToDrawingBounds(): void {
-        if (this.initialBottomRight.x < 0) this.initialBottomRight.x = 0;
-        if (this.initialBottomRight.x > this.drawingService.canvas.width) this.initialBottomRight.x = this.drawingService.canvas.width;
-
-        if (this.initialBottomRight.y < 0) this.initialBottomRight.y = 0;
-        if (this.initialBottomRight.y > this.drawingService.canvas.height) this.initialBottomRight.y = this.drawingService.canvas.height;
-    }
-
-    selectAll(): void {
-        this.onMouseDown({ pageX: 0 + HORIZONTAL_OFFSET, pageY: 0 + VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
-        this.onMouseUp({
-            pageX: this.drawingService.canvas.width + HORIZONTAL_OFFSET,
-            pageY: this.drawingService.canvas.height + VERTICAL_OFFSET,
-            button: MouseButton.Left,
-        } as MouseEvent);
-    }
-
-    cancelSelection(): void {
-        if (this.drawingService.previewCtx === undefined) return;
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        if (this.selectionExists) {
-            this.draw(this.drawingService.baseCtx);
-            this.selectionExists = false;
-            this.movingSelection = false;
-            this.undoRedoService.enableUndoRedo();
-            return;
-        }
-
-        this.initialTopLeft = { x: this.initialBottomRight.x, y: this.initialBottomRight.y };
-    }
-
-    drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const trueEndCoords = this.shapeService.getTrueEndCoords(begin, end, this.shapeService.alternateShape);
-        ctx.save();
-        ctx.lineWidth = 1;
-        ctx.lineJoin = 'miter';
-        ctx.strokeStyle = this.boxColor.rgbValue;
-        ctx.globalAlpha = this.boxColor.opacity;
-        ctx.beginPath();
-        ctx.rect(begin.x, begin.y, trueEndCoords.x - begin.x, trueEndCoords.y - begin.y);
-        ctx.stroke();
-        ctx.restore();
-        this.drawControlPoints(ctx, begin, trueEndCoords);
-    }
-
-    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-        ctx.beginPath();
-        ctx.lineWidth = 1;
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = 'blue';
-        this.getControlPointsCoords(begin, end).forEach((coord: Vec2) => ctx.rect(coord.x, coord.y, this.pointWidth, this.pointWidth));
-        ctx.stroke();
-        ctx.fill();
-        ctx.restore();
-    }
-
-    isInsideSelection(point: Vec2): boolean {
-        return (
-            point.x > this.finalTopLeft.x && point.x < this.finalBottomRight.x && point.y > this.finalTopLeft.y && point.y < this.finalBottomRight.y
-        );
-    }
-
-    moveSelection(ctx: CanvasRenderingContext2D, pos: Vec2): void {
+    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2): void {
         this.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
         this.finalBottomRight = {
             x: this.finalTopLeft.x + Math.abs(this.initialBottomRight.x - this.initialTopLeft.x),
@@ -276,6 +185,16 @@ export abstract class SelectionTool extends Tool {
         this.draw(ctx);
         this.drawPerimeter(ctx, this.finalTopLeft, this.finalBottomRight);
         this.drawBox(ctx, this.finalTopLeft, this.finalBottomRight);
+    }
+
+    createSelection(): void {
+        if (this.initialTopLeft.x === this.initialBottomRight.x || this.initialTopLeft.y === this.initialBottomRight.y) return;
+        this.saveSelection(this.drawingService.baseCtx);
+        this.draw(this.drawingService.previewCtx);
+        this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
+        this.drawBox(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
+        this.selectionExists = true;
+        this.undoRedoService.disableUndoRedo();
     }
 
     saveSelection(ctx: CanvasRenderingContext2D): void {
@@ -303,8 +222,26 @@ export abstract class SelectionTool extends Tool {
         this.initialBottomRight = this.finalBottomRight;
     }
 
-    setOffSet(pos: Vec2): void {
-        this.mouseMoveOffset = { x: pos.x - this.finalTopLeft.x, y: pos.y - this.finalTopLeft.y };
+    adjustToDrawingBounds(): void {
+        if (this.initialBottomRight.x < 0) this.initialBottomRight.x = 0;
+        if (this.initialBottomRight.x > this.drawingService.canvas.width) this.initialBottomRight.x = this.drawingService.canvas.width;
+
+        if (this.initialBottomRight.y < 0) this.initialBottomRight.y = 0;
+        if (this.initialBottomRight.y > this.drawingService.canvas.height) this.initialBottomRight.y = this.drawingService.canvas.height;
+    }
+
+    cancelSelection(): void {
+        if (this.drawingService.previewCtx === undefined) return;
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        if (this.selectionExists) {
+            this.draw(this.drawingService.baseCtx);
+            this.selectionExists = false;
+            this.movingWithMouse = false;
+            this.undoRedoService.enableUndoRedo();
+            return;
+        }
+
+        this.initialTopLeft = { x: this.initialBottomRight.x, y: this.initialBottomRight.y };
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -313,11 +250,78 @@ export abstract class SelectionTool extends Tool {
         if (ctx === this.drawingService.baseCtx && this.initialTopLeft !== this.finalTopLeft) this.undoRedoService.addCommand(selectionCommand);
     }
 
+    drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        const trueEndCoords = this.shapeService.getTrueEndCoords(begin, end, this.shapeService.alternateShape);
+        ctx.save();
+        ctx.lineWidth = 1;
+        ctx.lineJoin = 'miter';
+        ctx.strokeStyle = this.boxColor.rgbValue;
+        ctx.globalAlpha = this.boxColor.opacity;
+        ctx.beginPath();
+        ctx.rect(begin.x, begin.y, trueEndCoords.x - begin.x, trueEndCoords.y - begin.y);
+        ctx.stroke();
+        ctx.restore();
+        this.drawControlPoints(ctx, begin, trueEndCoords);
+    }
+
+    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'blue';
+        this.getControlPointsCoords(begin, end).forEach((coord: Vec2) => ctx.rect(coord.x, coord.y, this.controlPointWidth, this.controlPointWidth));
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    selectAll(): void {
+        this.onMouseDown({ pageX: 0 + HORIZONTAL_OFFSET, pageY: 0 + VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
+        this.onMouseUp({
+            pageX: this.drawingService.canvas.width + HORIZONTAL_OFFSET,
+            pageY: this.drawingService.canvas.height + VERTICAL_OFFSET,
+            button: MouseButton.Left,
+        } as MouseEvent);
+    }
+
+    isInsideSelection(point: Vec2): boolean {
+        return (
+            point.x > this.finalTopLeft.x && point.x < this.finalBottomRight.x && point.y > this.finalTopLeft.y && point.y < this.finalBottomRight.y
+        );
+    }
+
+    setOffSet(pos: Vec2): void {
+        this.mouseMoveOffset = { x: pos.x - this.finalTopLeft.x, y: pos.y - this.finalTopLeft.y };
+    }
+
+    getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
+        return [
+            { x: begin.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: begin.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: begin.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
+        ];
+    }
+
+    loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
+        return {
+            selectionCtx: ctx,
+            imageData: this.data,
+            topLeft: this.initialTopLeft,
+            bottomRight: this.initialBottomRight,
+            finalTopLeft: this.finalTopLeft,
+            finalBottomRight: this.finalBottomRight,
+        };
+    }
+
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
 
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
 
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
-
-    abstract loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties;
 }
