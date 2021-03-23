@@ -21,15 +21,11 @@ describe('spray-can-command', () => {
     const storingStub: RandomStoring = {
         angleArray: randomArrayStub2,
         radiusArray: randomArrayStub2,
-        randomGlobalAlpha: randomArrayStub2,
-        randomArc: randomArrayStub2,
     };
 
     const storingStub3: RandomStoring = {
         angleArray: randomArrayStub3,
         radiusArray: randomArrayStub3,
-        randomGlobalAlpha: randomArrayStub3,
-        randomArc: randomArrayStub3,
     };
 
     const numberStub = 1;
@@ -53,8 +49,6 @@ describe('spray-can-command', () => {
             emissionRate: numberStub,
             angleArray: randomArrayStub,
             radiusArray: randomArrayStub,
-            randomGlobalAlpha: randomArrayStub,
-            randomArc: randomArrayStub,
             randomStoring: storingStub,
         };
         sprayCanCommand = new SprayCanCommand(sprayCanServiceSpyObj, sprayCanPropreties);

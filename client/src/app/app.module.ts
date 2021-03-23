@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -43,6 +43,7 @@ import { EyeDropperComponent } from './components/eye-dropper/eye-dropper.compon
 import { MainPageComponent } from './components/main-page/main-page.component';
 import { OptionBarComponent } from './components/option-bar/option-bar.component';
 import { ResizeContainerComponent } from './components/resize-container/resize-container.component';
+import { SelectionOptionsComponent } from './components/selection-options/selection-options.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
@@ -76,6 +77,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ExportDialogComponent,
         CardDrawingComponent,
         SelectionSelectorComponent,
+        SelectionOptionsComponent,
         GenericSliderComponent,
     ],
     imports: [
@@ -108,7 +110,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
     bootstrap: [AppComponent],
 })
 export class AppModule {

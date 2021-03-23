@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { Tool } from '@app/classes/tool';
 import { Subject } from 'rxjs';
-import { PencilService } from './pencil/pencil-service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { ToolsService } from './tools.service';
+import { PencilService } from './trace-tool/pencil/pencil.service';
 
 // tslint:disable: no-string-literal
 describe('ToolsService', () => {

@@ -8,16 +8,22 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class EyeDropperService extends Tool {
+    private subject: Subject<void> = new Subject<void>();
+    private readonly SIDE_BAR_SIZE: number = 400;
+    private readonly OFFSET_LEFT: number = 4;
+    private readonly OFFSET_RIGHT: number = 5;
+    private readonly OFFSET_TOP: number = 1;
+    private readonly OFFSET_BOTTOM: number = 2;
+    currentPixelData: ImageData = new ImageData(1, 1);
+    currentGridOfPixelData: ImageData = new ImageData(1, 1);
+
+    isLeftClick: boolean = false;
+    previewIsDisplayed: boolean = false;
+    gridDrawn: boolean = false;
+
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Pipette');
     }
-    currentPixelData: ImageData;
-    currentGridOfPixelData: ImageData;
-    leftClick: boolean = false;
-    preview: boolean = false;
-    gridDrawn: boolean = false;
-
-    private subject: Subject<void> = new Subject<void>();
 
     sendNotifColor(): void {
         this.subject.next();
@@ -28,11 +34,12 @@ export class EyeDropperService extends Tool {
     }
 
     onMouseDown(event: MouseEvent): void {
-        this.leftClick = event.button === MouseButton.Left;
+        this.isLeftClick = event.button === MouseButton.Left;
         this.getImageData(this.getPositionFromMouse(event));
     }
 
     onMouseMove(event: MouseEvent): void {
+        this.previewIsDisplayed = this.mouseMoveIsInCanvas(event);
         const sizePreview = 11;
         this.currentGridOfPixelData = this.drawingService.baseCtx.getImageData(
             this.getPositionFromMouse(event).x - Math.floor(sizePreview / 2),
@@ -42,17 +49,17 @@ export class EyeDropperService extends Tool {
         );
     }
 
-    onMouseEnter(event: MouseEvent): void {
-        this.preview = true;
-    }
-
-    onMouseOut(event: MouseEvent): void {
-        this.preview = false;
-        this.gridDrawn = false;
-    }
-
-    getImageData(mousePosition: Vec2): void {
+    private getImageData(mousePosition: Vec2): void {
         this.currentPixelData = this.drawingService.baseCtx.getImageData(mousePosition.x, mousePosition.y, 1, 1);
         this.sendNotifColor();
+    }
+
+    private mouseMoveIsInCanvas(event: MouseEvent): boolean {
+        return (
+            event.pageX > this.SIDE_BAR_SIZE + this.OFFSET_LEFT &&
+            event.pageX < this.SIDE_BAR_SIZE + this.OFFSET_RIGHT + this.drawingService.canvas.width &&
+            event.pageY > this.OFFSET_TOP &&
+            event.pageY < this.drawingService.canvas.height + this.OFFSET_BOTTOM
+        );
     }
 }

@@ -1,24 +1,25 @@
 import { Injectable } from '@angular/core';
-import { PencilCommand, PencilPropreties } from '@app/classes/commands/pencil-command/pencil-command';
+import { TraceToolCommand, TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
 import { MouseButton } from '@app/classes/tool';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+
 @Injectable({
     providedIn: 'root',
 })
 export class PencilService extends TraceTool {
-    isEraser: boolean;
+    protected isEraser: boolean;
+    protected pathData: Vec2[] = [];
+
     constructor(drawingService: DrawingService, colorService: ColorService, protected undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Crayon');
         this.mouseDownCoord = { x: 0, y: 0 };
         this.clearPath();
         this.isEraser = false;
     }
-
-    protected pathData: Vec2[];
 
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
@@ -42,13 +43,13 @@ export class PencilService extends TraceTool {
         this.clearPath();
     }
 
-    clearPreviewIfNotEraser(isEraser: boolean): void {
+    private clearPreviewIfNotEraser(isEraser: boolean): void {
         if (!isEraser) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
         }
     }
 
-    everyMouseMove(event: MouseEvent): void {
+    protected everyMouseMove(event: MouseEvent): void {
         if (this.mouseDown) {
             const mousePosition = this.getPositionFromMouse(event);
             this.pathData.push(mousePosition);
@@ -61,44 +62,45 @@ export class PencilService extends TraceTool {
         this.everyMouseMove(event);
     }
 
-    sendCommandAction(): void {
+    protected sendCommandAction(): void {
         if (this.isEraser) return;
-        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(this.drawingService.baseCtx, this.pathData));
+        const drawingCommand: TraceToolCommand = new TraceToolCommand(this.loadUpPropreties(this.drawingService.baseCtx, this.pathData), this);
         drawingCommand.execute();
         this.undoRedoService.addCommand(drawingCommand);
     }
 
     drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
-        const drawingCommand: PencilCommand = new PencilCommand(this, this.loadUpPropreties(ctx, path));
+        const drawingCommand: TraceToolCommand = new TraceToolCommand(this.loadUpPropreties(ctx, path), this);
         drawingCommand.execute();
     }
 
-    executeDrawLine(pencilPropreties: PencilPropreties): void {
-        this.setContext(pencilPropreties.drawingContext, pencilPropreties);
-        pencilPropreties.drawingContext.save();
-        let oldPointX: number = pencilPropreties.drawingPath[0].x;
-        let oldPointY: number = pencilPropreties.drawingPath[0].y;
+    drawTrace(drawingToolPropreties: TraceToolPropreties): void {
+        this.setContext(drawingToolPropreties.drawingContext, drawingToolPropreties);
+        drawingToolPropreties.drawingContext.save();
+        let oldPointX: number = drawingToolPropreties.drawingPath[0].x;
+        let oldPointY: number = drawingToolPropreties.drawingPath[0].y;
 
-        pencilPropreties.drawingContext.beginPath();
-        for (const point of pencilPropreties.drawingPath) {
-            pencilPropreties.drawingContext.moveTo(oldPointX, oldPointY);
-            pencilPropreties.drawingContext.lineTo(point.x, point.y);
+        drawingToolPropreties.drawingContext.beginPath();
+        for (const point of drawingToolPropreties.drawingPath) {
+            drawingToolPropreties.drawingContext.moveTo(oldPointX, oldPointY);
+            drawingToolPropreties.drawingContext.lineTo(point.x, point.y);
 
             oldPointX = point.x;
             oldPointY = point.y;
         }
-        pencilPropreties.drawingContext.stroke();
-        pencilPropreties.drawingContext.restore();
+        drawingToolPropreties.drawingContext.stroke();
+        drawingToolPropreties.drawingContext.restore();
     }
 
-    private setContext(ctx: CanvasRenderingContext2D, pencilPropreties: PencilPropreties): void {
+    private setContext(ctx: CanvasRenderingContext2D, drawingToolPropreties: TraceToolPropreties): void {
+        if (drawingToolPropreties.drawingColor === undefined) return;
         ctx.lineJoin = ctx.lineCap = 'round';
-        ctx.lineWidth = pencilPropreties.drawingThickness;
-        ctx.globalAlpha = pencilPropreties.drawingColor.opacity;
-        ctx.strokeStyle = pencilPropreties.drawingColor.rgbValue;
+        ctx.lineWidth = drawingToolPropreties.drawingThickness;
+        ctx.globalAlpha = drawingToolPropreties.drawingColor.opacity;
+        ctx.strokeStyle = drawingToolPropreties.drawingColor.rgbValue;
     }
 
-    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): PencilPropreties {
+    private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,

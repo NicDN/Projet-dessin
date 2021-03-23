@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { ExportService } from '@app/services/option/export/export.service';
-
 import { FilterService, FilterType } from './filter.service';
 
 // tslint:disable: no-string-literal

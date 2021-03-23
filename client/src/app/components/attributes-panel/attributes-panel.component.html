@@ -25,7 +25,7 @@
         <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
         <mat-divider></mat-divider>
     </div>
-    <div *ngIf="this.currentTool===this.toolsService.eyeDropperService">
+    <div *ngIf="this.currentTool === this.toolsService.eyeDropperService">
         <app-eye-dropper></app-eye-dropper>
     </div>
     <div class="undo-redo">
@@ -33,21 +33,24 @@
         <app-undo-redo></app-undo-redo>
     </div>
 
-    <div
-        *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
+    <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
         <app-selection-selector></app-selection-selector>
         <mat-divider></mat-divider>
     </div>
-
 
     <!-- <div class="bottom"> -->
     <!-- <div *ngIf="this.currentTool === this.toolsService.rectangleSelectionService || this.currentTool === this.toolsService.ellipseSelectionService">
 
         </div> -->
+
+    <div class="selection-options">
+        <mat-divider></mat-divider>
+        <app-selection-options></app-selection-options>
+    </div>
+
     <div class="undo-redo">
         <mat-divider></mat-divider>
         <app-undo-redo></app-undo-redo>
     </div>
     <!-- </div> -->
-
 </mat-drawer-content>
