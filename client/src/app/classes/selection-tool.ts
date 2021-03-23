@@ -7,33 +7,33 @@ import { RectangleDrawingService as ShapeService } from '@app/services/tools/sha
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 export abstract class SelectionTool extends Tool {
-    constructor(drawingService: DrawingService, protected shapeService: ShapeService, toolName: string, protected undoRedoService: UndoRedoService) {
+    constructor(drawingService: DrawingService, protected shapeService: ShapeService, toolName: string, private undoRedoService: UndoRedoService) {
         super(drawingService, toolName);
     }
 
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
+    private data: ImageData;
     selectionExists: boolean = false;
-    protected data: ImageData;
 
-    movingWithMouse: boolean = false;
+    private movingWithMouse: boolean = false;
     protected mouseMoveOffset: Vec2;
 
     readonly arrowMoveDelta: number = 3;
-    movingWithArrows: boolean = false;
-    keyUpIsPressed: boolean = false;
-    keyDownIsPressed: boolean = false;
-    keyLeftIsPressed: boolean = false;
-    keyRightIsPressed: boolean = false;
-    initialKeyPress: boolean = false;
-    intervalHandler: number;
+    private movingWithArrows: boolean = false;
+    private keyUpIsPressed: boolean = false;
+    private keyDownIsPressed: boolean = false;
+    private keyLeftIsPressed: boolean = false;
+    private keyRightIsPressed: boolean = false;
+    private initialKeyPress: boolean = false;
+    private intervalHandler: number;
     private timeoutHandler: number;
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
 
-    protected initialTopLeft: Vec2 = { x: 0, y: 0 };
-    protected initialBottomRight: Vec2 = { x: 0, y: 0 };
-    protected finalTopLeft: Vec2 = { x: 0, y: 0 };
-    protected finalBottomRight: Vec2 = { x: 0, y: 0 };
+    private initialTopLeft: Vec2 = { x: 0, y: 0 };
+    private initialBottomRight: Vec2 = { x: 0, y: 0 };
+    private finalTopLeft: Vec2 = { x: 0, y: 0 };
+    private finalBottomRight: Vec2 = { x: 0, y: 0 };
 
     readonly controlPointWidth: number = 6;
     readonly halfControlPointWidth: number = this.controlPointWidth / 2;
@@ -98,19 +98,19 @@ export abstract class SelectionTool extends Tool {
         this.handleMovingArrowsKeyUp(event);
     }
 
-    handleLeftShift(event: KeyboardEvent, callback: (keyEvent: KeyboardEvent) => void): void {
+    private handleLeftShift(event: KeyboardEvent, callback: (keyEvent: KeyboardEvent) => void): void {
         callback.call(this.shapeService, event);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.initialTopLeft, this.initialBottomRight);
     }
 
-    handleMovingArrowsKeyDown(event: KeyboardEvent): void {
+    private handleMovingArrowsKeyDown(event: KeyboardEvent): void {
         this.updateArrowKeysPressed(event, true);
         if (this.checkIfAnyArrowIsPressed() && !this.movingWithArrows && !this.initialKeyPress)
             this.handleArrowInitialTime(this.drawingService.previewCtx, event);
     }
 
-    handleMovingArrowsKeyUp(event: KeyboardEvent): void {
+    private handleMovingArrowsKeyUp(event: KeyboardEvent): void {
         if (this.initialKeyPress) {
             this.initialKeyPress = false;
             clearTimeout(this.timeoutHandler);
@@ -126,7 +126,7 @@ export abstract class SelectionTool extends Tool {
         }
     }
 
-    handleArrowInitialTime(ctx: CanvasRenderingContext2D, event: KeyboardEvent): void {
+    private handleArrowInitialTime(ctx: CanvasRenderingContext2D, event: KeyboardEvent): void {
         this.initialKeyPress = true;
         this.timeoutHandler = (setTimeout(
             (() => {
@@ -137,7 +137,7 @@ export abstract class SelectionTool extends Tool {
         ) as unknown) as number;
     }
 
-    startContinousArrowMovement(ctx: CanvasRenderingContext2D): void {
+    private startContinousArrowMovement(ctx: CanvasRenderingContext2D): void {
         if (this.initialKeyPress) {
             this.initialKeyPress = false;
             this.movingWithArrows = true;
@@ -153,7 +153,7 @@ export abstract class SelectionTool extends Tool {
         }
     }
 
-    calculateDelta(): Vec2 {
+    private calculateDelta(): Vec2 {
         let deltaY = 0;
         let deltaX = 0;
         if (this.keyUpIsPressed) deltaY -= this.arrowMoveDelta;
@@ -163,18 +163,18 @@ export abstract class SelectionTool extends Tool {
         return { x: deltaX, y: deltaY };
     }
 
-    checkIfAnyArrowIsPressed(): boolean {
+    private checkIfAnyArrowIsPressed(): boolean {
         return this.keyUpIsPressed || this.keyDownIsPressed || this.keyLeftIsPressed || this.keyRightIsPressed;
     }
 
-    updateArrowKeysPressed(event: KeyboardEvent, state: boolean): void {
+    private updateArrowKeysPressed(event: KeyboardEvent, state: boolean): void {
         if (event.code === 'ArrowUp') this.keyUpIsPressed = state;
         if (event.code === 'ArrowDown') this.keyDownIsPressed = state;
         if (event.code === 'ArrowLeft') this.keyLeftIsPressed = state;
         if (event.code === 'ArrowRight') this.keyRightIsPressed = state;
     }
 
-    moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2): void {
+    private moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2): void {
         this.finalTopLeft.x += delta.x;
         this.finalTopLeft.y += delta.y;
         this.finalBottomRight.x += delta.x;
@@ -183,7 +183,7 @@ export abstract class SelectionTool extends Tool {
         this.drawAll(ctx);
     }
 
-    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2): void {
+    private moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2): void {
         this.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
         this.finalBottomRight = {
             x: this.finalTopLeft.x + (this.initialBottomRight.x - this.initialTopLeft.x),
@@ -194,7 +194,7 @@ export abstract class SelectionTool extends Tool {
         this.drawAll(ctx);
     }
 
-    createSelection(): void {
+    private createSelection(): void {
         if (this.initialTopLeft.x === this.initialBottomRight.x || this.initialTopLeft.y === this.initialBottomRight.y) return;
         this.saveSelection(this.drawingService.baseCtx);
         this.drawAll(this.drawingService.previewCtx);
@@ -203,7 +203,7 @@ export abstract class SelectionTool extends Tool {
         this.undoRedoService.disableUndoRedo();
     }
 
-    saveSelection(ctx: CanvasRenderingContext2D): void {
+    private saveSelection(ctx: CanvasRenderingContext2D): void {
         this.setSelectionCoords();
 
         this.data = ctx.getImageData(
@@ -215,7 +215,7 @@ export abstract class SelectionTool extends Tool {
         this.fillWithWhite(this.loadUpProperties(ctx));
     }
 
-    setSelectionCoords(): void {
+    private setSelectionCoords(): void {
         this.finalTopLeft = {
             x: Math.min(this.initialTopLeft.x, this.initialBottomRight.x),
             y: Math.min(this.initialTopLeft.y, this.initialBottomRight.y),
@@ -228,7 +228,7 @@ export abstract class SelectionTool extends Tool {
         this.initialBottomRight = { x: this.finalBottomRight.x, y: this.finalBottomRight.y };
     }
 
-    adjustToDrawingBounds(): void {
+    private adjustToDrawingBounds(): void {
         if (this.initialBottomRight.x < 0) this.initialBottomRight.x = 0;
         if (this.initialBottomRight.x > this.drawingService.canvas.width) this.initialBottomRight.x = this.drawingService.canvas.width;
 
@@ -255,19 +255,19 @@ export abstract class SelectionTool extends Tool {
         this.initialTopLeft = { x: this.initialBottomRight.x, y: this.initialBottomRight.y };
     }
 
-    drawAll(ctx: CanvasRenderingContext2D): void {
+    private drawAll(ctx: CanvasRenderingContext2D): void {
         this.draw(ctx);
         this.drawPerimeter(ctx, this.finalTopLeft, this.finalBottomRight);
         this.drawBox(ctx, this.finalTopLeft, this.finalBottomRight);
     }
-    draw(ctx: CanvasRenderingContext2D): void {
+    private draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
         if (ctx === this.drawingService.baseCtx && this.initialTopLeft.x !== this.finalTopLeft.x && this.initialTopLeft.y !== this.finalTopLeft.y)
             this.undoRedoService.addCommand(selectionCommand);
     }
 
-    drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+    private drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.save();
         ctx.lineWidth = 1;
         ctx.lineJoin = 'miter';
@@ -280,7 +280,7 @@ export abstract class SelectionTool extends Tool {
         this.drawControlPoints(ctx, begin, end);
     }
 
-    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+    private drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.save();
         ctx.beginPath();
         ctx.lineWidth = 1;
@@ -301,17 +301,17 @@ export abstract class SelectionTool extends Tool {
         } as MouseEvent);
     }
 
-    isInsideSelection(point: Vec2): boolean {
+    private isInsideSelection(point: Vec2): boolean {
         return (
             point.x > this.finalTopLeft.x && point.x < this.finalBottomRight.x && point.y > this.finalTopLeft.y && point.y < this.finalBottomRight.y
         );
     }
 
-    setOffSet(pos: Vec2): void {
+    private setOffSet(pos: Vec2): void {
         this.mouseMoveOffset = { x: pos.x - this.finalTopLeft.x, y: pos.y - this.finalTopLeft.y };
     }
 
-    getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
+    private getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
         return [
             { x: begin.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
             { x: begin.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
@@ -324,7 +324,7 @@ export abstract class SelectionTool extends Tool {
         ];
     }
 
-    loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
+    private loadUpProperties(ctx: CanvasRenderingContext2D): SelectionPropreties {
         return {
             selectionCtx: ctx,
             imageData: this.data,
