@@ -13,8 +13,10 @@ describe('EyeDropperService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
     let mouseEvent: MouseEvent;
-    const canvasSizeAlt: number = 1100;
-    const mouseEventClick = { pageX: canvasSizeAlt, pageY: canvasSizeAlt, button: 0 } as MouseEvent;
+    const MOUSE_CLICK_POSITION = 700;
+    const CANVAS_SIZE = 1100;
+    const SMALLER_CANVAS_SIZE = 200;
+    const mouseEventClick = { pageX: MOUSE_CLICK_POSITION, pageY: MOUSE_CLICK_POSITION, button: 0 } as MouseEvent;
 
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const LEFT_BUTTON_PRESSED = 1;
@@ -69,14 +71,14 @@ describe('EyeDropperService', () => {
     });
 
     it('#mouseMoveIsInCanvas should return true if we"re in the canvas', () => {
-        service['drawingService'].canvas.width = 1100;
-        service['drawingService'].canvas.height = 1100;
+        service['drawingService'].canvas.width = CANVAS_SIZE;
+        service['drawingService'].canvas.height = CANVAS_SIZE;
         expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeTrue();
     });
 
     it('#mouseMoveIsInCanvas should return false if we"re not in the canvas', () => {
-        service['drawingService'].canvas.width = 500;
-        service['drawingService'].canvas.height = 500;
+        service['drawingService'].canvas.width = SMALLER_CANVAS_SIZE;
+        service['drawingService'].canvas.height = SMALLER_CANVAS_SIZE;
         expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeFalse();
     });
 
