@@ -13,6 +13,10 @@ describe('EyeDropperService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
     let mouseEvent: MouseEvent;
+    const MOUSE_CLICK_POSITION = 700;
+    const CANVAS_SIZE = 1100;
+    const SMALLER_CANVAS_SIZE = 200;
+    const mouseEventClick = { pageX: MOUSE_CLICK_POSITION, pageY: MOUSE_CLICK_POSITION, button: 0 } as MouseEvent;
 
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const LEFT_BUTTON_PRESSED = 1;
@@ -28,6 +32,7 @@ describe('EyeDropperService', () => {
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
+        service['drawingService'].canvas = canvasTestHelper.canvas;
         service['drawingService'].baseCtx = baseCtxStub;
 
         mouseEvent = {
@@ -65,16 +70,16 @@ describe('EyeDropperService', () => {
         expect(service.currentGridOfPixelData).toEqual(gridOfPixelStub);
     });
 
-    it('#onMouseEnter should set the value of preview to true', () => {
-        service.previewIsDisplayed = false;
-        service.onMouseEnter();
-        expect(service.previewIsDisplayed).toEqual(true);
+    it('#mouseMoveIsInCanvas should return true if we"re in the canvas', () => {
+        service['drawingService'].canvas.width = CANVAS_SIZE;
+        service['drawingService'].canvas.height = CANVAS_SIZE;
+        expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeTrue();
     });
 
-    it('#onMouseOut should set the value of preview to false', () => {
-        service.previewIsDisplayed = true;
-        service.onMouseOut();
-        expect(service.previewIsDisplayed).toEqual(false);
+    it('#mouseMoveIsInCanvas should return false if we"re not in the canvas', () => {
+        service['drawingService'].canvas.width = SMALLER_CANVAS_SIZE;
+        service['drawingService'].canvas.height = SMALLER_CANVAS_SIZE;
+        expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeFalse();
     });
 
     it('#getImageDate should get the pixel data under the current mouse position and send it to currentPixelData and call sendNotifColor', () => {
