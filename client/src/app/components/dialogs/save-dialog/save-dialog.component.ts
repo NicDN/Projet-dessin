@@ -1,8 +1,10 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Component } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, Validators } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatInput } from '@angular/material/input';
 import { SaveService } from '@app/services/option/save/save.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
@@ -12,6 +14,9 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
     styleUrls: ['./save-dialog.component.scss'],
 })
 export class SaveDialogComponent {
+    @ViewChild('saveButton') saveButton: MatButton;
+    @ViewChild('fileName') fileName: MatInput;
+
     private readonly TAG_MAX_LENGTH: number = 10;
     private readonly TAG_MIN_LENGTH: number = 2;
 
@@ -20,6 +25,7 @@ export class SaveDialogComponent {
     tags: string[] = [];
     savingState: boolean = false;
     uniqueTagError: boolean = false;
+    inputFocus: boolean = false;
 
     fileNameFormControl: FormControl = new FormControl('', Validators.required);
 
@@ -80,5 +86,19 @@ export class SaveDialogComponent {
             return { nonUniqueTagFound: true };
         }
         return null;
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    onKeyDown(event: KeyboardEvent): void {
+        if (event.key !== 'Enter') {
+            return;
+        }
+        if (this.saveButton.disabled) {
+            return;
+        }
+        if (this.inputFocus) {
+            return;
+        }
+        this.postDrawing(this.fileName.value);
     }
 }

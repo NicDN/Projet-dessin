@@ -1,5 +1,6 @@
 // Reference: https://malcoded.com/posts/angular-color-picker/
 import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Vec2 } from '@app/classes/vec2';
 @Component({
     selector: 'app-color-palette',
     templateUrl: './color-palette.component.html',
@@ -15,20 +16,22 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     @ViewChild('canvas')
     canvas: ElementRef<HTMLCanvasElement>;
 
-    readonly DIAMETER: number = 10;
-    readonly THICKNESS: number = 5;
+    private readonly DEFAULT_POSITION: Vec2 = { x: 0, y: 0 };
+
+    private readonly DIAMETER: number = 10;
+    private readonly THICKNESS: number = 5;
 
     private ctx: CanvasRenderingContext2D;
 
     private mousedown: boolean = false;
 
-    selectedPosition: { x: number; y: number };
+    private selectedPosition: Vec2 = this.DEFAULT_POSITION;
 
     ngAfterViewInit(): void {
         this.renderPalette();
     }
 
-    renderPalette(): void {
+    private renderPalette(): void {
         if (!this.canvas) {
             return;
         }
@@ -58,8 +61,8 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.renderCircle();
     }
 
-    renderCircle(): void {
-        if (this.selectedPosition) {
+    private renderCircle(): void {
+        if (this.selectedPosition !== this.DEFAULT_POSITION) {
             this.ctx.strokeStyle = 'white';
             this.ctx.fillStyle = 'white';
             this.ctx.beginPath();
@@ -72,7 +75,7 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
     ngOnChanges(): void {
         this.renderPalette();
         const pos = this.selectedPosition;
-        if (this.selectedPosition) {
+        if (this.selectedPosition !== this.DEFAULT_POSITION) {
             this.color.emit(this.getColorAtPosition(pos.x, pos.y));
         }
     }
@@ -99,12 +102,12 @@ export class ColorPaletteComponent implements AfterViewInit, OnChanges {
         this.emitColor(evt.offsetX, evt.offsetY);
     }
 
-    emitColor(x: number, y: number): void {
+    private emitColor(x: number, y: number): void {
         const rgbColor = this.getColorAtPosition(x, y);
         this.color.emit(rgbColor);
     }
 
-    getColorAtPosition(x: number, y: number): string {
+    private getColorAtPosition(x: number, y: number): string {
         const imageData = this.ctx.getImageData(x, y, 1, 1).data;
         return 'rgb(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ')';
     }

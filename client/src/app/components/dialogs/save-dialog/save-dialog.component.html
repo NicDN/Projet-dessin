@@ -2,7 +2,12 @@
     <h2 mat-dialog-title>Sauvegarder les dessin</h2>
     <form>
         <mat-form-field class="file-name">
-            <input matInput  #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required />
+            <input matInput  #fileName 
+                   placeholder="Nom du fichier" 
+                   [formControl]="fileNameFormControl" 
+                   required 
+                   (focusout)="this.inputFocus=false"
+                   (focusin)="this.inputFocus=true"/>
             <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
                 <mat-icon>close</mat-icon>
             </button>
@@ -15,7 +20,7 @@
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input
+                <input #tagInput
                     pattern="[a-zA-Z ]*"
                     placeholder="Ajoutez des étiquettes"
                     type="text"
@@ -24,6 +29,8 @@
                     [matChipInputAddOnBlur]="true"
                     (matChipInputTokenEnd)="addTag($event)"
                     [formControl]="tagFormControl"
+                    (focusout)="this.inputFocus=false"
+                    (focusin)="this.inputFocus=true"
                 />
             </mat-chip-list>
 
@@ -44,6 +51,7 @@
 
     <div class="bottom-div">
         <button 
+            #saveButton
             mat-flat-button
             color="primary"
             class="save-canvas-btn"

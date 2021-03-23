@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ColorPaletteComponent } from './color-palette.component';
 
 // tslint:disable:no-string-literal
+// tslint:disable: no-any
 describe('ColorPaletteComponent', () => {
     let component: ColorPaletteComponent;
     let fixture: ComponentFixture<ColorPaletteComponent>;
@@ -29,41 +30,42 @@ describe('ColorPaletteComponent', () => {
     });
 
     it('#renderPalette should not render the palette if the canvas is undefined', () => {
-        spyOn(notLoadedComponent, 'renderCircle');
-        notLoadedComponent.renderPalette();
-        expect(notLoadedComponent.renderCircle).not.toHaveBeenCalled();
+        spyOn<any>(notLoadedComponent, 'renderCircle');
+        notLoadedComponent['renderPalette']();
+        expect(notLoadedComponent['renderCircle']).not.toHaveBeenCalled();
     });
 
     it('#renderPalette render the palette if the canvas is not undefined', () => {
-        spyOn(component, 'renderCircle');
-        component.renderPalette();
-        expect(component.renderCircle).toHaveBeenCalled();
+        spyOn<any>(component, 'renderCircle');
+        component['renderPalette']();
+        expect(component['renderCircle']).toHaveBeenCalled();
     });
 
     it('#renderPalette should create a new CanvasRenderingContext2D instance if ctx is undefined', () => {
-        component.renderPalette();
+        component['renderPalette']();
         expect(component['ctx']).not.toBeUndefined();
     });
 
     it('#renderCircle should render a circle icon above the mouse if a position is selected on the palette ', () => {
-        component.selectedPosition = { x: DEFAULT_X, y: DEFAULT_Y };
-        component.renderPalette();
-        expect(component['ctx'].lineWidth).toEqual(component.THICKNESS); // idicator that we entered the if condition to draw the circle
+        component['selectedPosition'] = { x: DEFAULT_X, y: DEFAULT_Y };
+        component['renderPalette']();
+        expect(component['ctx'].lineWidth).toEqual(component['THICKNESS']); // idicator that we entered the if condition to draw the circle
     });
 
     it('#renderCircle should not render a circle icon above the mouse if no position is selected on the palette ', () => {
-        component.renderPalette();
-        expect(component['ctx'].lineWidth).not.toEqual(component.THICKNESS);
+        component['renderPalette']();
+        expect(component['ctx'].lineWidth).not.toEqual(component['THICKNESS']);
     });
 
     it('#ngOnChanges should emit a color if a position is selected', () => {
-        component.selectedPosition = { x: 10, y: 10 };
+        component['selectedPosition'] = { x: 10, y: 10 };
         spyOn(component.color, 'emit');
         component.ngOnChanges();
         expect(component.color.emit).toHaveBeenCalled();
     });
 
     it('#ngOnChanges should not emit a color if no position is selected', () => {
+        component['selectedPosition'] = component['DEFAULT_POSITION'];
         spyOn(component.color, 'emit');
         component.ngOnChanges();
         expect(component.color.emit).not.toHaveBeenCalled();
@@ -84,7 +86,7 @@ describe('ColorPaletteComponent', () => {
 
         component.onMouseDown(mouseEvent);
         expect(component.color.emit).toHaveBeenCalled();
-        expect(component.color.emit).toHaveBeenCalledWith(component.getColorAtPosition(DEFAULT_X, DEFAULT_Y));
+        expect(component.color.emit).toHaveBeenCalledWith(component['getColorAtPosition'](DEFAULT_X, DEFAULT_Y));
         expect(component['mousedown']).toBeTrue();
     });
 
@@ -111,25 +113,25 @@ describe('ColorPaletteComponent', () => {
             offsetX: DEFAULT_X,
             offsetY: DEFAULT_Y,
         } as MouseEvent;
-        spyOn(component, 'renderPalette');
-        spyOn(component, 'emitColor');
+        spyOn<any>(component, 'renderPalette');
+        spyOn<any>(component, 'emitColor');
         component.handleMouseEvent(mouseEvent);
-        expect(component.selectedPosition.x).toBe(mouseEvent.offsetX);
-        expect(component.selectedPosition.y).toBe(mouseEvent.offsetY);
-        expect(component.renderPalette).toHaveBeenCalled();
-        expect(component.emitColor).toHaveBeenCalledWith(mouseEvent.offsetX, mouseEvent.offsetY);
+        expect(component['selectedPosition'].x).toBe(mouseEvent.offsetX);
+        expect(component['selectedPosition'].y).toBe(mouseEvent.offsetY);
+        expect(component['renderPalette']).toHaveBeenCalled();
+        expect(component['emitColor']).toHaveBeenCalledWith(mouseEvent.offsetX, mouseEvent.offsetY);
     });
 
     it('#emitColor should emit color correctly', () => {
         spyOn(component.color, 'emit');
-        component.emitColor(DEFAULT_X, DEFAULT_Y);
+        component['emitColor'](DEFAULT_X, DEFAULT_Y);
         expect(component.color.emit).toHaveBeenCalled();
-        expect(component.color.emit).toHaveBeenCalledWith(component.getColorAtPosition(DEFAULT_X, DEFAULT_Y));
+        expect(component.color.emit).toHaveBeenCalledWith(component['getColorAtPosition'](DEFAULT_X, DEFAULT_Y));
     });
 
     it('should get the right color at given position', () => {
         component.hue = 'rgb(255,0,0)';
         const expectedColor = 'rgb(122,122,122)';
-        expect(component.getColorAtPosition(DEFAULT_X, DEFAULT_Y)).toBe(expectedColor);
+        expect(component['getColorAtPosition'](DEFAULT_X, DEFAULT_Y)).toBe(expectedColor);
     });
 });
