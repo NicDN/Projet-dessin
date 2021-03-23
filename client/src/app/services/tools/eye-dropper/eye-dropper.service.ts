@@ -10,7 +10,10 @@ import { Observable, Subject } from 'rxjs';
 export class EyeDropperService extends Tool {
     private subject: Subject<void> = new Subject<void>();
     private readonly SIDE_BAR_SIZE: number = 400;
-    private readonly OFFSET: number = 3;
+    private readonly OFFSET_LEFT: number = 4;
+    private readonly OFFSET_RIGHT: number = 5;
+    private readonly OFFSET_TOP: number = 1;
+    private readonly OFFSET_BOTTOM: number = 2;
     currentPixelData: ImageData = new ImageData(1, 1);
     currentGridOfPixelData: ImageData = new ImageData(1, 1);
 
@@ -53,10 +56,10 @@ export class EyeDropperService extends Tool {
 
     private mouseMoveIsInCanvas(event: MouseEvent): boolean {
         return (
-            event.pageX > this.SIDE_BAR_SIZE &&
-            event.pageX < this.SIDE_BAR_SIZE + this.OFFSET + this.drawingService.canvas.width &&
-            event.pageY > 0 &&
-            event.pageY < this.drawingService.canvas.height + this.OFFSET
+            event.pageX > this.SIDE_BAR_SIZE + this.OFFSET_LEFT &&
+            event.pageX < this.SIDE_BAR_SIZE + this.OFFSET_RIGHT + this.drawingService.canvas.width &&
+            event.pageY > this.OFFSET_TOP &&
+            event.pageY < this.drawingService.canvas.height + this.OFFSET_BOTTOM
         );
     }
 }
