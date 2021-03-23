@@ -29,6 +29,7 @@ export class ToolBarComponent {
             tool: this.toolService.rectangleSelectionService,
         },
     ];
+
     constructor(public toolService: ToolsService) {
         this.toolService.setCurrentTool(this.toolService.pencilService);
     }

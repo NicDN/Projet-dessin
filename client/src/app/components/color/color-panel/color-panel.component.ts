@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 
 interface RGBInput {
     color: string;
@@ -15,7 +16,7 @@ interface RGBInput {
 })
 export class ColorPanelComponent {
     readonly OPACITY_AJUSTMENT: number = 100;
-    readonly CONCATENATE_OFFSET: number = 4;
+    private readonly CONCATENATE_OFFSET: number = 4;
 
     rgbInputs: RGBInput[] = [
         { color: 'Rouge', inputError: false },
@@ -23,22 +24,25 @@ export class ColorPanelComponent {
         { color: 'Bleu', inputError: false },
     ];
 
-    colorService: ColorService;
-    previousColors: Color[];
+    rgbInputError: boolean = true;
 
-    selectedColor: Color;
+    previousColors: Color[] = [];
+
+    selectedColor: Color = {} as Color;
     openColorPicker: boolean = false;
+    clickedOutise: boolean = false;
 
-    rgbValue: string;
-    hue: string;
-    opacity: number;
+    rgbValue: string = '';
+    hue: string = '';
+    opacity: number = 0;
 
     private rgbArray: string[]; // represents R/G/B decimal values
 
-    constructor(colorService: ColorService) {
+    constructor(public colorService: ColorService, public hotKeyService: HotkeyService) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
+
     selectColor(color: Color): void {
         this.selectedColor = color;
         this.rgbValue = this.selectedColor.rgbValue;
@@ -57,6 +61,15 @@ export class ColorPanelComponent {
         }
     }
 
+    rgbInputHasErrors(): boolean {
+        for (const rgbInput of this.rgbInputs) {
+            if (rgbInput.inputError) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     switchColors(): void {
         this.colorService.switchColors();
         this.openColorPicker = false;
@@ -68,7 +81,7 @@ export class ColorPanelComponent {
         this.openColorPicker = false;
     }
 
-    updatePreviousColors(selectedColor: Color): void {
+    private updatePreviousColors(selectedColor: Color): void {
         if (selectedColor.rgbValue !== this.rgbValue) {
             this.colorService.updatePreviousColors({ rgbValue: this.rgbValue, opacity: this.opacity });
         }
@@ -116,7 +129,7 @@ export class ColorPanelComponent {
         }
     }
 
-    inputHasErrors(input: string): boolean {
+    private inputHasErrors(input: string): boolean {
         if (input === '') {
             return true;
         }

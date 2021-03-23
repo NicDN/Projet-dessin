@@ -27,7 +27,6 @@ export class SaveService {
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return (error: Error): Observable<T> => {
-            console.log(error);
             if ((error as HttpErrorResponse).status === this.NO_SERVER_RESPONSE) {
                 return throwError("Impossible d'accéder au serveur.");
             }

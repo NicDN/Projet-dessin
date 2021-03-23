@@ -5,8 +5,8 @@ import { Color } from '@app/classes/color';
     providedIn: 'root',
 })
 export class ColorService {
-    mainColor: Color;
-    secondaryColor: Color;
+    mainColor: Color = {} as Color;
+    secondaryColor: Color = {} as Color;
 
     previousColors: Color[] = [
         { rgbValue: 'rgb(255,0,0)', opacity: 1 },

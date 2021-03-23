@@ -4,6 +4,10 @@ import { Db, MongoClient, MongoClientOptions } from 'mongodb';
 const DATABASE_URL = 'mongodb+srv://admin:log2990-309@cluster0.vmeuf.mongodb.net/polydessin?retryWrites=true&w=majority';
 const DATABASE_NAME = 'polydessin';
 
+// mongoDB infos:
+// user adress: nicolas.demersneuwirth@gmail.com
+// password: log2990-309
+
 @injectable()
 export class DatabaseService {
     private db: Db;

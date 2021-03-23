@@ -147,7 +147,6 @@ describe('PencilService', () => {
     it('#drawTrace should change the pixel of the canvas ', () => {
         const expectedRedColor = 255;
         const globalAlpha = 3;
-        console.log(drawingToolPropretiesStub);
         service.drawTrace(drawingToolPropretiesStub);
         const imageData: ImageData = drawingToolPropretiesStub.drawingContext.getImageData(0, 0, 1, 1);
         expect(imageData.data[0]).toEqual(expectedRedColor); // R, the red value is 255 because the default color of the app is red.
