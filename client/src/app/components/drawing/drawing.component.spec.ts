@@ -35,7 +35,7 @@ describe('DrawingComponent', () => {
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('HotkeyService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -114,6 +114,15 @@ describe('DrawingComponent', () => {
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
+    });
+
+    it('#onMouseDown should not disable undo-redo if the current tool is selection', () => {
+        component['canDraw'] = true;
+        spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.returnValue();
+        spyOn(toolsServiceSpy.currentTool, 'onMouseMove').and.returnValue();
+        spyOn(toolsServiceSpy.currentTool, 'onMouseUp').and.returnValue();
+        component.onKeyDown(keyBoardEvent);
+        expect(undoRedoServiceSpyObj.disableUndoRedo).toHaveBeenCalled();
     });
 
     it("#onMouseUp should call the current tool's #onMouseUp when receiving a mouse down event if canDrawflag is true ", () => {
