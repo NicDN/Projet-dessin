@@ -4,7 +4,6 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
-import { SelectionService } from '@app/services/tools/selection/selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -138,7 +137,6 @@ describe('DrawingComponent', () => {
             drawingStub,
             new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
             undoRedoServiceSpyObj,
-            new SelectionService(),
         );
         component.onMouseUp(mouseEventClick);
         expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();

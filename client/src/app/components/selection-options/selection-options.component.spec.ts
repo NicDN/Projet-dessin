@@ -39,12 +39,12 @@ describe('SelectionOptionsComponent', () => {
     });
 
     it('#selectionIsActive should return true if there is a selection in process', () => {
-        rectangleSelectionServiceSpyObj.hasSelection = false;
-        ellipseSelectionServiceSpyObj.hasSelection = false;
+        rectangleSelectionServiceSpyObj.selectionExists = false;
+        ellipseSelectionServiceSpyObj.selectionExists = false;
         expect(component.selectionIsActive()).toBeFalse();
 
-        rectangleSelectionServiceSpyObj.hasSelection = true;
-        ellipseSelectionServiceSpyObj.hasSelection = true;
+        rectangleSelectionServiceSpyObj.selectionExists = true;
+        ellipseSelectionServiceSpyObj.selectionExists = true;
         expect(component.selectionIsActive()).toBeTrue();
     });
 

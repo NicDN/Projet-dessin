@@ -30,8 +30,8 @@ export class EllipseSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x) / 2,
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y) / 2,
+            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x) / 2 - 1,
+            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y) / 2 - 1,
             0,
             0,
             2 * Math.PI,

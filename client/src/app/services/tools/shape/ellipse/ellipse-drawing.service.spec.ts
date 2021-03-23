@@ -153,7 +153,7 @@ describe('EllipseDrawingService', () => {
         expect(loadUpSpy).toHaveBeenCalled();
     });
 
-    it('#loadProprities should set the SprayCanPropreties to the current service status so it can be used in the redo', () => {
+    it('#loadProprities should set the ShapePropreties to the current service status so it can be used in the redo', () => {
         const beginAndEnd: Vec2 = { x: 1, y: 2 };
 
         const shapePropreties: ShapePropreties = service['loadUpPropreties'](baseCtxStub, beginAndEnd, beginAndEnd);
