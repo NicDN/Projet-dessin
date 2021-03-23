@@ -24,7 +24,7 @@ export class SelectionToolStub extends SelectionTool {
 }
 // tslint:disable: no-any
 // tslint:disable: no-string-literal
-fdescribe('SelectionTool', () => {
+describe('SelectionTool', () => {
     let selectionTool: SelectionTool;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
@@ -39,8 +39,6 @@ fdescribe('SelectionTool', () => {
     const MOUSE_OFFSET = 5;
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
-    // const BOTTOM_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 20 };
-    // const TOP_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 0 };
     const LEFT_BUTTON_PRESSED = 1;
     const NO_BUTTON_PRESSED = 0;
     const RGB_MAX = 255;
@@ -662,10 +660,10 @@ fdescribe('SelectionTool', () => {
         const centerPoint: Vec2 = { x: 10, y: 10 };
         const imageDataBorder: ImageData = previewCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
         expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX / 2));
-        const imageDataCenter: ImageData = previewCtxStub.getImageData(borderPoint2.x, borderPoint2.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX / 2));
-        const imageDataOutside: ImageData = previewCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataOutside.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
+        const imageDataBorder2: ImageData = previewCtxStub.getImageData(borderPoint2.x, borderPoint2.y, 1, 1);
+        expect(imageDataBorder2.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX / 2));
+        const imageDataCenter: ImageData = previewCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
+        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         expect(drawControlPointsSpy).toHaveBeenCalled();
     });
 
