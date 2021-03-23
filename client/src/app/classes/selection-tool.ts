@@ -46,6 +46,7 @@ export abstract class SelectionTool extends Tool {
             this.movingWithMouse = true;
             return;
         }
+        this.undoRedoService.disableUndoRedo();
         this.cancelSelection();
         this.initialTopLeft = this.getPositionFromMouse(event);
         this.initialBottomRight = this.initialTopLeft;
@@ -195,12 +196,14 @@ export abstract class SelectionTool extends Tool {
     }
 
     private createSelection(): void {
-        if (this.initialTopLeft.x === this.initialBottomRight.x || this.initialTopLeft.y === this.initialBottomRight.y) return;
+        if (this.initialTopLeft.x === this.initialBottomRight.x || this.initialTopLeft.y === this.initialBottomRight.y) {
+            this.undoRedoService.enableUndoRedo();
+            return;
+        }
         this.saveSelection(this.drawingService.baseCtx);
         this.drawAll(this.drawingService.previewCtx);
 
         this.selectionExists = true;
-        this.undoRedoService.disableUndoRedo();
     }
 
     private saveSelection(ctx: CanvasRenderingContext2D): void {

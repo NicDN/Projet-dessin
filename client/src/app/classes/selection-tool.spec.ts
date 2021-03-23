@@ -93,6 +93,7 @@ describe('SelectionTool', () => {
         selectionTool.onMouseDown(mouseEvent);
         expect(selectionTool['initialTopLeft']).toEqual(MOUSE_POSITION);
         expect(selectionTool['initialBottomRight']).toEqual(MOUSE_POSITION);
+        expect(undoRedoSpyObj.disableUndoRedo).toHaveBeenCalled();
     });
 
     it('#onMouseDown should cancelSelection if clicked outside of selection', () => {
@@ -329,21 +330,31 @@ describe('SelectionTool', () => {
 
     it('#handleArrowInitialTime should set initialKeyPress to true and start a timeout function', () => {
         selectionTool['initialKeyPress'] = false;
-        const setTimeoutSpy = spyOn(window, 'setTimeout');
+        const startContinousArrowMovementSpy = spyOn<any>(selectionTool, 'startContinousArrowMovement');
+
+        jasmine.clock().install();
 
         selectionTool['handleArrowInitialTime'](drawingServiceSpyObj.previewCtx, {} as KeyboardEvent);
+        jasmine.clock().tick(selectionTool['INITIAL_ARROW_TIMER'] + 1);
+
         expect(selectionTool['initialKeyPress']).toBeTrue();
-        expect(setTimeoutSpy).toHaveBeenCalled();
+        expect(startContinousArrowMovementSpy).toHaveBeenCalled();
+        jasmine.clock().uninstall();
     });
 
     it('#startContinousArrowMovement should set movingWithArrows to true and start an interval timer', () => {
         selectionTool['initialKeyPress'] = true;
-        const setIntervalSpy = spyOn(window, 'setInterval');
+        const moveSelectionWithArrowsSpy = spyOn<any>(selectionTool, 'moveSelectionWithArrows');
+
+        jasmine.clock().install();
 
         selectionTool['startContinousArrowMovement'](drawingServiceSpyObj.previewCtx);
+        jasmine.clock().tick(selectionTool['ARROW_INTERVAL'] + 1);
+
         expect(selectionTool['initialKeyPress']).toBeFalse();
         expect(selectionTool['movingWithArrows']).toBeTrue();
-        expect(setIntervalSpy).toHaveBeenCalled();
+        expect(moveSelectionWithArrowsSpy).toHaveBeenCalled();
+        jasmine.clock().uninstall();
     });
 
     it('#startContinousArrowMovement should not set movingWithArrows to true nor start an interval timer if initialKeyPress is false', () => {
@@ -472,7 +483,7 @@ describe('SelectionTool', () => {
         expect(drawAllSpy).toHaveBeenCalledWith(drawingServiceSpyObj.previewCtx);
     });
 
-    it('#createSelection should save the selection, draw it on the preview canvas, set selectionExists to true and disable undo-redo', () => {
+    it('#createSelection should save the selection, draw it on the preview canvas, set selectionExists to true', () => {
         selectionTool['initialTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool['selectionExists'] = false;
@@ -483,7 +494,6 @@ describe('SelectionTool', () => {
 
         expect(drawAllSpy).toHaveBeenCalledWith(drawingServiceSpyObj.previewCtx);
         expect(saveSelectionSpy).toHaveBeenCalled();
-        expect(undoRedoSpyObj.disableUndoRedo).toHaveBeenCalled();
         expect(selectionTool.selectionExists).toBeTrue();
     });
 
@@ -658,10 +668,11 @@ describe('SelectionTool', () => {
         const borderPoint: Vec2 = { x: 0, y: 0 };
         const borderPoint2: Vec2 = { x: 20, y: 20 };
         const centerPoint: Vec2 = { x: 10, y: 10 };
+
         const imageDataBorder: ImageData = previewCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX / 2));
+        expect(imageDataBorder.data[2]).toEqual(RGB_MAX);
         const imageDataBorder2: ImageData = previewCtxStub.getImageData(borderPoint2.x, borderPoint2.y, 1, 1);
-        expect(imageDataBorder2.data).toEqual(Uint8ClampedArray.of(0, 0, RGB_MAX, RGB_MAX / 2));
+        expect(imageDataBorder2.data[2]).toEqual(RGB_MAX);
         const imageDataCenter: ImageData = previewCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
         expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
         expect(drawControlPointsSpy).toHaveBeenCalled();
