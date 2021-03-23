@@ -99,7 +99,7 @@ fdescribe('SelectionTool', () => {
 
     it('#onMouseDown should cancelSelection if clicked outside of selection', () => {
         selectionTool.selectionExists = true;
-        const isInsideSelectionSpy = spyOn(selectionTool, 'isInsideSelection').and.returnValue(false);
+        const isInsideSelectionSpy = spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(false);
         const cancelSelectionSpy = spyOn(selectionTool, 'cancelSelection');
 
         selectionTool.onMouseDown(mouseEvent);
@@ -109,8 +109,8 @@ fdescribe('SelectionTool', () => {
 
     it('#onMouseDown should set movingWithMouse to true and shoud set a mouseOffset if clicked inside a selection', () => {
         selectionTool.selectionExists = true;
-        const isInsideSelectionSpy = spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
-        const setOffsetSpy = spyOn(selectionTool, 'setOffSet');
+        const isInsideSelectionSpy = spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(true);
+        const setOffsetSpy = spyOn<any>(selectionTool, 'setOffSet');
 
         selectionTool.onMouseDown(mouseEvent);
         expect(selectionTool['movingWithMouse']).toBeTrue();
@@ -133,7 +133,7 @@ fdescribe('SelectionTool', () => {
     it('#onMouseMove should set initialBottomRight coordinate and draw a perimeter box bounded by canvas when not moving a selection', () => {
         selectionTool.mouseDown = true;
         selectionTool['movingWithMouse'] = false;
-        const adjustToDrawingBoundsSpy = spyOn(selectionTool, 'adjustToDrawingBounds');
+        const adjustToDrawingBoundsSpy = spyOn<any>(selectionTool, 'adjustToDrawingBounds');
         const drawPerimeterSpy = spyOn(selectionTool, 'drawPerimeter');
 
         selectionTool.onMouseMove(mouseEvent);
@@ -147,7 +147,7 @@ fdescribe('SelectionTool', () => {
     it('#onMouseMove should call #moveSelectionWithMouse if moving a selection', () => {
         selectionTool.mouseDown = true;
         selectionTool['movingWithMouse'] = true;
-        const moveSelectionWithMouseSpy = spyOn(selectionTool, 'moveSelectionWithMouse');
+        const moveSelectionWithMouseSpy = spyOn<any>(selectionTool, 'moveSelectionWithMouse');
 
         selectionTool.onMouseMove(mouseEvent);
         expect(moveSelectionWithMouseSpy).toHaveBeenCalled();
@@ -171,8 +171,8 @@ fdescribe('SelectionTool', () => {
         const trueEndCoords = { x: 20, y: 20 };
         rectangleDrawingServiceSpyObj.alternateShape = true;
         rectangleDrawingServiceSpyObj.getTrueEndCoords.and.returnValue(trueEndCoords);
-        const adjustToDrawingBoundsSpy = spyOn(selectionTool, 'adjustToDrawingBounds');
-        const createSelectionSpy = spyOn(selectionTool, 'createSelection');
+        const adjustToDrawingBoundsSpy = spyOn<any>(selectionTool, 'adjustToDrawingBounds');
+        const createSelectionSpy = spyOn<any>(selectionTool, 'createSelection');
 
         selectionTool.onMouseUp(mouseEventUp);
 
@@ -187,7 +187,7 @@ fdescribe('SelectionTool', () => {
     it('#mouseUp shouldnt do anything if mouseDown is false', () => {
         selectionTool.mouseDown = false;
         selectionTool['movingWithMouse'] = false;
-        const createSelectionSpy = spyOn(selectionTool, 'createSelection');
+        const createSelectionSpy = spyOn<any>(selectionTool, 'createSelection');
 
         selectionTool.onMouseUp(mouseEvent);
 
@@ -207,7 +207,7 @@ fdescribe('SelectionTool', () => {
 
     it('#onKeyDown should handle leftShift when its pressed if there isnt an active selection yet', () => {
         selectionTool.selectionExists = false;
-        const handleLeftShiftSpy = spyOn(selectionTool, 'handleLeftShift');
+        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
 
         selectionTool.onKeyDown(leftShiftKeyEvent);
@@ -216,7 +216,7 @@ fdescribe('SelectionTool', () => {
 
     it('#onKeyDown should not handle leftShift when its pressed if there already is an active selection', () => {
         selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn(selectionTool, 'handleLeftShift');
+        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
 
         selectionTool.onKeyDown(leftShiftKeyEvent);
@@ -225,14 +225,14 @@ fdescribe('SelectionTool', () => {
 
     it('#onKeyDown should handle the arrow keys if a selection exists', () => {
         selectionTool.selectionExists = true;
-        const handleMovingArrowsKeyDownSpy = spyOn(selectionTool, 'handleMovingArrowsKeyDown');
+        const handleMovingArrowsKeyDownSpy = spyOn<any>(selectionTool, 'handleMovingArrowsKeyDown');
         selectionTool.onKeyDown({} as KeyboardEvent);
         expect(handleMovingArrowsKeyDownSpy).toHaveBeenCalled();
     });
 
     it('#onKeyUp should handle leftShift when its unpressed if there isnt an active selection yet', () => {
         selectionTool.selectionExists = false;
-        const handleLeftShiftSpy = spyOn(selectionTool, 'handleLeftShift');
+        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
         selectionTool.onKeyUp(leftShiftKeyEvent);
         expect(handleLeftShiftSpy).toHaveBeenCalledWith(leftShiftKeyEvent, rectangleDrawingServiceSpyObj.onKeyUp);
@@ -240,7 +240,7 @@ fdescribe('SelectionTool', () => {
 
     it('#onKeyUp should not handle leftShift when its unpressed if there already is an active selection', () => {
         selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn(selectionTool, 'handleLeftShift');
+        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
 
         selectionTool.onKeyUp(leftShiftKeyEvent);
@@ -249,7 +249,7 @@ fdescribe('SelectionTool', () => {
 
     it('#onKeyUp should handle the arrow keys if a selection exists', () => {
         selectionTool.selectionExists = true;
-        const handleMovingArrowsKeyUpSpy = spyOn(selectionTool, 'handleMovingArrowsKeyUp');
+        const handleMovingArrowsKeyUpSpy = spyOn<any>(selectionTool, 'handleMovingArrowsKeyUp');
         selectionTool.onKeyUp({} as KeyboardEvent);
         expect(handleMovingArrowsKeyUpSpy).toHaveBeenCalled();
     });
@@ -264,7 +264,7 @@ fdescribe('SelectionTool', () => {
     });
 
     it('#handleMovingArrowsKeyDown should update the arrow keys pressed to true', () => {
-        const updateArrowKeysPressedSpy = spyOn(selectionTool, 'updateArrowKeysPressed');
+        const updateArrowKeysPressedSpy = spyOn<any>(selectionTool, 'updateArrowKeysPressed');
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
         selectionTool['handleMovingArrowsKeyDown'](arrowEvent);
@@ -274,8 +274,8 @@ fdescribe('SelectionTool', () => {
     it('#handleMovingArrowsKeyDown should handle the initial arrow timer if any arrow is pressed and not already moving with arrows', () => {
         selectionTool['initialKeyPress'] = false;
         selectionTool['movingWithArrows'] = false;
-        const checkIfAnyArrowIsPressedSpy = spyOn(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(true);
-        const handleArrowInitialTimeSpy = spyOn(selectionTool, 'handleArrowInitialTime');
+        const checkIfAnyArrowIsPressedSpy = spyOn<any>(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(true);
+        const handleArrowInitialTimeSpy = spyOn<any>(selectionTool, 'handleArrowInitialTime');
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
         selectionTool['handleMovingArrowsKeyDown'](arrowEvent);
@@ -284,7 +284,7 @@ fdescribe('SelectionTool', () => {
     });
 
     it('#handleMovingArrowsKeyUp should update the arrow keys pressed to false', () => {
-        const updateArrowKeysPressedSpy = spyOn(selectionTool, 'updateArrowKeysPressed');
+        const updateArrowKeysPressedSpy = spyOn<any>(selectionTool, 'updateArrowKeysPressed');
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
         selectionTool['handleMovingArrowsKeyUp'](arrowEvent);
@@ -294,11 +294,11 @@ fdescribe('SelectionTool', () => {
     it('#handleMovingArrowsKeyUp should cancel the initial arrow timer and move the selection once by the calculated delta, when applicable', () => {
         selectionTool['initialKeyPress'] = true;
         const arrowDelta = { x: 3, y: 3 };
-        const calculateDeltaSpy = spyOn(selectionTool, 'calculateDelta').and.returnValue(arrowDelta);
-        const moveSelectionWithArrowsSpy = spyOn(selectionTool, 'moveSelectionWithArrows');
+        const calculateDeltaSpy = spyOn<any>(selectionTool, 'calculateDelta').and.returnValue(arrowDelta);
+        const moveSelectionWithArrowsSpy = spyOn<any>(selectionTool, 'moveSelectionWithArrows');
         const clearTimeoutSpy = spyOn(window, 'clearTimeout');
 
-        selectionTool.handleMovingArrowsKeyUp({} as KeyboardEvent);
+        selectionTool['handleMovingArrowsKeyUp']({} as KeyboardEvent);
         expect(clearTimeoutSpy).toHaveBeenCalled();
         expect(selectionTool['timeoutHandler']).toEqual(0);
         expect(calculateDeltaSpy).toHaveBeenCalled();
@@ -307,33 +307,33 @@ fdescribe('SelectionTool', () => {
 
     it('#handleMovingArrowsKeyUp should cancel the continuous arrow interval and set movingWithArrows to false, when applicable', () => {
         selectionTool['initialKeyPress'] = false;
-        const checkIfAnyArrowIsPressedSpy = spyOn(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(false);
+        const checkIfAnyArrowIsPressedSpy = spyOn<any>(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(false);
         const clearIntervalSpy = spyOn(window, 'clearInterval');
 
-        selectionTool.handleMovingArrowsKeyUp({} as KeyboardEvent);
+        selectionTool['handleMovingArrowsKeyUp']({} as KeyboardEvent);
         expect(clearIntervalSpy).toHaveBeenCalled();
         expect(selectionTool['intervalHandler']).toEqual(0);
         expect(checkIfAnyArrowIsPressedSpy).toHaveBeenCalled();
-        expect(selectionTool.movingWithArrows).toBeFalse();
+        expect(selectionTool['movingWithArrows']).toBeFalse();
     });
 
     it('#handleMovingArrowsKeyUp should not cancel the continuous arrow interval if a key is still pressd', () => {
         selectionTool['initialKeyPress'] = false;
         selectionTool['movingWithArrows'] = true;
-        const checkIfAnyArrowIsPressedSpy = spyOn(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(true);
+        const checkIfAnyArrowIsPressedSpy = spyOn<any>(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(true);
         const clearIntervalSpy = spyOn(window, 'clearInterval');
 
-        selectionTool.handleMovingArrowsKeyUp({} as KeyboardEvent);
+        selectionTool['handleMovingArrowsKeyUp']({} as KeyboardEvent);
         expect(clearIntervalSpy).not.toHaveBeenCalled();
         expect(checkIfAnyArrowIsPressedSpy).toHaveBeenCalled();
-        expect(selectionTool.movingWithArrows).toBeTrue();
+        expect(selectionTool['movingWithArrows']).toBeTrue();
     });
 
     it('#handleArrowInitialTime should set initialKeyPress to true and start a timeout function', () => {
         selectionTool['initialKeyPress'] = false;
         const setTimeoutSpy = spyOn(window, 'setTimeout');
 
-        selectionTool.handleArrowInitialTime(drawingServiceSpyObj.previewCtx, {} as KeyboardEvent);
+        selectionTool['handleArrowInitialTime'](drawingServiceSpyObj.previewCtx, {} as KeyboardEvent);
         expect(selectionTool['initialKeyPress']).toBeTrue();
         expect(setTimeoutSpy).toHaveBeenCalled();
     });
@@ -342,9 +342,9 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialKeyPress'] = true;
         const setIntervalSpy = spyOn(window, 'setInterval');
 
-        selectionTool.startContinousArrowMovement(drawingServiceSpyObj.previewCtx);
+        selectionTool['startContinousArrowMovement'](drawingServiceSpyObj.previewCtx);
         expect(selectionTool['initialKeyPress']).toBeFalse();
-        expect(selectionTool.movingWithArrows).toBeTrue();
+        expect(selectionTool['movingWithArrows']).toBeTrue();
         expect(setIntervalSpy).toHaveBeenCalled();
     });
 
@@ -352,8 +352,8 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialKeyPress'] = false;
         const setIntervalSpy = spyOn(window, 'setInterval');
 
-        selectionTool.startContinousArrowMovement(drawingServiceSpyObj.previewCtx);
-        expect(selectionTool.movingWithArrows).toBeFalse();
+        selectionTool['startContinousArrowMovement'](drawingServiceSpyObj.previewCtx);
+        expect(selectionTool['movingWithArrows']).toBeFalse();
         expect(setIntervalSpy).not.toHaveBeenCalled();
     });
 
@@ -361,7 +361,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['keyDownIsPressed'] = true;
         selectionTool['keyLeftIsPressed'] = true;
 
-        const calculatedDelta = selectionTool.calculateDelta();
+        const calculatedDelta = selectionTool['calculateDelta']();
 
         expect(calculatedDelta).toEqual({ x: -selectionTool.arrowMoveDelta, y: selectionTool.arrowMoveDelta });
     });
@@ -372,14 +372,14 @@ fdescribe('SelectionTool', () => {
         selectionTool['keyRightIsPressed'] = true;
         selectionTool['keyUpIsPressed'] = true;
 
-        const calculatedDelta = selectionTool.calculateDelta();
+        const calculatedDelta = selectionTool['calculateDelta']();
 
         expect(calculatedDelta).toEqual({ x: 0, y: 0 });
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
         selectionTool['keyUpIsPressed'] = true;
-        const anyArrowPressed = selectionTool.checkIfAnyArrowIsPressed();
+        const anyArrowPressed = selectionTool['checkIfAnyArrowIsPressed']();
         expect(anyArrowPressed).toBeTrue();
     });
 
@@ -390,7 +390,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['keyRightIsPressed'] = true;
         const arrowEvent = { code: 'ArrowLeft' } as KeyboardEvent;
 
-        selectionTool.updateArrowKeysPressed(arrowEvent, true);
+        selectionTool['updateArrowKeysPressed'](arrowEvent, true);
 
         expect(selectionTool['keyDownIsPressed']).toBeFalse();
         expect(selectionTool['keyUpIsPressed']).toBeTrue();
@@ -404,10 +404,10 @@ fdescribe('SelectionTool', () => {
         selectionTool['keyLeftIsPressed'] = false;
         selectionTool['keyRightIsPressed'] = false;
 
-        selectionTool.updateArrowKeysPressed({ code: 'ArrowLeft' } as KeyboardEvent, true);
-        selectionTool.updateArrowKeysPressed({ code: 'ArrowUp' } as KeyboardEvent, true);
-        selectionTool.updateArrowKeysPressed({ code: 'ArrowDown' } as KeyboardEvent, true);
-        selectionTool.updateArrowKeysPressed({ code: 'ArrowRight' } as KeyboardEvent, true);
+        selectionTool['updateArrowKeysPressed']({ code: 'ArrowLeft' } as KeyboardEvent, true);
+        selectionTool['updateArrowKeysPressed']({ code: 'ArrowUp' } as KeyboardEvent, true);
+        selectionTool['updateArrowKeysPressed']({ code: 'ArrowDown' } as KeyboardEvent, true);
+        selectionTool['updateArrowKeysPressed']({ code: 'ArrowRight' } as KeyboardEvent, true);
 
         expect(selectionTool['keyDownIsPressed']).toBeTrue();
         expect(selectionTool['keyUpIsPressed']).toBeTrue();
@@ -422,7 +422,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['keyRightIsPressed'] = true;
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
-        selectionTool.updateArrowKeysPressed(arrowEvent, false);
+        selectionTool['updateArrowKeysPressed'](arrowEvent, false);
 
         expect(selectionTool['keyDownIsPressed']).toBeFalse();
         expect(selectionTool['keyUpIsPressed']).toBeFalse();
@@ -433,9 +433,12 @@ fdescribe('SelectionTool', () => {
     it('#moveSelectionWithArrows should move the selection coordinates by the given delta and redraw selection at the new position', () => {
         selectionTool['finalTopLeft'] = { x: TOP_LEFT_CORNER_COORDS.x, y: TOP_LEFT_CORNER_COORDS.y };
         selectionTool['finalBottomRight'] = { x: BOTTOM_RIGHT_CORNER_COORDS.x, y: BOTTOM_RIGHT_CORNER_COORDS.y };
-        const drawAllSpy = spyOn(selectionTool, 'drawAll');
+        const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
 
-        selectionTool.moveSelectionWithArrows(drawingServiceSpyObj.previewCtx, { x: selectionTool.arrowMoveDelta, y: selectionTool.arrowMoveDelta });
+        selectionTool['moveSelectionWithArrows'](drawingServiceSpyObj.previewCtx, {
+            x: selectionTool.arrowMoveDelta,
+            y: selectionTool.arrowMoveDelta,
+        });
         expect(selectionTool['finalTopLeft']).toEqual({
             x: TOP_LEFT_CORNER_COORDS.x + selectionTool.arrowMoveDelta,
             y: TOP_LEFT_CORNER_COORDS.y + selectionTool.arrowMoveDelta,
@@ -456,9 +459,9 @@ fdescribe('SelectionTool', () => {
         selectionTool['mouseMoveOffset'] = { x: MOUSE_OFFSET, y: MOUSE_OFFSET };
         const selectionWidth = BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x;
         const selectionHeight = BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y;
-        const drawAllSpy = spyOn(selectionTool, 'drawAll');
+        const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
 
-        selectionTool.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION);
+        selectionTool['moveSelectionWithMouse'](drawingServiceSpyObj.previewCtx, MOUSE_POSITION);
         expect(selectionTool['finalTopLeft']).toEqual({
             x: MOUSE_POSITION.x - MOUSE_OFFSET,
             y: MOUSE_POSITION.y - MOUSE_OFFSET,
@@ -475,10 +478,10 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool['selectionExists'] = false;
-        const drawAllSpy = spyOn(selectionTool, 'drawAll');
-        const saveSelectionSpy = spyOn(selectionTool, 'saveSelection');
+        const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
+        const saveSelectionSpy = spyOn<any>(selectionTool, 'saveSelection');
 
-        selectionTool.createSelection();
+        selectionTool['createSelection']();
 
         expect(drawAllSpy).toHaveBeenCalledWith(drawingServiceSpyObj.previewCtx);
         expect(saveSelectionSpy).toHaveBeenCalled();
@@ -490,10 +493,10 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['selectionExists'] = false;
-        const drawAllSpy = spyOn(selectionTool, 'drawAll');
-        const saveSelectionSpy = spyOn(selectionTool, 'saveSelection');
+        const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
+        const saveSelectionSpy = spyOn<any>(selectionTool, 'saveSelection');
 
-        selectionTool.createSelection();
+        selectionTool['createSelection']();
 
         expect(drawAllSpy).not.toHaveBeenCalled();
         expect(saveSelectionSpy).not.toHaveBeenCalled();
@@ -505,10 +508,10 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
 
-        const setSelectionCoordsSpy = spyOn(selectionTool, 'setSelectionCoords');
+        const setSelectionCoordsSpy = spyOn<any>(selectionTool, 'setSelectionCoords');
         const fillWithWhiteSpy = spyOn(selectionTool, 'fillWithWhite');
 
-        selectionTool.saveSelection(drawingServiceSpyObj.baseCtx);
+        selectionTool['saveSelection'](drawingServiceSpyObj.baseCtx);
         expect(selectionTool['data']).toBeDefined();
         expect(fillWithWhiteSpy).toHaveBeenCalled();
         expect(setSelectionCoordsSpy).toHaveBeenCalled();
@@ -518,7 +521,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialTopLeft'] = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = TOP_LEFT_CORNER_COORDS;
 
-        selectionTool.setSelectionCoords();
+        selectionTool['setSelectionCoords']();
 
         expect(selectionTool['initialTopLeft']).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(selectionTool['initialBottomRight']).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
@@ -528,7 +531,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialTopLeft'] = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool['initialBottomRight'] = TOP_LEFT_CORNER_COORDS;
 
-        selectionTool.setSelectionCoords();
+        selectionTool['setSelectionCoords']();
 
         expect(selectionTool['finalTopLeft']).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(selectionTool['finalBottomRight']).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
@@ -542,7 +545,7 @@ fdescribe('SelectionTool', () => {
             y: drawingServiceSpyObj.canvas.height + EXCESS_PIXELS,
         };
 
-        selectionTool.adjustToDrawingBounds();
+        selectionTool['adjustToDrawingBounds']();
 
         expect(selectionTool['initialTopLeft']).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(selectionTool['initialBottomRight']).toEqual({ x: drawingServiceSpyObj.canvas.width, y: drawingServiceSpyObj.canvas.height });
@@ -557,7 +560,7 @@ fdescribe('SelectionTool', () => {
             y: -EXCESS_PIXELS,
         };
 
-        selectionTool.adjustToDrawingBounds();
+        selectionTool['adjustToDrawingBounds']();
 
         expect(selectionTool['initialTopLeft']).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
         expect(selectionTool['initialBottomRight']).toEqual(TOP_LEFT_CORNER_COORDS);
@@ -583,8 +586,8 @@ fdescribe('SelectionTool', () => {
         selectionTool['initialBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
 
         selectionTool.selectionExists = true;
-        const drawSpy = spyOn(selectionTool, 'draw');
-        const clearIntervalSpy = spyOn(window, 'clearInterval');
+        const drawSpy = spyOn<any>(selectionTool, 'draw');
+        const clearIntervalSpy = spyOn<any>(window, 'clearInterval');
 
         selectionTool.cancelSelection();
 
@@ -593,15 +596,15 @@ fdescribe('SelectionTool', () => {
         expect(drawSpy).toHaveBeenCalledWith(drawingServiceSpyObj.baseCtx);
         expect(selectionTool.selectionExists).toBeFalse();
         expect(selectionTool['movingWithMouse']).toBeFalse();
-        expect(selectionTool.movingWithArrows).toBeFalse();
-        expect(selectionTool.intervalHandler).toEqual(0);
+        expect(selectionTool['movingWithArrows']).toBeFalse();
+        expect(selectionTool['intervalHandler']).toEqual(0);
         expect(undoRedoSpyObj.enableUndoRedo).toHaveBeenCalled();
         expect(clearIntervalSpy).toHaveBeenCalled();
     });
 
     it('#cancelSelection should not do anything if context isnt initialized yet', () => {
         drawingServiceSpyObj.previewCtx = (undefined as unknown) as CanvasRenderingContext2D;
-        const drawSpy = spyOn(selectionTool, 'draw');
+        const drawSpy = spyOn<any>(selectionTool, 'draw');
 
         selectionTool.cancelSelection();
 
@@ -610,11 +613,11 @@ fdescribe('SelectionTool', () => {
     });
 
     it('#drawAll should draw the selection, draw the perimeter and draw the box', () => {
-        const drawSpy = spyOn(selectionTool, 'draw');
+        const drawSpy = spyOn<any>(selectionTool, 'draw');
         const drawPerimeterSpy = spyOn(selectionTool, 'drawPerimeter');
-        const drawBoxSpy = spyOn(selectionTool, 'drawBox');
+        const drawBoxSpy = spyOn<any>(selectionTool, 'drawBox');
 
-        selectionTool.drawAll(drawingServiceSpyObj.previewCtx);
+        selectionTool['drawAll'](drawingServiceSpyObj.previewCtx);
 
         expect(drawSpy).toHaveBeenCalled();
         expect(drawPerimeterSpy).toHaveBeenCalled();
@@ -622,8 +625,8 @@ fdescribe('SelectionTool', () => {
     });
 
     it('#draw should make a new selection command using #loadUpProperties as parameter', () => {
-        const loadUpPropertiesSpy = spyOn(selectionTool, 'loadUpProperties');
-        selectionTool.draw(drawingServiceSpyObj.previewCtx);
+        const loadUpPropertiesSpy = spyOn<any>(selectionTool, 'loadUpProperties');
+        selectionTool['draw'](drawingServiceSpyObj.previewCtx);
         expect(loadUpPropertiesSpy).toHaveBeenCalled();
     });
 
@@ -635,7 +638,7 @@ fdescribe('SelectionTool', () => {
             x: BOTTOM_RIGHT_CORNER_COORDS.x + MOUSE_POSITION.x,
             y: BOTTOM_RIGHT_CORNER_COORDS.y + MOUSE_POSITION.y,
         };
-        selectionTool.draw(drawingServiceSpyObj.baseCtx);
+        selectionTool['draw'](drawingServiceSpyObj.baseCtx);
         expect(undoRedoSpyObj.addCommand).toHaveBeenCalled();
     });
 
@@ -645,14 +648,14 @@ fdescribe('SelectionTool', () => {
         selectionTool['finalTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['finalBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
 
-        selectionTool.draw(drawingServiceSpyObj.baseCtx);
+        selectionTool['draw'](drawingServiceSpyObj.baseCtx);
         expect(undoRedoSpyObj.addCommand).not.toHaveBeenCalled();
     });
 
     it('#drawBox should draw a blue hollow rectangle and draw the controlPoints', () => {
-        const drawControlPointsSpy = spyOn(selectionTool, 'drawControlPoints');
+        const drawControlPointsSpy = spyOn<any>(selectionTool, 'drawControlPoints');
 
-        selectionTool.drawBox(drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        selectionTool['drawBox'](drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         const borderPoint: Vec2 = { x: 0, y: 0 };
         const borderPoint2: Vec2 = { x: 20, y: 20 };
@@ -668,10 +671,10 @@ fdescribe('SelectionTool', () => {
 
     it('#drawControlPoints should get all the control points data and draw a rectangle for each one', () => {
         const NUMBER_OF_CONTROL_POINTS = 3;
-        const getControlPointsCoordsSpy = spyOn(selectionTool, 'getControlPointsCoords').and.returnValue([{} as Vec2, {} as Vec2, {} as Vec2]);
+        const getControlPointsCoordsSpy = spyOn<any>(selectionTool, 'getControlPointsCoords').and.returnValue([{} as Vec2, {} as Vec2, {} as Vec2]);
         const rectSpy = spyOn(drawingServiceSpyObj.previewCtx, 'rect');
 
-        selectionTool.drawControlPoints(drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
+        selectionTool['drawControlPoints'](drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
 
         expect(getControlPointsCoordsSpy).toHaveBeenCalledWith(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
         expect(rectSpy).toHaveBeenCalledTimes(NUMBER_OF_CONTROL_POINTS);
@@ -691,24 +694,24 @@ fdescribe('SelectionTool', () => {
         selectionTool['finalTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['finalBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
 
-        expect(selectionTool.isInsideSelection({ x: 5, y: 5 })).toBeTrue();
-        expect(selectionTool.isInsideSelection({ x: 30, y: 10 })).toBeTrue();
-        expect(selectionTool.isInsideSelection({ x: 45, y: 10 })).toBeFalse();
-        expect(selectionTool.isInsideSelection({ x: 20, y: 25 })).toBeFalse();
-        expect(selectionTool.isInsideSelection({ x: 50, y: 50 })).toBeFalse();
+        expect(selectionTool['isInsideSelection']({ x: 5, y: 5 })).toBeTrue();
+        expect(selectionTool['isInsideSelection']({ x: 30, y: 10 })).toBeTrue();
+        expect(selectionTool['isInsideSelection']({ x: 45, y: 10 })).toBeFalse();
+        expect(selectionTool['isInsideSelection']({ x: 20, y: 25 })).toBeFalse();
+        expect(selectionTool['isInsideSelection']({ x: 50, y: 50 })).toBeFalse();
     });
 
     it('#setOffset should set the mouseMoveOffset to the difference between the given position and the top left corner', () => {
         selectionTool['finalTopLeft'] = BOTTOM_RIGHT_CORNER_COORDS;
 
-        selectionTool.setOffSet({ x: BOTTOM_RIGHT_CORNER_COORDS.x + MOUSE_OFFSET, y: BOTTOM_RIGHT_CORNER_COORDS.y + MOUSE_OFFSET });
+        selectionTool['setOffSet']({ x: BOTTOM_RIGHT_CORNER_COORDS.x + MOUSE_OFFSET, y: BOTTOM_RIGHT_CORNER_COORDS.y + MOUSE_OFFSET });
 
         expect(selectionTool['mouseMoveOffset']).toEqual({ x: MOUSE_OFFSET, y: MOUSE_OFFSET });
     });
 
     it('#getControlPointsCoords should return an array of 8 coords representing the control points positions', () => {
         const NO_OF_EXPECTED_POINTS = 8;
-        expect(selectionTool.getControlPointsCoords(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS).length).toEqual(NO_OF_EXPECTED_POINTS);
+        expect(selectionTool['getControlPointsCoords'](TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS).length).toEqual(NO_OF_EXPECTED_POINTS);
     });
 
     it('#loadUpProperties should create a SelectionProperties object with the right properties', () => {
@@ -724,7 +727,7 @@ fdescribe('SelectionTool', () => {
         selectionTool['finalTopLeft'] = TOP_LEFT_CORNER_COORDS;
         selectionTool['finalBottomRight'] = BOTTOM_RIGHT_CORNER_COORDS;
 
-        const selectionProperties = selectionTool.loadUpProperties(drawingServiceSpyObj.previewCtx);
+        const selectionProperties = selectionTool['loadUpProperties'](drawingServiceSpyObj.previewCtx);
 
         expect(selectionProperties.selectionCtx).toEqual(drawingServiceSpyObj.previewCtx);
         expect(selectionProperties.imageData).toEqual(TEST_DATA);
