@@ -30,6 +30,7 @@ describe('EyeDropperService', () => {
 
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
+        service['drawingService'].canvas = canvasTestHelper.canvas;
         service['drawingService'].baseCtx = baseCtxStub;
 
         mouseEvent = {
@@ -67,20 +68,16 @@ describe('EyeDropperService', () => {
         expect(service.currentGridOfPixelData).toEqual(gridOfPixelStub);
     });
 
-    // it('#onMouseEnter should set the value of preview to true', () => {
-    //     service.previewIsDisplayed = false;
-    //     service.onMouseEnter();
-    //     expect(service.previewIsDisplayed).toEqual(true);
-    // });
-
-    // it('#onMouseOut should set the value of preview to false', () => {
-    //     service.previewIsDisplayed = true;
-    //     service.onMouseOut();
-    //     expect(service.previewIsDisplayed).toEqual(false);
-    // });
-
     it('#mouseMoveIsInCanvas should return true if we"re in the canvas', () => {
+        service['drawingService'].canvas.width = 1100;
+        service['drawingService'].canvas.height = 1100;
         expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeTrue();
+    });
+
+    it('#mouseMoveIsInCanvas should return false if we"re not in the canvas', () => {
+        service['drawingService'].canvas.width = 500;
+        service['drawingService'].canvas.height = 500;
+        expect(service['mouseMoveIsInCanvas'](mouseEventClick)).toBeFalse();
     });
 
     it('#getImageDate should get the pixel data under the current mouse position and send it to currentPixelData and call sendNotifColor', () => {

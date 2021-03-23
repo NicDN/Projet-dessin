@@ -9,8 +9,8 @@ import { Observable, Subject } from 'rxjs';
 })
 export class EyeDropperService extends Tool {
     private subject: Subject<void> = new Subject<void>();
-    readonly SIDE_BAR_SIZE: number = 400;
-    readonly OFFSET: number = 6;
+    private readonly SIDE_BAR_SIZE: number = 400;
+    private readonly OFFSET: number = 3;
     currentPixelData: ImageData = new ImageData(1, 1);
     currentGridOfPixelData: ImageData = new ImageData(1, 1);
 
@@ -45,14 +45,6 @@ export class EyeDropperService extends Tool {
             sizePreview,
         );
     }
-
-    // onMouseEnter(): void {
-    //     this.previewIsDisplayed = true;
-    // }
-
-    // onMouseOut(): void {
-    //     this.previewIsDisplayed = false;
-    // }
 
     private getImageData(mousePosition: Vec2): void {
         this.currentPixelData = this.drawingService.baseCtx.getImageData(mousePosition.x, mousePosition.y, 1, 1);
