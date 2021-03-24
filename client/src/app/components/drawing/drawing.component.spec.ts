@@ -35,7 +35,7 @@ describe('DrawingComponent', () => {
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
-        undoRedoServiceSpyObj = jasmine.createSpyObj('HotkeyService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
+        undoRedoServiceSpyObj = jasmine.createSpyObj('undoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -44,6 +44,7 @@ describe('DrawingComponent', () => {
                 { provide: DrawingService, useValue: drawingStub },
                 { provide: HotkeyService, useValue: hotKeyServiceSpy },
                 { provide: ColorService, useValue: colorServiceStub },
+                { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -190,5 +191,26 @@ describe('DrawingComponent', () => {
         const handleNewDrawing = spyOn(component['drawingService'], 'handleNewDrawing');
         component.ngAfterViewInit();
         expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
+    });
+
+    it('#onMouseDown should call undoRedoService if it is not a selectionTool', () => {
+        component['canDraw'] = true;
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
+        component.onMouseDown(mouseEventClick);
+        expect(undoRedoServiceSpyObj.disableUndoRedo).toHaveBeenCalled();
+        expect(mouseEventSpy).toHaveBeenCalled();
+    });
+
+    it('#onMouseDown should not call undoRedoService if it is a selectionTool', () => {
+        component['canDraw'] = true;
+        toolsServiceSpy.currentTool = new RectangleSelectionService(
+            drawingStub,
+            new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
+            undoRedoServiceSpyObj,
+        );
+        const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
+        component.onMouseDown(mouseEventClick);
+        expect(undoRedoServiceSpyObj.disableUndoRedo).not.toHaveBeenCalled();
+        expect(mouseEventSpy).toHaveBeenCalled();
     });
 });

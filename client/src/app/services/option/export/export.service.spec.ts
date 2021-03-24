@@ -10,7 +10,7 @@ describe('ExportService', () => {
     const JPEG_FILE_FORMAT = 'jpeg';
     const FILE_NAME = 'test';
 
-    let exportLink=document.createElement('a');
+    const exportLink = document.createElement('a');
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -18,7 +18,7 @@ describe('ExportService', () => {
         });
         service = TestBed.inject(ExportService);
         service.canvasToExport = canvasMock;
-        service['exportLink']=exportLink;
+        service['exportLink'] = exportLink;
     });
 
     it('should be created', () => {
@@ -45,6 +45,7 @@ describe('ExportService', () => {
 
     it('#exportCanvas should set the file name to the default name if a file name is not provided', () => {
         spyOn(service['exportLink'], 'click');
+        spyOn(service.canvasToExport, 'toBlob');
         const DEFAULT_FILE_NAME = 'Sans titre';
         const NOT_PROVIDED_FILE_NAME = '';
         service.exportCanvas(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
