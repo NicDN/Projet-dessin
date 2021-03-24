@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { SelectionCommand, SelectionPropreties, SelectionType } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Subscription } from 'rxjs';
-import { SelectionService } from './selection.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,38 +13,25 @@ import { SelectionService } from './selection.service';
 export class EllipseSelectionService extends SelectionTool {
     subscription: Subscription;
 
-    constructor(
-        drawingService: DrawingService,
-        rectangleDrawingService: RectangleDrawingService,
-        undoRedoService: UndoRedoService,
-        private selectionService: SelectionService,
-    ) {
+    constructor(drawingService: DrawingService, rectangleDrawingService: RectangleDrawingService, undoRedoService: UndoRedoService) {
         super(drawingService, rectangleDrawingService, 'Sélection par ellipse', undoRedoService);
-        this.listenToNewEllipseSelectionCommands();
-    }
-
-    listenToNewEllipseSelectionCommands(): void {
-        this.subscription = this.selectionService.newEllipseSelection().subscribe((selectionPropreties) => {
-            this.fillWithWhite(selectionPropreties);
-            this.drawSelectionEllipse(selectionPropreties);
-        });
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        const trueEndCoords = this.rectangleDrawingService.getTrueEndCoords(begin, end, this.rectangleDrawingService.alternateShape);
-        this.rectangleDrawingService.drawEllipticalPerimeter(ctx, begin, trueEndCoords);
+        const trueEndCoords = this.shapeService.getTrueEndCoords(begin, end, this.shapeService.alternateShape);
+        this.shapeService.drawEllipticalPerimeter(ctx, begin, trueEndCoords);
     }
 
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
-        const centerCoords: Vec2 = this.rectangleDrawingService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight);
+        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight);
 
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x) / 2,
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y) / 2,
+            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x) / 2 - 1,
+            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y) / 2 - 1,
             0,
             0,
             2 * Math.PI,
@@ -53,21 +39,13 @@ export class EllipseSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.fill();
     }
 
-    draw(ctx: CanvasRenderingContext2D): void {
-        const ellipseSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpPropreties(ctx), this.selectionService);
-        ellipseSelectionCommand.execute();
-    }
-
-    drawSelectionEllipse(selectionPropreties: SelectionPropreties): void {
+    drawSelection(selectionPropreties: SelectionPropreties): void {
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
         image.width = selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x;
         image.height = selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
-        const centerCoords: Vec2 = this.rectangleDrawingService.getCenterCoords(
-            selectionPropreties.finalTopLeft,
-            selectionPropreties.finalBottomRight,
-        );
+        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.finalTopLeft, selectionPropreties.finalBottomRight);
 
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
@@ -82,23 +60,5 @@ export class EllipseSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.clip();
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
-    }
-
-    finalDrawDown(ctx: CanvasRenderingContext2D): void {
-        const ellipseSelectionCommand: SelectionCommand = new SelectionCommand(this.loadUpPropreties(ctx), this.selectionService);
-        ellipseSelectionCommand.execute();
-        this.undoRedoService.addCommand(ellipseSelectionCommand);
-    }
-
-    loadUpPropreties(ctx: CanvasRenderingContext2D): SelectionPropreties {
-        return {
-            selectionType: SelectionType.Ellipse,
-            selectionCtx: ctx,
-            imageData: this.data,
-            topLeft: this.initialTopLeft,
-            bottomRight: this.initialBottomRight,
-            finalTopLeft: this.finalTopLeft,
-            finalBottomRight: this.finalBottomRight,
-        };
     }
 }

@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-
 import { ExportService } from './export.service';
 
 // tslint:disable: no-string-literal
@@ -11,12 +10,15 @@ describe('ExportService', () => {
     const JPEG_FILE_FORMAT = 'jpeg';
     const FILE_NAME = 'test';
 
+    const exportLink = document.createElement('a');
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: MatDialog, useValue: {} }],
         });
         service = TestBed.inject(ExportService);
         service.canvasToExport = canvasMock;
+        service['exportLink'] = exportLink;
     });
 
     it('should be created', () => {
@@ -40,6 +42,8 @@ describe('ExportService', () => {
     });
 
     it('#exportCanvas should set the file name to the default name if a file name is not provided', () => {
+        // spyOn(service['exportLink'], 'click').and.returnValue();
+        spyOn(service.canvasToExport, 'toBlob').and.callThrough();
         const DEFAULT_FILE_NAME = 'Sans titre';
         const NOT_PROVIDED_FILE_NAME = '';
         service.exportCanvas(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);

@@ -1,6 +1,6 @@
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { SelectionService } from '@app/services/tools/selection/selection.service';
 
 export enum SelectionType {
     Rectangle = 1,
@@ -8,7 +8,6 @@ export enum SelectionType {
 }
 
 export interface SelectionPropreties {
-    selectionType: SelectionType;
     selectionCtx: CanvasRenderingContext2D;
     imageData: ImageData;
     topLeft: Vec2;
@@ -18,16 +17,12 @@ export interface SelectionPropreties {
 }
 
 export class SelectionCommand extends AbstractCommand {
-    constructor(private selectionPropreties: SelectionPropreties, private selectionService: SelectionService) {
+    constructor(private selectionPropreties: SelectionPropreties, private selectionTool: SelectionTool) {
         super();
     }
 
     execute(): void {
-        if (this.selectionPropreties.selectionType === SelectionType.Rectangle) {
-            this.selectionService.sendSelectionRectangleNotifs(this.selectionPropreties);
-        }
-        if (this.selectionPropreties.selectionType === SelectionType.Ellipse) {
-            this.selectionService.sendSelectionEllipseNotifs(this.selectionPropreties);
-        }
+        this.selectionTool.fillWithWhite(this.selectionPropreties);
+        this.selectionTool.drawSelection(this.selectionPropreties);
     }
 }
