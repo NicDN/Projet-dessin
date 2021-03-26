@@ -17,7 +17,6 @@ interface TextEffect {
 interface FontStyleOption {
     name: string;
     value: FontStyle;
-
 }
 
 @Component({

@@ -35,7 +35,6 @@ export class SelectionSelectorComponent {
             selectionTipContent: 'Sélection par lasso polygonal (V)',
             selectionService: this.toolsService.lassoSelectionService,
         },
-
     ];
 
     constructor(public toolsService: ToolsService) {}

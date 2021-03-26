@@ -47,13 +47,13 @@ import { SelectionOptionsComponent } from './components/selection-options/select
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
+import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
+import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
+import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
-import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
-import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
-import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 
 @NgModule({
     declarations: [
