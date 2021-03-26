@@ -16,8 +16,8 @@ export class GridSelectorComponent implements OnInit {
             {
                 title: 'Taille des carrées',
                 unit: 'Pixels',
-                min: 1, // must be constants defined in grid service
-                max: 20, // must be constants defined in grid service
+                min: 1, // TODO: must be constants defined in grid service
+                max: 20, // TODO: must be constants defined in grid service
                 getAttribute: () => {
                     return 1; // dump value
                 },
@@ -28,8 +28,8 @@ export class GridSelectorComponent implements OnInit {
             {
                 title: 'Opacité',
                 unit: '',
-                min: 1, // must be constants defined in grid service
-                max: 100, // must be constants defined in grid service
+                min: 1, // TODO: must be constants defined in grid service
+                max: 100, // TODO: must be constants defined in grid service
                 getAttribute: () => {
                     return 1; // dump value
                 },

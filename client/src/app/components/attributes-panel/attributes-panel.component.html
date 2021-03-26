@@ -21,8 +21,12 @@
         <mat-divider></mat-divider>
     </div>
 
+    <div *ngIf="this.currentTool === this.toolsService.textService">
+        <app-text-selector></app-text-selector>
+    </div>
+
     <div *ngIf="this.currentTool===this.toolsService.gridService">
-        <app-grid-selector></app-grid-selector>
+        <app-grid-selector [tool]="currentTool"></app-grid-selector>
     </div>
 
     <div *ngIf="this.currentTool === this.toolsService.sprayCanService">

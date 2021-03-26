@@ -1,0 +1,48 @@
+<app-generic-slider [sliderSetting]="this.textSizeSetting"></app-generic-slider>
+
+<mat-divider></mat-divider>
+
+<div>
+    <p>Orientation</p>
+    <div class="selection-type">
+        <mat-button-toggle-group>
+            <mat-button-toggle *ngFor="let textPositionOption of textPositionOptions "
+                matTooltip="{{ textPositionOption.toolTipContent }}" matTooltipPosition="below"
+                (click)="setActiveTextPosition(textPositionOption.textPositon)"
+                [class.active]="textPositionOption.textPositon === textService.textPosition">
+                <fa-icon icon={{textPositionOption.icon}}></fa-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+
+<mat-divider></mat-divider>
+
+<div>
+    <p>Option de texte</p>
+    <div class="selection-type">
+        <mat-button-toggle-group>
+            <mat-button-toggle *ngFor="let textEffect of textEffects" matTooltip="{{ textEffect.toolTipContent }}"
+                matTooltipPosition="below" (click)="textEffect.setEffect()"
+                [class.active]="checkActiveEffect(textEffect.icon)">
+                <fa-icon icon={{textEffect.icon}}></fa-icon>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+</div>
+
+<mat-divider></mat-divider>
+
+<div class="font-style">
+    <p>Police du texte</p>
+    <mat-form-field>
+        <mat-select>
+            <mat-option *ngFor="let fontStyle of this.fontStyles" [value]="fontStyle.name"
+                (click)="applyFontStyle(fontStyle.value)"
+                [ngStyle]="{'font-family':fontStyle.name}">{{fontStyle.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+
+
+<mat-divider></mat-divider>

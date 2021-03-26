@@ -7,6 +7,7 @@ import { Tool } from '@app/classes/tool';
 import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
+import { TextService } from '@app/services/tools/text/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 @Component({
@@ -73,7 +74,8 @@ export class AttributesPanelComponent implements OnInit {
     }
 
     needsTraceThickness(): boolean {
-        if (this.currentTool instanceof SprayCanService || this.currentTool instanceof FillDripService) {
+        // TODO: refactor the tools to remove the if condition
+        if (this.currentTool instanceof SprayCanService || this.currentTool instanceof FillDripService || this.currentTool instanceof TextService) {
             return false;
         }
         return this.currentTool instanceof DrawingTool;
