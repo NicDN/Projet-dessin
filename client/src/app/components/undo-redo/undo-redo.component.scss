@@ -1,15 +1,24 @@
-mat-icon{
+mat-icon {
     display: inline-block;
 }
-div{
+div {
     text-align: center;
 }
-button{
-    margin-left: 20px;
-    margin-right: 20px;
+button {
+    margin-left: 5px;
+    margin-right: 5px;
     margin-top: 8px;
 }
 
 .active {
     color: #e51282;
+}
+
+.vertical-divider {
+    border-left: 1px solid grey;
+    height: 50px;
+    position: absolute;
+    left: 50%;
+    margin-left: -3px;
+    top: 0;
 }
