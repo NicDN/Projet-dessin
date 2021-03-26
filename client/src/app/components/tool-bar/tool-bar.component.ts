@@ -24,10 +24,14 @@ export class ToolBarComponent {
         { icon: 'spray-can', toolTipContent: 'Aérosol (A)', tool: this.toolService.sprayCanService },
         { icon: 'eye-dropper', toolTipContent: 'Pipette (I)', tool: this.toolService.eyeDropperService },
         {
+            toolTipContent: 'Sélection (R : Rectangle, S : Ellipse, V: Lasso)',
             icon: 'expand',
-            toolTipContent: 'Sélection (R : Rectangle, S : Ellipse)',
             tool: this.toolService.rectangleSelectionService,
         },
+        { icon: 'fill-drip', toolTipContent: 'Sceau de peinture (B)', tool: this.toolService.fillDripService },
+        { icon: 'font', toolTipContent: 'Texte (T)', tool: this.toolService.textService },
+        { icon: 'stamp', toolTipContent: 'Étampe (D)', tool: this.toolService.stampService },
+        { icon: 'border-all', toolTipContent: 'Grille (G)', tool: this.toolService.gridService },
     ];
 
     constructor(public toolService: ToolsService) {
@@ -42,7 +46,8 @@ export class ToolBarComponent {
         if (tool instanceof SelectionTool) {
             return (
                 this.toolService.currentTool === this.toolService.rectangleSelectionService ||
-                this.toolService.currentTool === this.toolService.ellipseSelectionService
+                this.toolService.currentTool === this.toolService.ellipseSelectionService ||
+                this.toolService.currentTool === this.toolService.lassoSelectionService
             );
         }
         return tool === this.toolService.currentTool;

@@ -29,6 +29,12 @@ export class SelectionSelectorComponent {
             selectionTipContent: 'Sélection par ellipse (S)',
             selectionService: this.toolsService.ellipseSelectionService,
         },
+        {
+            iconFamily: 'fas',
+            icon: 'draw-polygon',
+            selectionTipContent: 'Sélection par lasso polygonal (V)',
+            selectionService: this.toolsService.lassoSelectionService,
+        },
     ];
 
     constructor(public toolsService: ToolsService) {}

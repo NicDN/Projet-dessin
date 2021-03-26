@@ -12,11 +12,6 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     providedIn: 'root',
 })
 export class SprayCanService extends TraceTool {
-    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
-        super(drawingService, colorService, 'Aérosol');
-        this.mouseDownCoord = { x: 0, y: 0 };
-        this.clearPath();
-    }
     readonly MIN_DROPLETS_DIAMETER: number = 3;
     readonly MIN_SPRAY_DIAMETER: number = 15;
     readonly MIN_EMISSION_RATE: number = 25;
@@ -36,6 +31,12 @@ export class SprayCanService extends TraceTool {
     emissionRate: number = this.MIN_EMISSION_RATE;
     sprayDiameter: number = this.MIN_SPRAY_DIAMETER;
     dropletsDiameter: number = this.MIN_DROPLETS_DIAMETER;
+
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
+        super(drawingService, colorService, 'Aérosol');
+        this.mouseDownCoord = { x: 0, y: 0 };
+        this.clearPath();
+    }
 
     private clearPath(): void {
         this.pathData = [];

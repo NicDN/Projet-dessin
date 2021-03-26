@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -14,6 +14,7 @@ interface ShortcutFunctions {
 
 enum shortCutManager {
     RECTANGLE_SELECTION = 'KeyR',
+    LASSO_SELECTION = 'KeyV',
     SAVE = 'KeyS',
     CAROUSEL = 'KeyG',
     EXPORT = 'KeyE',
@@ -27,6 +28,10 @@ enum shortCutManager {
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
+    STAMP = 'KeyD',
+    TEXT = 'KeyT',
+    FILL_DRIP = 'KeyB',
+    GRID = 'KeyG',
 }
 
 type ShortcutManager = {
@@ -61,7 +66,10 @@ export class HotkeyService {
                 action: () => this.toolService.setCurrentTool(this.toolService.ellipseSelectionService),
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
             },
-            KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
+            KeyG: {
+                action: () => this.toolService.setCurrentTool(this.toolService.gridService),
+                actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
+            },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
             KeyA: {
                 action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
@@ -78,6 +86,10 @@ export class HotkeyService {
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
             KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
+            KeyD: { action: () => this.toolService.setCurrentTool(this.toolService.stampService) },
+            KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
+            KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
+            KeyV: { action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService) },
         };
     }
 
