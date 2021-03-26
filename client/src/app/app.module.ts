@@ -53,6 +53,7 @@ import { TraceTypeSelectorComponent } from './components/tool-settings/trace-typ
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
+import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 
 @NgModule({
     declarations: [
@@ -83,6 +84,7 @@ import { TextSelectorComponent } from './components/tool-settings/text-selector/
         GenericSliderComponent,
         GridSelectorComponent,
         TextSelectorComponent,
+        StampSelectorComponent,
     ],
     imports: [
         BrowserModule,

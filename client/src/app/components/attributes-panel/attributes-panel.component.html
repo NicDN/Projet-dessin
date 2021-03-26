@@ -25,6 +25,10 @@
         <app-text-selector></app-text-selector>
     </div>
 
+    <div *ngIf="this.currentTool === this.toolsService.stampService">
+        <app-stamp-selector></app-stamp-selector>
+    </div>
+
     <div *ngIf="this.currentTool===this.toolsService.gridService">
         <app-grid-selector [tool]="currentTool"></app-grid-selector>
     </div>
