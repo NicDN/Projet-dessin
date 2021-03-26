@@ -1,13 +1,28 @@
 <div>
-    <button mat-button matTooltip="Activer/Désactiver">
-        <mat-icon>magnet</mat-icon>
+    <button mat-button matTooltip="Activer/Désactiver magnétisme (M)">
+        <fa-icon icon="magnet"></fa-icon>
     </button>
-    <button mat-button matTooltip="Annuler (Ctrl-Z)" [disabled]="this.commandListIsEmpty" matTooltipPosition="left"
-        (click)="this.undoRedoService.undo()">
+    <div class="vertical-divider"></div>
+    <button mat-button matTooltip="Activer/Désactiver grille (G)">
+        <fa-icon  icon="border-all"></fa-icon>
+    </button>
+
+    <button
+        mat-button
+        matTooltip="Annuler (Ctrl-Z)"
+        [disabled]="this.commandListIsEmpty"
+        matTooltipPosition="left"
+        (click)="this.undoRedoService.undo()"
+    >
         <mat-icon [class.active]="!this.commandListIsEmpty">undo</mat-icon>
     </button>
-    <button mat-button matTooltip="Refaire (Ctrl-Shift-Z)" [disabled]="this.redoListIsEmpty" matTooltipPosition="right"
-        (click)="this.undoRedoService.redo()">
+    <button
+        mat-button
+        matTooltip="Refaire (Ctrl-Shift-Z)"
+        [disabled]="this.redoListIsEmpty"
+        matTooltipPosition="right"
+        (click)="this.undoRedoService.redo()"
+    >
         <mat-icon [class.active]="!this.redoListIsEmpty">redo</mat-icon>
     </button>
 </div>
