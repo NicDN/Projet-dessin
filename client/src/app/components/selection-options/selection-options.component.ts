@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { EllipseSelectionService } from '@app/services/tools/selection/ellipse-selection.service';
-import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 @Component({

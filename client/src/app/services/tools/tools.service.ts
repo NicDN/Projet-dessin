@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
+import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
+import { StampService } from '@app/services/tools/stamp/stamp.service';
+import { TextService } from '@app/services/tools/text/text.service';
 import { Observable, Subject } from 'rxjs';
-import { EllipseSelectionService } from './selection/ellipse-selection.service';
-import { RectangleSelectionService } from './selection/rectangle-selection.service';
+import { FillDripService } from './fill-drip/fill-drip.service';
+import { EllipseSelectionService } from './selection/ellipse/ellipse-selection.service';
+import { RectangleSelectionService } from './selection/rectangle/rectangle-selection.service';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { PolygonService } from './shape/polygon/polygon.service';
 import { RectangleDrawingService } from './shape/rectangle/rectangle-drawing.service';
@@ -29,6 +33,10 @@ export class ToolsService {
         public eyeDropperService: EyeDropperService,
         public rectangleSelectionService: RectangleSelectionService,
         public ellipseSelectionService: EllipseSelectionService,
+        public lassoSelectionService: LassoSelectionService,
+        public fillDripService: FillDripService,
+        public textService: TextService,
+        public stampService: StampService,
     ) {
         this.currentTool = pencilService;
     }
@@ -40,7 +48,6 @@ export class ToolsService {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
-
         this.currentTool = tool;
 
         this.subject.next(tool);

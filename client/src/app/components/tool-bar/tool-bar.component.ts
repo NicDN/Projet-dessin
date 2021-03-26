@@ -28,6 +28,9 @@ export class ToolBarComponent {
             toolTipContent: 'Sélection (R : Rectangle, S : Ellipse)',
             tool: this.toolService.rectangleSelectionService,
         },
+        { icon: 'fill-drip', toolTipContent: 'Sceau de peinture (B)', tool: this.toolService.fillDripService },
+        { icon: 'font', toolTipContent: 'Texte (T)', tool: this.toolService.textService },
+        { icon: 'stamp', toolTipContent: 'Étampe (D)', tool: this.toolService.stampService },
     ];
 
     constructor(public toolService: ToolsService) {

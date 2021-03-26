@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -27,6 +27,9 @@ enum shortCutManager {
     ELLIPSE = 'Digit2',
     RECTANGLE = 'Digit1',
     POLYGON = 'Digit3',
+    STAMP = 'KeyD',
+    TEXT = 'KeyT',
+    FILL_DRIP = 'KeyB',
 }
 
 type ShortcutManager = {
@@ -78,6 +81,9 @@ export class HotkeyService {
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
             KeyZ: { actionCtrl: () => this.undoRedoService.undo(), actionCtrlShift: () => this.undoRedoService.redo() },
+            KeyD: { action: () => this.toolService.setCurrentTool(this.toolService.stampService) },
+            KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
+            KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
         };
     }
 

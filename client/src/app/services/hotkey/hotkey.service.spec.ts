@@ -8,7 +8,7 @@ import { MainPageComponent } from '@app/components/main-page/main-page.component
 import { ColorService } from '@app/services/color/color.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { RectangleSelectionService } from '@app/services/tools/selection/rectangle-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
