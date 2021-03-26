@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { GridService } from '@app/services/grid/grid.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
@@ -37,6 +38,7 @@ export class ToolsService {
         public fillDripService: FillDripService,
         public textService: TextService,
         public stampService: StampService,
+        public gridService: GridService,
     ) {
         this.currentTool = pencilService;
     }

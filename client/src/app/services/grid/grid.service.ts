@@ -7,6 +7,6 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class GridService extends Tool {
     constructor(drawingService: DrawingService) {
-        super(drawingService, 'Surface de dessin');
+        super(drawingService, 'Grille');
     }
 }

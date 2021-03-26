@@ -14,6 +14,7 @@ interface ShortcutFunctions {
 
 enum shortCutManager {
     RECTANGLE_SELECTION = 'KeyR',
+    LASSO_SELECTION = 'KeyV',
     SAVE = 'KeyS',
     CAROUSEL = 'KeyG',
     EXPORT = 'KeyE',
@@ -30,6 +31,7 @@ enum shortCutManager {
     STAMP = 'KeyD',
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
+    GRID = 'KeyG',
 }
 
 type ShortcutManager = {
@@ -64,7 +66,10 @@ export class HotkeyService {
                 action: () => this.toolService.setCurrentTool(this.toolService.ellipseSelectionService),
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
             },
-            KeyG: { actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel) },
+            KeyG: {
+                action: () => this.toolService.setCurrentTool(this.toolService.gridService),
+                actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
+            },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
             KeyA: {
                 action: () => this.toolService.setCurrentTool(this.toolService.sprayCanService),
@@ -84,6 +89,7 @@ export class HotkeyService {
             KeyD: { action: () => this.toolService.setCurrentTool(this.toolService.stampService) },
             KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
             KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
+            KeyV: { action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService) },
         };
     }
 

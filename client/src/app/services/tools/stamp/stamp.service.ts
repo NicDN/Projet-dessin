@@ -9,4 +9,5 @@ export class StampService extends Tool {
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Étampe');
     }
+    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
 }

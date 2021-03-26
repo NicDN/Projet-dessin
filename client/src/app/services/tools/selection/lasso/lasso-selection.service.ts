@@ -1,9 +1,26 @@
 import { Injectable } from '@angular/core';
+import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionTool } from '@app/classes/selection-tool';
+import { Vec2 } from '@app/classes/vec2';
+import { DrawingService } from '@app/services/drawing/drawing.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root',
 })
-export class LassoSelectionService {
+export class LassoSelectionService extends SelectionTool {
+    drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        throw new Error('Method not implemented.');
+    }
+    drawSelection(selectionPropreties: SelectionPropreties): void {
+        throw new Error('Method not implemented.');
+    }
+    fillWithWhite(selectionPropreties: SelectionPropreties): void {
+        throw new Error('Method not implemented.');
+    }
 
-  constructor() { }
+    constructor(drawingService: DrawingService, rectangleDrawingService: RectangleDrawingService, undoRedoService: UndoRedoService) {
+        super(drawingService, rectangleDrawingService, 'Sélection par lasso polygonal', undoRedoService);
+    }
 }

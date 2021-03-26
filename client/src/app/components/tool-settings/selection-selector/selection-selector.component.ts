@@ -33,7 +33,7 @@ export class SelectionSelectorComponent {
             iconFamily: 'fas',
             icon: 'draw-polygon',
             selectionTipContent: 'Sélection par lasso polygonal (V)',
-            selectionService: this.toolsService.ellipseSelectionService,
+            selectionService: this.toolsService.lassoSelectionService,
         },
 
     ];

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DrawingTool } from '@app/classes/drawing-tool';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Shape } from '@app/classes/shape';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { Tool } from '@app/classes/tool';
@@ -65,6 +66,10 @@ export class AttributesPanelComponent implements OnInit {
 
     polygonIsActive(): boolean {
         return this.currentTool instanceof PolygonService;
+    }
+
+    selectionToolIsActive(): boolean {
+        return this.currentTool instanceof SelectionTool;
     }
 
     needsTraceThickness(): boolean {

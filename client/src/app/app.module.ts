@@ -51,6 +51,7 @@ import { SelectionSelectorComponent } from './components/tool-settings/selection
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
 import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
+import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
 
 @NgModule({
     declarations: [
@@ -79,6 +80,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         SelectionSelectorComponent,
         SelectionOptionsComponent,
         GenericSliderComponent,
+        GridSelectorComponent,
     ],
     imports: [
         BrowserModule,
