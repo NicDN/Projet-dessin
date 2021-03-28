@@ -12,10 +12,11 @@ export class ExportDialogComponent implements AfterViewInit {
     @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement>;
 
     private canvasCtx: CanvasRenderingContext2D;
+    exportToImgur: boolean = false;
 
     constructor(
         public drawingService: DrawingService,
-        private exportService: ExportService,
+        public exportService: ExportService,
         public dialogRef: MatDialogRef<ExportDialogComponent>,
         public filterService: FilterService,
     ) {}
@@ -31,7 +32,7 @@ export class ExportDialogComponent implements AfterViewInit {
     }
 
     exportCanvas(fileName: string, fileFormat: string): void {
-        this.exportService.exportCanvas(fileName, fileFormat);
+        this.exportService.exportCanvas(fileName, fileFormat, this.exportToImgur);
         this.dialogRef.close();
     }
 }

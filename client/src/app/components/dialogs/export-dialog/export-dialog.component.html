@@ -18,6 +18,8 @@
             <mat-button-toggle value="jpeg">JPG</mat-button-toggle>
         </mat-button-toggle-group>
 
+        <mat-checkbox [checked]="exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser plutôt avec <em>imgur</em> !</mat-checkbox>
+
     </div>
 
     <div class="preview-filter">
@@ -28,7 +30,7 @@
     <div class="bottom-div">
         <button mat-flat-button color="primary" class="export-canvas-btn"
             (click)="exportCanvas(fileName.value,fileFormat.value)">Exporter</button>
-        <button mat-flat-button color="primary" class="cancel-btn" (click)=" this.dialogRef.close();">Annuler</button>
+        <button mat-flat-button color="primary" class="cancel-btn" (click)="this.dialogRef.close();">Annuler</button>
     </div>
 
 </div>
