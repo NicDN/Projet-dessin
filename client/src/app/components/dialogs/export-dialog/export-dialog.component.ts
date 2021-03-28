@@ -3,6 +3,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
+// import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 @Component({
     templateUrl: './export-dialog.component.html',
@@ -19,6 +21,7 @@ export class ExportDialogComponent implements AfterViewInit {
         public exportService: ExportService,
         public dialogRef: MatDialogRef<ExportDialogComponent>,
         public filterService: FilterService,
+        private snackBarService: SnackBarService,
     ) {}
 
     ngAfterViewInit(): void {
@@ -31,8 +34,16 @@ export class ExportDialogComponent implements AfterViewInit {
         this.filterService.applyFilter(filterType, this.canvas.nativeElement);
     }
 
-    exportCanvas(fileName: string, fileFormat: string): void {
-        this.exportService.exportCanvas(fileName, fileFormat, this.exportToImgur);
+    async exportCanvas(fileName: string, fileFormat: string): Promise<void> {
+        await this.exportService
+            .exportCanvas(fileName, fileFormat, this.exportToImgur)
+            .then((url) => {
+                this.snackBarService.openSnackBar("Le téléversement a été effectué avec succès! Voici l'URL publique: " + url, 'Fermer', 10000);
+            })
+            .catch(() => {
+                this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer', 2000);
+            });
+
         this.dialogRef.close();
     }
 }

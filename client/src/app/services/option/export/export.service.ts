@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+// import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,17 +14,24 @@ export class ExportService {
 
     canvasToExport: HTMLCanvasElement;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient /*private snackBarService: SnackBarService*/) {}
 
-    exportCanvas(fileName: string, fileFormat: string, exportToImgur: boolean): void {
+    async exportCanvas(fileName: string, fileFormat: string, exportToImgur: boolean): Promise<string> {
         this.exportLink = document.createElement('a');
         // tslint:disable-next-line: no-unused-expression
         fileName ? '' : (fileName = 'Sans titre');
         this.exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
         this.downloadFormat = `image/${fileFormat}`;
-        this.canvasToExport.toBlob((blob) => {
-            exportToImgur ? this.handleImgurExport(fileName, blob) : this.handleLocalExport(blob);
-        }, this.downloadFormat);
+
+        return new Promise((resolve, reject) => {
+            this.canvasToExport.toBlob((blob) => {
+                exportToImgur
+                    ? this.handleImgurExport(fileName, blob)
+                          .then((url) => resolve(url))
+                          .catch(reject)
+                    : this.handleLocalExport(blob);
+            }, this.downloadFormat);
+        });
     }
 
     private handleLocalExport(blob: Blob | null): void {
@@ -32,7 +40,7 @@ export class ExportService {
         this.exportLink.click();
     }
 
-    private handleImgurExport(fileName: string, blob: Blob | null): void {
+    private async handleImgurExport(fileName: string, blob: Blob | null): Promise<string> {
         const imgurData = new FormData();
         imgurData.append(fileName, blob as string | Blob);
 
@@ -42,7 +50,13 @@ export class ExportService {
             .toPromise()
             .then((res) => {
                 console.log(res);
+                return 'url';
             })
-            .catch((err) => console.log(err));
+
+            .catch((err) => {
+                console.log(err);
+            });
+
+        return ''; // TODO: unreachable
     }
 }
