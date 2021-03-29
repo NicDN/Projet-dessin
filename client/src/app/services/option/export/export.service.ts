@@ -1,6 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-// import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 @Injectable({
     providedIn: 'root',
@@ -9,54 +8,52 @@ export class ExportService {
     private readonly IMGUR_UPLOAD_URL: string = 'https://api.imgur.com/3/image';
     private readonly CLIENT_ID: string = 'a941b795d061911';
 
-    private downloadFormat: string;
+    private downloadFormat: string = '';
     private exportLink: HTMLAnchorElement;
+    private fileName: string = '';
 
     canvasToExport: HTMLCanvasElement;
 
-    constructor(private http: HttpClient /*private snackBarService: SnackBarService*/) {}
+    constructor(private http: HttpClient) {}
 
-    async exportCanvas(fileName: string, fileFormat: string, exportToImgur: boolean): Promise<string> {
-        this.exportLink = document.createElement('a');
+    private setupExport(fileName: string, fileFormat: string): void {
         // tslint:disable-next-line: no-unused-expression
-        fileName ? '' : (fileName = 'Sans titre');
-        this.exportLink.setAttribute('download', `${fileName}.${fileFormat}`);
+        fileName === '' ? (this.fileName = 'Sans titre') : (this.fileName = fileName);
+        this.exportLink.setAttribute('download', `${this.fileName}.${fileFormat}`);
         this.downloadFormat = `image/${fileFormat}`;
+    }
 
-        return new Promise((resolve, reject) => {
+    handleLocalExport(fileName: string, fileFormat: string): void {
+        this.exportLink = document.createElement('a');
+        this.setupExport(fileName, fileFormat);
+
+        this.canvasToExport.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            this.exportLink.setAttribute('href', url);
+            this.exportLink.click();
+        }, this.downloadFormat);
+    }
+
+    async handleImgurExport(fileName: string, fileFormat: string): Promise<string> {
+        this.setupExport(fileName, fileFormat);
+
+        return new Promise((resolve) => {
             this.canvasToExport.toBlob((blob) => {
-                exportToImgur
-                    ? this.handleImgurExport(fileName, blob)
-                          .then((url) => resolve(url))
-                          .catch(reject)
-                    : this.handleLocalExport(blob);
+                const imgurData = new FormData();
+                imgurData.append(this.fileName, blob as string | Blob);
+
+                const headers = new HttpHeaders({ Authorization: 'Client-ID ' + this.CLIENT_ID });
+                this.http
+                    .post(this.IMGUR_UPLOAD_URL, imgurData, { headers })
+                    .toPromise()
+                    .then((res) => {
+                        console.log(res);
+                        resolve('url');
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }, this.downloadFormat);
         });
-    }
-
-    private handleLocalExport(blob: Blob | null): void {
-        const url = URL.createObjectURL(blob);
-        this.exportLink.setAttribute('href', url);
-        this.exportLink.click();
-    }
-
-    private async handleImgurExport(fileName: string, blob: Blob | null): Promise<string> {
-        const imgurData = new FormData();
-        imgurData.append(fileName, blob as string | Blob);
-
-        const headers = new HttpHeaders({ Authorization: 'Client-ID ' + this.CLIENT_ID });
-        this.http
-            .post(this.IMGUR_UPLOAD_URL, imgurData, { headers })
-            .toPromise()
-            .then((res) => {
-                console.log(res);
-                return 'url';
-            })
-
-            .catch((err) => {
-                console.log(err);
-            });
-
-        return ''; // TODO: unreachable
     }
 }

@@ -35,14 +35,18 @@ export class ExportDialogComponent implements AfterViewInit {
     }
 
     async exportCanvas(fileName: string, fileFormat: string): Promise<void> {
-        await this.exportService
-            .exportCanvas(fileName, fileFormat, this.exportToImgur)
-            .then((url) => {
-                this.snackBarService.openSnackBar("Le téléversement a été effectué avec succès! Voici l'URL publique: " + url, 'Fermer', 10000);
-            })
-            .catch(() => {
-                this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer', 2000);
-            });
+        if (this.exportToImgur) {
+            await this.exportService
+                .handleImgurExport(fileName, fileFormat)
+                .then((url) => {
+                    this.snackBarService.openSnackBar("Le téléversement a été effectué avec succès! Voici l'URL publique: " + url, 'Fermer', 10000);
+                })
+                .catch(() => {
+                    this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer', 2000);
+                });
+        } else {
+            this.exportService.handleLocalExport(fileName, fileFormat);
+        }
 
         this.dialogRef.close();
     }
