@@ -3,6 +3,7 @@
     <div class="container">
         <button mat-raised-button color="primary" routerLink="/editor">Creer un nouveau dessin</button>
         <button mat-raised-button color="warn" (click)="this.dialogService.openDialog(this.dialogType)">Ouvrir le carrousel de dessins</button>
-        <button mat-raised-button color="accent" disabled>Continuer un dessin</button>
+        <button mat-raised-button color="accent" [disabled]="this.localStorageService.storageIsEmpty()" routerLink="/editor" (click)="this.continueDrawing()">Continuer un dessin</button>
+        <button mat-raised-button color="primary" (click)="emptyStorage()">Vider le storage</button>
     </div>
 </div>
