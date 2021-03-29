@@ -4,8 +4,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
-// import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
-
+import { ClipboardService } from 'ngx-clipboard';
 @Component({
     templateUrl: './export-dialog.component.html',
     styleUrls: ['./export-dialog.component.scss'],
@@ -14,6 +13,8 @@ export class ExportDialogComponent implements AfterViewInit {
     @ViewChild('canvas', { static: false }) canvas: ElementRef<HTMLCanvasElement>;
 
     private canvasCtx: CanvasRenderingContext2D;
+    private readonly IMGUR_SNACK_BAR_TIME_MS: number = 20000;
+
     exportToImgur: boolean = false;
 
     constructor(
@@ -22,6 +23,7 @@ export class ExportDialogComponent implements AfterViewInit {
         public dialogRef: MatDialogRef<ExportDialogComponent>,
         public filterService: FilterService,
         private snackBarService: SnackBarService,
+        private clipboardService: ClipboardService,
     ) {}
 
     ngAfterViewInit(): void {
@@ -37,14 +39,9 @@ export class ExportDialogComponent implements AfterViewInit {
     async exportCanvas(fileName: string, fileFormat: string): Promise<void> {
         if (this.exportToImgur) {
             await this.exportService
-                .handleImgurExport(fileName, fileFormat)
+                .handleImgurExport(fileFormat)
                 .then((url) => {
-                    const IMGUR_SNACK_BAR_TIME_MS = 20000;
-                    this.snackBarService.openSnackBar(
-                        'Le téléversement a été effectué avec succès! URL publique: ' + url,
-                        'Fermer',
-                        IMGUR_SNACK_BAR_TIME_MS,
-                    );
+                    this.displaySnackBarOnSuccess(url);
                 })
                 .catch(() => {
                     this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer');
@@ -54,5 +51,17 @@ export class ExportDialogComponent implements AfterViewInit {
         }
 
         this.dialogRef.close();
+    }
+
+    private displaySnackBarOnSuccess(url: string): void {
+        const snackBarRef = this.snackBarService.openSnackBar(
+            'Le téléversement a été effectué avec succès!',
+            "Copier l'URL",
+            this.IMGUR_SNACK_BAR_TIME_MS,
+        );
+
+        snackBarRef.onAction().subscribe(null, null, () => {
+            this.clipboardService.copy(url);
+        });
     }
 }

@@ -23,19 +23,11 @@ export class ExportService {
 
     constructor(private http: HttpClient) {}
 
-    private setupExport(fileName: string, fileFormat: string): void {
-        this.exportLink = document.createElement('a'); // local
-        // tslint:disable-next-line: no-unused-expression
-        fileName === '' ? (this.fileName = 'Sans titre') : (this.fileName = fileName); // imgur local
-        this.exportLink.setAttribute('download', `${this.fileName}.${fileFormat}`); // local
-        this.downloadFormat = `image/${fileFormat}`; // imgur local
-    }
-
     handleLocalExport(fileName: string, fileFormat: string): void {
-        this.setupExport(fileName, fileFormat);
-
-        // this.exportLink = document.createElement('a');
-        // this.downloadFormat = `image/${fileFormat}`;
+        this.exportLink = document.createElement('a');
+        fileName === '' ? (this.fileName = 'Sans titre') : (this.fileName = fileName);
+        this.downloadFormat = `image/${fileFormat}`;
+        this.exportLink.setAttribute('download', `${this.fileName}.${fileFormat}`);
 
         this.canvasToExport.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
@@ -44,8 +36,8 @@ export class ExportService {
         }, this.downloadFormat);
     }
 
-    async handleImgurExport(fileName: string, fileFormat: string): Promise<string> {
-        this.setupExport(fileName, fileFormat);
+    async handleImgurExport(fileFormat: string): Promise<string> {
+        this.downloadFormat = `image/${fileFormat}`;
 
         return new Promise((resolve, reject) => {
             this.canvasToExport.toBlob((blob) => {
