@@ -55,12 +55,12 @@ export class ExportDialogComponent implements AfterViewInit {
 
     private displaySnackBarOnSuccess(url: string): void {
         const snackBarRef = this.snackBarService.openSnackBar(
-            'Le téléversement a été effectué avec succès!',
+            'Le téléversement a été effectué avec succès! URL: ' + url,
             "Copier l'URL",
             this.IMGUR_SNACK_BAR_TIME_MS,
         );
 
-        snackBarRef.onAction().subscribe(null, null, () => {
+        snackBarRef.onAction().subscribe(() => {
             this.clipboardService.copy(url);
         });
     }

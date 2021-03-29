@@ -1,30 +1,25 @@
-// import { HttpHeaders } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ExportService, ImgurResponse } from './export.service';
 
 // tslint:disable: no-string-literal
-fdescribe('ExportService', () => {
+describe('ExportService', () => {
     let service: ExportService;
     const canvasMock = document.createElement('canvas');
     const PNG_FILE_FORMAT = 'png';
     const JPEG_FILE_FORMAT = 'jpeg';
     const FILE_NAME = 'test';
-
-    // let httpMock: HttpTestingController;
+    const EXPECTED_URL = 'expected url';
 
     const exportLink = document.createElement('a');
-
-    const EXPECTED_URL = 'expected url';
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [{ provide: MatDialog, useValue: {} }],
         });
-        // httpMock = TestBed.inject(HttpTestingController);
         service = TestBed.inject(ExportService);
         service.canvasToExport = canvasMock;
         service['exportLink'] = exportLink;
@@ -58,28 +53,6 @@ fdescribe('ExportService', () => {
         expect(service['exportLink'].getAttribute('download')).toBe(DEFAULT_FILE_NAME + '.' + PNG_FILE_FORMAT);
     });
 
-    // it('#handleImgurExport should return the correct url of the uploaded image ', async () => {
-    //     const imgurResponse: ImgurResponse = {
-    //         data: {
-    //             link: EXPECTED_URL,
-    //         },
-    //         success: true,
-    //     } as ImgurResponse;
-
-    //     // const imgurData = new FormData();
-    //     // imgurData.append('image', 'fake blob');
-    //     // const headers = new HttpHeaders({ Authorization: 'Client-ID ' + service['CLIENT_ID'] });
-
-    //     await service.handleImgurExport(JPEG_FILE_FORMAT).then((url) => {
-    //         expect(url).toBe(EXPECTED_URL);
-    //     });
-
-    //     const req = httpMock.expectOne(service['IMGUR_UPLOAD_URL']);
-
-    //     expect(req.request.method).toBe('POST');
-    //     req.flush(imgurResponse);
-    // });
-
     it('#handleImgurExport should return the correct url of the uploaded image ', async () => {
         const imgurResponse: ImgurResponse = {
             data: {
@@ -93,19 +66,19 @@ fdescribe('ExportService', () => {
     });
 
     it('#handleImgurExport promise should be rejected if a error occured while uploading ', async () => {
-        spyOn(service['http'], 'post').and.returnValue(of(new Error('fake error')));
+        spyOn(service['http'], 'post').and.returnValue(throwError('fake error'));
         await expectAsync(service.handleImgurExport(PNG_FILE_FORMAT)).toBeRejected();
     });
 
     it('#handleImgurExport promise should be rejected if the upload has not succeded', async () => {
-        const unsuccesfulResponse: ImgurResponse = {
+        const unsuccesfulUploadResponse: ImgurResponse = {
             data: {
                 link: '',
             },
             success: false,
         } as ImgurResponse;
 
-        spyOn(service['http'], 'post').and.returnValue(of(unsuccesfulResponse));
+        spyOn(service['http'], 'post').and.returnValue(of(unsuccesfulUploadResponse));
         await expectAsync(service.handleImgurExport(PNG_FILE_FORMAT)).toBeRejected();
     });
 });

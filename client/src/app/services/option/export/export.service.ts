@@ -45,15 +45,15 @@ export class ExportService {
                 imgurData.append('image', blob as string | Blob);
 
                 const headers = new HttpHeaders({ Authorization: 'Client-ID ' + this.CLIENT_ID });
-                this.http
-                    .post(this.IMGUR_UPLOAD_URL, imgurData, { headers })
-                    .toPromise()
-                    .then((res: ImgurResponse) => {
+
+                this.http.post(this.IMGUR_UPLOAD_URL, imgurData, { headers }).subscribe(
+                    (res: ImgurResponse) => {
                         res.success ? resolve(res.data.link) : reject();
-                    })
-                    .catch(() => {
+                    },
+                    () => {
                         reject();
-                    });
+                    },
+                );
             }, this.downloadFormat);
         });
     }

@@ -121,7 +121,7 @@ describe('ExportDialogComponent', () => {
         component['displaySnackBarOnSuccess'](EXPECTED_URL);
 
         expect(snackbarServiceSpy.openSnackBar).toHaveBeenCalledWith(
-            'Le téléversement a été effectué avec succès!',
+            'Le téléversement a été effectué avec succès! URL: ' + EXPECTED_URL,
             "Copier l'URL",
             component['IMGUR_SNACK_BAR_TIME_MS'],
         );
