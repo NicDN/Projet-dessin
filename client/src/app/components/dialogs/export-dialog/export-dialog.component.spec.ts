@@ -8,7 +8,7 @@ import { FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { ClipboardService } from 'ngx-clipboard';
-import { of } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ExportDialogComponent } from './export-dialog.component';
 
 // tslint:disable:no-string-literal
@@ -115,7 +115,9 @@ describe('ExportDialogComponent', () => {
 
     it('#displaySnackBarOnSuccess should display the succeded snack bar and copy the url on action event ', () => {
         const matSnackBarRefSpy: jasmine.SpyObj<MatSnackBarRef<TextOnlySnackBar>> = jasmine.createSpyObj('MatSnackBarRef', ['onAction']);
-        matSnackBarRefSpy.onAction.and.returnValue(of());
+        const subject: Subject<void> = new Subject();
+
+        matSnackBarRefSpy.onAction.and.returnValue(subject);
         snackbarServiceSpy.openSnackBar.and.returnValue(matSnackBarRefSpy);
 
         component['displaySnackBarOnSuccess'](EXPECTED_URL);
@@ -126,6 +128,7 @@ describe('ExportDialogComponent', () => {
             component['IMGUR_SNACK_BAR_TIME_MS'],
         );
 
+        subject.next();
         expect(clipboardServiceSpy.copy).toHaveBeenCalledWith(EXPECTED_URL);
     });
 });
