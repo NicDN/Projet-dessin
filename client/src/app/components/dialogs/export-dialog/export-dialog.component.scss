@@ -1,6 +1,6 @@
 .export-container {
     width: 850px;
-    height: 695px;
+    height: 707px;
     position: relative;
     overflow-y: auto;
 }
@@ -39,5 +39,13 @@ mat-button-toggle-group {
 
 canvas {
     object-fit: contain;
+}
+
+.imgur-checkbox{
+    margin-left: 20px;
+}
+
+.checkbox-div{
+    margin-bottom: 12px;
 }
 

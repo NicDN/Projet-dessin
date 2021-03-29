@@ -39,10 +39,15 @@ export class ExportDialogComponent implements AfterViewInit {
             await this.exportService
                 .handleImgurExport(fileName, fileFormat)
                 .then((url) => {
-                    this.snackBarService.openSnackBar("Le téléversement a été effectué avec succès! Voici l'URL publique: " + url, 'Fermer', 10000);
+                    const IMGUR_SNACK_BAR_TIME_MS = 20000;
+                    this.snackBarService.openSnackBar(
+                        'Le téléversement a été effectué avec succès! URL publique: ' + url,
+                        'Fermer',
+                        IMGUR_SNACK_BAR_TIME_MS,
+                    );
                 })
                 .catch(() => {
-                    this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer', 2000);
+                    this.snackBarService.openSnackBar('Le téléversement a échoué.', 'Fermer');
                 });
         } else {
             this.exportService.handleLocalExport(fileName, fileFormat);

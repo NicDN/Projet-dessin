@@ -1,8 +1,16 @@
 <div class="export-container">
     <h2 mat-dialog-title>Exporter le dessin</h2>
+    <div class="checkbox-div"> 
+        <mat-checkbox  [checked]="!exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser sur le disque
+        </mat-checkbox>
+        <mat-checkbox class="imgur-checkbox" [checked]="exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser plutôt avec
+            <em>imgur</em> !</mat-checkbox>
+       
+    </div>
+
     <div>
         <mat-form-field class="file-name">
-            <input matInput #fileName placeholder="Nom du fichier">
+            <input matInput #fileName placeholder="Nom du fichier" [disabled]="exportToImgur">
         </mat-form-field>
 
         <mat-form-field class="filter-selector">
@@ -17,9 +25,6 @@
             <mat-button-toggle checked="true" value="png">PNG</mat-button-toggle>
             <mat-button-toggle value="jpeg">JPG</mat-button-toggle>
         </mat-button-toggle-group>
-
-        <mat-checkbox [checked]="exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser plutôt avec <em>imgur</em> !</mat-checkbox>
-
     </div>
 
     <div class="preview-filter">
