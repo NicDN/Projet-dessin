@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -13,7 +12,7 @@ export class UndoRedoService {
 
     private updateUndoRedoComponent: Subject<void> = new Subject<void>();
 
-    constructor(private drawingService: DrawingService, private localStorageService: LocalStorageService) {
+    constructor(private drawingService: DrawingService) {
         this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
             this.setBaseLine(baseLineCommand);
         });
@@ -47,8 +46,6 @@ export class UndoRedoService {
         this.undoneList = [];
         this.commandList.push(command);
         this.sendUndoRedoNotif();
-
-        this.localStorageService.saveCanvas();
     }
 
     undo(): void {
