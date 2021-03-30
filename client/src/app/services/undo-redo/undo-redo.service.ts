@@ -7,17 +7,18 @@ import { Observable, Subject } from 'rxjs';
     providedIn: 'root',
 })
 export class UndoRedoService {
-    private commandList: AbstractCommand[] = [];
-    private undoneList: AbstractCommand[] = [];
-    private canUndoRedo: boolean = true;
-
-    private updateUndoRedoComponent: Subject<void> = new Subject<void>();
-
     constructor(private drawingService: DrawingService, private localStorageService: LocalStorageService) {
         this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
             this.setBaseLine(baseLineCommand);
         });
     }
+    private commandList: AbstractCommand[] = [];
+    private undoneList: AbstractCommand[] = [];
+    private canUndoRedo: boolean = true;
+
+    // canSaveToStorage: boolean = true;
+
+    private updateUndoRedoComponent: Subject<void> = new Subject<void>();
 
     private sendUndoRedoNotif(): void {
         this.updateUndoRedoComponent.next();
@@ -81,6 +82,10 @@ export class UndoRedoService {
         this.commandList[0] = baseLineCommand;
         this.sendUndoRedoNotif();
 
+        // if (!this.canSaveToStorage) {
+        //     this.canSaveToStorage = true;
+        //     return;
+        // }
         this.localStorageService.saveCanvas();
     }
 
@@ -89,5 +94,6 @@ export class UndoRedoService {
         for (const command of this.commandList) {
             command.execute();
         }
+        this.localStorageService.saveCanvas();
     }
 }

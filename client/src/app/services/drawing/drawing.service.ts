@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BoxSize } from '@app/classes/box-size';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
 import { Observable, Subject } from 'rxjs';
@@ -16,6 +17,8 @@ export class DrawingService {
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
+
+    constructor(private router: Router) {}
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
@@ -69,6 +72,9 @@ export class DrawingService {
     }
 
     private confirmReload(): boolean {
+        if (this.router.url === '/home') {
+            return true;
+        }
         return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
     }
 
