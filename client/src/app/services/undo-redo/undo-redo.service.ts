@@ -80,6 +80,8 @@ export class UndoRedoService {
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
         this.sendUndoRedoNotif();
+
+        this.localStorageService.saveCanvas();
     }
 
     private executeAllCommands(): void {

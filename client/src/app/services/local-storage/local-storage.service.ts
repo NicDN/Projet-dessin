@@ -14,6 +14,8 @@ export class LocalStorageService {
         const image = new Image();
         console.log('Canvas sizes: width: ' + this.drawingService.canvas.width + ' height: ' + this.drawingService.canvas.height);
         image.src = (' ' + this.drawingService.canvas.toDataURL()).slice(1);
+        image.width = this.drawingService.canvas.width;
+        image.height = this.drawingService.canvas.height;
         console.log('Image sizes: width: ' + image.width + ' height: ' + image.height);
         // *******
 
