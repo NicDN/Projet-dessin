@@ -11,7 +11,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 })
 export class SelectionOptionsComponent {
     constructor(
-        private clipboardSelectionService: ClipboardSelectionService,
+        public clipboardSelectionService: ClipboardSelectionService,
         private rectangleSelectionService: RectangleSelectionService,
         private toolsService: ToolsService,
     ) {}
