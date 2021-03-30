@@ -38,4 +38,8 @@ export class StampSelectorComponent implements OnInit {
             action: (value: number) => (this.stampService.angle = value),
         };
     }
+
+    openStampLibrary(): void {
+        return;
+    }
 }
