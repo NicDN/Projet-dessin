@@ -19,14 +19,14 @@ export class LineService extends TraceTool {
     private readonly HALF_FF_DEGREE: number = 22.5;
     private readonly FULL_CIRCLE: number = 360;
 
-    private isShiftDown: boolean = false;
+    isShiftDown: boolean = false;
     private canDoubleClick: boolean = false;
 
     drawWithJunction: boolean;
     junctionDiameter: number;
 
-    private pathData: Vec2[] = [];
-    private mousePosition: Vec2;
+    pathData: Vec2[] = [];
+    mousePosition: Vec2;
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Ligne');
@@ -177,7 +177,7 @@ export class LineService extends TraceTool {
         ctx.lineJoin = drawingToolPropreties.drawingContext.lineCap = 'round';
     }
 
-    private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
+    loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,
@@ -188,7 +188,7 @@ export class LineService extends TraceTool {
         };
     }
 
-    private lockLine(): void {
+    lockLine(): void {
         if (this.pathData.length < 2) return;
         const lastSelectedPoint = this.pathData[this.pathData.length - 2];
         const angle = this.calculateAngle(lastSelectedPoint);
