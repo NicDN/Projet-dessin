@@ -26,11 +26,14 @@ interface ClipBoardImage {
 export class ClipboardSelectionService {
     currentSelectionType: SelectionType;
     clipBoardImage: ClipBoardImage;
+    readonly outsideDrawingZoneCoords: number = 1000000;
+    readonly pasteOffSet: number = 10;
     constructor(private toolsService: ToolsService, private drawingService: DrawingService) {}
 
     copy(): void {
         if (!this.canUseClipboardService()) return;
         this.currentSelectionType = this.checkSelectionType();
+        console.log("we're changing the data");
         this.clipBoardImage = {
             clipboardImage: (this.toolsService.currentTool as SelectionTool).data,
             selectionType: this.currentSelectionType,
@@ -39,37 +42,51 @@ export class ClipboardSelectionService {
 
     paste(): void {
         if (this.clipBoardImage.clipboardImage === undefined) return;
-
-        // const selectionPropretiesTmp = this.loadUpSelectionPropretiesForDelete();
+        if ((this.toolsService.currentTool as SelectionTool).selectionExists) return;
+        this.switchToStoredClipboardImageSelectionTool();
+        (this.toolsService.currentTool as SelectionTool).data = this.clipBoardImage.clipboardImage;
 
         (this.toolsService.currentTool as SelectionTool).selectionExists = true;
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft = { x: 1000, y: 1000 };
+        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft = {
+            x: this.outsideDrawingZoneCoords,
+            y: this.outsideDrawingZoneCoords,
+        };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight = {
-            x: 1000 + this.clipBoardImage.clipboardImage.width,
-            y: 1000 + this.clipBoardImage.clipboardImage.height,
+            x: this.outsideDrawingZoneCoords + this.clipBoardImage.clipboardImage.width,
+            y: this.outsideDrawingZoneCoords + this.clipBoardImage.clipboardImage.height,
         };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft = {
-            x: 2,
-            y: 2,
+            x: this.pasteOffSet,
+            y: this.pasteOffSet,
         };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.finalBottomRight = {
-            x: 2 + this.clipBoardImage.clipboardImage.width,
-            y: 2 + this.clipBoardImage.clipboardImage.height,
+            x: this.pasteOffSet + this.clipBoardImage.clipboardImage.width,
+            y: this.pasteOffSet + this.clipBoardImage.clipboardImage.height,
         };
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
     }
 
-    cut(): void {}
+    cut(): void {
+        this.copy();
+        this.delete();
+    }
 
     delete(): void {
         if (!this.canUseClipboardService()) return;
-        const selectionPropretiesTmp = this.loadUpSelectionPropretiesForDelete();
-        (this.toolsService.currentTool as SelectionTool).fillWithWhite(selectionPropretiesTmp);
+        this.drawingService.fillWithWhite(this.drawingService.previewCtx);
+
+        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft.x--;
+        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft.y--;
+        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.x--;
+        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.y--;
+        (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
+            0,
+            0,
+            this.drawingService.canvas.width,
+            this.drawingService.previewCanvas.height,
+        );
+
         (this.toolsService.currentTool as SelectionTool).cancelSelection();
-        selectionPropretiesTmp.bottomRight = selectionPropretiesTmp.finalBottomRight;
-        selectionPropretiesTmp.topLeft = selectionPropretiesTmp.finalTopLeft;
-        selectionPropretiesTmp.selectionCtx = this.drawingService.baseCtx;
-        (this.toolsService.currentTool as SelectionTool).fillWithWhite(selectionPropretiesTmp);
     }
 
     loadUpSelectionPropretiesForDelete(): SelectionPropreties {

@@ -31,7 +31,6 @@ export class EllipseSelectionService extends SelectionTool {
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
         const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight);
         if (!selectionPropreties.selectionCtx) return;
-        if (selectionPropreties.bottomRight === { x: 0, y: 0 } && selectionPropreties.topLeft === { x: 0, y: 0 }) return;
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(

@@ -251,7 +251,7 @@ export abstract class SelectionTool extends Tool {
         this.drawBox(ctx, this.selectionCoords.finalTopLeft, this.selectionCoords.finalBottomRight);
     }
 
-    private draw(ctx: CanvasRenderingContext2D): void {
+    draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
         if (
