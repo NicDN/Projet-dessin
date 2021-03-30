@@ -10,12 +10,12 @@ export class LocalStorageService {
     saveCanvas(): void {
         console.log('saved');
 
-        // // ******* test purposes
-        // const image = new Image();
-        // console.log('Canvas sizes: width: ' + this.drawingService.canvas.width + ' height: ' + this.drawingService.canvas.height);
-        // image.src = (' ' + this.drawingService.canvas.toDataURL()).slice(1);
-        // console.log('Image sizes: width: ' + image.width + ' height: ' + image.height);
-        // // *******
+        // ******* test purposes
+        const image = new Image();
+        console.log('Canvas sizes: width: ' + this.drawingService.canvas.width + ' height: ' + this.drawingService.canvas.height);
+        image.src = (' ' + this.drawingService.canvas.toDataURL()).slice(1);
+        console.log('Image sizes: width: ' + image.width + ' height: ' + image.height);
+        // *******
 
         const canvasURLCopy = (' ' + this.drawingService.canvas.toDataURL()).slice(1); // deep copy of canvas url
         localStorage.setItem('canvas', canvasURLCopy);
