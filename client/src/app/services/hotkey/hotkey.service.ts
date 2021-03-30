@@ -5,6 +5,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { TextService } from '../tools/text/text.service';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -52,9 +53,11 @@ export class HotkeyService {
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
         private rectangleSelectionService: RectangleSelectionService,
+        private textService: TextService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
+        this.observeTextService();
     }
 
     private initializeShorcutManager(): void {
@@ -98,6 +101,16 @@ export class HotkeyService {
             this.listenToKeyEvents = listenToKeyEvents;
         });
     }
+
+    private observeTextService(): void {
+        this.textService.disableEnableKeyEvents().subscribe((listenToKeyEvents) => {
+            this.listenToKeyEvents = listenToKeyEvents;
+        });
+    }
+
+    // private disableEnableKeyEvents(bool: boolean): void {
+    //     this.listenToKeyEvents = bool;
+    // }
 
     onKeyDown(event: KeyboardEvent): void {
         if (!this.listenToKeyEvents) {

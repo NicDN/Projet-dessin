@@ -66,6 +66,9 @@ export class TextSelectorComponent implements OnInit {
     fontStyles: FontStyleOption[] = [
         { name: 'Arial', value: FontStyle.Arial },
         { name: 'Times', value: FontStyle.Times },
+        { name: 'Comic Sans MS', value: FontStyle.Comic },
+        { name: 'Consolas', value: FontStyle.Consolas },
+        { name: 'Bembo', value: FontStyle.Bembo },
     ];
 
     ngOnInit(): void {
