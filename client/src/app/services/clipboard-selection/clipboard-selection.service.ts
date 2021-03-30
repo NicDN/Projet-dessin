@@ -25,7 +25,6 @@ export class ClipboardSelectionService {
     copy(): void {
         if (!this.canUseClipboardService()) return;
         this.currentSelectionType = this.checkSelectionType();
-        console.log("we're changing the data");
         this.clipBoardData = {
             clipboardImage: (this.toolsService.currentTool as SelectionTool).data,
             selectionType: this.currentSelectionType,

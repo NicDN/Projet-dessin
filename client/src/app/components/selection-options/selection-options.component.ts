@@ -17,6 +17,7 @@ export class SelectionOptionsComponent {
     ) {}
 
     selectionIsActive(): boolean {
+        if (!(this.toolsService.currentTool instanceof SelectionTool)) return false;
         return (this.toolsService.currentTool as SelectionTool).selectionExists;
     }
 

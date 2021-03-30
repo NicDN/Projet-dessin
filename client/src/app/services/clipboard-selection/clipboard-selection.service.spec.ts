@@ -12,7 +12,7 @@ import { LassoSelectionService } from './../tools/selection/lasso/lasso-selectio
 import { RectangleSelectionService } from './../tools/selection/rectangle/rectangle-selection.service';
 import { ClipboardSelectionService } from './clipboard-selection.service';
 
-fdescribe('ClipboardService', () => {
+describe('ClipboardService', () => {
     let service: ClipboardSelectionService;
     let toolServiceSpyObj: jasmine.SpyObj<ToolsService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
