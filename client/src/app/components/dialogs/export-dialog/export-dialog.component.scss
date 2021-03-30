@@ -1,8 +1,9 @@
 .export-container {
     width: 850px;
-    height: 675px;
+    height: 707px;
     position: relative;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .bottom-div {
@@ -14,8 +15,7 @@
     border-radius: 3px;
     border-style: solid;
     background-color: white;
-    width: auto;
-    height: 510px;
+    margin-top: 5px;
 }
 
 mat-button-toggle-group {
@@ -32,10 +32,6 @@ mat-button-toggle-group {
     width: 400px;
 }
 
-.imgur-div {
-    margin-bottom: 15px;
-}
-
 .export-canvas-btn {
     margin-right: 10px;
 }
@@ -43,3 +39,12 @@ mat-button-toggle-group {
 canvas {
     object-fit: contain;
 }
+
+.imgur-checkbox{
+    margin-left: 20px;
+}
+
+.checkbox-div{
+    margin-bottom: 12px;
+}
+
