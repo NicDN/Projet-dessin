@@ -15,7 +15,7 @@ describe('DeplacementSelectionService', () => {
     // const LEFT_BUTTON_PRESSED = 1;
     // const NO_BUTTON_PRESSED = 0;
     // const RGB_MAX = 255;
-    let selectionCoordsStub: SelectionCoords = {
+    const selectionCoordsStub: SelectionCoords = {
         initialTopLeft: TOP_LEFT_CORNER_COORDS,
         initialBottomRight: BOTTOM_RIGHT_CORNER_COORDS,
         finalTopLeft: TOP_LEFT_CORNER_COORDS,
@@ -38,7 +38,7 @@ describe('DeplacementSelectionService', () => {
         service.keyDownIsPressed = true;
         service.keyLeftIsPressed = true;
 
-        const calculatedDelta = service['calculateDelta']();
+        const calculatedDelta = service.calculateDelta();
 
         expect(calculatedDelta).toEqual({ x: -service.arrowMoveDelta, y: service.arrowMoveDelta });
     });
@@ -47,7 +47,7 @@ describe('DeplacementSelectionService', () => {
         service.keyUpIsPressed = true;
         service.keyRightIsPressed = true;
 
-        const calculatedDelta = service['calculateDelta']();
+        const calculatedDelta = service.calculateDelta();
 
         expect(calculatedDelta).toEqual({ x: service.arrowMoveDelta, y: -service.arrowMoveDelta });
     });
@@ -58,32 +58,32 @@ describe('DeplacementSelectionService', () => {
         service.keyRightIsPressed = true;
         service.keyUpIsPressed = true;
 
-        const calculatedDelta = service['calculateDelta']();
+        const calculatedDelta = service.calculateDelta();
 
         expect(calculatedDelta).toEqual({ x: 0, y: 0 });
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
         service.keyUpIsPressed = true;
-        const anyArrowPressed = service['checkIfAnyArrowIsPressed']();
+        const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
         service.keyDownIsPressed = true;
-        const anyArrowPressed = service['checkIfAnyArrowIsPressed']();
+        const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
         service.keyLeftIsPressed = true;
-        const anyArrowPressed = service['checkIfAnyArrowIsPressed']();
+        const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
         service.keyRightIsPressed = true;
-        const anyArrowPressed = service['checkIfAnyArrowIsPressed']();
+        const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
@@ -94,7 +94,7 @@ describe('DeplacementSelectionService', () => {
         service.keyRightIsPressed = true;
         const arrowEvent = { code: 'ArrowLeft' } as KeyboardEvent;
 
-        service['updateArrowKeysPressed'](arrowEvent, true);
+        service.updateArrowKeysPressed(arrowEvent, true);
 
         expect(service.keyDownIsPressed).toBeFalse();
         expect(service.keyUpIsPressed).toBeTrue();
@@ -126,12 +126,12 @@ describe('DeplacementSelectionService', () => {
         service.keyRightIsPressed = true;
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
-        service['updateArrowKeysPressed'](arrowEvent, false);
+        service.updateArrowKeysPressed(arrowEvent, false);
 
-        expect(service['keyDownIsPressed']).toBeFalse();
-        expect(service['keyUpIsPressed']).toBeFalse();
-        expect(service['keyLeftIsPressed']).toBeFalse();
-        expect(service['keyRightIsPressed']).toBeTrue();
+        expect(service.keyDownIsPressed).toBeFalse();
+        expect(service.keyUpIsPressed).toBeFalse();
+        expect(service.keyLeftIsPressed).toBeFalse();
+        expect(service.keyRightIsPressed).toBeTrue();
     });
 
     it('#moveSelectionWithArrows should move the selection coordinates by the given delta and redraw selection at the new position', () => {
