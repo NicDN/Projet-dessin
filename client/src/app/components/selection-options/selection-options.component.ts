@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
+import { SelectionTool } from '@app/classes/selection-tool';
+import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
@@ -10,16 +11,17 @@ import { ToolsService } from '@app/services/tools/tools.service';
 })
 export class SelectionOptionsComponent {
     constructor(
+        private clipboardSelectionService: ClipboardSelectionService,
         private rectangleSelectionService: RectangleSelectionService,
-        private ellipseSelectionService: EllipseSelectionService,
         private toolsService: ToolsService,
     ) {}
 
     selectionIsActive(): boolean {
-        if (this.rectangleSelectionService.selectionExists || this.ellipseSelectionService.selectionExists) {
-            return true;
-        }
-        return false;
+        return (this.toolsService.currentTool as SelectionTool).selectionExists;
+    }
+
+    canPaste(): boolean {
+        return this.clipboardSelectionService.clipBoardData !== undefined;
     }
 
     selectAll(): void {

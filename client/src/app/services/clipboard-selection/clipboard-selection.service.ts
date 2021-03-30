@@ -14,7 +14,7 @@ enum SelectionType {
     NONE,
 }
 
-interface ClipBoardImage {
+interface ClipBoardData {
     clipboardImage: ImageData;
     selectionType: SelectionType;
     selectionCoords?: SelectionCoords;
@@ -25,7 +25,7 @@ interface ClipBoardImage {
 })
 export class ClipboardSelectionService {
     currentSelectionType: SelectionType;
-    clipBoardImage: ClipBoardImage;
+    clipBoardData: ClipBoardData;
     readonly outsideDrawingZoneCoords: number = 1000000;
     readonly pasteOffSet: number = 10;
     constructor(private toolsService: ToolsService, private drawingService: DrawingService) {}
@@ -34,17 +34,17 @@ export class ClipboardSelectionService {
         if (!this.canUseClipboardService()) return;
         this.currentSelectionType = this.checkSelectionType();
         console.log("we're changing the data");
-        this.clipBoardImage = {
+        this.clipBoardData = {
             clipboardImage: (this.toolsService.currentTool as SelectionTool).data,
             selectionType: this.currentSelectionType,
         };
     }
 
     paste(): void {
-        if (this.clipBoardImage.clipboardImage === undefined) return;
+        if (this.clipBoardData.clipboardImage === undefined) return;
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) return;
         this.switchToStoredClipboardImageSelectionTool();
-        (this.toolsService.currentTool as SelectionTool).data = this.clipBoardImage.clipboardImage;
+        (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
 
         (this.toolsService.currentTool as SelectionTool).selectionExists = true;
         (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft = {
@@ -52,16 +52,16 @@ export class ClipboardSelectionService {
             y: this.outsideDrawingZoneCoords,
         };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight = {
-            x: this.outsideDrawingZoneCoords + this.clipBoardImage.clipboardImage.width,
-            y: this.outsideDrawingZoneCoords + this.clipBoardImage.clipboardImage.height,
+            x: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.width,
+            y: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.height,
         };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft = {
             x: this.pasteOffSet,
             y: this.pasteOffSet,
         };
         (this.toolsService.currentTool as SelectionTool).selectionCoords.finalBottomRight = {
-            x: this.pasteOffSet + this.clipBoardImage.clipboardImage.width,
-            y: this.pasteOffSet + this.clipBoardImage.clipboardImage.height,
+            x: this.pasteOffSet + this.clipBoardData.clipboardImage.width,
+            y: this.pasteOffSet + this.clipBoardData.clipboardImage.height,
         };
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
     }
