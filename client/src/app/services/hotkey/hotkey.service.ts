@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
@@ -32,6 +33,8 @@ enum shortCutManager {
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
     GRID = 'KeyG',
+    CUT = 'KeyX',
+    DELETE = 'Delete',
 }
 
 type ShortcutManager = {
@@ -52,6 +55,7 @@ export class HotkeyService {
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
         private rectangleSelectionService: RectangleSelectionService,
+        private clipboardSelectionService: ClipboardSelectionService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -81,7 +85,10 @@ export class HotkeyService {
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Export),
             },
             KeyL: { action: () => this.toolService.setCurrentTool(this.toolService.lineService) },
-            KeyC: { action: () => this.toolService.setCurrentTool(this.toolService.pencilService) },
+            KeyC: {
+                action: () => this.toolService.setCurrentTool(this.toolService.pencilService),
+                actionCtrl: () => this.clipboardSelectionService.copy(),
+            },
             Digit1: { action: () => this.toolService.setCurrentTool(this.toolService.rectangleDrawingService) },
             Digit2: { action: () => this.toolService.setCurrentTool(this.toolService.ellipseDrawingService) },
             Digit3: { action: () => this.toolService.setCurrentTool(this.toolService.polygonService) },
@@ -89,7 +96,12 @@ export class HotkeyService {
             KeyD: { action: () => this.toolService.setCurrentTool(this.toolService.stampService) },
             KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
             KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
-            KeyV: { action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService) },
+            KeyV: {
+                action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService),
+                actionCtrl: () => this.clipboardSelectionService.paste(),
+            },
+            KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
+            Delete: { action: () => this.clipboardSelectionService.delete() },
         };
     }
 
