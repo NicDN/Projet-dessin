@@ -29,10 +29,11 @@ export class MainPageComponent {
     continueDrawing(): void {
         const image = new Image();
         image.src = localStorage.getItem('canvas') as string;
-        this.drawingService.newImage = image;
-        console.log(image.src);
+
         this.router.navigate(['editor']);
+        this.drawingService.newImage = image;
     }
+
     // for testing
     emptyStorage(): void {
         localStorage.clear();
