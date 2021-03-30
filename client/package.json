@@ -30,6 +30,7 @@
     "font-awesome": "^4.7.0",
     "http-status-codes": "^2.1.4",
     "ng-click-outside": "^7.0.1",
+    "ngx-clipboard": "^14.0.1",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

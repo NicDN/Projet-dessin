@@ -3,6 +3,7 @@ import { SelectionPropreties } from '@app/classes/commands/selection-command/sel
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -20,7 +21,12 @@ export class LassoSelectionService extends SelectionTool {
         throw new Error('Method not implemented.');
     }
 
-    constructor(drawingService: DrawingService, rectangleDrawingService: RectangleDrawingService, undoRedoService: UndoRedoService) {
-        super(drawingService, rectangleDrawingService, 'Sélection par lasso polygonal', undoRedoService);
+    constructor(
+        drawingService: DrawingService,
+        rectangleDrawingService: RectangleDrawingService,
+        undoRedoService: UndoRedoService,
+        moveSelectionService: MoveSelectionService,
+    ) {
+        super(drawingService, rectangleDrawingService, 'Sélection par lasso polygonal', undoRedoService, moveSelectionService);
     }
 }

@@ -3,6 +3,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { RectangleSelectionService } from './rectangle-selection.service';
@@ -14,6 +15,7 @@ describe('RectangleSelectionService', () => {
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let canvasTestHelper: CanvasTestHelper;
+    let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -29,12 +31,15 @@ describe('RectangleSelectionService', () => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
         rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', ['getTrueEndCoords', 'drawPerimeter']);
         undoRedoSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
+
         TestBed.configureTestingModule({
             providers: [
                 RectangleSelectionService,
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoSpyObj },
+                { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -94,9 +99,24 @@ describe('RectangleSelectionService', () => {
         expect(imageDataOutside2.data).toEqual(Uint8ClampedArray.of(RGB_MAX, 0, 0, RGB_MAX));
     });
 
+    it('#fillWithWhite should return if selection context is undefined', () => {
+        selectionProperties.selectionCtx = undefined;
+        const beginPathSpy = spyOn(drawingServiceSpyObj.baseCtx, 'beginPath');
+
+        rectangleSelectionService.fillWithWhite(selectionProperties);
+        expect(beginPathSpy).not.toHaveBeenCalled();
+    });
+
     it('#drawSelection should put the image data at the final coords', () => {
         const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'putImageData');
         rectangleSelectionService.drawSelection(selectionProperties);
         expect(putImageDataSpy).toHaveBeenCalled();
+    });
+
+    it('#drawSelection should return if the selectionCtx is undefined', () => {
+        selectionProperties.selectionCtx = undefined;
+        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'putImageData');
+        rectangleSelectionService.drawSelection(selectionProperties);
+        expect(putImageDataSpy).not.toHaveBeenCalled();
     });
 });
