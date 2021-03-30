@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -26,6 +27,7 @@ describe('DrawingComponent', () => {
     let colorServiceStub: ColorService;
     let drawingStub: DrawingService;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
+    let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
 
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
@@ -36,6 +38,7 @@ describe('DrawingComponent', () => {
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('undoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
+        moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -45,6 +48,7 @@ describe('DrawingComponent', () => {
                 { provide: HotkeyService, useValue: hotKeyServiceSpy },
                 { provide: ColorService, useValue: colorServiceStub },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
+                { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -138,6 +142,7 @@ describe('DrawingComponent', () => {
             drawingStub,
             new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
             undoRedoServiceSpyObj,
+            moveSelectionServiceSpyObj,
         );
         component.onMouseUp(mouseEventClick);
         expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();
@@ -207,6 +212,7 @@ describe('DrawingComponent', () => {
             drawingStub,
             new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
             undoRedoServiceSpyObj,
+            moveSelectionServiceSpyObj,
         );
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
         component.onMouseDown(mouseEventClick);

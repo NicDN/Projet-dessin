@@ -55,6 +55,12 @@ describe('HotkeyService', () => {
     const digit2Stub = new KeyboardEvent('keydown', { code: 'Digit2' });
     const digit3Stub = new KeyboardEvent('keydown', { code: 'Digit3' });
 
+    const keyTStub = new KeyboardEvent('keydown', { code: 'KeyT' });
+    const keyVStub = new KeyboardEvent('keydown', { code: 'KeyV' });
+    const keyGStub = new KeyboardEvent('keydown', { code: 'KeyG' });
+    const keyBStub = new KeyboardEvent('keydown', { code: 'KeyB' });
+    const keyDStub = new KeyboardEvent('keydown', { code: 'KeyD' });
+
     const noCtrlKeyOEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: false });
     const randomKeyEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 
@@ -155,6 +161,21 @@ describe('HotkeyService', () => {
 
             service.onKeyDown(keyRStub);
             expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.rectangleDrawingService);
+
+            service.onKeyDown(keyTStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.textService);
+
+            service.onKeyDown(keyVStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.lassoSelectionService);
+
+            service.onKeyDown(keyGStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
+
+            service.onKeyDown(keyBStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.fillDripService);
+
+            service.onKeyDown(keyDStub);
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.stampService);
 
             service.onKeyDown(keyCtrlAStub);
             expect(service['handleSelectAll']).toHaveBeenCalled();

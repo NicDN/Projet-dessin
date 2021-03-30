@@ -8,7 +8,7 @@ export enum SelectionType {
 }
 
 export interface SelectionPropreties {
-    selectionCtx: CanvasRenderingContext2D;
+    selectionCtx?: CanvasRenderingContext2D;
     imageData: ImageData;
     topLeft: Vec2;
     bottomRight: Vec2;
