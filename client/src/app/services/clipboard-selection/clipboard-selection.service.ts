@@ -80,10 +80,10 @@ export class ClipboardSelectionService {
         (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.x--;
         (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.y--;
         (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
-            0,
-            0,
-            this.drawingService.canvas.width,
-            this.drawingService.previewCanvas.height,
+            (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft.x,
+            (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft.y,
+            (this.toolsService.currentTool as SelectionTool).data.width,
+            (this.toolsService.currentTool as SelectionTool).data.height,
         );
 
         (this.toolsService.currentTool as SelectionTool).cancelSelection();
