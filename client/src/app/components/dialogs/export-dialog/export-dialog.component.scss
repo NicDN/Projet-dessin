@@ -3,6 +3,7 @@
     height: 707px;
     position: relative;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .bottom-div {
@@ -14,8 +15,6 @@
     border-radius: 3px;
     border-style: solid;
     background-color: white;
-    width: auto;
-    height: 510px;
     margin-top: 5px;
 }
 
