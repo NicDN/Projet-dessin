@@ -1,23 +1,15 @@
 import { Injectable } from '@angular/core';
-import { SelectionCoords, SelectionTool } from '@app/classes/selection-tool';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { DrawingService } from '../drawing/drawing.service';
 import { EllipseSelectionService } from '../tools/selection/ellipse/ellipse-selection.service';
 import { LassoSelectionService } from '../tools/selection/lasso/lasso-selection.service';
 import { RectangleSelectionService } from '../tools/selection/rectangle/rectangle-selection.service';
-import { SelectionPropreties } from './../../classes/commands/selection-command/selection-command';
-
-enum SelectionType {
-    RECTANGLE,
-    ELLIPSE,
-    LASSO,
-    NONE,
-}
+import { SelectionPropreties, SelectionType } from './../../classes/commands/selection-command/selection-command';
 
 interface ClipBoardData {
     clipboardImage: ImageData;
     selectionType: SelectionType;
-    selectionCoords?: SelectionCoords;
 }
 
 @Injectable({
@@ -41,7 +33,7 @@ export class ClipboardSelectionService {
     }
 
     paste(): void {
-        if (this.clipBoardData.clipboardImage === undefined) return;
+        if (this.clipBoardData === undefined) return;
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) (this.toolsService.currentTool as SelectionTool).cancelSelection();
         this.switchToStoredClipboardImageSelectionTool();
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
@@ -102,33 +94,30 @@ export class ClipboardSelectionService {
 
     checkSelectionType(): SelectionType {
         if (this.toolsService.currentTool instanceof RectangleSelectionService) {
-            console.log('im rectangle!');
-            return SelectionType.RECTANGLE;
+            return SelectionType.Rectangle;
         } else if (this.toolsService.currentTool instanceof EllipseSelectionService) {
-            console.log('im ellipse!');
-            return SelectionType.ELLIPSE;
+            return SelectionType.Ellipse;
         } else if (this.toolsService.currentTool instanceof LassoSelectionService) {
-            console.log('im lasso!');
-            return SelectionType.LASSO;
+            return SelectionType.Lasso;
         } else {
-            console.log('not a selection tool ! ');
-            return SelectionType.NONE;
+            return SelectionType.None;
         }
     }
 
     switchToStoredClipboardImageSelectionTool(): void {
-        if (this.currentSelectionType === SelectionType.RECTANGLE) {
+        if (this.currentSelectionType === SelectionType.Rectangle) {
             this.toolsService.setCurrentTool(this.toolsService.rectangleSelectionService);
         }
-        if (this.currentSelectionType === SelectionType.ELLIPSE) {
+        if (this.currentSelectionType === SelectionType.Ellipse) {
             this.toolsService.setCurrentTool(this.toolsService.ellipseSelectionService);
         }
-        if (this.currentSelectionType === SelectionType.LASSO) {
+        if (this.currentSelectionType === SelectionType.Lasso) {
             this.toolsService.setCurrentTool(this.toolsService.lassoSelectionService);
         }
     }
 
     canUseClipboardService(): boolean {
-        return this.toolsService.currentTool instanceof SelectionTool && (this.toolsService.currentTool as SelectionTool).selectionExists;
+        if (!(this.toolsService.currentTool instanceof SelectionTool)) return false;
+        return (this.toolsService.currentTool as SelectionTool).selectionExists;
     }
 }

@@ -12,13 +12,8 @@
         <mat-icon [class.active]="this.selectionIsActive()">content_copy</mat-icon>
     </button>
 
-    <button
-        [disabled]="!this.canPaste() || this.selectionIsActive()"
-        mat-button
-        matTooltip="Coller la sélection (Ctrl-V)"
-        (click)="this.clipboardSelectionService.paste()"
-    >
-        <mat-icon [class.active]="this.canPaste() && !this.selectionIsActive()">content_paste</mat-icon>
+    <button [disabled]="!this.canPaste()" mat-button matTooltip="Coller la sélection (Ctrl-V)" (click)="this.clipboardSelectionService.paste()">
+        <mat-icon [class.active]="this.canPaste()">content_paste</mat-icon>
     </button>
 
     <button
