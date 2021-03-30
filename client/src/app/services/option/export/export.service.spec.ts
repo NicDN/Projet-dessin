@@ -1,6 +1,8 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { ExportService } from './export.service';
+import { of, throwError } from 'rxjs';
+import { ExportService, ImgurResponse } from './export.service';
 
 // tslint:disable: no-string-literal
 describe('ExportService', () => {
@@ -9,11 +11,13 @@ describe('ExportService', () => {
     const PNG_FILE_FORMAT = 'png';
     const JPEG_FILE_FORMAT = 'jpeg';
     const FILE_NAME = 'test';
+    const EXPECTED_URL = 'expected url';
 
     const exportLink = document.createElement('a');
 
     beforeEach(() => {
         TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             providers: [{ provide: MatDialog, useValue: {} }],
         });
         service = TestBed.inject(ExportService);
@@ -25,28 +29,56 @@ describe('ExportService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('#exportCanvas should export canvas to jpeg if jpeg format is provided by the user', () => {
+    it('#handleLocalExport should export canvas to jpeg if jpeg format is provided by the user', () => {
         spyOn(service.canvasToExport, 'toBlob');
-        service.exportCanvas(FILE_NAME, JPEG_FILE_FORMAT);
+        service.handleLocalExport(FILE_NAME, JPEG_FILE_FORMAT);
         expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + JPEG_FILE_FORMAT);
         expect(service['downloadFormat']).toBe('image/jpeg');
         expect(service.canvasToExport.toBlob).toHaveBeenCalled();
     });
 
-    it('#exportCanvas should export canvas to png if png format is provided by the user', () => {
+    it('#handleLocalExport should export canvas to png if png format is provided by the user', () => {
         spyOn(service.canvasToExport, 'toBlob');
-        service.exportCanvas(FILE_NAME, PNG_FILE_FORMAT);
+        service.handleLocalExport(FILE_NAME, PNG_FILE_FORMAT);
         expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + PNG_FILE_FORMAT);
         expect(service['downloadFormat']).toBe('image/png');
         expect(service.canvasToExport.toBlob).toHaveBeenCalled();
     });
 
-    it('#exportCanvas should set the file name to the default name if a file name is not provided', () => {
-        // spyOn(service['exportLink'], 'click').and.returnValue();
+    it('#handleLocalExport should set the file name to the default name if a file name is not provided', () => {
         spyOn(service.canvasToExport, 'toBlob').and.callThrough();
         const DEFAULT_FILE_NAME = 'Sans titre';
         const NOT_PROVIDED_FILE_NAME = '';
-        service.exportCanvas(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
+        service.handleLocalExport(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
         expect(service['exportLink'].getAttribute('download')).toBe(DEFAULT_FILE_NAME + '.' + PNG_FILE_FORMAT);
+    });
+
+    it('#handleImgurExport should return the correct url of the uploaded image ', async () => {
+        const imgurResponse: ImgurResponse = {
+            data: {
+                link: EXPECTED_URL,
+            },
+            success: true,
+        } as ImgurResponse;
+
+        spyOn(service['http'], 'post').and.returnValue(of(imgurResponse));
+        await expectAsync(service.handleImgurExport(PNG_FILE_FORMAT)).toBeResolvedTo(EXPECTED_URL);
+    });
+
+    it('#handleImgurExport promise should be rejected if a error occured while uploading ', async () => {
+        spyOn(service['http'], 'post').and.returnValue(throwError('fake error'));
+        await expectAsync(service.handleImgurExport(PNG_FILE_FORMAT)).toBeRejected();
+    });
+
+    it('#handleImgurExport promise should be rejected if the upload has not succeded', async () => {
+        const unsuccesfulUploadResponse: ImgurResponse = {
+            data: {
+                link: '',
+            },
+            success: false,
+        } as ImgurResponse;
+
+        spyOn(service['http'], 'post').and.returnValue(of(unsuccesfulUploadResponse));
+        await expectAsync(service.handleImgurExport(PNG_FILE_FORMAT)).toBeRejected();
     });
 });
