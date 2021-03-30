@@ -16,26 +16,26 @@ export class GridSelectorComponent implements OnInit {
             {
                 title: 'Taille des carrées',
                 unit: 'Pixels',
-                min: 1, // TODO: must be constants defined in grid service
-                max: 20, // TODO: must be constants defined in grid service
+                min: this.tool.MIN_SQUARE_SIZE,
+                max: this.tool.MAX_SQUARE_SIZE,
                 getAttribute: () => {
-                    return 1; // dump value
+                    return this.tool.squareSize;
                 },
-                // tslint:disable-next-line: no-empty
-                action: (value: number) => {},
+                action: (value: number) => {
+                    this.tool.squareSize = value;
+                },
             },
 
             {
                 title: 'Opacité',
-                unit: '',
-                min: 1, // TODO: must be constants defined in grid service
-                max: 100, // TODO: must be constants defined in grid service
+                unit: '%',
+                min: this.tool.MIN_OPACITY_PERCENTAGE,
+                max: this.tool.MAX_OPACITY_PERCENTAGE,
                 getAttribute: () => {
-                    return 1; // dump value
+                    return this.tool.opacity;
                 },
-                // tslint:disable-next-line: no-empty
                 action: (value: number) => {
-                    // divide value by 100 to have opacity between 0.1 - 1
+                    this.tool.opacity = value;
                 },
             },
         ];
