@@ -42,7 +42,7 @@ export class ClipboardSelectionService {
 
     paste(): void {
         if (this.clipBoardData.clipboardImage === undefined) return;
-        if ((this.toolsService.currentTool as SelectionTool).selectionExists) return;
+        if ((this.toolsService.currentTool as SelectionTool).selectionExists) (this.toolsService.currentTool as SelectionTool).cancelSelection();
         this.switchToStoredClipboardImageSelectionTool();
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
 
