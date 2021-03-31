@@ -357,7 +357,7 @@ describe('Shape', () => {
 
     it('#drawTraceType should draw with Border', () => {
         shapePropretiesStub.traceType = TraceType.Bordered;
-        shapePropretiesStub.drawingContext.fillStyle = 'white';
+        // shapePropretiesStub.drawingContext.fillStyle = 'white';
         shape['drawTraceType'](shapePropretiesStub);
         spyOn<any>(shape, 'setStrokeColor');
         spyOn(shapePropretiesStub.drawingContext, 'stroke');
@@ -368,7 +368,7 @@ describe('Shape', () => {
 
     it('#drawTraceType should draw with FilleNoBordered', () => {
         shapePropretiesStub.traceType = TraceType.FilledNoBordered;
-        shapePropretiesStub.drawingContext.fillStyle = 'white';
+        // shapePropretiesStub.drawingContext.fillStyle = 'white';
         shape['drawTraceType'](shapePropretiesStub);
         spyOn<any>(shape, 'setFillColor');
         spyOn(shapePropretiesStub.drawingContext, 'fill');

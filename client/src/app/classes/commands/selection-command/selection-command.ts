@@ -5,6 +5,8 @@ import { Vec2 } from '@app/classes/vec2';
 export enum SelectionType {
     Rectangle = 1,
     Ellipse = 2,
+    Lasso = 3,
+    None = 4,
 }
 
 export interface SelectionPropreties {
