@@ -43,7 +43,7 @@ export class TextService extends TraceTool {
     private writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
     private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Consolas', 'Bembo'];
     private enterPosition: number[] = [];
-    private atEnterLeft: boolean = false;
+    // private atEnterLeft: boolean = false;
     // private atEnterRight: boolean = false;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
@@ -105,24 +105,19 @@ export class TextService extends TraceTool {
 
     private arrowLeftPressed(): void {
         if (this.writingPosition !== this.writtenOnPreview.length) this.writingPosition += 1;
-        // console.log(this.writingPosition);
+        // if (this.writingPosition === this.writtenOnPreview.length) return;
         // let enterDetected = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition);
-        // console.log(enterDetected);
         // if (this.atEnterLeft === false) {
         //     if (!this.atEnterLeft && enterDetected !== this.MINUS_ONE) this.atEnterLeft = true;
         // } else {
         //     enterDetected = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition + 1);
         //     if (this.atEnterLeft && enterDetected === this.MINUS_ONE) {
         //         this.writingPosition += 1;
-        //         console.log('non');
-        //         console.log(this.writingPosition);
         //         this.atEnterLeft = false;
         //         return;
         //     }
         // }
-
         // if (enterDetected === this.MINUS_ONE) this.writingPosition += 1;
-        // console.log(this.writingPosition);
     }
 
     private arrowRightPressed(): void {
