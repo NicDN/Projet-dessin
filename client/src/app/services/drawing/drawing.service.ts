@@ -13,6 +13,7 @@ export class DrawingService {
     previewCanvas: HTMLCanvasElement;
 
     newImage?: HTMLImageElement = undefined;
+    isStamp: boolean = false;
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
@@ -93,15 +94,22 @@ export class DrawingService {
     }
 
     onSizeChange(boxsize: BoxSize): void {
-        const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        if (!this.isStamp) {
+            const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            this.swapDrawings(boxsize);
+            this.previewCtx.putImageData(imageOldPreview, 0, 0);
+        } else {
+            this.swapDrawings(boxsize);
+        }
+    }
+
+    private swapDrawings(boxsize: BoxSize): void {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
         this.fillWithWhite(this.baseCtx);
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
-
-        this.previewCtx.putImageData(imageOldPreview, 0, 0);
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {

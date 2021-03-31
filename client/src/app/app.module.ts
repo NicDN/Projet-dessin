@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -51,6 +53,7 @@ import { GenericSliderComponent } from './components/tool-settings/generic-slide
 import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
+import { StampLibraryBottomSheetComponent } from './components/tool-settings/stamp-selector/stamp-library-bottom-sheet/stamp-library-bottom-sheet.component';
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
@@ -86,6 +89,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         GridSelectorComponent,
         TextSelectorComponent,
         StampSelectorComponent,
+        StampLibraryBottomSheetComponent,
     ],
     imports: [
         BrowserModule,
@@ -115,6 +119,8 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         MatSnackBarModule,
         ClickOutsideModule,
         ClipboardModule,
+        MatBottomSheetModule,
+        MatGridListModule,
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],

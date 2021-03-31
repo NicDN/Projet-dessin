@@ -7,6 +7,7 @@ import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/text.service';
 import { Observable, Subject } from 'rxjs';
+import { DrawingService } from '../drawing/drawing.service';
 import { FillDripService } from './fill-drip/fill-drip.service';
 import { EllipseSelectionService } from './selection/ellipse/ellipse-selection.service';
 import { RectangleSelectionService } from './selection/rectangle/rectangle-selection.service';
@@ -39,6 +40,7 @@ export class ToolsService {
         public textService: TextService,
         public stampService: StampService,
         public gridService: GridService,
+        private drawingService: DrawingService,
     ) {
         this.currentTool = pencilService;
     }
@@ -46,11 +48,18 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.ellipseSelectionService.cancelSelection();
         this.rectangleSelectionService.cancelSelection();
+
         if (this.currentTool === this.lineService) {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
+
         this.currentTool = tool;
+
+        this.drawingService.isStamp = false;
+        if (this.currentTool === this.stampService) {
+            this.drawingService.isStamp = true;
+        }
 
         this.subject.next(tool);
     }
