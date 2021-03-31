@@ -1,5 +1,6 @@
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { Component, OnInit } from '@angular/core';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Component({
@@ -11,7 +12,7 @@ export class UndoRedoComponent implements OnInit {
     commandListIsEmpty: boolean = true;
     redoListIsEmpty: boolean = true;
 
-    constructor(public undoRedoService: UndoRedoService, public moveSelectionService: MoveSelectionService) {
+    constructor(public undoRedoService: UndoRedoService, public moveSelectionService: MoveSelectionService, public toolService: ToolsService) {
         this.listenToUndoRedoNotification();
     }
 
@@ -29,5 +30,10 @@ export class UndoRedoComponent implements OnInit {
     private updateUndoRedoValues(): void {
         this.commandListIsEmpty = this.undoRedoService.commandListIsEmpty();
         this.redoListIsEmpty = this.undoRedoService.redoListIsEmpty();
+    }
+
+    handleClickGrid(): void {
+        this.toolService.setCurrentTool(this.toolService.gridService);
+        this.toolService.gridService.handleDrawGrid();
     }
 }

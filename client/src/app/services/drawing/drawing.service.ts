@@ -9,6 +9,9 @@ export class DrawingService {
     blankHTMLImage: HTMLImageElement;
     baseCtx: CanvasRenderingContext2D;
     previewCtx: CanvasRenderingContext2D;
+    gridCtx: CanvasRenderingContext2D;
+
+    gridCanvas: HTMLCanvasElement;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
@@ -16,9 +19,18 @@ export class DrawingService {
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
+    private gridSubject: Subject<void> = new Subject<void>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
+    }
+
+    updateGrid(): void {
+        this.gridSubject.next();
+    }
+
+    newGridSignals(): Observable<void> {
+        return this.gridSubject.asObservable();
     }
 
     private sendBaseLineCommand(image: HTMLImageElement): void {
@@ -38,7 +50,7 @@ export class DrawingService {
     }
 
     clearCanvas(context: CanvasRenderingContext2D): void {
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     }
 
     executeBaseLine(image: HTMLImageElement): void {
@@ -100,8 +112,9 @@ export class DrawingService {
         this.fillWithWhite(this.baseCtx);
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
-
+        this.clearCanvas(this.gridCtx);
         this.previewCtx.putImageData(imageOldPreview, 0, 0);
+        this.updateGrid();
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { GridService } from '@app/services/grid/grid.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class MoveSelectionService {
-    constructor(private drawingService: DrawingService) {}
+    constructor(private drawingService: DrawingService, private gridService: GridService) {}
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2;
@@ -52,7 +53,7 @@ export class MoveSelectionService {
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
         if (this.magnetisme) {
-            if ((pos.x - this.mouseMoveOffset.x) % 20 == 0) {
+            if ((pos.x - this.mouseMoveOffset.x) % this.gridService.squareSize === 0) {
                 selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
                 selectionCoords.finalBottomRight = {
                     x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
@@ -60,7 +61,7 @@ export class MoveSelectionService {
                 };
             }
 
-            if ((pos.y - this.mouseMoveOffset.y) % 20 == 0) {
+            if ((pos.y - this.mouseMoveOffset.y) % this.gridService.squareSize === 0) {
                 selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
                 selectionCoords.finalBottomRight = {
                     x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
