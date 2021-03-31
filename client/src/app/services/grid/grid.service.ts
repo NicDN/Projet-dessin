@@ -55,6 +55,7 @@ export class GridService extends Tool {
     }
 
     drawGrid(): void {
+        this.drawingService.clearCanvas(this.drawingService.gridCtx);
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();
         this.setGridContext();

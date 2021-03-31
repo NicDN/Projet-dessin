@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 
 @Component({
@@ -11,6 +12,9 @@ export class GridSelectorComponent implements OnInit {
     @Input() tool: GridService;
 
     gridSettings: SliderSetting[];
+
+    constructor(private drawingService: DrawingService) {}
+
     ngOnInit(): void {
         this.gridSettings = [
             {
@@ -23,6 +27,7 @@ export class GridSelectorComponent implements OnInit {
                 },
                 action: (value: number) => {
                     this.tool.squareSize = value;
+                    this.drawingService.updateGrid();
                 },
             },
 
@@ -36,6 +41,7 @@ export class GridSelectorComponent implements OnInit {
                 },
                 action: (value: number) => {
                     this.tool.opacity = value;
+                    this.drawingService.updateGrid();
                 },
             },
         ];
