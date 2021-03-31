@@ -81,7 +81,7 @@ describe('HotkeyService', () => {
     const minusStub = new KeyboardEvent('keydown', { code: 'Minus' });
 
     beforeEach(async(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals', 'updateGrid']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
@@ -271,10 +271,10 @@ describe('HotkeyService', () => {
         expect(service.onKeyDown(notAssignedKeyboardEvent3)).toBeFalsy();
     });
 
-    it('#onKeyDown should be truthy if a shift key event event is passed', () => {
+    it('#onKeyDown should be falsy if a shift key event event is passed', () => {
         service['listenToKeyEvents'] = true;
-        const knownshiftKeyEvent = new KeyboardEvent('keydown', { code: 'Equal', ctrlKey: false, shiftKey: true });
-        expect(service.onKeyDown(knownshiftKeyEvent)).toBeTruthy();
+        const knownshiftKeyEvent = new KeyboardEvent('keydown', { code: 'KeyP', ctrlKey: false, shiftKey: true });
+        expect(service.onKeyDown(knownshiftKeyEvent)).toBeFalsy();
     });
 
     it('#handleSelectAll should call appropriate function to select all drawing', () => {
@@ -287,11 +287,13 @@ describe('HotkeyService', () => {
         service['handleIncrementingSquareSize']();
         expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
         expect(gridServiceSpyObj.incrementSquareSize).toHaveBeenCalled();
+        expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
     });
 
     it('#handleDecrementingSquareSize should call appropriate function to decrement the squareSize if it is more then the minimum square size', () => {
         service['handleDecrementingSquareSize']();
         expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
         expect(gridServiceSpyObj.decrementSquareSize).toHaveBeenCalled();
+        expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
     });
 });
