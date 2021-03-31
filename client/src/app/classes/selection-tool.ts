@@ -4,6 +4,7 @@ import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/clas
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -21,6 +22,7 @@ export abstract class SelectionTool extends Tool {
         toolName: string,
         private undoRedoService: UndoRedoService,
         private moveSelectionService: MoveSelectionService,
+        private resizeSelectionService: ResizeSelectionService,
     ) {
         super(drawingService, toolName);
     }
@@ -48,6 +50,8 @@ export abstract class SelectionTool extends Tool {
         this.mouseDown = event.button === MouseButton.Left;
         if (!this.mouseDown) return;
         if (this.isInsideSelection(this.getPositionFromMouse(event)) && this.selectionExists) {
+            this.resizeSelectionService.isAmovingSelectionPoint(this.getPositionFromMouse(event), this.selectionCoords);
+
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
             return;
