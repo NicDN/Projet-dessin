@@ -37,8 +37,11 @@ export class DrawingComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.drawingService.gridCtx = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+
         this.drawingService.canvas = this.baseCanvas.nativeElement;
         this.drawingService.previewCanvas = this.previewCanvas.nativeElement;
+        this.drawingService.gridCanvas = this.gridCanvas.nativeElement;
         this.drawingService.fillWithWhite(this.drawingService.baseCtx);
 
         const baseImage = new Image(this.canvasSize.x, this.canvasSize.y);

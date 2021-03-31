@@ -10,6 +10,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 interface ShortcutFunctions {
     action?: () => void;
     actionCtrl?: () => void;
+    actionShift?: () => void;
     actionCtrlShift?: () => void;
 }
 
@@ -71,7 +72,10 @@ export class HotkeyService {
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
             },
             KeyG: {
-                action: () => this.toolService.setCurrentTool(this.toolService.gridService),
+                action: () => {
+                    this.toolService.setCurrentTool(this.toolService.gridService);
+                    this.toolService.gridService.handleDrawGrid();
+                },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
             },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
@@ -94,7 +98,10 @@ export class HotkeyService {
             KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
             KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
             KeyV: { action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService) },
-            Equal: { action: () => this.handleIncrementingSquareSize() },
+            Equal: {
+                action: () => this.handleIncrementingSquareSize(),
+                actionShift: () => this.handleIncrementingSquareSize(),
+            },
             Minus: { action: () => this.handleDecrementingSquareSize() },
         };
     }
@@ -114,6 +121,9 @@ export class HotkeyService {
             event.shiftKey
                 ? this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.()
                 : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+        } else if (event.shiftKey) {
+            event.preventDefault();
+            this.shortCutManager[event.code as shortCutManager]?.actionShift?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }

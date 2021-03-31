@@ -11,6 +11,11 @@ canvas {
     background-color: white;
 }
 
+#grid-canvas {
+    z-index: 2;
+    background-color: white;
+}
+
 #drawCanvas {
     z-index: 2;
 }

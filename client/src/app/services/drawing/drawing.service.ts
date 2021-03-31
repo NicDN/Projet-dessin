@@ -9,6 +9,9 @@ export class DrawingService {
     blankHTMLImage: HTMLImageElement;
     baseCtx: CanvasRenderingContext2D;
     previewCtx: CanvasRenderingContext2D;
+    gridCtx: CanvasRenderingContext2D;
+
+    gridCanvas: HTMLCanvasElement;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
 
@@ -100,7 +103,7 @@ export class DrawingService {
         this.fillWithWhite(this.baseCtx);
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
-
+        this.clearCanvas(this.gridCtx);
         this.previewCtx.putImageData(imageOldPreview, 0, 0);
     }
 
