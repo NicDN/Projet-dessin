@@ -83,15 +83,25 @@ describe('ClipboardService', () => {
     });
 
     it('#switchToStoredClipboardImageSelectionTool should switch to the tool with the appropriate type', () => {
-        service.currentSelectionType = SelectionType.Rectangle;
+        drawingServiceSpyObj.previewCtx.fillRect(0, 0, drawingServiceSpyObj.previewCtx.canvas.width, drawingServiceSpyObj.previewCtx.canvas.height);
+        service.clipBoardData = {
+            clipboardImage: drawingServiceSpyObj.previewCtx.getImageData(
+                0,
+                0,
+                drawingServiceSpyObj.previewCtx.canvas.width,
+                drawingServiceSpyObj.previewCtx.canvas.height,
+            ),
+            selectionType: SelectionType.Ellipse,
+        };
+        service.clipBoardData.selectionType = SelectionType.Rectangle;
         service.switchToStoredClipboardImageSelectionTool();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.rectangleSelectionService);
 
-        service.currentSelectionType = SelectionType.Ellipse;
+        service.clipBoardData.selectionType = SelectionType.Ellipse;
         service.switchToStoredClipboardImageSelectionTool();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.ellipseSelectionService);
 
-        service.currentSelectionType = SelectionType.Lasso;
+        service.clipBoardData.selectionType = SelectionType.Lasso;
         service.switchToStoredClipboardImageSelectionTool();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.lassoSelectionService);
     });
@@ -114,24 +124,24 @@ describe('ClipboardService', () => {
         expect(service.canUseClipboardService()).toBeFalse();
     });
 
-    it('#checkSelectionType should return selection type rectangle if the current tool is a rectangleSelection', () => {
+    it('#getSelectionType should return selection type rectangle if the current tool is a rectangleSelection', () => {
         toolServiceSpyObj.currentTool = rectangleSelectionServiceStub;
-        expect(service.checkSelectionType()).toEqual(SelectionType.Rectangle);
+        expect(service.getSelectionType()).toEqual(SelectionType.Rectangle);
     });
 
     it('#checkSelectionType should return selection type ellipse if the current tool is a ellipseSelection', () => {
         toolServiceSpyObj.currentTool = ellipseSelectionServiceStub;
-        expect(service.checkSelectionType()).toEqual(SelectionType.Ellipse);
+        expect(service.getSelectionType()).toEqual(SelectionType.Ellipse);
     });
 
     it('#checkSelectionType should return selection type rectangle if the current tool is a lassoSelection', () => {
         toolServiceSpyObj.currentTool = lassoSelectionServiceStub;
-        expect(service.checkSelectionType()).toEqual(SelectionType.Lasso);
+        expect(service.getSelectionType()).toEqual(SelectionType.Lasso);
     });
 
     it('#checkSelectionType should return selection type none if the current tool is not a selection tool', () => {
         toolServiceSpyObj.currentTool = toolServiceSpyObj.pencilService;
-        expect(service.checkSelectionType()).toEqual(SelectionType.None);
+        expect(service.getSelectionType()).toEqual(SelectionType.None);
     });
 
     it('#cut should call copy and delete from the service', () => {
@@ -140,25 +150,6 @@ describe('ClipboardService', () => {
         service.cut();
         expect(copySpy).toHaveBeenCalled();
         expect(deleteSpy).toHaveBeenCalled();
-    });
-
-    it('#loadUpSelectionPropretiesForDelete should load up the correct selection propreties', () => {
-        (toolServiceSpyObj.currentTool as SelectionTool).data = drawingServiceSpyObj.previewCtx.getImageData(
-            0,
-            0,
-            drawingServiceSpyObj.previewCtx.canvas.width,
-            drawingServiceSpyObj.previewCtx.canvas.height,
-        );
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight = { x: 1, y: 1 };
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft = { x: 2, y: 2 };
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalBottomRight = { x: 1, y: 1 };
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalTopLeft = { x: 2, y: 2 };
-        const testPropreties = service.loadUpSelectionPropretiesForDelete();
-        expect(testPropreties.imageData).toEqual((toolServiceSpyObj.currentTool as SelectionTool).data);
-        expect(testPropreties.bottomRight).toEqual((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight);
-        expect(testPropreties.topLeft).toEqual((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft);
-        expect(testPropreties.finalBottomRight).toEqual((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalBottomRight);
-        expect(testPropreties.finalTopLeft).toEqual((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalTopLeft);
     });
 
     it('#delete should change by 1 pixel the position of initial coords', () => {
@@ -362,7 +353,7 @@ describe('ClipboardService', () => {
 
     it('#copy should not copy there are no selection active', () => {
         spyOn(service, 'canUseClipboardService').and.returnValue(false);
-        const checkSelectionType = spyOn(service, 'checkSelectionType');
+        const checkSelectionType = spyOn(service, 'getSelectionType');
         service.copy();
         expect(checkSelectionType).not.toHaveBeenCalled();
     });

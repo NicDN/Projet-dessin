@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { SelectionTool } from '@app/classes/selection-tool';
 import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -17,8 +16,7 @@ export class SelectionOptionsComponent {
     ) {}
 
     selectionIsActive(): boolean {
-        if (!(this.toolsService.currentTool instanceof SelectionTool)) return false;
-        return (this.toolsService.currentTool as SelectionTool).selectionExists;
+        return this.clipboardSelectionService.canUseClipboardService();
     }
 
     canPaste(): boolean {

@@ -37,7 +37,7 @@ describe('SelectionOptionsComponent', () => {
 
     beforeEach(async(() => {
         toolServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool']);
-        clipboardSelectionServiceSpyObj = jasmine.createSpyObj('ClipboardSelectionService', ['']);
+        clipboardSelectionServiceSpyObj = jasmine.createSpyObj('ClipboardSelectionService', ['canUseClipboardService']);
 
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['fillWithWhite', 'clearCanvas']);
@@ -96,9 +96,14 @@ describe('SelectionOptionsComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('#selectionIsActive should return true if there is a selection in process', () => {
-        rectangleSelectionServiceStub.selectionExists = false;
+    it('#selectionIsActive should return false if there are no selection in process', () => {
+        clipboardSelectionServiceSpyObj.canUseClipboardService.and.returnValue(false);
         expect(component.selectionIsActive()).toBeFalse();
+    });
+
+    it('#selectionIsActive should return true if there is a selection in process', () => {
+        clipboardSelectionServiceSpyObj.canUseClipboardService.and.returnValue(true);
+        expect(component.selectionIsActive()).toBeTrue();
     });
 
     it('#selectAll should change the current tool to rectangleSelectionService', () => {
