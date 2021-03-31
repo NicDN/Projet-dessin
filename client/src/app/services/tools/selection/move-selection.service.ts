@@ -11,6 +11,7 @@ export class MoveSelectionService {
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2;
+    magnetisme: boolean = false;
 
     readonly arrowMoveDelta: number = 3;
     movingWithArrows: boolean = false;
@@ -50,26 +51,29 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        if ((pos.x - this.mouseMoveOffset.x) % 20 == 0) {
-            selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
-            selectionCoords.finalBottomRight = {
-                x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-                y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-            };
-        }
+        if (this.magnetisme) {
+            if ((pos.x - this.mouseMoveOffset.x) % 20 == 0) {
+                selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
+                selectionCoords.finalBottomRight = {
+                    x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
+                    y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
+                };
+            }
 
-        if ((pos.y - this.mouseMoveOffset.y) % 20 == 0) {
-            selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
+            if ((pos.y - this.mouseMoveOffset.y) % 20 == 0) {
+                selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
+                selectionCoords.finalBottomRight = {
+                    x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
+                    y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
+                };
+            }
+        } else {
+            selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
             selectionCoords.finalBottomRight = {
                 x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
                 y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
             };
         }
-        // selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
-        // selectionCoords.finalBottomRight = {
-        //     x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-        //     y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-        // };
 
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -35,6 +36,7 @@ enum shortCutManager {
     GRID = 'KeyG',
     CUT = 'KeyX',
     DELETE = 'Delete',
+    MAGNETISME = 'KeyM',
 }
 
 type ShortcutManager = {
@@ -56,6 +58,7 @@ export class HotkeyService {
         private undoRedoService: UndoRedoService,
         private rectangleSelectionService: RectangleSelectionService,
         private clipboardSelectionService: ClipboardSelectionService,
+        private moveSelectionService: MoveSelectionService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -102,6 +105,7 @@ export class HotkeyService {
             },
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
+            KeyM: { action: () => (this.moveSelectionService.magnetisme = !this.moveSelectionService.magnetisme) },
         };
     }
 

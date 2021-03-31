@@ -1,3 +1,4 @@
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { Component, OnInit } from '@angular/core';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -10,7 +11,7 @@ export class UndoRedoComponent implements OnInit {
     commandListIsEmpty: boolean = true;
     redoListIsEmpty: boolean = true;
 
-    constructor(public undoRedoService: UndoRedoService) {
+    constructor(public undoRedoService: UndoRedoService, public moveSelectionService: MoveSelectionService) {
         this.listenToUndoRedoNotification();
     }
 
