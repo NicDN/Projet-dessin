@@ -25,6 +25,7 @@ export class GridService extends Tool {
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Grille');
         this.listenToResizeNotifications();
+        this.listenToUpdateGridNotification();
     }
 
     private listenToResizeNotifications(): void {
@@ -33,7 +34,15 @@ export class GridService extends Tool {
         });
     }
 
-    private resizeNotification(boxSize: BoxSize): void {
+    private listenToUpdateGridNotification(): void {
+        this.drawingService.newGridSignals().subscribe(() => {
+            if (this.gridDrawn) {
+                this.drawGrid();
+            }
+        });
+    }
+
+    resizeNotification(boxSize: BoxSize): void {
         this.drawingService.gridCanvas.width = boxSize.widthBox;
         this.drawingService.gridCanvas.height = boxSize.heightBox;
         if (this.gridDrawn) this.drawGrid();
@@ -47,7 +56,8 @@ export class GridService extends Tool {
         this.drawGrid();
     }
 
-    private drawGrid(): void {
+    drawGrid(): void {
+        this.drawingService.clearCanvas(this.drawingService.gridCtx);
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();
         this.setGridContext();
