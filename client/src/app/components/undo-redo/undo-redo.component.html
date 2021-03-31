@@ -3,7 +3,12 @@
         <fa-icon icon="magnet"></fa-icon>
     </button>
     <div class="vertical-divider"></div>
-    <button mat-button matTooltip="Activer/Désactiver grille (G)" (click)="this.handleClickGrid()">
+    <button
+        mat-button
+        matTooltip="Activer/Désactiver grille (G)"
+        [class.active]="this.toolService.gridService.gridDrawn"
+        (click)="this.handleClickGrid()"
+    >
         <fa-icon icon="border-all"></fa-icon>
     </button>
 
