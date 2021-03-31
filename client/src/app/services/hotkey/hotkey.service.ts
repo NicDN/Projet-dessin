@@ -160,10 +160,12 @@ export class HotkeyService {
     private handleIncrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
         if (this.gridService.squareSize < this.gridService.MAX_SQUARE_SIZE) this.gridService.incrementSquareSize();
+        this.drawingService.updateGrid();
     }
 
     private handleDecrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
         if (this.gridService.squareSize > this.gridService.MIN_SQUARE_SIZE) this.gridService.decrementSquareSize();
+        this.drawingService.updateGrid();
     }
 }
