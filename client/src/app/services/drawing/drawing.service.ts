@@ -41,7 +41,7 @@ export class DrawingService {
     }
 
     clearCanvas(context: CanvasRenderingContext2D): void {
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     }
 
     executeBaseLine(image: HTMLImageElement): void {
