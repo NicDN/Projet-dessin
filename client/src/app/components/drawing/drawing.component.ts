@@ -55,6 +55,7 @@ export class DrawingComponent implements AfterViewInit {
         if (this.canDraw) this.toolsService.currentTool.onMouseMove(event);
     }
 
+    @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
         if (this.canDraw) {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
