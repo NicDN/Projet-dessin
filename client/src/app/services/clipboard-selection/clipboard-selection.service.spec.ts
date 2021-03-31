@@ -1,17 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import { SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
+import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { MoveSelectionService } from '../tools/selection/move-selection.service';
-import { RectangleDrawingService } from '../tools/shape/rectangle/rectangle-drawing.service';
-import { UndoRedoService } from '../undo-redo/undo-redo.service';
-import { SelectionType } from './../../classes/commands/selection-command/selection-command';
-import { LassoSelectionService } from './../tools/selection/lasso/lasso-selection.service';
-import { RectangleSelectionService } from './../tools/selection/rectangle/rectangle-selection.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ClipboardSelectionService } from './clipboard-selection.service';
 
+// tslint:disable: no-any
+// tslint:disable: no-string-literal
+// tslint:disable: max-file-line-count
 describe('ClipboardService', () => {
     let service: ClipboardSelectionService;
     let toolServiceSpyObj: jasmine.SpyObj<ToolsService>;
@@ -94,15 +97,15 @@ describe('ClipboardService', () => {
             selectionType: SelectionType.Ellipse,
         };
         service.clipBoardData.selectionType = SelectionType.Rectangle;
-        service.switchToStoredClipboardImageSelectionTool();
+        service['switchToStoredClipboardImageSelectionTool']();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.rectangleSelectionService);
 
         service.clipBoardData.selectionType = SelectionType.Ellipse;
-        service.switchToStoredClipboardImageSelectionTool();
+        service['switchToStoredClipboardImageSelectionTool']();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.ellipseSelectionService);
 
         service.clipBoardData.selectionType = SelectionType.Lasso;
-        service.switchToStoredClipboardImageSelectionTool();
+        service['switchToStoredClipboardImageSelectionTool']();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolServiceSpyObj.lassoSelectionService);
     });
 
@@ -126,22 +129,22 @@ describe('ClipboardService', () => {
 
     it('#getSelectionType should return selection type rectangle if the current tool is a rectangleSelection', () => {
         toolServiceSpyObj.currentTool = rectangleSelectionServiceStub;
-        expect(service.getSelectionType()).toEqual(SelectionType.Rectangle);
+        expect(service['getSelectionType']()).toEqual(SelectionType.Rectangle);
     });
 
     it('#checkSelectionType should return selection type ellipse if the current tool is a ellipseSelection', () => {
         toolServiceSpyObj.currentTool = ellipseSelectionServiceStub;
-        expect(service.getSelectionType()).toEqual(SelectionType.Ellipse);
+        expect(service['getSelectionType']()).toEqual(SelectionType.Ellipse);
     });
 
     it('#checkSelectionType should return selection type rectangle if the current tool is a lassoSelection', () => {
         toolServiceSpyObj.currentTool = lassoSelectionServiceStub;
-        expect(service.getSelectionType()).toEqual(SelectionType.Lasso);
+        expect(service['getSelectionType']()).toEqual(SelectionType.Lasso);
     });
 
     it('#checkSelectionType should return selection type none if the current tool is not a selection tool', () => {
         toolServiceSpyObj.currentTool = toolServiceSpyObj.pencilService;
-        expect(service.getSelectionType()).toEqual(SelectionType.None);
+        expect(service['getSelectionType']()).toEqual(SelectionType.None);
     });
 
     it('#cut should call copy and delete from the service', () => {
@@ -195,11 +198,13 @@ describe('ClipboardService', () => {
         let red = true;
         let green = true;
         let blue = true;
-        for (let index = 0; index < (toolServiceSpyObj.currentTool as SelectionTool).data.data.length; index += 4) {
+        const pixelSize = 4;
+        const globalAlphaPosition = 3;
+        for (let index = 0; index < (toolServiceSpyObj.currentTool as SelectionTool).data.data.length; index += pixelSize) {
             if ((toolServiceSpyObj.currentTool as SelectionTool).data.data[index] !== 0) red = false;
             if ((toolServiceSpyObj.currentTool as SelectionTool).data.data[index + 1] !== 0) green = false;
             if ((toolServiceSpyObj.currentTool as SelectionTool).data.data[index + 2] !== 0) blue = false;
-            if ((toolServiceSpyObj.currentTool as SelectionTool).data.data[index + 3] !== whiteRGB) opacity = false;
+            if ((toolServiceSpyObj.currentTool as SelectionTool).data.data[index + globalAlphaPosition] !== whiteRGB) opacity = false;
         }
         expect(opacity).toBeTrue();
         expect(red).toBeTrue();
@@ -233,7 +238,7 @@ describe('ClipboardService', () => {
 
     it('#paste should call the switch to stored clipboard image selection tool and the drawAll method from the current tool ( if it is a selection tool', () => {
         const drawAllSpy = spyOn(toolServiceSpyObj.currentTool as SelectionTool, 'drawAll').and.returnValue();
-        const switchToolSpy = spyOn(service, 'switchToStoredClipboardImageSelectionTool').and.returnValue();
+        const switchToolSpy = spyOn<any>(service, 'switchToStoredClipboardImageSelectionTool').and.returnValues();
         service.clipBoardData = {
             clipboardImage: drawingServiceSpyObj.previewCtx.getImageData(
                 0,
@@ -265,7 +270,7 @@ describe('ClipboardService', () => {
     });
 
     it('#paste should not paste if clipboard there are no images', () => {
-        const switchToolSpy = spyOn(service, 'switchToStoredClipboardImageSelectionTool');
+        const switchToolSpy = spyOn<any>(service, 'switchToStoredClipboardImageSelectionTool');
         service.paste();
         expect(switchToolSpy).not.toHaveBeenCalled();
     });
@@ -288,7 +293,7 @@ describe('ClipboardService', () => {
     });
 
     it('#paste should not paste if clipboard there are no images', () => {
-        const switchToolSpy = spyOn(service, 'switchToStoredClipboardImageSelectionTool');
+        const switchToolSpy = spyOn<any>(service, 'switchToStoredClipboardImageSelectionTool');
         service.paste();
         expect(switchToolSpy).not.toHaveBeenCalled();
     });
@@ -306,23 +311,23 @@ describe('ClipboardService', () => {
         };
         service.paste();
         expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalTopLeft).toEqual({
-            x: service.pasteOffSet,
-            y: service.pasteOffSet,
+            x: service['pasteOffSet'],
+            y: service['pasteOffSet'],
         });
 
         expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalBottomRight).toEqual({
-            x: service.pasteOffSet + service.clipBoardData.clipboardImage.width,
-            y: service.pasteOffSet + service.clipBoardData.clipboardImage.height,
+            x: service['pasteOffSet'] + service.clipBoardData.clipboardImage.width,
+            y: service['pasteOffSet'] + service.clipBoardData.clipboardImage.height,
         });
 
         expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft).toEqual({
-            x: service.outsideDrawingZoneCoords,
-            y: service.outsideDrawingZoneCoords,
+            x: service['outsideDrawingZoneCoords'],
+            y: service['outsideDrawingZoneCoords'],
         });
 
         expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight).toEqual({
-            x: service.outsideDrawingZoneCoords + service.clipBoardData.clipboardImage.width,
-            y: service.outsideDrawingZoneCoords + service.clipBoardData.clipboardImage.height,
+            x: service['outsideDrawingZoneCoords'] + service.clipBoardData.clipboardImage.width,
+            y: service['outsideDrawingZoneCoords'] + service.clipBoardData.clipboardImage.height,
         });
     });
 
@@ -353,7 +358,7 @@ describe('ClipboardService', () => {
 
     it('#copy should not copy there are no selection active', () => {
         spyOn(service, 'canUseClipboardService').and.returnValue(false);
-        const checkSelectionType = spyOn(service, 'getSelectionType');
+        const checkSelectionType = spyOn<any>(service, 'getSelectionType');
         service.copy();
         expect(checkSelectionType).not.toHaveBeenCalled();
     });

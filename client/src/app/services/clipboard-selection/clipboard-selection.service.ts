@@ -17,8 +17,8 @@ interface ClipBoardData {
 })
 export class ClipboardSelectionService {
     clipBoardData: ClipBoardData;
-    readonly outsideDrawingZoneCoords: number = 1000000;
-    readonly pasteOffSet: number = 10;
+    private readonly outsideDrawingZoneCoords: number = 1000000;
+    private readonly pasteOffSet: number = 10;
     constructor(private toolsService: ToolsService, private drawingService: DrawingService) {}
 
     copy(): void {
@@ -78,7 +78,7 @@ export class ClipboardSelectionService {
         (this.toolsService.currentTool as SelectionTool).cancelSelection();
     }
 
-    getSelectionType(): SelectionType {
+    private getSelectionType(): SelectionType {
         if (this.toolsService.currentTool instanceof RectangleSelectionService) {
             return SelectionType.Rectangle;
         } else if (this.toolsService.currentTool instanceof EllipseSelectionService) {
@@ -89,7 +89,7 @@ export class ClipboardSelectionService {
         return SelectionType.None;
     }
 
-    switchToStoredClipboardImageSelectionTool(): void {
+    private switchToStoredClipboardImageSelectionTool(): void {
         if (this.clipBoardData.selectionType === SelectionType.Rectangle) {
             this.toolsService.setCurrentTool(this.toolsService.rectangleSelectionService);
         }

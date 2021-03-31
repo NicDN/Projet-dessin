@@ -13,6 +13,8 @@ import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { SelectionOptionsComponent } from './selection-options.component';
 
+// tslint:disable: no-any
+// tslint:disable: no-string-literal
 describe('SelectionOptionsComponent', () => {
     let component: SelectionOptionsComponent;
     let fixture: ComponentFixture<SelectionOptionsComponent>;
@@ -118,8 +120,9 @@ describe('SelectionOptionsComponent', () => {
     });
 
     it('# can paste should return false if the clipboard is undefined', () => {
-        let undefined: any;
-        clipboardSelectionServiceSpyObj.clipBoardData = undefined;
+        // tslint:disable-next-line: prefer-const
+        let undefinedImage: any;
+        clipboardSelectionServiceSpyObj.clipBoardData = undefinedImage;
         expect(component.canPaste()).toBeFalse();
     });
 
