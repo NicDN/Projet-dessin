@@ -20,7 +20,7 @@ enum PointSelected {
 })
 export class ResizeSelectionService {
     constructor(protected shapeService: ShapeService) {}
-    private readonly selectingPointOffSet: number = 20;
+    private readonly selectingPointOffSet: number = 10;
     private selectedPoint: PointSelected;
     private selectingAreaWidth: number;
     private selectingAreaHeight: number;
@@ -33,6 +33,7 @@ export class ResizeSelectionService {
     }
 
     private checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
+        this.selectedPoint = PointSelected.NONE;
         this.isUpperLeft(mousePosition, selectionCoords);
         this.isUpperMiddle(mousePosition, selectionCoords);
         this.isUpperRight(mousePosition, selectionCoords);
@@ -41,6 +42,7 @@ export class ResizeSelectionService {
         this.isBottomLeft(mousePosition, selectionCoords);
         this.isBottomMiddle(mousePosition, selectionCoords);
         this.isBottomRight(mousePosition, selectionCoords);
+        console.log(this.selectedPoint);
     }
 
     private isUpperLeft(mousePosition: Vec2, selectionCoords: SelectionCoords): void {

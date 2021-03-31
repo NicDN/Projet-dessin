@@ -30,6 +30,7 @@ export abstract class SelectionTool extends Tool {
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
     selectionExists: boolean = false;
+    private readonly selectionOffSet: number = 5;
 
     private intervalHandler: number;
     private timeoutHandler: number;
@@ -302,10 +303,10 @@ export abstract class SelectionTool extends Tool {
 
     private isInsideSelection(point: Vec2): boolean {
         return (
-            point.x > this.selectionCoords.finalTopLeft.x &&
-            point.x < this.selectionCoords.finalBottomRight.x &&
-            point.y > this.selectionCoords.finalTopLeft.y &&
-            point.y < this.selectionCoords.finalBottomRight.y
+            point.x > this.selectionCoords.finalTopLeft.x - this.selectionOffSet &&
+            point.x < this.selectionCoords.finalBottomRight.x + this.selectionOffSet &&
+            point.y > this.selectionCoords.finalTopLeft.y - this.selectionOffSet &&
+            point.y < this.selectionCoords.finalBottomRight.y + this.selectionOffSet
         );
     }
 
