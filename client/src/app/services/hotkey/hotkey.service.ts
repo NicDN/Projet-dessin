@@ -35,7 +35,7 @@ enum shortCutManager {
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
     GRID = 'KeyG',
-    INCREMENT_SQUARE_SIZE_WITH_EQUAL = 'Equal',
+    INCREMENT_SQUARE_SIZE = 'Equal',
     DECREMENT_SQUARE_SIZE = 'Minus',
     CUT = 'KeyX',
     DELETE = 'Delete',
@@ -78,7 +78,7 @@ export class HotkeyService {
             KeyG: {
                 action: () => {
                     this.toolService.setCurrentTool(this.toolService.gridService);
-                    this.toolService.gridService.handleDrawGrid();
+                    this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
             },
@@ -159,11 +159,11 @@ export class HotkeyService {
 
     private handleIncrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
-        if (this.gridService.squareSize < this.gridService.MAX_SQUARE_SIZE) this.gridService.incrementSquareSize();
+        this.gridService.incrementSquareSize();
     }
 
     private handleDecrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
-        if (this.gridService.squareSize > this.gridService.MIN_SQUARE_SIZE) this.gridService.decrementSquareSize();
+        this.gridService.decrementSquareSize();
     }
 }

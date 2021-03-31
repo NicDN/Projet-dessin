@@ -13,6 +13,8 @@ export class GridService extends Tool {
     readonly MIN_OPACITY_PERCENTAGE: number = 10;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
 
+    private PERCENTAGE_CONVERTER: number = 100;
+
     squareSize: number = 20;
     opacity: number = 10;
 
@@ -31,7 +33,7 @@ export class GridService extends Tool {
         });
     }
 
-    resizeNotification(boxSize: BoxSize): void {
+    private resizeNotification(boxSize: BoxSize): void {
         this.drawingService.gridCanvas.width = boxSize.widthBox;
         this.drawingService.gridCanvas.height = boxSize.heightBox;
         if (this.gridDrawn) this.drawGrid();
@@ -45,7 +47,7 @@ export class GridService extends Tool {
         this.drawGrid();
     }
 
-    drawGrid(): void {
+    private drawGrid(): void {
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();
         this.setGridContext();
@@ -67,14 +69,16 @@ export class GridService extends Tool {
     private setGridContext(): void {
         this.drawingService.gridCtx.strokeStyle = 'black';
         this.drawingService.gridCtx.lineWidth = 1;
-        this.drawingService.gridCtx.globalAlpha = this.opacity / 100;
+        this.drawingService.gridCtx.globalAlpha = this.opacity / this.PERCENTAGE_CONVERTER;
     }
 
     incrementSquareSize(): void {
-        this.squareSize = (Math.floor(this.squareSize / this.MULTIPLIER_FACTOR) + 1) * this.MULTIPLIER_FACTOR;
+        if (this.squareSize < this.MAX_SQUARE_SIZE)
+            this.squareSize = (Math.floor(this.squareSize / this.MULTIPLIER_FACTOR) + 1) * this.MULTIPLIER_FACTOR;
     }
 
     decrementSquareSize(): void {
-        this.squareSize = Math.floor((this.squareSize - 1) / this.MULTIPLIER_FACTOR) * this.MULTIPLIER_FACTOR;
+        if (this.squareSize > this.MIN_SQUARE_SIZE)
+            this.squareSize = Math.floor((this.squareSize - 1) / this.MULTIPLIER_FACTOR) * this.MULTIPLIER_FACTOR;
     }
 }
