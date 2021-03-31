@@ -19,9 +19,18 @@ export class DrawingService {
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
+    private gridSubject: Subject<void> = new Subject<void>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
+    }
+
+    updateGrid(): void {
+        this.gridSubject.next();
+    }
+
+    newGridSignals(): Observable<void> {
+        return this.gridSubject.asObservable();
     }
 
     private sendBaseLineCommand(image: HTMLImageElement): void {
@@ -105,6 +114,7 @@ export class DrawingService {
         this.clearCanvas(this.previewCtx);
         this.clearCanvas(this.gridCtx);
         this.previewCtx.putImageData(imageOldPreview, 0, 0);
+        this.updateGrid();
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {

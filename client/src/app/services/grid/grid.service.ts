@@ -23,11 +23,20 @@ export class GridService extends Tool {
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Grille');
         this.listenToResizeNotifications();
+        this.listenToUpdateGridNotification();
     }
 
     private listenToResizeNotifications(): void {
         this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
             this.resizeNotification(boxSize);
+        });
+    }
+
+    private listenToUpdateGridNotification(): void {
+        this.drawingService.newGridSignals().subscribe(() => {
+            if (this.gridDrawn) {
+                this.drawGrid();
+            }
         });
     }
 
