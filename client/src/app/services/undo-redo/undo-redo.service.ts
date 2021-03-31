@@ -16,8 +16,6 @@ export class UndoRedoService {
     private undoneList: AbstractCommand[] = [];
     private canUndoRedo: boolean = true;
 
-    // canSaveToStorage: boolean = true;
-
     private updateUndoRedoComponent: Subject<void> = new Subject<void>();
 
     private sendUndoRedoNotif(): void {
@@ -82,10 +80,6 @@ export class UndoRedoService {
         this.commandList[0] = baseLineCommand;
         this.sendUndoRedoNotif();
 
-        // if (!this.canSaveToStorage) {
-        //     this.canSaveToStorage = true;
-        //     return;
-        // }
         this.localStorageService.saveCanvas();
     }
 

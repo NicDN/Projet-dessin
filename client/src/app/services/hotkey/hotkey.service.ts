@@ -32,7 +32,6 @@ enum shortCutManager {
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
     GRID = 'KeyG',
-    TEST = 'KeyF',
 }
 
 type ShortcutManager = {
@@ -91,7 +90,6 @@ export class HotkeyService {
             KeyT: { action: () => this.toolService.setCurrentTool(this.toolService.textService) },
             KeyB: { action: () => this.toolService.setCurrentTool(this.toolService.fillDripService) },
             KeyV: { action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService) },
-            KeyF: { action: () => this.router.navigate(['home']) },
         };
     }
 

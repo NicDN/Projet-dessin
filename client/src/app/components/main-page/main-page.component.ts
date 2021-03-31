@@ -4,7 +4,6 @@ import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
-// import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Component({
     selector: 'app-main-page',
@@ -19,7 +18,7 @@ export class MainPageComponent {
         public dialogService: DialogService,
         public localStorageService: LocalStorageService,
         private drawingService: DrawingService,
-        private router: Router, // private undoRedoService: UndoRedoService,
+        private router: Router,
     ) {}
 
     @HostListener('window:keydown', ['$event'])
@@ -30,13 +29,13 @@ export class MainPageComponent {
     continueDrawing(): void {
         const image = new Image();
         image.src = localStorage.getItem('canvas') as string;
-        console.log('wheres our imageeeeee ' + image.width + ' ' + image.height);
-        // BOOLEAN HAS TO BE REMOVED, SHOULD NOT BE IN UNDO-REDO
-        // this.undoRedoService.canSaveToStorage = false;
+        // console.log(image.src);
+        console.log('Main page Images dimensions: width ' + image.width + 'Height ' + image.height);
 
         this.drawingService.newImage = image;
         this.router.navigate(['editor']);
     }
+
     openNewDrawing(): void {
         this.drawingService.newImage = undefined;
         this.router.navigate(['editor']);

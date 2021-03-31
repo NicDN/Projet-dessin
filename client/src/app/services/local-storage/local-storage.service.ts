@@ -15,7 +15,7 @@ export class LocalStorageService {
         image.src = (' ' + this.drawingService.canvas.toDataURL()).slice(1);
         image.width = this.drawingService.canvas.width;
         image.height = this.drawingService.canvas.height;
-        console.log('Image sizes: width: ' + image.width + ' height: ' + image.height);
+        console.log('Saving Local storage Image sizes: width: ' + image.width + ' height: ' + image.height);
         // *******
         const canvasURLCopy = (' ' + this.drawingService.canvas.toDataURL()).slice(1); // deep copy of canvas url
         localStorage.setItem('canvas', canvasURLCopy);
