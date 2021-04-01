@@ -3,6 +3,7 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -86,6 +87,11 @@ export class DrawingComponent implements AfterViewInit {
     @HostListener('mouseout', ['$event'])
     onMouseOut(event: MouseEvent): void {
         this.toolsService.currentTool.onMouseOut(event);
+    }
+
+    @HostListener('wheel', ['$event'])
+    onScroll(event: MouseEvent): void {
+        if (this.toolsService.stampService) (this.toolsService.currentTool as StampService).onScroll(event);
     }
 
     disableDrawing(isUsingResizeButton: boolean): void {

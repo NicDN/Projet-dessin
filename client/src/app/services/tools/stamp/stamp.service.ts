@@ -1,4 +1,4 @@
-import { HostListener, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
@@ -18,7 +18,8 @@ export class StampService extends Tool {
 
     selectedStampSrc: string = '';
 
-    readonly SCALING_MAX_VALUE: number = 4; // TODO: change to appropriate value
+    readonly SCALING_MAX_VALUE: number = 3; // TODO: change to appropriate value
+    readonly SCALING_MIN_VALUE: number = 1;
 
     readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
@@ -36,11 +37,21 @@ export class StampService extends Tool {
     }
 
     private displayPreview(event: MouseEvent): void {
+        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
+    }
+
+    onMouseDown(event: MouseEvent): void {
+        this.drawImageOnCanvas(event, this.drawingService.baseCtx);
+        return;
+    }
+
+    private drawImageOnCanvas(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
         const stampPreview: HTMLImageElement = new Image();
         stampPreview.src = this.selectedStampSrc;
+        // stampPreview.setAttribute = ('crossOrigin', ' ');
         const mousePosition = this.getPositionFromMouse(event);
 
-        this.drawingService.previewCtx.drawImage(
+        ctx.drawImage(
             stampPreview,
             mousePosition.x - Math.floor((stampPreview.width * this.scaling) / 2),
             mousePosition.y - Math.floor((stampPreview.height * this.scaling) / 2),
@@ -49,15 +60,23 @@ export class StampService extends Tool {
         );
     }
 
-    onMouseDown(event: MouseEvent): void {
-        return;
+    onScroll(event: MouseEvent): void {
+        this.rotateStamp(event);
     }
 
-    @HostListener('window:scroll', ['$event'])
-    onScroll($event: Event): void {
-        if ($event) {
-            console.log('Scrolling');
-        }
+    rotateStamp(event: MouseEvent): void {
+        let stampCanvasTmp: HTMLCanvasElement = document.createElement('canvas');
+        let stampCanvasTmpCtx = stampCanvasTmp.getContext('2d') as CanvasRenderingContext2D;
+        stampCanvasTmp.width = this.drawingService.previewCanvas.width;
+        stampCanvasTmp.height = this.drawingService.previewCanvas.height;
+
+        const currentCoords = this.getPositionFromMouse(event);
+        stampCanvasTmpCtx.translate(currentCoords.x, currentCoords.y);
+        stampCanvasTmpCtx.rotate((45 * Math.PI) / 180);
+        stampCanvasTmpCtx.translate(-currentCoords.x, -currentCoords.y);
+
+        this.drawingService.previewCtx.putImageData(stampCanvasTmpCtx.getImageData(0, 0, stampCanvasTmp.width, stampCanvasTmp.height), 0, 0);
+        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage

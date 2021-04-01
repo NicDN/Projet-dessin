@@ -21,11 +21,11 @@ export class StampSelectorComponent implements OnInit {
         this.scalingSetting = {
             title: "Facteur de mise à l'échelle",
             unit: '',
-            min: 1,
-            max: this.stampService.SCALING_MAX_VALUE,
+            min: this.stampService.SCALING_MIN_VALUE *10,
+            max: this.stampService.SCALING_MAX_VALUE *10,
 
             getAttribute: () => {
-                return this.stampService.scaling;
+                return this.stampService.scaling/10;
             },
             action: (value: number) => (this.stampService.scaling = value),
         };
