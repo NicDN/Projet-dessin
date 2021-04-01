@@ -41,7 +41,6 @@ export class StampService extends Tool {
 
     onMouseDown(event: MouseEvent): void {
         this.drawImageOnCanvas(event, this.drawingService.baseCtx);
-        return;
     }
 
     private drawImageOnCanvas(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
