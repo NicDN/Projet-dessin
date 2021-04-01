@@ -26,7 +26,7 @@ export abstract class SelectionTool extends Tool {
     }
 
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
-    private data: ImageData;
+    data: ImageData;
     selectionExists: boolean = false;
 
     private intervalHandler: number;
@@ -34,7 +34,7 @@ export abstract class SelectionTool extends Tool {
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
 
-    private selectionCoords: SelectionCoords = {
+    selectionCoords: SelectionCoords = {
         initialTopLeft: { x: 0, y: 0 },
         initialBottomRight: { x: 0, y: 0 },
         finalTopLeft: { x: 0, y: 0 },
@@ -245,13 +245,13 @@ export abstract class SelectionTool extends Tool {
         this.selectionCoords.initialTopLeft = { x: this.selectionCoords.initialBottomRight.x, y: this.selectionCoords.initialBottomRight.y };
     }
 
-    private drawAll(ctx: CanvasRenderingContext2D): void {
+    drawAll(ctx: CanvasRenderingContext2D): void {
         this.draw(ctx);
         this.drawPerimeter(ctx, this.selectionCoords.finalTopLeft, this.selectionCoords.finalBottomRight);
         this.drawBox(ctx, this.selectionCoords.finalTopLeft, this.selectionCoords.finalBottomRight);
     }
 
-    private draw(ctx: CanvasRenderingContext2D): void {
+    draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
         if (

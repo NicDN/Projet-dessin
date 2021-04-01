@@ -5,6 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
 import { EditorComponent } from '@app/components/editor/editor.component';
 import { MainPageComponent } from '@app/components/main-page/main-page.component';
+import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { ColorService } from '@app/services/color/color.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -25,6 +26,8 @@ describe('HotkeyService', () => {
     let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let rectangleSelectionServiceSpyObj: jasmine.SpyObj<RectangleSelectionService>;
+    let clipboardSelectionServiceSpyObj: jasmine.SpyObj<ClipboardSelectionService>;
+
     const boxSizeStub = { widthBox: 10, heightBox: 10 };
     const booleanStub = true;
 
@@ -46,7 +49,14 @@ describe('HotkeyService', () => {
     const keySStub = new KeyboardEvent('keydown', { code: 'KeyS' });
 
     const keyLStub = new KeyboardEvent('keydown', { code: 'KeyL' });
+
     const keyCStub = new KeyboardEvent('keydown', { code: 'KeyC' });
+    const keyCCtrlStub = new KeyboardEvent('keydown', { code: 'KeyC', ctrlKey: true });
+
+    const keyXCtrlStub = new KeyboardEvent('keydown', { code: 'KeyX', ctrlKey: true });
+
+    const keyDeleteStub = new KeyboardEvent('keydown', { code: 'Delete' });
+    const keyVCtrlStub = new KeyboardEvent('keydown', { code: 'KeyV', ctrlKey: true });
 
     const keyCtrlZStub = new KeyboardEvent('keydown', { code: 'KeyZ', ctrlKey: true });
     const keyZCtrlShiftStub = new KeyboardEvent('keydown', { code: 'KeyZ', ctrlKey: true, shiftKey: true });
@@ -71,6 +81,7 @@ describe('HotkeyService', () => {
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool', 'onKeyDown']);
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['selectAll']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
+        clipboardSelectionServiceSpyObj = jasmine.createSpyObj('ClipboardSelectionService', ['copy', 'cut', 'delete', 'paste']);
 
         toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
@@ -90,6 +101,7 @@ describe('HotkeyService', () => {
                 { provide: DialogService, useValue: dialogServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: RectangleSelectionService, useValue: rectangleSelectionServiceSpyObj },
+                { provide: ClipboardSelectionService, useValue: clipboardSelectionServiceSpyObj },
                 { provide: MatDialog, useValue: {} },
             ],
             schemas: [NO_ERRORS_SCHEMA],
@@ -179,6 +191,18 @@ describe('HotkeyService', () => {
 
             service.onKeyDown(keyCtrlAStub);
             expect(service['handleSelectAll']).toHaveBeenCalled();
+
+            service.onKeyDown(keyCCtrlStub);
+            expect(clipboardSelectionServiceSpyObj.copy).toHaveBeenCalled();
+
+            service.onKeyDown(keyXCtrlStub);
+            expect(clipboardSelectionServiceSpyObj.cut).toHaveBeenCalled();
+
+            service.onKeyDown(keyDeleteStub);
+            expect(clipboardSelectionServiceSpyObj.delete).toHaveBeenCalled();
+
+            service.onKeyDown(keyVCtrlStub);
+            expect(clipboardSelectionServiceSpyObj.paste).toHaveBeenCalled();
         },
     );
 
