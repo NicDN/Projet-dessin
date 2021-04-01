@@ -57,45 +57,71 @@ export class TextService extends TraceTool {
         this.isWriting = true;
         this.disableEnableHotKeyService(false);
         this.initialClickPosition = this.getPositionFromMouse(event);
+
+        this.drawingService.previewCtx.save();
+        this.setContextForWriting(this.drawingService.previewCtx);
+        this.displayPreviewBar(this.drawingService.previewCtx, '', 0);
+        this.drawingService.previewCtx.restore();
     }
 
     onKeyDown(event: KeyboardEvent): void {
         // Maybe making this function a switch case?
-        if (event.key === 'Escape') {
-            this.disableWriting();
-            return;
-        }
+        // if (event.key === 'Escape') {
+        //     this.disableWriting();
+        //     return;
+        // }
+        // if (event.key === 'ArrowLeft') {
+        //     this.arrowLeftPressed();
+        // }
 
-        if (event.key === 'ArrowLeft') {
-            this.arrowLeftPressed();
+        // if (event.key === 'ArrowRight') {
+        //     this.arrowRightPressed();
+        // }
+        // if (event.key === 'ArrowUp') {
+        //     this.arrowUpPressed();
+        // }
+        // if (event.key === 'ArrowDown') {
+        //     this.arrowDownPressed();
+        // }
+        // if (event.key === 'Delete') {
+        //     this.deletePressed();
+        //     return;
+        // }
+        // if (event.key === 'Backspace') {
+        //     this.backSpacePressed();
+        //     return;
+        // }
+        // if (event.key === 'Enter') {
+        //     this.enterPressed();
+        // }
+        switch (event.code) {
+            case 'Escape':
+                this.disableWriting();
+                return;
+            case 'ArrowLeft':
+                this.arrowLeftPressed();
+                break;
+            case 'ArrowRight':
+                this.arrowRightPressed();
+                break;
+            case 'ArrowUp':
+                this.arrowUpPressed();
+                break;
+            case 'ArrowDown':
+                this.arrowDownPressed();
+                break;
+            case 'Delete':
+                this.deletePressed();
+                return;
+            case 'Backspace':
+                this.backSpacePressed();
+                return;
+            case 'Enter':
+                this.enterPressed();
+                break;
+            default:
+                break;
         }
-
-        if (event.key === 'ArrowRight') {
-            this.arrowRightPressed();
-        }
-
-        if (event.key === 'ArrowUp') {
-            this.arrowUpPressed();
-        }
-
-        if (event.key === 'ArrowDown') {
-            this.arrowDownPressed();
-        }
-
-        if (event.key === 'Delete') {
-            this.deletePressed();
-            return;
-        }
-
-        if (event.key === 'Backspace') {
-            this.backSpacePressed();
-            return;
-        }
-
-        if (event.key === 'Enter') {
-            this.enterPressed();
-        }
-
         if (this.isWriting) {
             this.addChar(event);
         }
