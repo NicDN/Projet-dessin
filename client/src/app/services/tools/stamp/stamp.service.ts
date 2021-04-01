@@ -6,19 +6,18 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
     providedIn: 'root',
 })
 export class StampService extends Tool {
-    // TODO: put links in a JSON ?
     stamps: string[] = [
-        'https://media.lactualite.com/2020/03/jqb10755641.jpg',
-        'https://pbs.twimg.com/profile_images/1210618202457292802/lt9KD2lt.jpg',
-        'https://pbs.twimg.com/profile_images/1963916757/carre-FB-Twitter-br_400x400.jpg',
-        'https://cdn.eso.org/images/thumb300y/eso1907a.jpg',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQwp2WSOJ81mjgmNNn4Mx2o9HDfPKN7MFixe6SUjwrfMvValc5PAqZufIyDolSF2sGHVs&usqp=CAU',
-        'https://p.kindpng.com/picc/s/707-7071194_meme-memexd-memes-shrek-shrekmeme-mikewazowski-shrek-mike.png',
+        ' ../../../../../assets/stamps/catKun.jpg',
+        ' ../../../../../assets/stamps/github.png',
+        ' ../../../../../assets/stamps/mario.jpeg',
+        ' ../../../../../assets/stamps/emoji.png',
+        ' ../../../../../assets/stamps/minecraft.png',
+        ' ../../../../../assets/stamps/creeper.png',
     ];
 
-    selectedStampSrc: string = '';
+    selectedStampSrc: string = this.stamps[0];
 
-    readonly SCALING_MAX_VALUE: number = 3; // TODO: change to appropriate value
+    readonly SCALING_MAX_VALUE: number = 3;
     readonly SCALING_MIN_VALUE: number = 1;
 
     readonly ANGLE_MAX_VALUE: number = 360;
@@ -48,7 +47,6 @@ export class StampService extends Tool {
     private drawImageOnCanvas(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
         const stampPreview: HTMLImageElement = new Image();
         stampPreview.src = this.selectedStampSrc;
-        // stampPreview.setAttribute = ('crossOrigin', ' ');
         const mousePosition = this.getPositionFromMouse(event);
 
         ctx.drawImage(
@@ -65,8 +63,8 @@ export class StampService extends Tool {
     }
 
     rotateStamp(event: MouseEvent): void {
-        let stampCanvasTmp: HTMLCanvasElement = document.createElement('canvas');
-        let stampCanvasTmpCtx = stampCanvasTmp.getContext('2d') as CanvasRenderingContext2D;
+        const stampCanvasTmp: HTMLCanvasElement = document.createElement('canvas');
+        const stampCanvasTmpCtx = stampCanvasTmp.getContext('2d') as CanvasRenderingContext2D;
         stampCanvasTmp.width = this.drawingService.previewCanvas.width;
         stampCanvasTmp.height = this.drawingService.previewCanvas.height;
 

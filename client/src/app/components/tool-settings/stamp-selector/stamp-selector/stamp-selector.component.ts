@@ -21,11 +21,11 @@ export class StampSelectorComponent implements OnInit {
         this.scalingSetting = {
             title: "Facteur de mise à l'échelle",
             unit: '',
-            min: this.stampService.SCALING_MIN_VALUE *10,
-            max: this.stampService.SCALING_MAX_VALUE *10,
+            min: this.stampService.SCALING_MIN_VALUE * 10,
+            max: this.stampService.SCALING_MAX_VALUE * 10,
 
             getAttribute: () => {
-                return this.stampService.scaling/10;
+                return this.stampService.scaling / 10;
             },
             action: (value: number) => (this.stampService.scaling = value),
         };
@@ -42,7 +42,7 @@ export class StampSelectorComponent implements OnInit {
             action: (value: number) => (this.stampService.angle = value),
         };
 
-        this.stampService.selectedStampSrc = this.stampService.stamps[0];
+        this.stampService.selectedStampSrc = this.stampService.selectedStampSrc;
     }
 
     openStampLibrary(): void {
