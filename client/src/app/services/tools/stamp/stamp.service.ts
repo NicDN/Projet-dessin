@@ -23,6 +23,8 @@ export class StampService extends Tool {
     readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
 
+    wheel: number = 1;
+    currentAngle: number = 0;
     scaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
@@ -48,6 +50,12 @@ export class StampService extends Tool {
         stampPreview.src = this.selectedStampSrc;
         const mousePosition = this.getPositionFromMouse(event);
 
+        ctx.save();
+        const currentCoords = this.getPositionFromMouse(event);
+        ctx.translate(currentCoords.x, currentCoords.y);
+        ctx.rotate(this.currentAngle);
+        ctx.translate(-currentCoords.x, -currentCoords.y);
+
         ctx.drawImage(
             stampPreview,
             mousePosition.x - Math.floor((stampPreview.width * this.scaling) / 2),
@@ -55,6 +63,7 @@ export class StampService extends Tool {
             stampPreview.width * this.scaling,
             stampPreview.height * this.scaling,
         );
+        ctx.restore();
     }
 
     onScroll(event: MouseEvent): void {
@@ -62,18 +71,13 @@ export class StampService extends Tool {
     }
 
     rotateStamp(event: MouseEvent): void {
-        const stampCanvasTmp: HTMLCanvasElement = document.createElement('canvas');
-        const stampCanvasTmpCtx = stampCanvasTmp.getContext('2d') as CanvasRenderingContext2D;
-        stampCanvasTmp.width = this.drawingService.previewCanvas.width;
-        stampCanvasTmp.height = this.drawingService.previewCanvas.height;
-
-        const currentCoords = this.getPositionFromMouse(event);
-        stampCanvasTmpCtx.translate(currentCoords.x, currentCoords.y);
-        stampCanvasTmpCtx.rotate((45 * Math.PI) / 180);
-        stampCanvasTmpCtx.translate(-currentCoords.x, -currentCoords.y);
-
-        this.drawingService.previewCtx.putImageData(stampCanvasTmpCtx.getImageData(0, 0, stampCanvasTmp.width, stampCanvasTmp.height), 0, 0);
-        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
+        if (event.deltaY > 0) {
+            this.wheel += 4;
+        } else {
+            this.wheel -= 4;
+        }
+        console.log(this.wheel);
+        this.currentAngle = (this.wheel * Math.PI) / 180;
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
