@@ -43,8 +43,6 @@ export class TextService extends TraceTool {
     private writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
     private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Consolas', 'Bembo'];
     private enterPosition: number[] = [];
-    // private atEnterLeft: boolean = false;
-    // private atEnterRight: boolean = false;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Texte');
@@ -77,11 +75,11 @@ export class TextService extends TraceTool {
         }
 
         if (event.key === 'ArrowUp') {
-            // something
+            this.arrowUpPressed();
         }
 
         if (event.key === 'ArrowDown') {
-            // something
+            this.arrowDownPressed();
         }
 
         if (event.key === 'Delete') {
@@ -105,23 +103,18 @@ export class TextService extends TraceTool {
 
     private arrowLeftPressed(): void {
         if (this.writingPosition !== this.writtenOnPreview.length) this.writingPosition += 1;
-        // if (this.writingPosition === this.writtenOnPreview.length) return;
-        // let enterDetected = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition);
-        // if (this.atEnterLeft === false) {
-        //     if (!this.atEnterLeft && enterDetected !== this.MINUS_ONE) this.atEnterLeft = true;
-        // } else {
-        //     enterDetected = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition + 1);
-        //     if (this.atEnterLeft && enterDetected === this.MINUS_ONE) {
-        //         this.writingPosition += 1;
-        //         this.atEnterLeft = false;
-        //         return;
-        //     }
-        // }
-        // if (enterDetected === this.MINUS_ONE) this.writingPosition += 1;
     }
 
     private arrowRightPressed(): void {
         if (this.writingPosition !== 0) this.writingPosition -= 1;
+    }
+
+    private arrowUpPressed(): void {
+        // hi
+    }
+
+    private arrowDownPressed(): void {
+        // hi
     }
 
     private deletePressed(): void {
@@ -129,10 +122,13 @@ export class TextService extends TraceTool {
         const enterDeleted = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition + 1);
         if (enterDeleted !== this.MINUS_ONE) {
             this.enterPosition.splice(enterDeleted, 1);
-        } else
-            this.writtenOnPreview =
-                this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition) +
-                this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition + 1, this.writtenOnPreview.length);
+        }
+        this.writtenOnPreview =
+            this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition) +
+            this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition + 1, this.writtenOnPreview.length);
+        for (let i = 0; i < this.enterPosition.length; i++) {
+            if (this.writtenOnPreview.length - this.writingPosition < this.enterPosition[i]) this.enterPosition[i] -= 1;
+        }
         this.writingPosition -= 1;
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
@@ -142,27 +138,32 @@ export class TextService extends TraceTool {
         const enterDeleted = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition);
         if (enterDeleted !== this.MINUS_ONE) {
             this.enterPosition.splice(enterDeleted, 1);
-        } else
-            this.writtenOnPreview =
-                this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition - 1) +
-                this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition, this.writtenOnPreview.length);
+        }
+        this.writtenOnPreview =
+            this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition - 1) +
+            this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition, this.writtenOnPreview.length);
+        for (let i = 0; i < this.enterPosition.length; i++) {
+            if (this.writtenOnPreview.length - this.writingPosition < this.enterPosition[i]) this.enterPosition[i] -= 1;
+        }
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
     }
 
     private enterPressed(): void {
-        this.enterPosition.push(this.writtenOnPreview.length - this.writingPosition);
+        this.enterPosition.push(this.writtenOnPreview.length - this.writingPosition + 1);
+        this.writtenOnPreview =
+            this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition) +
+            ' ' +
+            this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition, this.writtenOnPreview.length);
         this.enterPosition.sort((n1, n2) => n1 - n2);
     }
 
     private addChar(event: KeyboardEvent): void {
-        if (event.key.length !== 1 && event.key !== 'Enter') return;
-        if (event.key !== 'Enter') {
-            const nextToEnter = this.enterPosition.indexOf(this.writtenOnPreview.length - this.writingPosition + 1);
-            if (nextToEnter !== this.MINUS_ONE) {
-                for (let i = nextToEnter; i < this.enterPosition.length; i++) {
-                    this.enterPosition[i] += 1;
-                }
+        if (event.key.length !== 1 && event.key !== 'Enter' && event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        if (event.key !== 'Enter' && event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+            const writingPosFromStart = this.writtenOnPreview.length - this.writingPosition + 1;
+            for (let i = 0; i < this.enterPosition.length; i++) {
+                if (writingPosFromStart <= this.enterPosition[i]) this.enterPosition[i] += 1;
             }
             this.writtenOnPreview =
                 this.writtenOnPreview.substring(0, this.writtenOnPreview.length - this.writingPosition) +
@@ -185,29 +186,77 @@ export class TextService extends TraceTool {
     drawText(ctx: CanvasRenderingContext2D, text: string): void {
         ctx.save();
         this.setContextForWriting(ctx);
+        const previewPosition = this.writtenOnPreview.length - this.writingPosition;
         if (this.enterPosition.length !== 0) {
             // You can get a very close approximation of the vertical height by checking the length of a capital M (multiplying by 1.5 for comfort).
             const approximateHeight = ctx.measureText('M').width * this.MULTIPLIER;
             let i = 0;
             let previousPosition = 0;
             for (const position of this.enterPosition) {
-                ctx.fillText(
-                    this.writtenOnPreview.substring(previousPosition, position),
-                    this.initialClickPosition.x,
-                    this.initialClickPosition.y + approximateHeight * i,
-                );
+                if (previewPosition >= previousPosition && previewPosition < position) {
+                    ctx.fillText(
+                        this.writtenOnPreview.substring(previousPosition, previewPosition),
+                        this.initialClickPosition.x,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
+                    this.displayPreviewBar(ctx, text.substring(previousPosition, previewPosition), i * approximateHeight);
+                    ctx.fillText(
+                        text.substring(previewPosition, position),
+                        this.initialClickPosition.x + ctx.measureText(this.writtenOnPreview.substring(previousPosition, previewPosition)).width,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
+                } else
+                    ctx.fillText(
+                        this.writtenOnPreview.substring(previousPosition, position),
+                        this.initialClickPosition.x,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
                 i += 1;
                 previousPosition = position;
             }
+
             if (previousPosition !== this.writtenOnPreview.length) {
-                ctx.fillText(
-                    this.writtenOnPreview.substring(previousPosition, this.writtenOnPreview.length),
-                    this.initialClickPosition.x,
-                    this.initialClickPosition.y + approximateHeight * i,
-                );
-            }
-        } else ctx.fillText(text, this.initialClickPosition.x, this.initialClickPosition.y);
+                if (previewPosition >= previousPosition && previewPosition <= this.writtenOnPreview.length) {
+                    ctx.fillText(
+                        text.substring(previousPosition, previewPosition),
+                        this.initialClickPosition.x,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
+                    this.displayPreviewBar(ctx, text.substring(previousPosition, previewPosition), approximateHeight * i);
+                    ctx.fillText(
+                        text.substring(previewPosition, this.writtenOnPreview.length),
+                        this.initialClickPosition.x + ctx.measureText(text.substring(previousPosition, previewPosition)).width,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
+                } else {
+                    ctx.fillText(
+                        this.writtenOnPreview.substring(previousPosition, this.writtenOnPreview.length),
+                        this.initialClickPosition.x,
+                        this.initialClickPosition.y + approximateHeight * i,
+                    );
+                }
+            } else this.displayPreviewBar(ctx, '', approximateHeight * i);
+        } else {
+            ctx.fillText(text.substring(0, previewPosition), this.initialClickPosition.x, this.initialClickPosition.y);
+            this.displayPreviewBar(ctx, text.substring(0, previewPosition), 0);
+            ctx.fillText(
+                text.substring(previewPosition, text.length),
+                this.initialClickPosition.x + ctx.measureText(text.substring(0, previewPosition)).width,
+                this.initialClickPosition.y,
+            );
+        }
         ctx.restore();
+    }
+
+    private displayPreviewBar(ctx: CanvasRenderingContext2D, text: string, approximateHeightPadding: number): void {
+        if (ctx === this.drawingService.baseCtx) return;
+        ctx.fillRect(
+            ctx.measureText(text).width + this.initialClickPosition.x,
+            // Change the next value to make the bar more centered (bar not the right size for some type of fonts)
+            this.initialClickPosition.y - ctx.measureText('M').width + approximateHeightPadding,
+            1,
+            Math.floor(ctx.measureText('M').width * this.MULTIPLIER),
+        );
     }
 
     private setContextForWriting(ctx: CanvasRenderingContext2D): void {
