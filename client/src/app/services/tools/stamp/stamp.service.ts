@@ -72,12 +72,14 @@ export class StampService extends Tool {
 
     rotateStamp(event: MouseEvent): void {
         if (event.deltaY > 0) {
-            this.wheel += 4;
+            this.wheel += 10;
         } else {
-            this.wheel -= 4;
+            this.wheel -= 10;
         }
         console.log(this.wheel);
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.currentAngle = (this.wheel * Math.PI) / 180;
+        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
