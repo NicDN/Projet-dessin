@@ -90,7 +90,7 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     @HostListener('wheel', ['$event'])
-    onScroll(event: MouseEvent): void {
+    onScroll(event: WheelEvent): void {
         if (this.toolsService.stampService) (this.toolsService.currentTool as StampService).onScroll(event);
     }
 

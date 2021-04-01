@@ -66,17 +66,16 @@ export class StampService extends Tool {
         ctx.restore();
     }
 
-    onScroll(event: MouseEvent): void {
+    onScroll(event: WheelEvent): void {
         this.rotateStamp(event);
     }
 
-    rotateStamp(event: MouseEvent): void {
+    rotateStamp(event: WheelEvent): void {
         if (event.deltaY > 0) {
-            this.wheel += 10;
+            this.wheel += 45;
         } else {
-            this.wheel -= 10;
+            this.wheel -= 45;
         }
-        console.log(this.wheel);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.currentAngle = (this.wheel * Math.PI) / 180;
         this.drawImageOnCanvas(event, this.drawingService.previewCtx);
