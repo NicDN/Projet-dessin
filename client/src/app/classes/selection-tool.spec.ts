@@ -106,8 +106,8 @@ describe('SelectionTool', () => {
     it('#onMouseDown should initialize values for initialTopLeft and initialBottomRight if there is no selection yet', () => {
         selectionTool.selectionExists = false;
         selectionTool.onMouseDown(mouseEvent);
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(MOUSE_POSITION);
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(MOUSE_POSITION);
+        expect(selectionTool['coords'].initialTopLeft).toEqual(MOUSE_POSITION);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(MOUSE_POSITION);
         expect(undoRedoSpyObj.disableUndoRedo).toHaveBeenCalled();
     });
 
@@ -154,7 +154,7 @@ describe('SelectionTool', () => {
 
         selectionTool.onMouseMove(mouseEvent);
 
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(MOUSE_POSITION);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(MOUSE_POSITION);
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(adjustToDrawingBoundsSpy).toHaveBeenCalled();
         expect(drawPerimeterSpy).toHaveBeenCalled();
@@ -191,7 +191,7 @@ describe('SelectionTool', () => {
 
         selectionTool.onMouseUp(mouseEventUp);
 
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(trueEndCoords);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(trueEndCoords);
         expect(adjustToDrawingBoundsSpy).toHaveBeenCalled();
         expect(rectangleDrawingServiceSpyObj.getTrueEndCoords).toHaveBeenCalled();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
@@ -318,7 +318,7 @@ describe('SelectionTool', () => {
         expect(moveSelectionServiceSpyObj.moveSelectionWithArrows).toHaveBeenCalledWith(
             drawingServiceSpyObj.previewCtx,
             arrowDelta,
-            selectionTool['selectionCoords'],
+            selectionTool['coords'],
         );
     });
 
@@ -383,8 +383,8 @@ describe('SelectionTool', () => {
     });
 
     it('#createSelection should save the selection, draw it on the preview canvas, set selectionExists to true', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool['selectionExists'] = false;
         const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
         const saveSelectionSpy = spyOn<any>(selectionTool, 'saveSelection');
@@ -397,8 +397,8 @@ describe('SelectionTool', () => {
     });
 
     it('#createSelection should not do anything if the selection width or height is zero', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
         selectionTool['selectionExists'] = false;
         const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
         const saveSelectionSpy = spyOn<any>(selectionTool, 'saveSelection');
@@ -412,8 +412,8 @@ describe('SelectionTool', () => {
     });
 
     it('#saveSelection should set the selection coords to the right values, save the image data in a variable and selected area with white', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
 
         const setSelectionCoordsSpy = spyOn<any>(selectionTool, 'setSelectionCoords');
         const fillWithWhiteSpy = spyOn(selectionTool, 'fillWithWhite');
@@ -425,37 +425,37 @@ describe('SelectionTool', () => {
     });
 
     it('#setSelectionCoords should re-arrange the initial coords so that initialTopLeft is actually the top-leftmost point, etc.', () => {
-        selectionTool['selectionCoords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
 
         selectionTool['setSelectionCoords']();
 
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });
 
     it('#setSelectionCoords should set the final coords to the re-arranged initial coords', () => {
-        selectionTool['selectionCoords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = TOP_LEFT_CORNER_COORDS;
 
         selectionTool['setSelectionCoords']();
 
-        expect(selectionTool['selectionCoords'].finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionTool['selectionCoords'].finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionTool['coords'].finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });
 
     it('#adjustToDrawingBounds should adjust the initial coords so that they dont go outside the canvas, beyond the canvas dimensions', () => {
         const EXCESS_PIXELS = 5;
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = {
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = {
             x: drawingServiceSpyObj.canvas.width + EXCESS_PIXELS,
             y: drawingServiceSpyObj.canvas.height + EXCESS_PIXELS,
         };
 
         selectionTool['adjustToDrawingBounds']();
 
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual({
+        expect(selectionTool['coords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialBottomRight).toEqual({
             x: drawingServiceSpyObj.canvas.width,
             y: drawingServiceSpyObj.canvas.height,
         });
@@ -464,16 +464,16 @@ describe('SelectionTool', () => {
     it('#adjustToDrawingBounds should adjust the initial coords so that they dont go outside the canvas, under zero', () => {
         const EXCESS_PIXELS = 5;
 
-        selectionTool['selectionCoords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = {
+        selectionTool['coords'].initialTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = {
             x: -EXCESS_PIXELS,
             y: -EXCESS_PIXELS,
         };
 
         selectionTool['adjustToDrawingBounds']();
 
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialTopLeft).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(TOP_LEFT_CORNER_COORDS);
     });
 
     it('#cancelSelection should clear the canvas', () => {
@@ -482,18 +482,18 @@ describe('SelectionTool', () => {
     });
 
     it('#cancelSelection should set the initialTopLeft coords to the initialBottomRight, if there isnt a selection yet (escape key case)', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         selectionTool.selectionExists = false;
 
         selectionTool.cancelSelection();
 
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialTopLeft).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });
 
     it('#cancelSelection should draw the selection on the base context, reset values and enable undo-redo if selection exists', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
 
         selectionTool.selectionExists = true;
         const drawSpy = spyOn<any>(selectionTool, 'draw');
@@ -501,8 +501,8 @@ describe('SelectionTool', () => {
 
         selectionTool.cancelSelection();
 
-        expect(selectionTool['selectionCoords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionTool['selectionCoords'].initialBottomRight).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionTool['coords'].initialBottomRight).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(drawSpy).toHaveBeenCalledWith(drawingServiceSpyObj.baseCtx);
         expect(selectionTool.selectionExists).toBeFalse();
         expect(moveSelectionServiceSpyObj.movingWithMouse).toBeFalse();
@@ -541,13 +541,13 @@ describe('SelectionTool', () => {
     });
 
     it('#draw should add a command to the undo-redo list if the initial coords are different to the final coords, and ctx is baseCtx', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalTopLeft = {
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].finalTopLeft = {
             x: TOP_LEFT_CORNER_COORDS.x + MOUSE_POSITION.x,
             y: TOP_LEFT_CORNER_COORDS.y + MOUSE_POSITION.y,
         };
-        selectionTool['selectionCoords'].finalBottomRight = {
+        selectionTool['coords'].finalBottomRight = {
             x: BOTTOM_RIGHT_CORNER_COORDS.x + MOUSE_POSITION.x,
             y: BOTTOM_RIGHT_CORNER_COORDS.y + MOUSE_POSITION.y,
         };
@@ -556,10 +556,10 @@ describe('SelectionTool', () => {
     });
 
     it('#draw should not add a command to the undo-redo list if the initial coords the same as the final coords', () => {
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
 
         selectionTool['draw'](drawingServiceSpyObj.baseCtx);
         expect(undoRedoSpyObj.addCommand).not.toHaveBeenCalled();
@@ -605,8 +605,8 @@ describe('SelectionTool', () => {
     });
 
     it('#isInsideSelection should return true if given point is inside the selection bounds, and false otherwise', () => {
-        selectionTool['selectionCoords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
 
         expect(selectionTool['isInsideSelection']({ x: 5, y: 5 })).toBeTrue();
         expect(selectionTool['isInsideSelection']({ x: 30, y: 10 })).toBeTrue();
@@ -616,7 +616,7 @@ describe('SelectionTool', () => {
     });
 
     it('#setOffset should set the mouseMoveOffset to the difference between the given position and the top left corner', () => {
-        selectionTool['selectionCoords'].finalTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].finalTopLeft = BOTTOM_RIGHT_CORNER_COORDS;
 
         selectionTool['setOffSet']({ x: BOTTOM_RIGHT_CORNER_COORDS.x + MOUSE_OFFSET, y: BOTTOM_RIGHT_CORNER_COORDS.y + MOUSE_OFFSET });
 
@@ -636,10 +636,10 @@ describe('SelectionTool', () => {
             BOTTOM_RIGHT_CORNER_COORDS.y,
         );
         selectionTool['data'] = TEST_DATA;
-        selectionTool['selectionCoords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
-        selectionTool['selectionCoords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].initialTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
 
         const selectionProperties = selectionTool['loadUpProperties'](drawingServiceSpyObj.previewCtx);
 

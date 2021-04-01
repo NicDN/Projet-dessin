@@ -96,7 +96,7 @@ export class LineService extends TraceTool {
         }
     }
 
-    private addPoint(): void {
+    addPoint(): void {
         this.pathData.push(this.mousePosition);
         this.updatePreview();
     }

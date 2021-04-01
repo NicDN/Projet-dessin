@@ -19,8 +19,8 @@ export abstract class SelectionTool extends Tool {
         drawingService: DrawingService,
         protected shapeService: ShapeService,
         toolName: string,
-        private undoRedoService: UndoRedoService,
-        private moveSelectionService: MoveSelectionService,
+        protected undoRedoService: UndoRedoService,
+        protected moveSelectionService: MoveSelectionService,
     ) {
         super(drawingService, toolName);
     }
@@ -34,7 +34,7 @@ export abstract class SelectionTool extends Tool {
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
 
-    selectionCoords: SelectionCoords = {
+    coords: SelectionCoords = {
         initialTopLeft: { x: 0, y: 0 },
         initialBottomRight: { x: 0, y: 0 },
         finalTopLeft: { x: 0, y: 0 },
@@ -54,27 +54,25 @@ export abstract class SelectionTool extends Tool {
         }
         this.undoRedoService.disableUndoRedo();
         this.cancelSelection();
-        this.selectionCoords.initialTopLeft = this.getPositionFromMouse(event);
-        this.selectionCoords.initialBottomRight = this.selectionCoords.initialTopLeft;
+        this.coords.initialTopLeft = this.getPositionFromMouse(event);
+        this.coords.initialBottomRight = this.coords.initialTopLeft;
     }
 
     onMouseMove(event: MouseEvent): void {
         // 1 = leftclick
-        if (event.buttons !== 1) {
-            this.mouseDown = false;
-        }
+        if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.selectionCoords);
+            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
 
-        this.selectionCoords.initialBottomRight = this.getPositionFromMouse(event);
+        this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawPerimeter(this.drawingService.previewCtx, this.selectionCoords.initialTopLeft, this.selectionCoords.initialBottomRight);
+        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
     }
 
     onMouseUp(event: MouseEvent): void {
@@ -86,11 +84,11 @@ export abstract class SelectionTool extends Tool {
             return;
         }
 
-        this.selectionCoords.initialBottomRight = this.getPositionFromMouse(event);
+        this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
-        this.selectionCoords.initialBottomRight = this.shapeService.getTrueEndCoords(
-            this.selectionCoords.initialTopLeft,
-            this.selectionCoords.initialBottomRight,
+        this.coords.initialBottomRight = this.shapeService.getTrueEndCoords(
+            this.coords.initialTopLeft,
+            this.coords.initialBottomRight,
             this.shapeService.alternateShape,
         );
         this.shapeService.alternateShape = false;
@@ -113,7 +111,7 @@ export abstract class SelectionTool extends Tool {
     private handleLeftShift(event: KeyboardEvent, callback: (keyEvent: KeyboardEvent) => void): void {
         callback.call(this.shapeService, event);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawPerimeter(this.drawingService.previewCtx, this.selectionCoords.initialTopLeft, this.selectionCoords.initialBottomRight);
+        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
     }
 
     private handleMovingArrowsKeyDown(event: KeyboardEvent): void {
@@ -134,7 +132,7 @@ export abstract class SelectionTool extends Tool {
             this.moveSelectionService.moveSelectionWithArrows(
                 this.drawingService.previewCtx,
                 this.moveSelectionService.calculateDelta(),
-                this.selectionCoords,
+                this.coords,
             );
             this.drawAll(this.drawingService.previewCtx);
         }
@@ -165,7 +163,7 @@ export abstract class SelectionTool extends Tool {
 
             this.intervalHandler = (setInterval(
                 (() => {
-                    this.moveSelectionService.moveSelectionWithArrows(ctx, this.moveSelectionService.calculateDelta(), this.selectionCoords);
+                    this.moveSelectionService.moveSelectionWithArrows(ctx, this.moveSelectionService.calculateDelta(), this.coords);
                     this.drawAll(ctx);
                 }).bind(this),
                 this.ARROW_INTERVAL,
@@ -175,11 +173,8 @@ export abstract class SelectionTool extends Tool {
         }
     }
 
-    private createSelection(): void {
-        if (
-            this.selectionCoords.initialTopLeft.x === this.selectionCoords.initialBottomRight.x ||
-            this.selectionCoords.initialTopLeft.y === this.selectionCoords.initialBottomRight.y
-        ) {
+    protected createSelection(): void {
+        if (this.coords.initialTopLeft.x === this.coords.initialBottomRight.x || this.coords.initialTopLeft.y === this.coords.initialBottomRight.y) {
             this.undoRedoService.enableUndoRedo();
             return;
         }
@@ -195,35 +190,34 @@ export abstract class SelectionTool extends Tool {
         this.setSelectionCoords();
 
         this.data = ctx.getImageData(
-            this.selectionCoords.initialTopLeft.x,
-            this.selectionCoords.initialTopLeft.y,
-            this.selectionCoords.initialBottomRight.x - this.selectionCoords.initialTopLeft.x,
-            this.selectionCoords.initialBottomRight.y - this.selectionCoords.initialTopLeft.y,
+            this.coords.initialTopLeft.x,
+            this.coords.initialTopLeft.y,
+            this.coords.initialBottomRight.x - this.coords.initialTopLeft.x,
+            this.coords.initialBottomRight.y - this.coords.initialTopLeft.y,
         );
         this.fillWithWhite(this.loadUpProperties(ctx));
     }
 
     private setSelectionCoords(): void {
-        this.selectionCoords.finalTopLeft = {
-            x: Math.min(this.selectionCoords.initialTopLeft.x, this.selectionCoords.initialBottomRight.x),
-            y: Math.min(this.selectionCoords.initialTopLeft.y, this.selectionCoords.initialBottomRight.y),
+        this.coords.finalTopLeft = {
+            x: Math.min(this.coords.initialTopLeft.x, this.coords.initialBottomRight.x),
+            y: Math.min(this.coords.initialTopLeft.y, this.coords.initialBottomRight.y),
         };
-        this.selectionCoords.finalBottomRight = {
-            x: Math.max(this.selectionCoords.initialTopLeft.x, this.selectionCoords.initialBottomRight.x),
-            y: Math.max(this.selectionCoords.initialTopLeft.y, this.selectionCoords.initialBottomRight.y),
+        this.coords.finalBottomRight = {
+            x: Math.max(this.coords.initialTopLeft.x, this.coords.initialBottomRight.x),
+            y: Math.max(this.coords.initialTopLeft.y, this.coords.initialBottomRight.y),
         };
-        this.selectionCoords.initialTopLeft = { x: this.selectionCoords.finalTopLeft.x, y: this.selectionCoords.finalTopLeft.y };
-        this.selectionCoords.initialBottomRight = { x: this.selectionCoords.finalBottomRight.x, y: this.selectionCoords.finalBottomRight.y };
+        this.coords.initialTopLeft = { x: this.coords.finalTopLeft.x, y: this.coords.finalTopLeft.y };
+        this.coords.initialBottomRight = { x: this.coords.finalBottomRight.x, y: this.coords.finalBottomRight.y };
     }
 
     private adjustToDrawingBounds(): void {
-        if (this.selectionCoords.initialBottomRight.x < 0) this.selectionCoords.initialBottomRight.x = 0;
-        if (this.selectionCoords.initialBottomRight.x > this.drawingService.canvas.width)
-            this.selectionCoords.initialBottomRight.x = this.drawingService.canvas.width;
+        if (this.coords.initialBottomRight.x < 0) this.coords.initialBottomRight.x = 0;
+        if (this.coords.initialBottomRight.x > this.drawingService.canvas.width) this.coords.initialBottomRight.x = this.drawingService.canvas.width;
 
-        if (this.selectionCoords.initialBottomRight.y < 0) this.selectionCoords.initialBottomRight.y = 0;
-        if (this.selectionCoords.initialBottomRight.y > this.drawingService.canvas.height)
-            this.selectionCoords.initialBottomRight.y = this.drawingService.canvas.height;
+        if (this.coords.initialBottomRight.y < 0) this.coords.initialBottomRight.y = 0;
+        if (this.coords.initialBottomRight.y > this.drawingService.canvas.height)
+            this.coords.initialBottomRight.y = this.drawingService.canvas.height;
     }
 
     cancelSelection(): void {
@@ -231,8 +225,8 @@ export abstract class SelectionTool extends Tool {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         if (this.selectionExists) {
             this.draw(this.drawingService.baseCtx);
-            this.selectionCoords.initialTopLeft = { x: 0, y: 0 };
-            this.selectionCoords.initialBottomRight = { x: 0, y: 0 };
+            this.coords.initialTopLeft = { x: 0, y: 0 };
+            this.coords.initialBottomRight = { x: 0, y: 0 };
             this.selectionExists = false;
             this.moveSelectionService.movingWithMouse = false;
             this.moveSelectionService.movingWithArrows = false;
@@ -242,13 +236,13 @@ export abstract class SelectionTool extends Tool {
             return;
         }
 
-        this.selectionCoords.initialTopLeft = { x: this.selectionCoords.initialBottomRight.x, y: this.selectionCoords.initialBottomRight.y };
+        this.coords.initialTopLeft = { x: this.coords.initialBottomRight.x, y: this.coords.initialBottomRight.y };
     }
 
     drawAll(ctx: CanvasRenderingContext2D): void {
         this.draw(ctx);
-        this.drawPerimeter(ctx, this.selectionCoords.finalTopLeft, this.selectionCoords.finalBottomRight);
-        this.drawBox(ctx, this.selectionCoords.finalTopLeft, this.selectionCoords.finalBottomRight);
+        this.drawPerimeter(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
+        this.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -256,8 +250,8 @@ export abstract class SelectionTool extends Tool {
         selectionCommand.execute();
         if (
             ctx === this.drawingService.baseCtx &&
-            this.selectionCoords.initialTopLeft.x !== this.selectionCoords.finalTopLeft.x &&
-            this.selectionCoords.initialTopLeft.y !== this.selectionCoords.finalTopLeft.y
+            this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x &&
+            this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y
         )
             this.undoRedoService.addCommand(selectionCommand);
     }
@@ -296,19 +290,19 @@ export abstract class SelectionTool extends Tool {
         } as MouseEvent);
     }
 
-    private isInsideSelection(point: Vec2): boolean {
+    protected isInsideSelection(point: Vec2): boolean {
         return (
-            point.x > this.selectionCoords.finalTopLeft.x &&
-            point.x < this.selectionCoords.finalBottomRight.x &&
-            point.y > this.selectionCoords.finalTopLeft.y &&
-            point.y < this.selectionCoords.finalBottomRight.y
+            point.x > this.coords.finalTopLeft.x &&
+            point.x < this.coords.finalBottomRight.x &&
+            point.y > this.coords.finalTopLeft.y &&
+            point.y < this.coords.finalBottomRight.y
         );
     }
 
-    private setOffSet(pos: Vec2): void {
+    protected setOffSet(pos: Vec2): void {
         this.moveSelectionService.mouseMoveOffset = {
-            x: pos.x - this.selectionCoords.finalTopLeft.x,
-            y: pos.y - this.selectionCoords.finalTopLeft.y,
+            x: pos.x - this.coords.finalTopLeft.x,
+            y: pos.y - this.coords.finalTopLeft.y,
         };
     }
 
@@ -329,10 +323,10 @@ export abstract class SelectionTool extends Tool {
         return {
             selectionCtx: ctx,
             imageData: this.data,
-            topLeft: this.selectionCoords.initialTopLeft,
-            bottomRight: this.selectionCoords.initialBottomRight,
-            finalTopLeft: this.selectionCoords.finalTopLeft,
-            finalBottomRight: this.selectionCoords.finalBottomRight,
+            topLeft: this.coords.initialTopLeft,
+            bottomRight: this.coords.initialBottomRight,
+            finalTopLeft: this.coords.finalTopLeft,
+            finalBottomRight: this.coords.finalBottomRight,
         };
     }
 
