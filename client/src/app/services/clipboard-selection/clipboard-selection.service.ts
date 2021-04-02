@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SelectionType } from '@app/classes/commands/selection-command/selection-command';
-import { SelectionTool } from '@app/classes/selection-tool';
+import { SelectionCoords, SelectionTool } from '@app/classes/selection-tool';
+import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
@@ -10,6 +11,8 @@ import { ToolsService } from '@app/services/tools/tools.service';
 interface ClipBoardData {
     clipboardImage: ImageData;
     selectionType: SelectionType;
+    selectionCoords: SelectionCoords;
+    selectionPathData: Vec2[];
 }
 
 @Injectable({
@@ -26,6 +29,8 @@ export class ClipboardSelectionService {
         this.clipBoardData = {
             clipboardImage: (this.toolsService.currentTool as SelectionTool).data,
             selectionType: this.getSelectionType(),
+            selectionCoords: (this.toolsService.currentTool as SelectionTool).coords,
+            selectionPathData: this.toolsService.lineService.pathData,
         };
     }
 
@@ -33,6 +38,10 @@ export class ClipboardSelectionService {
         if (this.clipBoardData === undefined) return;
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) (this.toolsService.currentTool as SelectionTool).cancelSelection();
         this.switchToStoredClipboardImageSelectionTool();
+        const width = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.x - this.clipBoardData.selectionCoords.finalTopLeft.x);
+        const height = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y);
+
+        this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
 
         (this.toolsService.currentTool as SelectionTool).selectionExists = true;
@@ -49,8 +58,8 @@ export class ClipboardSelectionService {
             y: this.pasteOffSet,
         };
         (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight = {
-            x: this.pasteOffSet + this.clipBoardData.clipboardImage.width,
-            y: this.pasteOffSet + this.clipBoardData.clipboardImage.height,
+            x: this.pasteOffSet + width,
+            y: this.pasteOffSet + height,
         };
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
     }

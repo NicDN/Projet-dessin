@@ -29,6 +29,7 @@ export abstract class SelectionTool extends Tool {
 
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
+    realImageData: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
 

@@ -49,7 +49,6 @@ export class RectangleSelectionService extends SelectionTool {
         image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
         image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
-
         const ratioX: number =
             (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
             (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
