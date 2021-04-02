@@ -34,8 +34,20 @@ export class StampService extends Tool {
     realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
+    stampsData: HTMLImageElement[];
+
     constructor(drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         super(drawingService, 'Étampe');
+        this.loadImage();
+    }
+
+    loadImage(): void {
+        this.stampsData = [];
+        for (const stamp of this.stamps) {
+            const tmpImage: HTMLImageElement = new Image();
+            tmpImage.src = stamp;
+            this.stampsData.push(tmpImage);
+        }
     }
 
     onMouseMove(event: MouseEvent): void {
@@ -59,21 +71,21 @@ export class StampService extends Tool {
         }
     }
 
+    // async drawImageOnCanvas(stampPropreties: StampPropreties): Promise<void> {
     drawImageOnCanvas(stampPropreties: StampPropreties): void {
-        const stampPreview: HTMLImageElement = new Image();
-        stampPreview.src = stampPropreties.selectedStampSrc;
+        // await stampPreview.decode();
 
         stampPropreties.drawingContext.save();
         stampPropreties.drawingContext.translate(stampPropreties.currentCoords.x, stampPropreties.currentCoords.y);
         stampPropreties.drawingContext.rotate(stampPropreties.angle);
         stampPropreties.drawingContext.translate(-stampPropreties.currentCoords.x, -stampPropreties.currentCoords.y);
-
+        const currentStamp = this.stampsData[stampPropreties.selectedStampIndex];
         stampPropreties.drawingContext.drawImage(
-            stampPreview,
-            stampPropreties.currentCoords.x - Math.floor((stampPreview.width * stampPropreties.scaling) / 2),
-            stampPropreties.currentCoords.y - Math.floor((stampPreview.height * stampPropreties.scaling) / 2),
-            stampPreview.width * stampPropreties.scaling,
-            stampPreview.height * stampPropreties.scaling,
+            currentStamp,
+            stampPropreties.currentCoords.x - Math.floor((currentStamp.width * stampPropreties.scaling) / 2),
+            stampPropreties.currentCoords.y - Math.floor((currentStamp.height * stampPropreties.scaling) / 2),
+            currentStamp.width * stampPropreties.scaling,
+            currentStamp.height * stampPropreties.scaling,
         );
         stampPropreties.drawingContext.restore();
     }
@@ -82,7 +94,7 @@ export class StampService extends Tool {
         return {
             drawingContext: ctx,
             currentCoords: this.getPositionFromMouse(event),
-            selectedStampSrc: this.selectedStampSrc,
+            selectedStampIndex: this.stamps.indexOf(this.selectedStampSrc),
             angle: this.angle,
             scaling: this.scaling / 100,
         };

@@ -5,7 +5,7 @@ import { StampService } from '@app/services/tools/stamp/stamp.service';
 export interface StampPropreties {
     drawingContext: CanvasRenderingContext2D;
     currentCoords: Vec2;
-    selectedStampSrc: string;
+    selectedStampIndex: number;
     angle: number;
     scaling: number;
 }
