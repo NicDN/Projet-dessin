@@ -1,6 +1,12 @@
 <div
     id="canvas-container"
-    [ngStyle]="this.toolsService.currentTool === this.toolsService.eraserService ? { cursor: 'none' } : { cursor: 'crosshair' }"
+    [ngStyle]="
+        this.toolsService.currentTool === this.toolsService.eraserService
+            ? { cursor: 'none' }
+            : this.toolsService.lassoSelectionService && this.toolsService.lassoSelectionService.checkIfLineCrossing()
+            ? { cursor: 'not-allowed' }
+            : { cursor: 'crosshair' }
+    "
 >
     <canvas id="canvas" #baseCanvas></canvas>
     <canvas id="previewLayer" #previewCanvas (mousedown)="onMouseDown($event)" oncontextmenu="return false"></canvas>

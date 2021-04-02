@@ -36,19 +36,19 @@ export class ClipboardSelectionService {
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
 
         (this.toolsService.currentTool as SelectionTool).selectionExists = true;
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft = {
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft = {
             x: this.outsideDrawingZoneCoords,
             y: this.outsideDrawingZoneCoords,
         };
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight = {
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight = {
             x: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.width,
             y: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.height,
         };
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft = {
+        (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft = {
             x: this.pasteOffSet,
             y: this.pasteOffSet,
         };
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.finalBottomRight = {
+        (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight = {
             x: this.pasteOffSet + this.clipBoardData.clipboardImage.width,
             y: this.pasteOffSet + this.clipBoardData.clipboardImage.height,
         };
@@ -64,13 +64,13 @@ export class ClipboardSelectionService {
         if (!this.canUseClipboardService()) return;
         this.drawingService.fillWithWhite(this.drawingService.previewCtx);
 
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft.x--;
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialTopLeft.y--;
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.x--;
-        (this.toolsService.currentTool as SelectionTool).selectionCoords.initialBottomRight.y--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.x--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.y--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.x--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.y--;
         (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
-            (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft.x,
-            (this.toolsService.currentTool as SelectionTool).selectionCoords.finalTopLeft.y,
+            (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x,
+            (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y,
             (this.toolsService.currentTool as SelectionTool).data.width,
             (this.toolsService.currentTool as SelectionTool).data.height,
         );
