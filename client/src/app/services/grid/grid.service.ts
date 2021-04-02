@@ -20,7 +20,7 @@ export class GridService extends Tool {
 
     gridDrawn: boolean = false;
 
-    MULTIPLIER_FACTOR: number = 5;
+    private MULTIPLIER_FACTOR: number = 5;
 
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Grille');
@@ -54,7 +54,7 @@ export class GridService extends Tool {
         this.drawGrid();
     }
 
-    drawGrid(): void {
+    private drawGrid(): void {
         this.drawingService.clearCanvas(this.drawingService.gridCtx);
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();

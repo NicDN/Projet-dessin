@@ -1,21 +1,19 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { UndoRedoComponent } from './undo-redo.component';
+import { DrawingOptionsComponent } from './drawing-options.component';
 
 // tslint:disable: no-string-literal
 // tslint:disable: no-any
 describe('UndoRedoComponent', () => {
-    let component: UndoRedoComponent;
-    let fixture: ComponentFixture<UndoRedoComponent>;
+    let component: DrawingOptionsComponent;
+    let fixture: ComponentFixture<DrawingOptionsComponent>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let toolsServiceSpyObj: jasmine.SpyObj<ToolsService>;
     let gridServiceSpyObj: jasmine.SpyObj<GridService>;
-    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     beforeEach(() => {
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', [
@@ -27,23 +25,21 @@ describe('UndoRedoComponent', () => {
         ]);
         toolsServiceSpyObj = jasmine.createSpyObj('ToolsService', ['setCurrentTool']);
         gridServiceSpyObj = jasmine.createSpyObj('GridService', ['handleDrawGrid']);
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
         // tslint:disable-next-line: prefer-const no-any
         let randomMsg: any;
         undoRedoServiceSpyObj.newUndoRedoSignals.and.returnValue(of(randomMsg));
 
         TestBed.configureTestingModule({
-            declarations: [UndoRedoComponent],
+            declarations: [DrawingOptionsComponent],
             providers: [
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: ToolsService, useValue: toolsServiceSpyObj },
                 { provide: GridService, useValue: gridServiceSpyObj },
-                { provide: DrawingService, useValue: drawingServiceSpyObj },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(UndoRedoComponent);
+        fixture = TestBed.createComponent(DrawingOptionsComponent);
         toolsServiceSpyObj.gridService = TestBed.inject(GridService);
 
         component = fixture.componentInstance;

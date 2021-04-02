@@ -49,7 +49,7 @@ describe('GridService', () => {
 
     it('#listenToUpdateGridNotification should receive a message from subscriber and draw the grid if it is switched on', () => {
         service.gridDrawn = true;
-        const drawGridSpy = spyOn(service, 'drawGrid');
+        const drawGridSpy = spyOn<any>(service, 'drawGrid');
         service['listenToUpdateGridNotification']();
         drawingServiceSpyObj.updateGrid();
         expect(drawGridSpy).toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('GridService', () => {
 
     it('#resizeGridNotification should resize the grid canvas to new drawing space dimensions and draw the grid if it is active', () => {
         service.gridDrawn = true;
-        const drawGridSpy = spyOn(service, 'drawGrid');
+        const drawGridSpy = spyOn<any>(service, 'drawGrid');
         service['resizeGridNotification'](boxSizeStub);
         expect(service['drawingService'].gridCanvas.width).toEqual(boxSizeStub.widthBox);
         expect(service['drawingService'].gridCanvas.height).toEqual(boxSizeStub.heightBox);
@@ -66,14 +66,14 @@ describe('GridService', () => {
 
     it('#resizeGridNotification should not draw the grid if it is not active', () => {
         service.gridDrawn = false;
-        const drawGridSpy = spyOn(service, 'drawGrid');
+        const drawGridSpy = spyOn<any>(service, 'drawGrid');
         service['resizeGridNotification'](boxSizeStub);
         expect(drawGridSpy).not.toHaveBeenCalled();
     });
 
     it('#handleDrawGrid should clear the grid canvas and switch it off if it is currently switched on and not draw the grid', () => {
         service.gridDrawn = true;
-        const drawGridSpy = spyOn(service, 'drawGrid');
+        const drawGridSpy = spyOn<any>(service, 'drawGrid');
         service.handleDrawGrid();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(service.gridDrawn).toBeFalse();
@@ -82,7 +82,7 @@ describe('GridService', () => {
 
     it('#handleDrawGrid should clear the grid canvas and switch it on if it is currently switched off and draw the grid', () => {
         service.gridDrawn = false;
-        const drawGridSpy = spyOn(service, 'drawGrid');
+        const drawGridSpy = spyOn<any>(service, 'drawGrid');
         service.handleDrawGrid();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(service.gridDrawn).toBeTrue();
@@ -130,7 +130,7 @@ describe('GridService', () => {
     });
 
     it('#drawGrid should clear the canvas before begining to draw', () => {
-        service.drawGrid();
+        service['drawGrid']();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
@@ -139,7 +139,7 @@ describe('GridService', () => {
         const squareSizeStub = 5;
         const moveToSpy = spyOn(drawingServiceSpyObj.gridCtx, 'moveTo');
         service.squareSize = squareSizeStub;
-        service.drawGrid();
+        service['drawGrid']();
         expect(moveToSpy).toHaveBeenCalledTimes(numberOfTimesMoveToShouldBeCalledStub);
     });
 });
