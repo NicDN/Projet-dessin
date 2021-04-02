@@ -19,8 +19,8 @@ describe('GridService', () => {
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas', 'newIncomingResizeSignals', 'newGridSignals', 'updateGrid']);
         // tslint:disable-next-line: prefer-const
-        let tmp: any;
-        drawingServiceSpyObj.newGridSignals.and.returnValue(of(tmp));
+        let emptyMessage: any;
+        drawingServiceSpyObj.newGridSignals.and.returnValue(of(emptyMessage));
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
 
         TestBed.configureTestingModule({
