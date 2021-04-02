@@ -25,7 +25,6 @@ describe('DrawingService', () => {
     let drawingServiceSpyClearCanvas: jasmine.Spy;
     let imageStub: HTMLImageElement;
 
-
     const snackBarServiceStub = {} as SnackBarService;
 
     beforeEach(async(() => {

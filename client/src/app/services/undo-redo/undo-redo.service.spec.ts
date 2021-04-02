@@ -3,8 +3,8 @@ import { BoxSize } from '@app/classes/box-size';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
 import { of, Subject } from 'rxjs';
-import { LocalStorageService } from '../local-storage/local-storage.service';
 import { UndoRedoService } from './undo-redo.service';
 
 export class TestCommand extends AbstractCommand {

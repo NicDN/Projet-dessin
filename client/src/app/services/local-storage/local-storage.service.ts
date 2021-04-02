@@ -14,9 +14,7 @@ export class LocalStorageService {
         try {
             localStorage.setItem('canvas', canvasURLCopy);
         } catch (error) {
-            if (error.name === 'QUOTA_EXCEEDED_ERR') {
-                this.snackBarService.openSnackBar('Erreur lors de la sauvegarde automatique. Le dessin est trop volumineux', 'Fermer');
-            }
+            this.snackBarService.openSnackBar('Erreur lors de la sauvegarde automatique.', 'Fermer');
         }
     }
 

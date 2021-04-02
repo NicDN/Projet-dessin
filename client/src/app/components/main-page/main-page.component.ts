@@ -13,6 +13,8 @@ import { LocalStorageService } from '@app/services/local-storage/local-storage.s
 export class MainPageComponent {
     dialogType: DialogType = DialogType.Carousel;
 
+    private image: HTMLImageElement = new Image();
+
     constructor(
         private hotkeyService: HotkeyService,
         public dialogService: DialogService,
@@ -27,13 +29,13 @@ export class MainPageComponent {
     }
 
     async continueDrawing(): Promise<void> {
-        const image = new Image();
-        image.src = localStorage.getItem('canvas') as string;
-        await image.decode();
-        this.drawingService.changeDrawing(image);
+        this.image = new Image();
+        this.image.src = localStorage.getItem('canvas') as string;
+        await this.image.decode();
+        this.drawingService.changeDrawing(this.image);
     }
 
-    openNewDrawing(): void {
+    createNewDrawing(): void {
         this.drawingService.newImage = undefined;
         this.router.navigate(['editor']);
     }
