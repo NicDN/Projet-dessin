@@ -71,8 +71,6 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        event.preventDefault();
-        event.stopPropagation();
         this.hotKeyService.onKeyDown(event);
     }
 
@@ -93,7 +91,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('wheel', ['$event'])
     onScroll(event: WheelEvent): void {
-        if (this.toolsService.stampService) (this.toolsService.currentTool as StampService).onScroll(event);
+        if (this.toolsService.currentTool === this.toolsService.stampService) (this.toolsService.currentTool as StampService).onScroll(event);
     }
 
     disableDrawing(isUsingResizeButton: boolean): void {
