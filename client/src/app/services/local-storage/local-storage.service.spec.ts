@@ -1,16 +1,22 @@
 import { TestBed } from '@angular/core/testing';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 import { LocalStorageService } from './local-storage.service';
 
 describe('LocalStorageService', () => {
-  let service: LocalStorageService;
+    let service: LocalStorageService;
+    let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(LocalStorageService);
-  });
+    beforeEach(() => {
+        snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+        TestBed.configureTestingModule({
+            providers: [{ provide: SnackBarService, useValue: snackbarServiceSpy }],
+        });
+        service = TestBed.inject(LocalStorageService);
+    });
+
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

@@ -1,24 +1,23 @@
 import { Injectable } from '@angular/core';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LocalStorageService {
-    constructor(private drawingService: DrawingService) {}
+    constructor(private drawingService: DrawingService, private snackBarService: SnackBarService) {}
 
     saveCanvas(): void {
-        console.log('saved');
-        // ******* test purposes
-        const image = new Image();
-        console.log('Canvas sizes: width: ' + this.drawingService.canvas.width + ' height: ' + this.drawingService.canvas.height);
-        image.src = (' ' + this.drawingService.canvas.toDataURL()).slice(1);
-        image.width = this.drawingService.canvas.width;
-        image.height = this.drawingService.canvas.height;
-        console.log('Saving Local storage Image sizes: width: ' + image.width + ' height: ' + image.height);
-        // *******
         const canvasURLCopy = (' ' + this.drawingService.canvas.toDataURL()).slice(1); // deep copy of canvas url
-        localStorage.setItem('canvas', canvasURLCopy);
+
+        try {
+            localStorage.setItem('canvas', canvasURLCopy);
+        } catch (error) {
+            if (error.name === 'QUOTA_EXCEEDED_ERR') {
+                this.snackBarService.openSnackBar('Erreur lors de la sauvegarde automatique. Le dessin est trop volumineux', 'Fermer');
+            }
+        }
     }
 
     storageIsEmpty(): boolean {

@@ -4,6 +4,7 @@ import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { of, Subject } from 'rxjs';
+import { LocalStorageService } from '../local-storage/local-storage.service';
 import { UndoRedoService } from './undo-redo.service';
 
 export class TestCommand extends AbstractCommand {
@@ -19,11 +20,14 @@ export class TestCommand extends AbstractCommand {
 describe('UndoRedoService', () => {
     let service: UndoRedoService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+    let localStorageServiceSpyObj: jasmine.SpyObj<LocalStorageService>;
+
     const canvasStub: HTMLCanvasElement = document.createElement('canvas');
     let canvasCtxStub: CanvasRenderingContext2D;
     const boxSizeStub: BoxSize = { widthBox: 1, heightBox: 1 };
 
     beforeEach(() => {
+        localStorageServiceSpyObj = jasmine.createSpyObj('LocalStorageService', ['saveCanvas']);
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', [
             'clearCanvas',
             'newBaseLineSignals',
@@ -48,7 +52,10 @@ describe('UndoRedoService', () => {
         drawingServiceSpyObj.newBaseLineSignals.and.returnValue(of(baseLineStub));
 
         TestBed.configureTestingModule({
-            providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
+            providers: [
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: LocalStorageService, useValue: localStorageServiceSpyObj },
+            ],
         });
         service = TestBed.inject(UndoRedoService);
         service['commandList'] = [];

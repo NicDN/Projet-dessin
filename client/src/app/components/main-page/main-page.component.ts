@@ -26,23 +26,15 @@ export class MainPageComponent {
         this.hotkeyService.onKeyDown(event);
     }
 
-    continueDrawing(): void {
+    async continueDrawing(): Promise<void> {
         const image = new Image();
         image.src = localStorage.getItem('canvas') as string;
-        // console.log(image.src);
-        console.log('Main page Images dimensions: width ' + image.width + 'Height ' + image.height);
-
-        this.drawingService.newImage = image;
-        this.router.navigate(['editor']);
+        await image.decode();
+        this.drawingService.changeDrawing(image);
     }
 
     openNewDrawing(): void {
         this.drawingService.newImage = undefined;
         this.router.navigate(['editor']);
-    }
-
-    // for testing
-    emptyStorage(): void {
-        localStorage.clear();
     }
 }

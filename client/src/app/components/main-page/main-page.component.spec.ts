@@ -4,7 +4,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EditorComponent } from '@app/components/editor/editor.component';
 import { DialogService } from '@app/services/dialog/dialog.service';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { MainPageComponent } from './main-page.component';
 import SpyObj = jasmine.SpyObj;
 
@@ -13,10 +15,12 @@ describe('MainPageComponent', () => {
     let fixture: ComponentFixture<MainPageComponent>;
     let hotKeyServiceSpy: SpyObj<HotkeyService>;
     let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     beforeEach(async(() => {
         hotKeyServiceSpy = jasmine.createSpyObj('HotKeyService', ['onKeyDown']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['changeDrawing']);
 
         TestBed.configureTestingModule({
             imports: [RouterTestingModule.withRoutes([{ path: 'editor', component: EditorComponent }]), HttpClientModule],
@@ -24,6 +28,8 @@ describe('MainPageComponent', () => {
             providers: [
                 { provide: HotkeyService, useValue: hotKeyServiceSpy },
                 { provide: DialogService, useValue: dialogServiceSpyObj },
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: SnackBarService, useValue: {} },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -44,4 +50,6 @@ describe('MainPageComponent', () => {
         window.dispatchEvent(keyEvent);
         expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
     });
+
+    it('#continueDrawing should put the saved drawing on the canvas correctly', async () => {});
 });

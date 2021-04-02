@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Tool } from '@app/classes/tool';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { Subject } from 'rxjs';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { ToolsService } from './tools.service';
@@ -12,8 +13,12 @@ describe('ToolsService', () => {
     let ellipseDrawingService: EllipseDrawingService;
     const keyboardEvent = new KeyboardEvent('test');
 
+    const snackBarServiceStub = {} as SnackBarService;
+
     beforeEach(() => {
-        TestBed.configureTestingModule({ providers: [PencilService, EllipseDrawingService] });
+        TestBed.configureTestingModule({
+            providers: [PencilService, EllipseDrawingService, { provide: SnackBarService, useValue: snackBarServiceStub }],
+        });
         service = TestBed.inject(ToolsService);
         pencilService = TestBed.inject(PencilService);
         ellipseDrawingService = TestBed.inject(EllipseDrawingService);
