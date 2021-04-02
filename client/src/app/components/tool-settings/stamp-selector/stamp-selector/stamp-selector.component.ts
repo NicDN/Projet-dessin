@@ -40,7 +40,5 @@ export class StampSelectorComponent implements OnInit {
             },
             action: (value: number) => (this.stampService.angle = (value * Math.PI) / this.PERCENTAGE_FACTOR),
         };
-
-        this.stampService.selectedStampSrc = this.stampService.selectedStampSrc;
     }
 }

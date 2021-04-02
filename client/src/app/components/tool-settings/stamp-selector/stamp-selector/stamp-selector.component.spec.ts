@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StampSelectorComponent } from './stamp-selector.component';
 
-describe('StampSelectorComponent', () => {
+fdescribe('StampSelectorComponent', () => {
     let component: StampSelectorComponent;
     let fixture: ComponentFixture<StampSelectorComponent>;
 

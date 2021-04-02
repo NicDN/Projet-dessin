@@ -53,7 +53,6 @@ import { GenericSliderComponent } from './components/tool-settings/generic-slide
 import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
-import { StampLibraryBottomSheetComponent } from './components/tool-settings/stamp-selector/stamp-library-bottom-sheet/stamp-library-bottom-sheet.component';
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
@@ -89,7 +88,6 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         GridSelectorComponent,
         TextSelectorComponent,
         StampSelectorComponent,
-        StampLibraryBottomSheetComponent,
     ],
     imports: [
         BrowserModule,
