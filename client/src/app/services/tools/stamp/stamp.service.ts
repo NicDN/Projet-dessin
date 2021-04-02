@@ -18,7 +18,7 @@ export class StampService extends Tool {
     selectedStampSrc: string = this.stamps[0];
 
     readonly SCALING_MAX_VALUE: number = 3;
-    readonly SCALING_MIN_VALUE: number = 1;
+    readonly SCALING_MIN_VALUE: number = 0.1;
 
     readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
@@ -27,6 +27,7 @@ export class StampService extends Tool {
 
     wheelScroll: number = 0;
     scaling: number = 1;
+    realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
     constructor(drawingService: DrawingService) {
@@ -56,13 +57,15 @@ export class StampService extends Tool {
         ctx.translate(currentCoords.x, currentCoords.y);
         ctx.rotate(this.angle);
         ctx.translate(-currentCoords.x, -currentCoords.y);
-
+        this.scaling = this.scaling;
+        this.realScaling = this.scaling / 10;
+        console.log(this.scaling);
         ctx.drawImage(
             stampPreview,
-            mousePosition.x - Math.floor((stampPreview.width * this.scaling) / 2),
-            mousePosition.y - Math.floor((stampPreview.height * this.scaling) / 2),
-            stampPreview.width * this.scaling,
-            stampPreview.height * this.scaling,
+            mousePosition.x - Math.floor((stampPreview.width * this.realScaling) / 2),
+            mousePosition.y - Math.floor((stampPreview.height * this.realScaling) / 2),
+            stampPreview.width * this.realScaling,
+            stampPreview.height * this.realScaling,
         );
         ctx.restore();
     }
