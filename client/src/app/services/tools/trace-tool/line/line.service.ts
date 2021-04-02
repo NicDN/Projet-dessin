@@ -109,13 +109,17 @@ export class LineService extends TraceTool {
         }
     }
 
-    private finishLine(): void {
+    checkClosingLoop(): boolean {
         const MAX_OFFSET = 20;
         const firstPos = this.pathData[0];
         const dx = Math.abs(firstPos.x - this.mousePosition.x);
         const dy = Math.abs(firstPos.y - this.mousePosition.y);
 
-        if (dx <= MAX_OFFSET && dy <= MAX_OFFSET) {
+        return dx <= MAX_OFFSET && dy <= MAX_OFFSET;
+    }
+
+    private finishLine(): void {
+        if (this.checkClosingLoop()) {
             this.pathData.pop();
             this.pathData.pop();
             this.pathData.push(this.pathData[0]);
@@ -210,7 +214,7 @@ export class LineService extends TraceTool {
         }
         this.pathData.pop();
         this.pathData.push(tempMousePosition);
-        //this.updatePreview();
+        // this.updatePreview();
     }
 
     clearPath(): void {

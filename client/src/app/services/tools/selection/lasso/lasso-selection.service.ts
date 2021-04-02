@@ -26,14 +26,13 @@ export class LassoSelectionService extends SelectionTool {
 
     onMouseDown(event: MouseEvent): void {
         this.lineService.onMouseDown(event);
-
         this.mouseDown = event.button === MouseButton.Left;
         if (!this.mouseDown) return;
-        if (this.isInsideSelection(this.getPositionFromMouse(event)) && this.selectionExists) {
+        if (!this.selectionExists) return;
+        if (this.isInsideSelection(this.getPositionFromMouse(event))) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
-            return;
-        } else if (this.selectionExists) {
+        } else {
             this.cancelSelection();
             this.lineService.clearPath();
             this.lineService.isShiftDown = false;
@@ -41,10 +40,6 @@ export class LassoSelectionService extends SelectionTool {
     }
 
     onMouseUp(event: MouseEvent): void {
-        console.clear();
-        console.table(this.lineService.pathData);
-        // tslint:disable-next-line: no-string-literal
-        console.log(this.undoRedoService['canUndoRedo']);
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
@@ -52,16 +47,12 @@ export class LassoSelectionService extends SelectionTool {
             this.moveSelectionService.movingWithMouse = false;
             return;
         }
+
         if (this.lineService.pathData.length !== 0) this.undoRedoService.disableUndoRedo();
-        this.lineService.pathData.push(this.lineService.mousePosition);
+        if (!this.checkIfLineCrossing()) this.lineService.pathData.push(this.lineService.mousePosition);
 
         if (this.lineService.pathData.length > 4) {
-            const MAX_OFFSET = 20;
-            const firstPos = this.lineService.pathData[0];
-            const dx = Math.abs(firstPos.x - this.lineService.mousePosition.x);
-            const dy = Math.abs(firstPos.y - this.lineService.mousePosition.y);
-
-            if (dx <= MAX_OFFSET && dy <= MAX_OFFSET) {
+            if (this.lineService.checkClosingLoop()) {
                 this.lineService.pathData.pop();
                 this.lineService.pathData.pop();
                 this.lineService.pathData.push(this.lineService.pathData[0]);
@@ -192,5 +183,51 @@ export class LassoSelectionService extends SelectionTool {
             x: this.lineService.pathData[0].x - this.coords.initialTopLeft.x,
             y: this.lineService.pathData[0].y - this.coords.initialTopLeft.y,
         };
+    }
+
+    checkIfLineCrossing(): boolean {
+        const A1: Vec2 = this.lineService.pathData[this.lineService.pathData.length - 1];
+        const A2: Vec2 = this.lineService.pathData[this.lineService.pathData.length - 2];
+        let lineCrossing = false;
+        this.lineService.pathData.forEach((point, index) => {
+            if (index >= this.lineService.pathData.length - 2) return;
+
+            const B1: Vec2 = point;
+            const B2: Vec2 = this.lineService.pathData[index + 1];
+
+            const deltaXA = A2.x - A1.x;
+            const deltaYA = A2.y - A1.y;
+            const deltaXB = B2.x - B1.x;
+            const deltaYB = B2.y - B1.y;
+
+            const intersectX =
+                (B1.y * deltaXA * deltaXB - B1.x * deltaYB * deltaXA - A1.y * deltaXA * deltaXB + A1.x * deltaYA * deltaXB) /
+                (deltaYA * deltaXB - deltaYB * deltaXA);
+
+            const intersectY = (intersectX * deltaYA + A1.y * deltaXA - A1.x * deltaYA) / deltaXA;
+
+            const upperBoundXA = Math.max(A1.x, A2.x);
+            const upperBoundYA = Math.max(A1.y, A2.y);
+            const upperBoundXB = Math.max(B1.x, B2.x);
+            const upperBoundYB = Math.max(B1.y, B2.y);
+
+            const lowerBoundXA = Math.min(A1.x, A2.x);
+            const lowerBoundYA = Math.min(A1.y, A2.y);
+            const lowerBoundXB = Math.min(B1.x, B2.x);
+            const lowerBoundYB = Math.min(B1.y, B2.y);
+
+            if (
+                intersectX > lowerBoundXA &&
+                intersectX < upperBoundXA &&
+                intersectX > lowerBoundXB &&
+                intersectX < upperBoundXB &&
+                intersectY > lowerBoundYA &&
+                intersectY < upperBoundYA &&
+                intersectY > lowerBoundYB &&
+                intersectY < upperBoundYB
+            )
+                lineCrossing = true;
+        });
+        return lineCrossing;
     }
 }
