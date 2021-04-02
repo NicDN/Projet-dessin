@@ -63,9 +63,8 @@ export class LineService extends TraceTool {
 
         if (this.isShiftDown) {
             this.lockLine();
-        } else {
-            this.updatePreview();
         }
+        this.updatePreview();
     }
 
     onKeyDown(event: KeyboardEvent): void {
@@ -211,7 +210,7 @@ export class LineService extends TraceTool {
         }
         this.pathData.pop();
         this.pathData.push(tempMousePosition);
-        this.updatePreview();
+        //this.updatePreview();
     }
 
     clearPath(): void {

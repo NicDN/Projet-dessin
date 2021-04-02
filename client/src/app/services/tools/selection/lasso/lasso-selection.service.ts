@@ -34,13 +34,17 @@ export class LassoSelectionService extends SelectionTool {
             this.moveSelectionService.movingWithMouse = true;
             return;
         } else if (this.selectionExists) {
-            this.undoRedoService.disableUndoRedo();
             this.cancelSelection();
             this.lineService.clearPath();
+            this.lineService.isShiftDown = false;
         }
     }
 
     onMouseUp(event: MouseEvent): void {
+        console.clear();
+        console.table(this.lineService.pathData);
+        // tslint:disable-next-line: no-string-literal
+        console.log(this.undoRedoService['canUndoRedo']);
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
@@ -48,10 +52,10 @@ export class LassoSelectionService extends SelectionTool {
             this.moveSelectionService.movingWithMouse = false;
             return;
         }
-
+        if (this.lineService.pathData.length !== 0) this.undoRedoService.disableUndoRedo();
         this.lineService.pathData.push(this.lineService.mousePosition);
 
-        if (this.lineService.pathData.length > 2) {
+        if (this.lineService.pathData.length > 4) {
             const MAX_OFFSET = 20;
             const firstPos = this.lineService.pathData[0];
             const dx = Math.abs(firstPos.x - this.lineService.mousePosition.x);
@@ -61,7 +65,7 @@ export class LassoSelectionService extends SelectionTool {
                 this.lineService.pathData.pop();
                 this.lineService.pathData.pop();
                 this.lineService.pathData.push(this.lineService.pathData[0]);
-
+                this.drawingService.clearCanvas(this.drawingService.previewCtx);
                 this.calculateInitialCoords();
                 this.createSelection();
             }
@@ -85,11 +89,10 @@ export class LassoSelectionService extends SelectionTool {
 
         if (this.lineService.isShiftDown) {
             this.lineService.lockLine();
-        } else {
-            this.calculateInitialCoords();
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
         }
+        this.calculateInitialCoords();
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
     }
 
     private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
@@ -104,8 +107,28 @@ export class LassoSelectionService extends SelectionTool {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        super.onKeyDown(event);
+        if (this.selectionExists) {
+            super.onKeyDown(event);
+            if (event.code === 'Escape') this.lineService.clearPath();
+            return;
+        }
+
         this.lineService.onKeyDown(event);
+        this.calculateInitialCoords();
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        if (this.selectionExists) {
+            super.onKeyUp(event);
+            return;
+        }
+
+        this.lineService.onKeyUp(event);
+        this.calculateInitialCoords();
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -140,6 +163,7 @@ export class LassoSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
     }
+
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.fillStyle = 'white';
@@ -154,6 +178,7 @@ export class LassoSelectionService extends SelectionTool {
     }
 
     calculateInitialCoords(): void {
+        if (this.lineService.pathData.length === 0) return;
         this.coords.initialTopLeft = {
             x: Math.min(...this.lineService.pathData.map((data) => data.x)),
             y: Math.min(...this.lineService.pathData.map((data) => data.y)),

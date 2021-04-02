@@ -180,9 +180,7 @@ export abstract class SelectionTool extends Tool {
         }
 
         this.saveSelection(this.drawingService.baseCtx);
-
         this.drawAll(this.drawingService.previewCtx);
-
         this.selectionExists = true;
     }
 
