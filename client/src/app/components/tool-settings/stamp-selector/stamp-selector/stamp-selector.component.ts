@@ -37,9 +37,9 @@ export class StampSelectorComponent implements OnInit {
             max: this.stampService.ANGLE_MAX_VALUE,
 
             getAttribute: () => {
-                return this.stampService.angle;
+                return Math.ceil(Math.abs((this.stampService.angle * 180) / Math.PI)) % 360;
             },
-            action: (value: number) => (this.stampService.angle = value),
+            action: (value: number) => (this.stampService.angle = (value * Math.PI) / 180),
         };
 
         this.stampService.selectedStampSrc = this.stampService.selectedStampSrc;
