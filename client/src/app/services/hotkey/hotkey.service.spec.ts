@@ -9,12 +9,12 @@ import { ClipboardSelectionService } from '@app/services/clipboard-selection/cli
 import { ColorService } from '@app/services/color/color.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { GridService } from '@app/services/grid/grid.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
-import { GridService } from '../grid/grid.service';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
@@ -283,17 +283,23 @@ describe('HotkeyService', () => {
         expect(rectangleSelectionServiceSpyObj.selectAll).toHaveBeenCalled();
     });
 
-    it('#handleIncrementingSquareSize should call appropriate function to increment the squareSize if it is less then the maximum square size', () => {
-        service['handleIncrementingSquareSize']();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
-        expect(gridServiceSpyObj.incrementSquareSize).toHaveBeenCalled();
-        expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
-    });
+    it(
+        '#handleIncrementingSquareSize should call appropriate function to increment the squareSize' + 'if it is less then the maximum square size',
+        () => {
+            service['handleIncrementingSquareSize']();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
+            expect(gridServiceSpyObj.incrementSquareSize).toHaveBeenCalled();
+            expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
+        },
+    );
 
-    it('#handleDecrementingSquareSize should call appropriate function to decrement the squareSize if it is more then the minimum square size', () => {
-        service['handleDecrementingSquareSize']();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
-        expect(gridServiceSpyObj.decrementSquareSize).toHaveBeenCalled();
-        expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
-    });
+    it(
+        '#handleDecrementingSquareSize should call appropriate function to decrement the squareSize' + 'if it is more then the minimum square size',
+        () => {
+            service['handleDecrementingSquareSize']();
+            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
+            expect(gridServiceSpyObj.decrementSquareSize).toHaveBeenCalled();
+            expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
+        },
+    );
 });
