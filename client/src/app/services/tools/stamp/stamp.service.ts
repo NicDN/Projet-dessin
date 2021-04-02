@@ -77,13 +77,15 @@ export class StampService extends Tool {
 
     rotateStamp(event: WheelEvent): void {
         if (event.deltaY > 0) {
-            console.log(this.angleIncrement);
+            // dconsole.log(this.angleIncrement);
             this.wheelScroll += this.angleIncrement;
         } else {
             this.wheelScroll -= this.angleIncrement;
         }
         console.log(this.wheelScroll);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        if (this.wheelScroll > 360) this.wheelScroll = this.wheelScroll - 360;
+        if (this.wheelScroll < 0) this.wheelScroll = 360 - Math.abs(this.wheelScroll);
         this.angle = (this.wheelScroll * Math.PI) / this.RADIAN_DEGREE_RATIO;
         this.drawImageOnCanvas(event, this.drawingService.previewCtx);
     }
