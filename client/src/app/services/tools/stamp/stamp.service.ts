@@ -8,8 +8,9 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     providedIn: 'root',
 })
 export class StampService extends Tool {
+    // TODO: looks not acceptable for AQ
     stamps: string[] = [
-        ' ../../../../../assets/stamps/catKun.jpg',
+        ' ../../../../../assets/stamps/kali.jpeg',
         ' ../../../../../assets/stamps/github.png',
         ' ../../../../../assets/stamps/mario.jpeg',
         ' ../../../../../assets/stamps/emoji.png',
@@ -17,25 +18,21 @@ export class StampService extends Tool {
         ' ../../../../../assets/stamps/creeper.png',
     ];
 
-    selectedStampSrc: string = this.stamps[0];
-
     readonly SCALING_MAX_VALUE: number = 300;
     readonly SCALING_MIN_VALUE: number = 10;
-
-    readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
 
-    readonly RADIAN_DEGREE_RATIO: number = 180;
-    readonly DEFAULT_SCROLL_ANGLE_CHANGE: number = 15;
-    readonly ALT_SCROLL_ANGLE_CHANGE: number = 1;
+    private readonly ANGLE_MAX_VALUE: number = 360;
+    private readonly RADIAN_DEGREE_RATIO: number = 180;
+    private readonly DEFAULT_SCROLL_ANGLE_CHANGE: number = 15;
+    private readonly ALT_SCROLL_ANGLE_CHANGE: number = 1;
 
     private angleIncrement: number = 15;
-    wheelScroll: number = 0;
+    private wheelScroll: number = 0;
+    private stampsData: HTMLImageElement[] = [];
     scaling: number = 100;
-    realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
-
-    stampsData: HTMLImageElement[];
+    selectedStampSrc: string = this.stamps[0];
 
     constructor(drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         super(drawingService, 'Étampe');
