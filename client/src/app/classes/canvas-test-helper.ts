@@ -10,11 +10,13 @@ export class CanvasTestHelper {
     canvas: HTMLCanvasElement;
     drawCanvas: HTMLCanvasElement;
     selectionCanvas: HTMLCanvasElement;
+    gridCanvas: HTMLCanvasElement;
 
     constructor() {
         this.canvas = this.createCanvas(WIDTH, HEIGHT);
         this.drawCanvas = this.createCanvas(WIDTH, HEIGHT);
         this.selectionCanvas = this.createCanvas(WIDTH, HEIGHT);
+        this.gridCanvas = this.createCanvas(WIDTH, HEIGHT);
     }
 
     private createCanvas(width: number, height: number): HTMLCanvasElement {

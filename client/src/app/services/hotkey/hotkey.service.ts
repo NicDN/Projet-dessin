@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { GridService } from '@app/services/grid/grid.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -10,6 +11,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 interface ShortcutFunctions {
     action?: () => void;
     actionCtrl?: () => void;
+    actionShift?: () => void;
     actionCtrlShift?: () => void;
 }
 
@@ -33,6 +35,8 @@ enum shortCutManager {
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
     GRID = 'KeyG',
+    INCREMENT_SQUARE_SIZE = 'Equal',
+    DECREMENT_SQUARE_SIZE = 'Minus',
     CUT = 'KeyX',
     DELETE = 'Delete',
 }
@@ -55,6 +59,7 @@ export class HotkeyService {
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
         private rectangleSelectionService: RectangleSelectionService,
+        private gridService: GridService,
         private clipboardSelectionService: ClipboardSelectionService,
     ) {
         this.initializeShorcutManager();
@@ -71,7 +76,10 @@ export class HotkeyService {
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Save),
             },
             KeyG: {
-                action: () => this.toolService.setCurrentTool(this.toolService.gridService),
+                action: () => {
+                    this.toolService.setCurrentTool(this.toolService.gridService);
+                    this.gridService.handleDrawGrid();
+                },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
             },
             KeyO: { actionCtrl: () => this.handleCtrlO() },
@@ -100,6 +108,12 @@ export class HotkeyService {
                 action: () => this.toolService.setCurrentTool(this.toolService.lassoSelectionService),
                 actionCtrl: () => this.clipboardSelectionService.paste(),
             },
+            Equal: {
+                action: () => this.handleIncrementingSquareSize(),
+                actionShift: () => this.handleIncrementingSquareSize(),
+            },
+            Minus: { action: () => this.handleDecrementingSquareSize() },
+
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
         };
@@ -120,6 +134,9 @@ export class HotkeyService {
             event.shiftKey
                 ? this.shortCutManager[event.code as shortCutManager]?.actionCtrlShift?.()
                 : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
+        } else if (event.shiftKey) {
+            event.preventDefault();
+            this.shortCutManager[event.code as shortCutManager]?.actionShift?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
@@ -138,5 +155,17 @@ export class HotkeyService {
 
     private currentRouteIsEditor(url: string): boolean {
         return url === '/editor';
+    }
+
+    private handleIncrementingSquareSize(): void {
+        this.toolService.setCurrentTool(this.toolService.gridService);
+        this.gridService.incrementSquareSize();
+        this.drawingService.updateGrid();
+    }
+
+    private handleDecrementingSquareSize(): void {
+        this.toolService.setCurrentTool(this.toolService.gridService);
+        this.gridService.decrementSquareSize();
+        this.drawingService.updateGrid();
     }
 }
