@@ -3,133 +3,84 @@ import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 
-enum PointSelected {
-    TOP_LEFT = 1,
-    TOP_MIDDLE = 2,
-    TOP_RIGHT = 3,
-    MIDDLE_LEFT = 4,
-    MIDDLE_RIGHT = 5,
-    BOTTOM_LEFT = 6,
-    BOTTOM_MIDDLE = 7,
-    BOTTOM_RIGHT = 8,
-    NONE = 9,
-}
-
 @Injectable({
     providedIn: 'root',
 })
 export class ResizeSelectionService {
     constructor(protected shapeService: ShapeService) {}
-    private readonly selectingPointOffSet: number = 10;
-    private selectedPoint: PointSelected;
-    private selectingAreaWidth: number;
-    private selectingAreaHeight: number;
+    private readonly selectingPointOffSet: number = 13;
 
-    isAmovingSelectionPoint(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        this.selectingAreaWidth = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
-        this.selectingAreaHeight = selectionCoords.finalTopLeft.y - selectionCoords.finalBottomRight.y;
-        this.checkIfAControlPointHasBeenSelected(mousePosition, selectionCoords);
-        console.log(this.selectedPoint);
+    readonly NO_POINT_SELECTED_INDEX: number = -1;
+    selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
+
+    readonly controlPointWidth: number = 6;
+    readonly halfControlPointWidth: number = this.controlPointWidth / 2;
+
+    getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
+        return [
+            { x: begin.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: begin.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
+            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
+            { x: begin.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
+            { x: end.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
+        ];
     }
 
-    private checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        this.selectedPoint = PointSelected.NONE;
-        this.isUpperLeft(mousePosition, selectionCoords);
-        this.isUpperMiddle(mousePosition, selectionCoords);
-        this.isUpperRight(mousePosition, selectionCoords);
-        this.isMiddleLeft(mousePosition, selectionCoords);
-        this.isMiddleRight(mousePosition, selectionCoords);
-        this.isBottomLeft(mousePosition, selectionCoords);
-        this.isBottomMiddle(mousePosition, selectionCoords);
-        this.isBottomRight(mousePosition, selectionCoords);
-        console.log(this.selectedPoint);
+    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'blue';
+        this.getControlPointsCoords(begin, end).forEach((coord: Vec2) => ctx.rect(coord.x, coord.y, this.controlPointWidth, this.controlPointWidth));
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+    }
+    checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
+        this.selectedPointIndex = this.NO_POINT_SELECTED_INDEX;
+
+        this.getControlPointsCoords(selectionCoords.finalTopLeft, selectionCoords.finalBottomRight).forEach((point, index) => {
+            if (Math.abs(mousePosition.x - point.x) < this.selectingPointOffSet && Math.abs(mousePosition.y - point.y) < this.selectingPointOffSet) {
+                this.selectedPointIndex = index;
+            }
+        });
+        console.log(this.selectedPointIndex);
     }
 
-    private isUpperLeft(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingAreaHeight + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y + this.selectingAreaHeight - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.TOP_LEFT;
-        }
-    }
-
-    private isUpperMiddle(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x + this.selectingAreaWidth / 2 - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingAreaWidth / 2 + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingAreaHeight + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y + this.selectingAreaHeight - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.TOP_MIDDLE;
-        }
-    }
-
-    private isUpperRight(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalBottomRight.x - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalBottomRight.x + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingAreaHeight + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y + this.selectingAreaHeight - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.TOP_RIGHT;
-        }
-    }
-
-    private isMiddleLeft(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingAreaHeight / 2 + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y + this.selectingAreaHeight / 2 - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.MIDDLE_LEFT;
-        }
-    }
-
-    private isMiddleRight(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalBottomRight.x - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalBottomRight.x + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingAreaHeight / 2 + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y + this.selectingAreaHeight / 2 - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.MIDDLE_RIGHT;
-        }
-    }
-
-    private isBottomLeft(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.BOTTOM_LEFT;
-        }
-    }
-
-    private isBottomMiddle(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x + this.selectingAreaWidth / 2 - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingAreaWidth / 2 + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.BOTTOM_MIDDLE;
-        }
-    }
-
-    private isBottomRight(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        if (
-            mousePosition.x > selectionCoords.finalTopLeft.x + this.selectingAreaWidth - this.selectingPointOffSet &&
-            mousePosition.x < selectionCoords.finalTopLeft.x + this.selectingAreaWidth + this.selectingPointOffSet &&
-            mousePosition.y < selectionCoords.finalBottomRight.y + this.selectingPointOffSet &&
-            mousePosition.y > selectionCoords.finalBottomRight.y - this.selectingPointOffSet
-        ) {
-            this.selectedPoint = PointSelected.BOTTOM_RIGHT;
+    resizeSelection(pos: Vec2, coords: SelectionCoords): void {
+        switch (this.selectedPointIndex) {
+            case 0:
+                coords.finalTopLeft.y = pos.y;
+                coords.finalTopLeft.x = pos.x;
+                break;
+            case 1:
+                coords.finalTopLeft.x = pos.x;
+                coords.finalBottomRight.y = pos.y;
+                break;
+            case 2:
+                coords.finalTopLeft.y = pos.y;
+                coords.finalBottomRight.x = pos.x;
+                break;
+            case 3:
+                coords.finalBottomRight.x = pos.x;
+                coords.finalBottomRight.y = pos.y;
+                break;
+            case 4:
+                coords.finalTopLeft.y = pos.y;
+                break;
+            case 5:
+                coords.finalBottomRight.y = pos.y;
+                break;
+            case 6:
+                coords.finalTopLeft.x = pos.x;
+                break;
+            case 7:
+                coords.finalBottomRight.x = pos.x;
+                break;
         }
     }
 }

@@ -39,8 +39,6 @@ export class LassoSelectionService extends SelectionTool {
         if (!this.mouseDown) return;
         if (!this.selectionExists) return;
         if (this.isInsideSelection(this.getPositionFromMouse(event))) {
-            // this.setOffSet(this.getPositionFromMouse(event));
-            // this.moveSelectionService.movingWithMouse = true;
             this.handleSelectionMouseDown(event);
         } else {
             this.cancelSelection();
@@ -53,6 +51,10 @@ export class LassoSelectionService extends SelectionTool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
+        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+            this.resizeSelectionService.selectedPointIndex = -1;
+            return;
+        }
         if (this.moveSelectionService.movingWithMouse) {
             this.moveSelectionService.movingWithMouse = false;
             return;
@@ -77,6 +79,13 @@ export class LassoSelectionService extends SelectionTool {
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown && this.selectionExists) return;
+
+        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+            this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.drawAll(this.drawingService.previewCtx);
+            return;
+        }
 
         if (this.moveSelectionService.movingWithMouse) {
             this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
@@ -150,6 +159,18 @@ export class LassoSelectionService extends SelectionTool {
                 y: begin.y + this.firstPointOffset.y - this.lineService.pathData[0].y + point.y,
             };
         });
+
+        if (this.selectionExists) {
+            const ratioX: number =
+                (this.coords.finalBottomRight.x - this.coords.finalTopLeft.x) / (this.coords.initialBottomRight.x - this.coords.initialTopLeft.x);
+
+            const ratioY: number =
+                (this.coords.finalBottomRight.y - this.coords.finalTopLeft.y) / (this.coords.initialBottomRight.y - this.coords.initialTopLeft.y);
+
+            ctx.translate(this.coords.finalTopLeft.x, this.coords.finalTopLeft.y);
+            ctx.scale(ratioX, ratioY);
+            ctx.translate(-this.coords.finalTopLeft.x, -this.coords.finalTopLeft.y);
+        }
         const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpLinePropreties(ctx, actualPoints), this.lineService);
         lineCommand.execute();
         ctx.restore();
@@ -158,10 +179,20 @@ export class LassoSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x;
-        image.height = selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y;
+        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
+        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
+        const ratioX: number =
+            (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
+            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
 
+        const ratioY: number =
+            (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
+            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
+
+        selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
+        selectionPropreties.selectionCtx.scale(ratioX, ratioY);
+        selectionPropreties.selectionCtx.translate(-selectionPropreties.finalTopLeft.x, -selectionPropreties.finalTopLeft.y);
         this.makePath(selectionPropreties, false);
         selectionPropreties.selectionCtx.clip();
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);

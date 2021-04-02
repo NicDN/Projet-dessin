@@ -50,10 +50,12 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
+        const largeur = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
+        const hauteur = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
         selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
         selectionCoords.finalBottomRight = {
-            x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-            y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
+            x: selectionCoords.finalTopLeft.x + largeur,
+            y: selectionCoords.finalTopLeft.y + hauteur,
         };
 
         this.drawingService.clearCanvas(this.drawingService.previewCtx);

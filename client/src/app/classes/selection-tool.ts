@@ -30,7 +30,7 @@ export abstract class SelectionTool extends Tool {
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
     selectionExists: boolean = false;
-    private readonly selectionOffSet: number = 5;
+    private readonly selectionOffSet: number = 13;
 
     private intervalHandler: number;
     private timeoutHandler: number;
@@ -44,17 +44,11 @@ export abstract class SelectionTool extends Tool {
         finalBottomRight: { x: 0, y: 0 },
     };
 
-    readonly controlPointWidth: number = 6;
-    readonly halfControlPointWidth: number = this.controlPointWidth / 2;
-
     onMouseDown(event: MouseEvent): void {
         this.mouseDown = event.button === MouseButton.Left;
         if (!this.mouseDown) return;
         if (this.isInsideSelection(this.getPositionFromMouse(event)) && this.selectionExists) {
-            this.resizeSelectionService.isAmovingSelectionPoint(this.getPositionFromMouse(event), this.coords);
-
-            this.setOffSet(this.getPositionFromMouse(event));
-            this.moveSelectionService.movingWithMouse = true;
+            this.handleSelectionMouseDown(event);
             return;
         }
         this.undoRedoService.disableUndoRedo();
@@ -64,14 +58,23 @@ export abstract class SelectionTool extends Tool {
     }
 
     handleSelectionMouseDown(event: MouseEvent): void {
-        this.setOffSet(this.getPositionFromMouse(event));
-        this.moveSelectionService.movingWithMouse = true;
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords);
+        if (this.resizeSelectionService.selectedPointIndex === -1) {
+            this.setOffSet(this.getPositionFromMouse(event));
+            this.moveSelectionService.movingWithMouse = true;
+        }
     }
 
     onMouseMove(event: MouseEvent): void {
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
+        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+            this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.drawAll(this.drawingService.previewCtx);
+            return;
+        }
 
         if (this.moveSelectionService.movingWithMouse) {
             this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
@@ -89,6 +92,10 @@ export abstract class SelectionTool extends Tool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
+        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+            this.resizeSelectionService.selectedPointIndex = -1;
+            return;
+        }
         if (this.moveSelectionService.movingWithMouse) {
             this.moveSelectionService.movingWithMouse = false;
             return;
@@ -258,8 +265,7 @@ export abstract class SelectionTool extends Tool {
         selectionCommand.execute();
         if (
             ctx === this.drawingService.baseCtx &&
-            this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x &&
-            this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y
+            (this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x || this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y)
         )
             this.undoRedoService.addCommand(selectionCommand);
     }
@@ -274,19 +280,7 @@ export abstract class SelectionTool extends Tool {
         ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
         ctx.stroke();
         ctx.restore();
-        this.drawControlPoints(ctx, begin, end);
-    }
-
-    private drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-        ctx.beginPath();
-        ctx.lineWidth = 1;
-        ctx.fillStyle = 'white';
-        ctx.strokeStyle = 'blue';
-        this.getControlPointsCoords(begin, end).forEach((coord: Vec2) => ctx.rect(coord.x, coord.y, this.controlPointWidth, this.controlPointWidth));
-        ctx.stroke();
-        ctx.fill();
-        ctx.restore();
+        this.resizeSelectionService.drawControlPoints(ctx, begin, end);
     }
 
     selectAll(): void {
@@ -299,11 +293,16 @@ export abstract class SelectionTool extends Tool {
     }
 
     protected isInsideSelection(point: Vec2): boolean {
+        const minX = Math.min(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
+        const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
+        const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
+        const maxY = Math.max(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
+
         return (
-            point.x > this.coords.finalTopLeft.x - this.selectionOffSet &&
-            point.x < this.coords.finalBottomRight.x + this.selectionOffSet &&
-            point.y > this.coords.finalTopLeft.y - this.selectionOffSet &&
-            point.y < this.coords.finalBottomRight.y + this.selectionOffSet
+            point.x > minX - this.selectionOffSet &&
+            point.x < maxX + this.selectionOffSet &&
+            point.y > minY - this.selectionOffSet &&
+            point.y < maxY + this.selectionOffSet
         );
     }
 
@@ -312,19 +311,6 @@ export abstract class SelectionTool extends Tool {
             x: pos.x - this.coords.finalTopLeft.x,
             y: pos.y - this.coords.finalTopLeft.y,
         };
-    }
-
-    private getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
-        return [
-            { x: begin.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
-            { x: begin.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
-            { x: end.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
-            { x: end.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
-            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth },
-            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth },
-            { x: begin.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
-            { x: end.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth },
-        ];
     }
 
     protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {

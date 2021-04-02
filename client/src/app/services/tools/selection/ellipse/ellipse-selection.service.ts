@@ -51,22 +51,35 @@ export class EllipseSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x;
-        image.height = selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y;
+        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
+        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
         const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.finalTopLeft, selectionPropreties.finalBottomRight);
+
+        const ratioX: number =
+            (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
+            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
+
+        const ratioY: number =
+            (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
+            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
 
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) / 2,
-            (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) / 2,
+            Math.abs(selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) / 2,
+            Math.abs(selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) / 2,
             0,
             0,
             2 * Math.PI,
         );
         selectionPropreties.selectionCtx.clip();
+
+        selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
+        selectionPropreties.selectionCtx.scale(ratioX, ratioY);
+        selectionPropreties.selectionCtx.translate(-selectionPropreties.finalTopLeft.x, -selectionPropreties.finalTopLeft.y);
+
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
     }

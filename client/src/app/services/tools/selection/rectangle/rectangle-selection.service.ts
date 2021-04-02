@@ -43,11 +43,26 @@ export class RectangleSelectionService extends SelectionTool {
     }
 
     drawSelection(selectionPropreties: SelectionPropreties): void {
-        if (selectionPropreties.selectionCtx === undefined) return;
-        selectionPropreties.selectionCtx.putImageData(
-            selectionPropreties.imageData,
-            selectionPropreties.finalTopLeft.x,
-            selectionPropreties.finalTopLeft.y,
-        );
+        if (!selectionPropreties.selectionCtx) return;
+        selectionPropreties.selectionCtx.save();
+        const image: HTMLCanvasElement = document.createElement('canvas');
+        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
+        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
+        (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
+
+        const ratioX: number =
+            (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
+            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
+
+        const ratioY: number =
+            (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
+            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
+
+        selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
+        selectionPropreties.selectionCtx.scale(ratioX, ratioY);
+        selectionPropreties.selectionCtx.translate(-selectionPropreties.finalTopLeft.x, -selectionPropreties.finalTopLeft.y);
+
+        selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
+        selectionPropreties.selectionCtx.restore();
     }
 }
