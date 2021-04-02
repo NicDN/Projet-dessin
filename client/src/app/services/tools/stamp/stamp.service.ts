@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { StampCommand, StampPropreties } from './../../../classes/commands/stamp-command/stamp-command';
+import { UndoRedoService } from './../../undo-redo/undo-redo.service';
 
 @Injectable({
     providedIn: 'root',
@@ -32,7 +34,7 @@ export class StampService extends Tool {
     realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
-    constructor(drawingService: DrawingService) {
+    constructor(drawingService: DrawingService, private undoRedoService: UndoRedoService) {
         super(drawingService, 'Étampe');
     }
 
@@ -42,33 +44,48 @@ export class StampService extends Tool {
     }
 
     private displayPreview(event: MouseEvent): void {
-        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
+        this.drawStamp(event, this.drawingService.previewCtx);
     }
 
     onMouseDown(event: MouseEvent): void {
-        this.drawImageOnCanvas(event, this.drawingService.baseCtx);
+        this.drawStamp(event, this.drawingService.baseCtx);
     }
 
-    private drawImageOnCanvas(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
-        const stampPreview: HTMLImageElement = new Image();
-        stampPreview.src = this.selectedStampSrc;
-        const mousePosition = this.getPositionFromMouse(event);
+    drawStamp(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
+        const stampCommand = new StampCommand(this, this.loadUpPropreties(ctx, event));
+        stampCommand.execute();
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(stampCommand);
+        }
+    }
 
-        ctx.save();
-        const currentCoords = this.getPositionFromMouse(event);
-        ctx.translate(currentCoords.x, currentCoords.y);
-        ctx.rotate(this.angle);
-        ctx.translate(-currentCoords.x, -currentCoords.y);
-        this.scaling = this.scaling;
-        this.realScaling = this.scaling / 10;
-        ctx.drawImage(
+    drawImageOnCanvas(stampPropreties: StampPropreties): void {
+        const stampPreview: HTMLImageElement = new Image();
+        stampPreview.src = stampPropreties.selectedStampSrc;
+
+        stampPropreties.drawingContext.save();
+        stampPropreties.drawingContext.translate(stampPropreties.currentCoords.x, stampPropreties.currentCoords.y);
+        stampPropreties.drawingContext.rotate(stampPropreties.angle);
+        stampPropreties.drawingContext.translate(-stampPropreties.currentCoords.x, -stampPropreties.currentCoords.y);
+
+        stampPropreties.drawingContext.drawImage(
             stampPreview,
-            mousePosition.x - Math.floor((stampPreview.width * this.realScaling) / 2),
-            mousePosition.y - Math.floor((stampPreview.height * this.realScaling) / 2),
-            stampPreview.width * this.realScaling,
-            stampPreview.height * this.realScaling,
+            stampPropreties.currentCoords.x - Math.floor((stampPreview.width * stampPropreties.scaling) / 2),
+            stampPropreties.currentCoords.y - Math.floor((stampPreview.height * stampPropreties.scaling) / 2),
+            stampPreview.width * stampPropreties.scaling,
+            stampPreview.height * stampPropreties.scaling,
         );
-        ctx.restore();
+        stampPropreties.drawingContext.restore();
+    }
+
+    loadUpPropreties(ctx: CanvasRenderingContext2D, event: MouseEvent): StampPropreties {
+        return {
+            drawingContext: ctx,
+            currentCoords: this.getPositionFromMouse(event),
+            selectedStampSrc: this.selectedStampSrc,
+            angle: this.angle,
+            scaling: this.scaling / 10,
+        };
     }
 
     onScroll(event: WheelEvent): void {
@@ -77,17 +94,15 @@ export class StampService extends Tool {
 
     rotateStamp(event: WheelEvent): void {
         if (event.deltaY > 0) {
-            // dconsole.log(this.angleIncrement);
             this.wheelScroll += this.angleIncrement;
         } else {
             this.wheelScroll -= this.angleIncrement;
         }
-        console.log(this.wheelScroll);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         if (this.wheelScroll > 360) this.wheelScroll = this.wheelScroll - 360;
         if (this.wheelScroll < 0) this.wheelScroll = 360 - Math.abs(this.wheelScroll);
         this.angle = (this.wheelScroll * Math.PI) / this.RADIAN_DEGREE_RATIO;
-        this.drawImageOnCanvas(event, this.drawingService.previewCtx);
+        this.drawStamp(event, this.drawingService.previewCtx);
     }
 
     onKeyDown(event: KeyboardEvent): void {
