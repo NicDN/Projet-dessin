@@ -71,6 +71,8 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
         this.hotKeyService.onKeyDown(event);
     }
 

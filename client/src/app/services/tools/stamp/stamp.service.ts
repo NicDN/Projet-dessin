@@ -22,11 +22,13 @@ export class StampService extends Tool {
 
     readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
-    readonly ANGLE_INCREMENT: number = 15;
     readonly RADIAN_DEGREE_RATIO: number = 180;
+    readonly DEFAULT_SCROLL_ANGLE_CHANGE: number = 15;
+    readonly ALT_SCROLL_ANGLE_CHANGE: number = 1;
 
+    private angleIncrement: number = 15;
     wheelScroll: number = 0;
-    scaling: number = 1;
+    scaling: number = 10;
     realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
@@ -59,7 +61,6 @@ export class StampService extends Tool {
         ctx.translate(-currentCoords.x, -currentCoords.y);
         this.scaling = this.scaling;
         this.realScaling = this.scaling / 10;
-        console.log(this.scaling);
         ctx.drawImage(
             stampPreview,
             mousePosition.x - Math.floor((stampPreview.width * this.realScaling) / 2),
@@ -75,16 +76,26 @@ export class StampService extends Tool {
     }
 
     rotateStamp(event: WheelEvent): void {
-        console.log(event.deltaY);
         if (event.deltaY > 0) {
-            this.wheelScroll += this.ANGLE_INCREMENT;
+            console.log(this.angleIncrement);
+            this.wheelScroll += this.angleIncrement;
         } else {
-            this.wheelScroll -= this.ANGLE_INCREMENT;
+            this.wheelScroll -= this.angleIncrement;
         }
         console.log(this.wheelScroll);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.angle = (this.wheelScroll * Math.PI) / this.RADIAN_DEGREE_RATIO;
         this.drawImageOnCanvas(event, this.drawingService.previewCtx);
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        if (event.altKey) {
+            this.angleIncrement = this.ALT_SCROLL_ANGLE_CHANGE;
+        }
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        this.angleIncrement = this.DEFAULT_SCROLL_ANGLE_CHANGE;
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
