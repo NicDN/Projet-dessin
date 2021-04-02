@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { SliderSetting } from '@app/classes/slider-setting';
-import { StampLibraryBottomSheetComponent } from '@app/components/tool-settings/stamp-selector/stamp-library-bottom-sheet/stamp-library-bottom-sheet.component';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 
 @Component({
@@ -12,12 +10,11 @@ import { StampService } from '@app/services/tools/stamp/stamp.service';
 export class StampSelectorComponent implements OnInit {
     scalingSetting: SliderSetting;
     angleSetting: SliderSetting;
-    private PERCENTAGE_FACTOR: number = 100;
-    private FULL_CIRCLE_DEGREES: number = 100;
 
-    private previousSrc: string = this.stampService.stamps[0];
+    private readonly PERCENTAGE_FACTOR: number = 180;
+    private readonly FULL_CIRCLE_DEGREES: number = 360;
 
-    constructor(public stampService: StampService, private bottomSheet: MatBottomSheet) {}
+    constructor(public stampService: StampService) {}
 
     ngOnInit(): void {
         this.scalingSetting = {
@@ -36,7 +33,7 @@ export class StampSelectorComponent implements OnInit {
             title: "Angle d'orientation",
             unit: 'Degrés',
             min: this.stampService.ANGLE_MIN_VALUE,
-            max: this.stampService.ANGLE_MAX_VALUE,
+            max: this.FULL_CIRCLE_DEGREES - 1,
 
             getAttribute: () => {
                 return Math.ceil(Math.abs((this.stampService.angle * this.PERCENTAGE_FACTOR) / Math.PI)) % this.FULL_CIRCLE_DEGREES;
@@ -45,20 +42,5 @@ export class StampSelectorComponent implements OnInit {
         };
 
         this.stampService.selectedStampSrc = this.stampService.selectedStampSrc;
-    }
-
-    openStampLibrary(): void {
-        const bottomSheetRef = this.bottomSheet.open(StampLibraryBottomSheetComponent, {
-            data: this.stampService.stamps,
-        });
-
-        bottomSheetRef.afterDismissed().subscribe((stampSrc: string) => {
-            if (stampSrc == undefined) {
-                this.stampService.selectedStampSrc = this.previousSrc;
-                return;
-            }
-            this.stampService.selectedStampSrc = stampSrc;
-            this.previousSrc = this.stampService.selectedStampSrc;
-        });
     }
 }
