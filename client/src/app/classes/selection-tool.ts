@@ -58,6 +58,11 @@ export abstract class SelectionTool extends Tool {
         this.coords.initialBottomRight = this.coords.initialTopLeft;
     }
 
+    handleSelectionMouseDown(event: MouseEvent): void {
+        this.setOffSet(this.getPositionFromMouse(event));
+        this.moveSelectionService.movingWithMouse = true;
+    }
+
     onMouseMove(event: MouseEvent): void {
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
@@ -317,7 +322,7 @@ export abstract class SelectionTool extends Tool {
         ];
     }
 
-    private loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {
+    protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {
         return {
             selectionCtx: ctx,
             imageData: this.data,

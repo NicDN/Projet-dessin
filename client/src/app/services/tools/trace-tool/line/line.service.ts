@@ -57,6 +57,11 @@ export class LineService extends TraceTool {
     }
 
     onMouseMove(event: MouseEvent): void {
+        this.handleMouseMove(event);
+        this.updatePreview();
+    }
+
+    handleMouseMove(event: MouseEvent): void {
         this.mousePosition = this.getPositionFromMouse(event);
         this.pathData.pop();
         this.pathData.push(this.mousePosition);
@@ -64,7 +69,6 @@ export class LineService extends TraceTool {
         if (this.isShiftDown) {
             this.lockLine();
         }
-        this.updatePreview();
     }
 
     onKeyDown(event: KeyboardEvent): void {

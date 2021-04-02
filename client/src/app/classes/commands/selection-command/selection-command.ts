@@ -11,6 +11,8 @@ export enum SelectionType {
 
 export interface SelectionPropreties {
     selectionCtx?: CanvasRenderingContext2D;
+    selectionPathData?: Vec2[];
+    firstPointOffset?: Vec2;
     imageData: ImageData;
     topLeft: Vec2;
     bottomRight: Vec2;

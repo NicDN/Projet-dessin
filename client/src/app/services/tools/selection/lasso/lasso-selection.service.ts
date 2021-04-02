@@ -30,8 +30,9 @@ export class LassoSelectionService extends SelectionTool {
         if (!this.mouseDown) return;
         if (!this.selectionExists) return;
         if (this.isInsideSelection(this.getPositionFromMouse(event))) {
-            this.setOffSet(this.getPositionFromMouse(event));
-            this.moveSelectionService.movingWithMouse = true;
+            // this.setOffSet(this.getPositionFromMouse(event));
+            // this.moveSelectionService.movingWithMouse = true;
+            this.handleSelectionMouseDown(event);
         } else {
             this.cancelSelection();
             this.lineService.clearPath();
@@ -73,20 +74,14 @@ export class LassoSelectionService extends SelectionTool {
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
+        console.clear();
+        console.table(this.lineService.pathData);
+        this.lineService.handleMouseMove(event);
 
-        this.lineService.mousePosition = this.getPositionFromMouse(event);
-        this.lineService.pathData.pop();
-        this.lineService.pathData.push(this.lineService.mousePosition);
-
-        if (this.lineService.isShiftDown) {
-            this.lineService.lockLine();
-        }
-        this.calculateInitialCoords();
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
+        this.updatePerimeter();
     }
 
-    private loadUpPropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
+    private loadUpLinePropreties(ctx: CanvasRenderingContext2D, path: Vec2[]): TraceToolPropreties {
         return {
             drawingContext: ctx,
             drawingPath: path,
@@ -94,6 +89,19 @@ export class LassoSelectionService extends SelectionTool {
             drawingColor: { rgbValue: 'black', opacity: 1 },
             drawWithJunction: false,
             junctionDiameter: 1,
+        };
+    }
+
+    protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {
+        return {
+            selectionCtx: ctx,
+            selectionPathData: this.lineService.pathData,
+            firstPointOffset: this.firstPointOffset,
+            imageData: this.data,
+            topLeft: this.coords.initialTopLeft,
+            bottomRight: this.coords.initialBottomRight,
+            finalTopLeft: this.coords.finalTopLeft,
+            finalBottomRight: this.coords.finalBottomRight,
         };
     }
 
@@ -105,9 +113,7 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         this.lineService.onKeyDown(event);
-        this.calculateInitialCoords();
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
+        this.updatePerimeter();
     }
 
     onKeyUp(event: KeyboardEvent): void {
@@ -117,6 +123,10 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         this.lineService.onKeyUp(event);
+        this.updatePerimeter();
+    }
+
+    updatePerimeter(): void {
         this.calculateInitialCoords();
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawPerimeter(this.drawingService.previewCtx, this.coords.initialTopLeft, this.coords.initialBottomRight);
@@ -131,41 +141,49 @@ export class LassoSelectionService extends SelectionTool {
                 y: begin.y + this.firstPointOffset.y - this.lineService.pathData[0].y + point.y,
             };
         });
-        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpPropreties(ctx, actualPoints), this.lineService);
+        const lineCommand: TraceToolCommand = new TraceToolCommand(this.loadUpLinePropreties(ctx, actualPoints), this.lineService);
         lineCommand.execute();
         ctx.restore();
     }
     drawSelection(selectionPropreties: SelectionPropreties): void {
-        if (!selectionPropreties.selectionCtx) return;
+        if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
         image.width = selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x;
         image.height = selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
 
-        selectionPropreties.selectionCtx.beginPath();
-        for (const point of this.lineService.pathData) {
-            selectionPropreties.selectionCtx.lineTo(
-                selectionPropreties.finalTopLeft.x + this.firstPointOffset.x - this.lineService.pathData[0].x + point.x,
-                selectionPropreties.finalTopLeft.y + this.firstPointOffset.y - this.lineService.pathData[0].y + point.y,
-            );
-        }
+        this.makePath(selectionPropreties, false);
         selectionPropreties.selectionCtx.clip();
         selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
     }
 
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
-        if (!selectionPropreties.selectionCtx) return;
+        if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData || !selectionPropreties.firstPointOffset) return;
+        selectionPropreties.selectionCtx.save();
+
         selectionPropreties.selectionCtx.fillStyle = 'white';
+        this.makePath(selectionPropreties, true);
+        selectionPropreties.selectionCtx.fill();
+        selectionPropreties.selectionCtx.restore();
+    }
+
+    makePath(selectionPropreties: SelectionPropreties, b: boolean): void {
+        if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData || !selectionPropreties.firstPointOffset) return;
         selectionPropreties.selectionCtx.beginPath();
-        for (const point of this.lineService.pathData) {
+        for (const point of selectionPropreties.selectionPathData) {
             selectionPropreties.selectionCtx.lineTo(
-                selectionPropreties.finalTopLeft.x + this.firstPointOffset.x - this.lineService.pathData[0].x + point.x,
-                selectionPropreties.finalTopLeft.y + this.firstPointOffset.y - this.lineService.pathData[0].y + point.y,
+                (b ? selectionPropreties.topLeft.x : selectionPropreties.finalTopLeft.x) +
+                    selectionPropreties.firstPointOffset.x -
+                    selectionPropreties.selectionPathData[0].x +
+                    point.x,
+                (b ? selectionPropreties.topLeft.y : selectionPropreties.finalTopLeft.y) +
+                    selectionPropreties.firstPointOffset.y -
+                    selectionPropreties.selectionPathData[0].y +
+                    point.y,
             );
         }
-        selectionPropreties.selectionCtx.fill();
     }
 
     calculateInitialCoords(): void {
