@@ -10,13 +10,13 @@ export class GridService extends Tool {
     readonly MIN_SQUARE_SIZE: number = 20;
     readonly MAX_SQUARE_SIZE: number = 40;
 
-    readonly MIN_OPACITY_PERCENTAGE: number = 10;
+    readonly MIN_OPACITY_PERCENTAGE: number = 20;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
 
     private PERCENTAGE_CONVERTER: number = 100;
 
     squareSize: number = 20;
-    opacity: number = 10;
+    opacity: number = 20;
 
     gridDrawn: boolean = false;
 
@@ -36,21 +36,20 @@ export class GridService extends Tool {
 
     private listenToUpdateGridNotification(): void {
         this.drawingService.newGridSignals().subscribe(() => {
-            if (this.gridDrawn) {
-                this.drawGrid();
-            }
+            if (this.gridDrawn) this.drawGrid();
         });
     }
 
-    resizeGridNotification(boxSize: BoxSize): void {
-        this.drawingService.gridCanvas.width = boxSize.widthBox;
+    private resizeGridNotification(boxSize: BoxSize): void {
+        if (this.drawingService.gridCanvas === undefined) return;
         this.drawingService.gridCanvas.height = boxSize.heightBox;
+        this.drawingService.gridCanvas.width = boxSize.widthBox;
         if (this.gridDrawn) this.drawGrid();
     }
 
     handleDrawGrid(): void {
         this.gridDrawn = !this.gridDrawn;
-        this.drawingService.gridCtx.globalAlpha = 0;
+        this.drawingService.clearCanvas(this.drawingService.gridCtx);
         if (!this.gridDrawn) return;
         this.drawGrid();
     }

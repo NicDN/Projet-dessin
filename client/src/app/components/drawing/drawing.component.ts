@@ -57,7 +57,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw) {
+        if (this.canDraw && this.isInsideCanvas(event)) {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
             this.toolsService.currentTool.onMouseDown(event);
         }
@@ -95,5 +95,17 @@ export class DrawingComponent implements AfterViewInit {
 
     disableDrawing(isUsingResizeButton: boolean): void {
         this.canDraw = !isUsingResizeButton;
+    }
+
+    private isInsideCanvas(event: MouseEvent): boolean {
+        console.log(this.drawingService.canvas.width + SIDE_BAR_SIZE);
+        console.log(this.drawingService.canvas.height);
+        // console.log(event.pageX);
+        // console.log(event.pageY);
+        return (
+            event.pageX < this.drawingService.canvas.width + SIDE_BAR_SIZE &&
+            event.pageY < this.drawingService.canvas.height &&
+            event.pageX > SIDE_BAR_SIZE
+        );
     }
 }

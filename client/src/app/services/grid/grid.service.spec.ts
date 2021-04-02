@@ -1,50 +1,38 @@
 import { TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { of } from 'rxjs';
-import { DrawingService } from '../drawing/drawing.service';
 import { GridService } from './grid.service';
 
-fdescribe('GridService', () => {
+// tslint:disable: no-any
+// tslint:disable: no-string-literal
+describe('GridService', () => {
     let service: GridService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
-    let boxSizeStub: BoxSize = { widthBox: 100, heightBox: 100 };
+    const boxSizeStub: BoxSize = { widthBox: 100, heightBox: 100 };
 
     let canvasTestHelper: CanvasTestHelper;
-    let baseCtxStub: CanvasRenderingContext2D;
     let gridContextStub: CanvasRenderingContext2D;
-    let previewCtxStub: CanvasRenderingContext2D;
 
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas', 'newIncomingResizeSignals', 'newGridSignals']);
-        drawingServiceSpyObj.newGridSignals.and.returnValue(of());
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas', 'newIncomingResizeSignals', 'newGridSignals', 'updateGrid']);
+        // tslint:disable-next-line: prefer-const
+        let tmp: any;
+        drawingServiceSpyObj.newGridSignals.and.returnValue(of(tmp));
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
 
         TestBed.configureTestingModule({
-            declarations: [ResizeContainerComponent],
             providers: [{ provide: DrawingService, useValue: drawingServiceSpyObj }],
         });
 
+        service = TestBed.inject(GridService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
 
-        baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         gridContextStub = canvasTestHelper.gridCanvas.getContext('2d') as CanvasRenderingContext2D;
-        previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
-        service = TestBed.inject(GridService);
-
-        service['drawingService'].canvas = canvasTestHelper.canvas;
-        service['drawingService'].previewCanvas = canvasTestHelper.drawCanvas;
         service['drawingService'].gridCanvas = canvasTestHelper.gridCanvas;
-
-        service['drawingService'].baseCtx = baseCtxStub;
-        service['drawingService'].previewCtx = previewCtxStub;
         service['drawingService'].gridCtx = gridContextStub;
-
-        service['drawingService'].gridCanvas.height = 25;
-        service['drawingService'].gridCanvas.width = 25;
-
         drawingServiceSpyObj.clearCanvas.and.returnValue();
     });
 
@@ -52,13 +40,63 @@ fdescribe('GridService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('#listenToResizeNotifications should receive a message from subscriber', () => {
+        const newDrawingNotificationSpy = spyOn<any>(service, 'resizeGridNotification');
+        service['listenToResizeNotifications']();
+        drawingServiceSpyObj.updateGrid();
+        expect(newDrawingNotificationSpy).toHaveBeenCalled();
+    });
+
+    it('#listenToUpdateGridNotification should receive a message from subscriber and draw the grid if it is switched on', () => {
+        service.gridDrawn = true;
+        const drawGridSpy = spyOn(service, 'drawGrid');
+        service['listenToUpdateGridNotification']();
+        drawingServiceSpyObj.updateGrid();
+        expect(drawGridSpy).toHaveBeenCalled();
+    });
+
+    it('#resizeGridNotification should resize the grid canvas to new drawing space dimensions and draw the grid if it is active', () => {
+        service.gridDrawn = true;
+        const drawGridSpy = spyOn(service, 'drawGrid');
+        service['resizeGridNotification'](boxSizeStub);
+        expect(service['drawingService'].gridCanvas.width).toEqual(boxSizeStub.widthBox);
+        expect(service['drawingService'].gridCanvas.height).toEqual(boxSizeStub.heightBox);
+        expect(drawGridSpy).toHaveBeenCalled();
+    });
+
+    it('#resizeGridNotification should not draw the grid if it is not active', () => {
+        service.gridDrawn = false;
+        const drawGridSpy = spyOn(service, 'drawGrid');
+        service['resizeGridNotification'](boxSizeStub);
+        expect(drawGridSpy).not.toHaveBeenCalled();
+    });
+
+    it('#handleDrawGrid should clear the grid canvas and switch it off if it is currently switched on and not draw the grid', () => {
+        service.gridDrawn = true;
+        const drawGridSpy = spyOn(service, 'drawGrid');
+        service.handleDrawGrid();
+        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
+        expect(service.gridDrawn).toBeFalse();
+        expect(drawGridSpy).not.toHaveBeenCalled();
+    });
+
+    it('#handleDrawGrid should clear the grid canvas and switch it on if it is currently switched off and draw the grid', () => {
+        service.gridDrawn = false;
+        const drawGridSpy = spyOn(service, 'drawGrid');
+        service.handleDrawGrid();
+        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
+        expect(service.gridDrawn).toBeTrue();
+        expect(drawGridSpy).toHaveBeenCalled();
+    });
+
     it('#setGridContext should set the context of the grid so it is ready to draw', () => {
+        const PERCENTAGE_CONVERTER = 100;
         const EXPECTED_OPACITY_PERCENTAGE = 50;
         service.opacity = EXPECTED_OPACITY_PERCENTAGE;
         service['setGridContext']();
         expect(gridContextStub.strokeStyle).toEqual('#000000');
         expect(gridContextStub.lineWidth).toEqual(1);
-        expect(gridContextStub.globalAlpha).toEqual(EXPECTED_OPACITY_PERCENTAGE / 100);
+        expect(gridContextStub.globalAlpha).toEqual(EXPECTED_OPACITY_PERCENTAGE / PERCENTAGE_CONVERTER);
     });
 
     it('#incrementSquareSize should increment the square size if it is less than the maximum square size', () => {
@@ -92,18 +130,15 @@ fdescribe('GridService', () => {
     });
 
     it('#drawGrid should clear the canvas before begining to draw', () => {
-        drawingServiceSpyObj.gridCanvas.height = 25;
-        drawingServiceSpyObj.gridCanvas.width = 25;
         service.drawGrid();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#drawGrid should draw the approriate number of lines', () => {
-        const numberOfTimesMoveToShouldBeCalledStub = 12;
+        const numberOfTimesMoveToShouldBeCalledStub = 42;
+        const squareSizeStub = 5;
         const moveToSpy = spyOn(drawingServiceSpyObj.gridCtx, 'moveTo');
-        service.squareSize = 5;
-        drawingServiceSpyObj.gridCanvas.height = 25;
-        drawingServiceSpyObj.gridCanvas.width = 25;
+        service.squareSize = squareSizeStub;
         service.drawGrid();
         expect(moveToSpy).toHaveBeenCalledTimes(numberOfTimesMoveToShouldBeCalledStub);
     });
