@@ -19,13 +19,13 @@ export class StampSelectorComponent implements OnInit {
 
     ngOnInit(): void {
         this.scalingSetting = {
-            title: "Facteur de mise à l'échelle",
-            unit: '',
-            min: this.stampService.SCALING_MIN_VALUE * 10,
-            max: this.stampService.SCALING_MAX_VALUE * 10,
+            title: "Pourcentage de mise à l'échelle",
+            unit: '%',
+            min: this.stampService.SCALING_MIN_VALUE,
+            max: this.stampService.SCALING_MAX_VALUE,
 
             getAttribute: () => {
-                return this.stampService.scaling / 10;
+                return this.stampService.scaling;
             },
             action: (value: number) => (this.stampService.scaling = value),
         };

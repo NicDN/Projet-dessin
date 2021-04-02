@@ -19,8 +19,8 @@ export class StampService extends Tool {
 
     selectedStampSrc: string = this.stamps[0];
 
-    readonly SCALING_MAX_VALUE: number = 3;
-    readonly SCALING_MIN_VALUE: number = 0.1;
+    readonly SCALING_MAX_VALUE: number = 300;
+    readonly SCALING_MIN_VALUE: number = 10;
 
     readonly ANGLE_MAX_VALUE: number = 360;
     readonly ANGLE_MIN_VALUE: number = 0;
@@ -30,7 +30,7 @@ export class StampService extends Tool {
 
     private angleIncrement: number = 15;
     wheelScroll: number = 0;
-    scaling: number = 10;
+    scaling: number = 100;
     realScaling: number = 1;
     angle: number = this.ANGLE_MIN_VALUE;
 
@@ -84,7 +84,7 @@ export class StampService extends Tool {
             currentCoords: this.getPositionFromMouse(event),
             selectedStampSrc: this.selectedStampSrc,
             angle: this.angle,
-            scaling: this.scaling / 10,
+            scaling: this.scaling / 100,
         };
     }
 
