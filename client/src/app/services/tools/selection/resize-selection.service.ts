@@ -48,7 +48,7 @@ export class ResizeSelectionService {
                 this.selectedPointIndex = index;
             }
         });
-        console.log(this.selectedPointIndex);
+        // console.log(this.selectedPointIndex);
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {

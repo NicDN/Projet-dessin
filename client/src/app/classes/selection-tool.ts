@@ -29,7 +29,6 @@ export abstract class SelectionTool extends Tool {
 
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
-    realImageData: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
 
@@ -243,6 +242,8 @@ export abstract class SelectionTool extends Tool {
             this.draw(this.drawingService.baseCtx);
             this.coords.initialTopLeft = { x: 0, y: 0 };
             this.coords.initialBottomRight = { x: 0, y: 0 };
+            this.coords.finalBottomRight = { x: 0, y: 0 };
+            this.coords.finalTopLeft = { x: 0, y: 0 };
             this.selectionExists = false;
             this.moveSelectionService.movingWithMouse = false;
             this.moveSelectionService.movingWithArrows = false;

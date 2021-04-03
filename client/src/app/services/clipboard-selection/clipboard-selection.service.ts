@@ -13,6 +13,7 @@ interface ClipBoardData {
     selectionType: SelectionType;
     selectionCoords: SelectionCoords;
     selectionPathData: Vec2[];
+    firstPointOffSet: Vec2;
 }
 
 @Injectable({
@@ -29,9 +30,11 @@ export class ClipboardSelectionService {
         this.clipBoardData = {
             clipboardImage: (this.toolsService.currentTool as SelectionTool).data,
             selectionType: this.getSelectionType(),
-            selectionCoords: (this.toolsService.currentTool as SelectionTool).coords,
+            selectionCoords: this.loadCoords(),
             selectionPathData: this.toolsService.lineService.pathData,
+            firstPointOffSet: this.loadFirstPointOffSet(),
         };
+        console.log(this.clipBoardData.selectionCoords.finalBottomRight.x);
     }
 
     paste(): void {
@@ -43,6 +46,10 @@ export class ClipboardSelectionService {
 
         this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
+
+        if (this.clipBoardData.selectionType === SelectionType.Lasso) {
+            (this.toolsService.currentTool as LassoSelectionService).firstPointOffset = this.clipBoardData.firstPointOffSet;
+        }
 
         (this.toolsService.currentTool as SelectionTool).selectionExists = true;
         (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft = {
@@ -108,6 +115,37 @@ export class ClipboardSelectionService {
         if (this.clipBoardData.selectionType === SelectionType.Lasso) {
             this.toolsService.setCurrentTool(this.toolsService.lassoSelectionService);
         }
+    }
+
+    loadCoords(): SelectionCoords {
+        return {
+            initialTopLeft: {
+                x: (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.x,
+                y: (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.y,
+            },
+            initialBottomRight: {
+                x: (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.x,
+                y: (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.y,
+            },
+            finalTopLeft: {
+                x: (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x,
+                y: (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y,
+            },
+            finalBottomRight: {
+                x: (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x,
+                y: (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y,
+            },
+        };
+    }
+
+    private loadFirstPointOffSet(): Vec2 {
+        if (this.toolsService.currentTool === this.toolsService.lassoSelectionService) {
+            return {
+                x: (this.toolsService.currentTool as LassoSelectionService).firstPointOffset.x,
+                y: (this.toolsService.currentTool as LassoSelectionService).firstPointOffset.y,
+            };
+        }
+        return { x: 0, y: 0 };
     }
 
     canUseClipboardService(): boolean {

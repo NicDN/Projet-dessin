@@ -98,8 +98,8 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private isInsideCanvas(event: MouseEvent): boolean {
-        console.log(this.drawingService.canvas.width + SIDE_BAR_SIZE);
-        console.log(this.drawingService.canvas.height);
+        // console.log(this.drawingService.canvas.width + SIDE_BAR_SIZE);
+        // console.log(this.drawingService.canvas.height);
         // console.log(event.pageX);
         // console.log(event.pageY);
         return (
