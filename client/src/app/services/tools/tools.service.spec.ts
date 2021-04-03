@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Tool } from '@app/classes/tool';
+// import { DrawingService } from '@app/services/drawing/drawing.service';
 import { Subject } from 'rxjs';
 import { EllipseDrawingService } from './shape/ellipse/ellipse-drawing.service';
 import { ToolsService } from './tools.service';
@@ -11,9 +12,15 @@ describe('ToolsService', () => {
     let pencilService: PencilService;
     let ellipseDrawingService: EllipseDrawingService;
     const keyboardEvent = new KeyboardEvent('test');
+    // let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({ providers: [PencilService, EllipseDrawingService] });
+        // drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['newBaseLineSignals'], {
+        //     isStamp: false,
+        // });
+        TestBed.configureTestingModule({
+            providers: [PencilService, EllipseDrawingService],
+        });
         service = TestBed.inject(ToolsService);
         pencilService = TestBed.inject(PencilService);
         ellipseDrawingService = TestBed.inject(EllipseDrawingService);
@@ -50,6 +57,16 @@ describe('ToolsService', () => {
         expect(service['subject'].next).toHaveBeenCalledWith(ellipseDrawingService);
         expect(service.lineService.clearPath).toHaveBeenCalledWith();
         expect(service.lineService.updatePreview).toHaveBeenCalledWith();
+    });
+
+    it('#setCurrentTool should set the isStamp attribute of drawingService to true if the current tool is the stamp ', () => {
+        service.setCurrentTool(service.stampService);
+        expect(service['drawingService'].isStamp).toBeTrue();
+    });
+
+    it('#setCurrentTool should set the isStamp attribute of drawingService to false if the current tool is not the stamp ', () => {
+        service.setCurrentTool(service.pencilService);
+        expect(service['drawingService'].isStamp).toBeFalse();
     });
 
     it('#getCurrentTool should return an observable subject', () => {

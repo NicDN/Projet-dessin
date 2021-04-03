@@ -3,6 +3,7 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { EllipseSelectionService } from './ellipse-selection.service';
@@ -14,6 +15,7 @@ describe('EllipseSelectionService', () => {
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let canvasTestHelper: CanvasTestHelper;
+    let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -36,12 +38,14 @@ describe('EllipseSelectionService', () => {
             'getCenterCoords',
         ]);
         undoRedoSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
+        moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 EllipseSelectionService,
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoSpyObj },
+                { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
             ],
         });
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
@@ -102,6 +106,13 @@ describe('EllipseSelectionService', () => {
         expect(imageDataOutside3.data).toEqual(Uint8ClampedArray.of(RGB_MAX, 0, 0, RGB_MAX));
     });
 
+    it('#fillWithWhite should return if its undefined', () => {
+        const beginPathSpy = spyOn(drawingServiceSpyObj.baseCtx, 'beginPath');
+        selectionProperties.selectionCtx = undefined;
+        ellipseSelectionService.fillWithWhite(selectionProperties);
+        expect(beginPathSpy).not.toHaveBeenCalled();
+    });
+
     it('#drawSelection should put the image data at the final coords', () => {
         const clipSpy = spyOn(drawingServiceSpyObj.baseCtx, 'clip');
         const drawImageSpy = spyOn(drawingServiceSpyObj.baseCtx, 'drawImage');
@@ -110,5 +121,13 @@ describe('EllipseSelectionService', () => {
         ellipseSelectionService.drawSelection(selectionProperties);
         expect(clipSpy).toHaveBeenCalled();
         expect(drawImageSpy).toHaveBeenCalled();
+    });
+
+    it('#drawSelection should return if the selectionCtx is undefined', () => {
+        selectionProperties.selectionCtx = undefined;
+        const clipSpy = spyOn(drawingServiceSpyObj.baseCtx, 'clip');
+
+        ellipseSelectionService.drawSelection(selectionProperties);
+        expect(clipSpy).not.toHaveBeenCalled();
     });
 });

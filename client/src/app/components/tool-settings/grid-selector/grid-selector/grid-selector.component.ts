@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 
 @Component({
@@ -11,31 +12,36 @@ export class GridSelectorComponent implements OnInit {
     @Input() tool: GridService;
 
     gridSettings: SliderSetting[];
+
+    constructor(private drawingService: DrawingService) {}
+
     ngOnInit(): void {
         this.gridSettings = [
             {
                 title: 'Taille des carrées',
                 unit: 'Pixels',
-                min: 1, // TODO: must be constants defined in grid service
-                max: 20, // TODO: must be constants defined in grid service
+                min: this.tool.MIN_SQUARE_SIZE,
+                max: this.tool.MAX_SQUARE_SIZE,
                 getAttribute: () => {
-                    return 1; // dump value
+                    return this.tool.squareSize;
                 },
-                // tslint:disable-next-line: no-empty
-                action: (value: number) => {},
+                action: (value: number) => {
+                    this.tool.squareSize = value;
+                    this.drawingService.updateGrid();
+                },
             },
 
             {
                 title: 'Opacité',
-                unit: '',
-                min: 1, // TODO: must be constants defined in grid service
-                max: 100, // TODO: must be constants defined in grid service
+                unit: '%',
+                min: this.tool.MIN_OPACITY_PERCENTAGE,
+                max: this.tool.MAX_OPACITY_PERCENTAGE,
                 getAttribute: () => {
-                    return 1; // dump value
+                    return this.tool.opacity;
                 },
-                // tslint:disable-next-line: no-empty
                 action: (value: number) => {
-                    // divide value by 100 to have opacity between 0.1 - 1
+                    this.tool.opacity = value;
+                    this.drawingService.updateGrid();
                 },
             },
         ];

@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -21,11 +23,13 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DrawingOptionsComponent } from '@app/components/drawing-options/drawing-options.component';
 import { LineSettingsSelectorComponent } from '@app/components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ClickOutsideModule } from 'ng-click-outside';
+import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
@@ -53,7 +57,6 @@ import { SprayCanSettingsSelectorComponent } from './components/tool-settings/sp
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
-import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 
 @NgModule({
     declarations: [
@@ -73,7 +76,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorSliderComponent,
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
-        UndoRedoComponent,
+        DrawingOptionsComponent,
         EyeDropperComponent,
         CarouselDialogComponent,
         SaveDialogComponent,
@@ -113,6 +116,9 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         MatRippleModule,
         MatSnackBarModule,
         ClickOutsideModule,
+        ClipboardModule,
+        MatBottomSheetModule,
+        MatGridListModule,
     ],
     entryComponents: [CarouselDialogComponent],
     providers: [],
