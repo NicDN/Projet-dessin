@@ -2,3 +2,9 @@
 <mat-divider></mat-divider>
 <app-generic-slider [sliderSetting]="this.angleSetting"></app-generic-slider>
 <mat-divider></mat-divider>
+
+<mat-grid-list cols="3" rowHeight="1:1" gutterSize="0">
+    <mat-grid-tile *ngFor="let stamp of stampService.stamps" (click)="this.stampService.selectedStampSrc=stamp">
+        <img src="{{stamp}}" alt="Image non disponible" [class.active]="stamp === stampService.selectedStampSrc">
+    </mat-grid-tile>
+</mat-grid-list>

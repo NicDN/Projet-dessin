@@ -6,6 +6,7 @@ import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
@@ -225,6 +226,23 @@ describe('DrawingComponent', () => {
         component.onMouseDown(mouseEventClick);
         expect(undoRedoServiceSpyObj.disableUndoRedo).not.toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalled();
+    });
+
+    it('#onScroll should call #rotateStamp if the current tool is the stamp', () => {
+        const wheelEvent = {} as WheelEvent;
+        toolsServiceSpy.stampService = new StampService(drawingStub, undoRedoServiceSpyObj);
+        toolsServiceSpy.currentTool = toolsServiceSpy.stampService;
+        spyOn(toolsServiceSpy.stampService, 'rotateStamp');
+        component.onScroll(wheelEvent);
+        expect(toolsServiceSpy.stampService.rotateStamp).toHaveBeenCalledWith(wheelEvent);
+    });
+
+    it('#onScroll should not call #rotateStamp if the current tool is not the stamp', () => {
+        const wheelEvent = {} as WheelEvent;
+        toolsServiceSpy.stampService = new StampService(drawingStub, undoRedoServiceSpyObj);
+        spyOn(toolsServiceSpy.stampService, 'rotateStamp');
+        component.onScroll(wheelEvent);
+        expect(toolsServiceSpy.stampService.rotateStamp).not.toHaveBeenCalledWith(wheelEvent);
     });
 
     it('#isInsideCanvas should return true if the mouse event click is inside the canvas', () => {

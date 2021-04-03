@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
@@ -39,6 +40,7 @@ export class ToolsService {
         public textService: TextService,
         public stampService: StampService,
         public gridService: GridService,
+        private drawingService: DrawingService,
     ) {
         this.currentTool = pencilService;
     }
@@ -46,11 +48,18 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.ellipseSelectionService.cancelSelection();
         this.rectangleSelectionService.cancelSelection();
+
         if (this.currentTool === this.lineService) {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }
+
         this.currentTool = tool;
+
+        this.drawingService.isStamp = false;
+        if (this.currentTool === this.stampService) {
+            this.drawingService.isStamp = true;
+        }
 
         this.subject.next(tool);
     }
