@@ -16,6 +16,6 @@ export class StampCommand extends AbstractCommand {
     }
 
     execute(): void {
-        this.stampService.drawImageOnCanvas(this.stampPropreties);
+        this.stampService.drawStampOnCanvas(this.stampPropreties);
     }
 }

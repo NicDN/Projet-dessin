@@ -27,8 +27,8 @@ export class StampService extends Tool {
     private readonly DEFAULT_SCROLL_ANGLE_CHANGE: number = 15;
     private readonly ALT_SCROLL_ANGLE_CHANGE: number = 1;
 
-    private angleIncrement: number = 15;
-    private wheelScroll: number = 0;
+    private angleIncrement: number = this.DEFAULT_SCROLL_ANGLE_CHANGE;
+    private wheelScrollAngleDegree: number = 0;
     private stampsData: HTMLImageElement[] = [];
     scaling: number = 100;
     angle: number = this.ANGLE_MIN_VALUE;
@@ -54,14 +54,14 @@ export class StampService extends Tool {
     }
 
     private displayPreview(event: MouseEvent): void {
-        this.drawStamp(event, this.drawingService.previewCtx);
+        this.registerStampCommand(event, this.drawingService.previewCtx);
     }
 
     onMouseDown(event: MouseEvent): void {
-        this.drawStamp(event, this.drawingService.baseCtx);
+        this.registerStampCommand(event, this.drawingService.baseCtx);
     }
 
-    private drawStamp(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
+    private registerStampCommand(event: MouseEvent, ctx: CanvasRenderingContext2D): void {
         const stampCommand = new StampCommand(this, this.loadUpPropreties(ctx, event));
         stampCommand.execute();
         if (ctx === this.drawingService.baseCtx) {
@@ -69,7 +69,7 @@ export class StampService extends Tool {
         }
     }
 
-    drawImageOnCanvas(stampPropreties: StampPropreties): void {
+    drawStampOnCanvas(stampPropreties: StampPropreties): void {
         stampPropreties.drawingContext.save();
         stampPropreties.drawingContext.translate(stampPropreties.currentCoords.x, stampPropreties.currentCoords.y);
         stampPropreties.drawingContext.rotate(stampPropreties.angle);
@@ -99,19 +99,15 @@ export class StampService extends Tool {
         };
     }
 
-    onScroll(event: WheelEvent): void {
-        this.rotateStamp(event);
-    }
-
-    private rotateStamp(event: WheelEvent): void {
-        event.deltaY > 0 ? (this.wheelScroll += this.angleIncrement) : (this.wheelScroll -= this.angleIncrement);
+    rotateStamp(event: WheelEvent): void {
+        event.deltaY > 0 ? (this.wheelScrollAngleDegree += this.angleIncrement) : (this.wheelScrollAngleDegree -= this.angleIncrement);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
 
-        if (this.wheelScroll > this.ANGLE_MAX_VALUE) this.wheelScroll = this.wheelScroll - this.ANGLE_MAX_VALUE;
-        if (this.wheelScroll < 0) this.wheelScroll = this.ANGLE_MAX_VALUE - Math.abs(this.wheelScroll);
+        if (this.wheelScrollAngleDegree > this.ANGLE_MAX_VALUE) this.wheelScrollAngleDegree = this.wheelScrollAngleDegree - this.ANGLE_MAX_VALUE;
+        if (this.wheelScrollAngleDegree < 0) this.wheelScrollAngleDegree = this.ANGLE_MAX_VALUE - Math.abs(this.wheelScrollAngleDegree);
 
-        this.angle = (this.wheelScroll * Math.PI) / this.RADIAN_DEGREE_RATIO;
-        this.drawStamp(event, this.drawingService.previewCtx);
+        this.angle = (this.wheelScrollAngleDegree * Math.PI) / this.RADIAN_DEGREE_RATIO;
+        this.registerStampCommand(event, this.drawingService.previewCtx);
     }
 
     onKeyDown(event: KeyboardEvent): void {

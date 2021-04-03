@@ -242,6 +242,20 @@ describe('HotkeyService', () => {
         expect(toolsServiceSpyObj.currentTool.onKeyDown).not.toHaveBeenCalled();
     });
 
+    it('#onKeyDown should preventDefault if alt key is pressed', () => {
+        const event = new KeyboardEvent('keyDown', { altKey: true });
+        spyOn(event, 'preventDefault');
+        service.onKeyDown(event);
+        expect(event.preventDefault).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not preventDefault if alt key is not pressed', () => {
+        const event = new KeyboardEvent('keyDown', { altKey: false });
+        spyOn(event, 'preventDefault');
+        service.onKeyDown(event);
+        expect(event.preventDefault).not.toHaveBeenCalled();
+    });
+
     it('#onKeyDown should be falsy if an unknown keyboard event is passed', () => {
         service['listenToKeyEvents'] = true;
         const notAssignedKeyboardEvent1 = new KeyboardEvent('keydown', { code: 'KeyJ', ctrlKey: true, shiftKey: true });

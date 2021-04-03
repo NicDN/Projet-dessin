@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
@@ -7,7 +8,6 @@ import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/text.service';
 import { Observable, Subject } from 'rxjs';
-import { DrawingService } from '../drawing/drawing.service';
 import { FillDripService } from './fill-drip/fill-drip.service';
 import { EllipseSelectionService } from './selection/ellipse/ellipse-selection.service';
 import { RectangleSelectionService } from './selection/rectangle/rectangle-selection.service';

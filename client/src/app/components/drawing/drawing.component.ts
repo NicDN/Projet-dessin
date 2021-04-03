@@ -91,7 +91,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('wheel', ['$event'])
     onScroll(event: WheelEvent): void {
-        if (this.toolsService.currentTool === this.toolsService.stampService) (this.toolsService.currentTool as StampService).onScroll(event);
+        if (this.toolsService.currentTool === this.toolsService.stampService) (this.toolsService.currentTool as StampService).rotateStamp(event);
     }
 
     disableDrawing(isUsingResizeButton: boolean): void {
