@@ -23,6 +23,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DrawingOptionsComponent } from '@app/components/drawing-options/drawing-options.component';
 import { LineSettingsSelectorComponent } from '@app/components/tool-settings/line-settings-selector/line-settings-selector.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
@@ -56,7 +57,6 @@ import { SprayCanSettingsSelectorComponent } from './components/tool-settings/sp
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
-import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
 
 @NgModule({
     declarations: [
@@ -76,7 +76,7 @@ import { UndoRedoComponent } from './components/undo-redo/undo-redo.component';
         ColorSliderComponent,
         ColorPaletteComponent,
         SprayCanSettingsSelectorComponent,
-        UndoRedoComponent,
+        DrawingOptionsComponent,
         EyeDropperComponent,
         CarouselDialogComponent,
         SaveDialogComponent,

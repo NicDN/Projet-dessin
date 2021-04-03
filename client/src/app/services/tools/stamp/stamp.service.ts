@@ -8,7 +8,6 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     providedIn: 'root',
 })
 export class StampService extends Tool {
-    // TODO: looks not acceptable for AQ
     stamps: string[] = [
         ' ../../../../../assets/stamps/kali.jpeg',
         ' ../../../../../assets/stamps/github.png',

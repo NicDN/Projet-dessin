@@ -14,12 +14,16 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { DrawingComponent } from './drawing.component';
 
 const MOUSE_POSITION_DEFAULT = 1000;
+const INSIDE_CANVAS_WIDTH = 500;
+const INSIDE_CANVAS_HEIGHT = 500;
 const mouseEventClick = { pageX: MOUSE_POSITION_DEFAULT, pageY: MOUSE_POSITION_DEFAULT, button: 0 } as MouseEvent;
+const mouseEventInsideCanvas = { pageX: INSIDE_CANVAS_WIDTH, pageY: INSIDE_CANVAS_HEIGHT, button: 0 } as MouseEvent;
 const keyBoardEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 const OVER_MINIMUM_WIDTH = 1000;
 const OVER_MINIMUM_HEIGHT = 1000;
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
@@ -106,8 +110,9 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is true ", () => {
+    it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event inside the canvas if canDrawflag is true ", () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -199,8 +204,9 @@ describe('DrawingComponent', () => {
         expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
     });
 
-    it('#onMouseDown should call undoRedoService if it is not a selectionTool', () => {
+    it('#onMouseDown should call undoRedoService if it is not a selectionTool and is inside the canvas', () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
         component.onMouseDown(mouseEventClick);
         expect(undoRedoServiceSpyObj.disableUndoRedo).toHaveBeenCalled();
@@ -209,6 +215,7 @@ describe('DrawingComponent', () => {
 
     it('#onMouseDown should not call undoRedoService if it is a selectionTool', () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         toolsServiceSpy.currentTool = new RectangleSelectionService(
             drawingStub,
             new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
@@ -236,5 +243,12 @@ describe('DrawingComponent', () => {
         spyOn(toolsServiceSpy.stampService, 'rotateStamp');
         component.onScroll(wheelEvent);
         expect(toolsServiceSpy.stampService.rotateStamp).not.toHaveBeenCalledWith(wheelEvent);
+    });
+
+    it('#isInsideCanvas should return true if the mouse event click is inside the canvas', () => {
+        drawingStub.canvas.width = MOUSE_POSITION_DEFAULT;
+        drawingStub.canvas.height = MOUSE_POSITION_DEFAULT;
+        component['isInsideCanvas'](mouseEventInsideCanvas);
+        expect(component['isInsideCanvas'](mouseEventInsideCanvas)).toBeTrue();
     });
 });

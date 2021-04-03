@@ -15,7 +15,7 @@
     background-color: rgb(33, 38, 43);
 }
 
-@media (min-height: 910px) {
+@media (min-height: 950px) {
     .drawing-manager-bottom-section {
         position: absolute;
         bottom: 0;
@@ -23,7 +23,7 @@
     }
 }
 
-@media (max-height: 910px) {
+@media (max-height: 950px) {
     .drawing-manager-bottom-section {
         position: relative;
         border-top: 1px solid grey;
