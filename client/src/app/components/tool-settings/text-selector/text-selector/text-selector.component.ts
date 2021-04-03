@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FontStyle, TextPositon, TextService } from '@app/services/tools/text/text.service';
 
 interface TextPositionOption {
@@ -27,7 +28,7 @@ interface FontStyleOption {
 export class TextSelectorComponent implements OnInit {
     textSizeSetting: SliderSetting;
 
-    constructor(public textService: TextService) {}
+    constructor(public textService: TextService, public drawingService: DrawingService) {}
 
     textPositionOptions: TextPositionOption[] = [
         {
@@ -53,13 +54,13 @@ export class TextSelectorComponent implements OnInit {
         {
             icon: 'italic',
             toolTipContent: 'Italique',
-            setEffect: () => (this.textService.writeItalic = !this.textService.writeItalic),
+            setEffect: () => this.changeWriteItalic(),
         },
 
         {
             icon: 'bold',
             toolTipContent: 'Gras',
-            setEffect: () => (this.textService.writeBold = !this.textService.writeBold),
+            setEffect: () => this.changeWriteBold(),
         },
     ];
 
@@ -86,8 +87,18 @@ export class TextSelectorComponent implements OnInit {
         };
     }
 
+    changeWriteBold(): void {
+        this.textService.writeBold = !this.textService.writeBold;
+        this.updateText();
+    }
+    changeWriteItalic(): void {
+        this.textService.writeItalic = !this.textService.writeItalic;
+        this.updateText();
+    }
+
     setActiveTextPosition(textPositon: TextPositon): void {
         this.textService.textPosition = textPositon;
+        this.updateText();
     }
 
     checkActiveEffect(icon: string): boolean {
@@ -100,5 +111,11 @@ export class TextSelectorComponent implements OnInit {
 
     applyFontStyle(fontStyle: FontStyle): void {
         this.textService.fontStyle = fontStyle;
+        this.updateText();
+    }
+
+    updateText(): void {
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.textService.drawText(this.drawingService.previewCtx, this.textService.writtenOnPreview);
     }
 }

@@ -37,12 +37,15 @@ export class TextService extends TraceTool {
     writeBold: boolean = false;
     isWriting: boolean = false;
 
+    private longestCharacterChain: Vec2 = { x: 0, y: 0 };
+
     fontStyle: FontStyle = FontStyle.Arial;
-    private writtenOnPreview: string = '';
+    writtenOnPreview: string = '';
     private initialClickPosition: Vec2;
     private writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
     private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Consolas', 'Bembo'];
     private enterPosition: number[] = [];
+    private approximateHeight: number = 0;
 
     constructor(drawingService: DrawingService, colorService: ColorService) {
         super(drawingService, colorService, 'Texte');
@@ -60,7 +63,7 @@ export class TextService extends TraceTool {
 
         this.drawingService.previewCtx.save();
         this.setContextForWriting(this.drawingService.previewCtx);
-        this.displayPreviewBar(this.drawingService.previewCtx, '', 0);
+        this.displayPreviewBar('', 0);
         this.drawingService.previewCtx.restore();
     }
 
@@ -95,6 +98,7 @@ export class TextService extends TraceTool {
         }
         if (this.isWriting) {
             this.addChar(event);
+            this.drawBox(this.approximateHeight);
         }
     }
 
@@ -176,6 +180,7 @@ export class TextService extends TraceTool {
         this.writingPosition -= 1;
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
+        this.drawBox(this.approximateHeight);
     }
 
     private backSpacePressed(): void {
@@ -188,6 +193,7 @@ export class TextService extends TraceTool {
         }
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
+        this.drawBox(this.approximateHeight);
     }
 
     private enterPressed(): void {
@@ -230,52 +236,83 @@ export class TextService extends TraceTool {
         this.writtenOnPreview = '';
         this.writingPosition = 0;
         this.enterPosition = [];
+        this.longestCharacterChain = { x: 0, y: 0 };
     }
 
     drawText(ctx: CanvasRenderingContext2D, text: string): void {
+        this.longestCharacterChain = { x: 0, y: 0 };
         ctx.save();
         this.setContextForWriting(ctx);
         const previewPosition = this.writtenOnPreview.length - this.writingPosition;
         let asDrawnedPreview = false;
         // You can get a very close approximation of the vertical height by checking the length of a capital M (multiplying by 1.5 for comfort).
-        const approximateHeight = ctx.measureText('M').width * this.MULTIPLIER;
+        this.approximateHeight = ctx.measureText('M').width * this.MULTIPLIER;
         let i = 0;
         let previousPosition = 0;
+
+        // this.enterPosition.forEach((position, index) => {
+        // });
+        if (this.enterPosition.length === 0) {
+            this.boxSizeX(ctx, 0, this.writtenOnPreview.length - 1);
+        }
         for (const position of this.enterPosition) {
+            this.boxSizeX(ctx, previousPosition, position);
             if (previewPosition >= previousPosition && previewPosition < position) {
-                this.writeText(ctx, previousPosition, position, approximateHeight * i);
-                this.displayPreviewBar(ctx, text.substring(previousPosition, previewPosition), i * approximateHeight);
+                this.writeText(ctx, previousPosition, position, this.approximateHeight * i);
+                this.displayPreviewBar(text.substring(previousPosition, previewPosition), i * this.approximateHeight);
                 asDrawnedPreview = true;
-            } else this.writeText(ctx, previousPosition, position, approximateHeight * i);
+            } else this.writeText(ctx, previousPosition, position, this.approximateHeight * i);
             i += 1;
             previousPosition = position;
         }
+        this.longestCharacterChain.y = this.approximateHeight * i;
 
         if (previousPosition !== this.writtenOnPreview.length) {
+            this.boxSizeX(ctx, previousPosition - 2, this.writtenOnPreview.length - 1);
             if (previewPosition >= previousPosition && previewPosition <= this.writtenOnPreview.length) {
-                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, approximateHeight * i);
-                this.displayPreviewBar(ctx, text.substring(previousPosition, previewPosition), approximateHeight * i);
+                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, this.approximateHeight * i);
+                this.displayPreviewBar(text.substring(previousPosition, previewPosition), this.approximateHeight * i);
             } else {
-                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, approximateHeight * i);
+                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, this.approximateHeight * i);
             }
         } else {
-            if (!asDrawnedPreview) this.displayPreviewBar(ctx, '', approximateHeight * i);
+            if (!asDrawnedPreview) this.displayPreviewBar('', this.approximateHeight * i);
         }
         ctx.restore();
+    }
+
+    drawBox(approximateHeight: number): void {
+        console.clear();
+        console.table(this.longestCharacterChain);
+        this.drawingService.previewCtx.save();
+        this.drawingService.previewCtx.beginPath();
+        this.drawingService.previewCtx.rect(
+            this.initialClickPosition.x - 10,
+            this.initialClickPosition.y - approximateHeight,
+            this.longestCharacterChain.x + 30,
+            this.longestCharacterChain.y + approximateHeight + 20,
+        );
+        this.drawingService.previewCtx.stroke();
+        this.drawingService.previewCtx.closePath();
+        this.drawingService.previewCtx.restore();
+    }
+
+    private boxSizeX(ctx: CanvasRenderingContext2D, startingPos: number, endingPos: number): void {
+        const lineWidth = ctx.measureText(this.writtenOnPreview.substring(startingPos, endingPos)).width;
+        if (this.longestCharacterChain.x < lineWidth) this.longestCharacterChain.x = lineWidth;
     }
 
     private writeText(ctx: CanvasRenderingContext2D, begin: number, end: number, height: number): void {
         ctx.fillText(this.writtenOnPreview.substring(begin, end), this.initialClickPosition.x, this.initialClickPosition.y + height);
     }
 
-    private displayPreviewBar(ctx: CanvasRenderingContext2D, text: string, approximateHeightPadding: number): void {
-        if (ctx === this.drawingService.baseCtx) return;
-        ctx.fillRect(
-            ctx.measureText(text).width + this.initialClickPosition.x,
+    private displayPreviewBar(text: string, approximateHeightPadding: number): void {
+        this.drawingService.previewCtx.fillRect(
+            this.drawingService.previewCtx.measureText(text).width + this.initialClickPosition.x,
             // Change the next value to make the bar more centered (bar not the right size for some type of fonts)
-            this.initialClickPosition.y - ctx.measureText('M').width + approximateHeightPadding,
+            this.initialClickPosition.y - this.drawingService.previewCtx.measureText('M').width + approximateHeightPadding,
             1,
-            Math.floor(ctx.measureText('M').width * this.MULTIPLIER),
+            Math.floor(this.drawingService.previewCtx.measureText('M').width * this.MULTIPLIER),
         );
     }
 
