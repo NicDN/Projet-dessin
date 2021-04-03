@@ -61,6 +61,7 @@ export class ClipboardSelectionService {
             x: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.width,
             y: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.height,
         };
+
         (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft = {
             x: this.pasteOffSet,
             y: this.pasteOffSet,
@@ -93,7 +94,13 @@ export class ClipboardSelectionService {
             (this.toolsService.currentTool as SelectionTool).data.height,
         );
 
+        (this.toolsService.currentTool as SelectionTool).selectionExists = true;
         (this.toolsService.currentTool as SelectionTool).cancelSelection();
+
+        if (this.toolsService.currentTool === this.toolsService.lassoSelectionService) {
+            this.toolsService.lineService.clearPath();
+            this.toolsService.lineService.isShiftDown = false;
+        }
     }
 
     private getSelectionType(): SelectionType {
