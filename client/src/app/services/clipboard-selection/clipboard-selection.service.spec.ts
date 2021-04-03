@@ -163,11 +163,11 @@ describe('ClipboardService', () => {
             drawingServiceSpyObj.previewCtx.canvas.width,
             drawingServiceSpyObj.previewCtx.canvas.height,
         );
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight = { x: 1, y: 1 };
-        (toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft = { x: 1, y: 1 };
+        (toolServiceSpyObj.currentTool as SelectionTool).coords.initialBottomRight = { x: 1, y: 1 };
+        (toolServiceSpyObj.currentTool as SelectionTool).coords.initialTopLeft = { x: 1, y: 1 };
         service.delete();
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight).toEqual({ x: 0, y: 0 });
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft).toEqual({ x: 0, y: 0 });
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialBottomRight).toEqual({ x: 0, y: 0 });
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialTopLeft).toEqual({ x: 0, y: 0 });
     });
 
     it('#delete should call the fill with white on preview context and cancel selection', () => {
@@ -310,22 +310,22 @@ describe('ClipboardService', () => {
             selectionType: SelectionType.Rectangle,
         };
         service.paste();
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalTopLeft).toEqual({
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.finalTopLeft).toEqual({
             x: service['pasteOffSet'],
             y: service['pasteOffSet'],
         });
 
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.finalBottomRight).toEqual({
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.finalBottomRight).toEqual({
             x: service['pasteOffSet'] + service.clipBoardData.clipboardImage.width,
             y: service['pasteOffSet'] + service.clipBoardData.clipboardImage.height,
         });
 
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialTopLeft).toEqual({
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialTopLeft).toEqual({
             x: service['outsideDrawingZoneCoords'],
             y: service['outsideDrawingZoneCoords'],
         });
 
-        expect((toolServiceSpyObj.currentTool as SelectionTool).selectionCoords.initialBottomRight).toEqual({
+        expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialBottomRight).toEqual({
             x: service['outsideDrawingZoneCoords'] + service.clipBoardData.clipboardImage.width,
             y: service['outsideDrawingZoneCoords'] + service.clipBoardData.clipboardImage.height,
         });

@@ -10,15 +10,17 @@ export class GridService extends Tool {
     readonly MIN_SQUARE_SIZE: number = 20;
     readonly MAX_SQUARE_SIZE: number = 40;
 
-    readonly MIN_OPACITY_PERCENTAGE: number = 10;
+    readonly MIN_OPACITY_PERCENTAGE: number = 20;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
 
+    private PERCENTAGE_CONVERTER: number = 100;
+
     squareSize: number = 20;
-    opacity: number = 10;
+    opacity: number = 20;
 
     gridDrawn: boolean = false;
 
-    MULTIPLIER_FACTOR: number = 5;
+    private MULTIPLIER_FACTOR: number = 5;
 
     constructor(drawingService: DrawingService) {
         super(drawingService, 'Grille');
@@ -28,33 +30,31 @@ export class GridService extends Tool {
 
     private listenToResizeNotifications(): void {
         this.drawingService.newIncomingResizeSignals().subscribe((boxSize) => {
-            this.resizeNotification(boxSize);
+            this.resizeGridNotification(boxSize);
         });
     }
 
     private listenToUpdateGridNotification(): void {
         this.drawingService.newGridSignals().subscribe(() => {
-            if (this.gridDrawn) {
-                this.drawGrid();
-            }
+            if (this.gridDrawn) this.drawGrid();
         });
     }
 
-    resizeNotification(boxSize: BoxSize): void {
-        this.drawingService.gridCanvas.width = boxSize.widthBox;
+    private resizeGridNotification(boxSize: BoxSize): void {
+        if (this.drawingService.gridCanvas === undefined) return;
         this.drawingService.gridCanvas.height = boxSize.heightBox;
+        this.drawingService.gridCanvas.width = boxSize.widthBox;
         if (this.gridDrawn) this.drawGrid();
     }
 
     handleDrawGrid(): void {
         this.gridDrawn = !this.gridDrawn;
         this.drawingService.clearCanvas(this.drawingService.gridCtx);
-        this.drawingService.gridCtx.globalAlpha = 0;
         if (!this.gridDrawn) return;
         this.drawGrid();
     }
 
-    drawGrid(): void {
+    private drawGrid(): void {
         this.drawingService.clearCanvas(this.drawingService.gridCtx);
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();
@@ -77,14 +77,16 @@ export class GridService extends Tool {
     private setGridContext(): void {
         this.drawingService.gridCtx.strokeStyle = 'black';
         this.drawingService.gridCtx.lineWidth = 1;
-        this.drawingService.gridCtx.globalAlpha = this.opacity / 100;
+        this.drawingService.gridCtx.globalAlpha = this.opacity / this.PERCENTAGE_CONVERTER;
     }
 
     incrementSquareSize(): void {
-        this.squareSize = (Math.floor(this.squareSize / this.MULTIPLIER_FACTOR) + 1) * this.MULTIPLIER_FACTOR;
+        if (this.squareSize < this.MAX_SQUARE_SIZE)
+            this.squareSize = (Math.floor(this.squareSize / this.MULTIPLIER_FACTOR) + 1) * this.MULTIPLIER_FACTOR;
     }
 
     decrementSquareSize(): void {
-        this.squareSize = Math.floor((this.squareSize - 1) / this.MULTIPLIER_FACTOR) * this.MULTIPLIER_FACTOR;
+        if (this.squareSize > this.MIN_SQUARE_SIZE)
+            this.squareSize = Math.floor((this.squareSize - 1) / this.MULTIPLIER_FACTOR) * this.MULTIPLIER_FACTOR;
     }
 }

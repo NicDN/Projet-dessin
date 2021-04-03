@@ -52,30 +52,43 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        if (this.magnetisme) {
-            if ((pos.x - this.mouseMoveOffset.x) % this.gridService.squareSize === 0) {
-                selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
-                selectionCoords.finalBottomRight = {
-                    x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-                    y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-                };
-            }
+        // if ((pos.x - this.mouseMoveOffset.x) % this.gridService.squareSize === 0) {
+        //     selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
+        //     selectionCoords.finalBottomRight = {
+        //         x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
+        //         y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
+        //     };
+        // }
 
-            if ((pos.y - this.mouseMoveOffset.y) % this.gridService.squareSize === 0) {
-                selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
-                selectionCoords.finalBottomRight = {
-                    x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-                    y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-                };
-            }
-        } else {
-            selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
-            selectionCoords.finalBottomRight = {
-                x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-                y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-            };
+        // if ((pos.y - this.mouseMoveOffset.y) % this.gridService.squareSize === 0) {
+        //     selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
+        //     selectionCoords.finalBottomRight = {
+        //         x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
+        //         y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
+        //     };
+        // }
+        if (!this.magnetisme) {
+            pos = this.getTruePosition(pos);
         }
 
+        const largeur = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
+        const hauteur = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
+        selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
+        selectionCoords.finalBottomRight = {
+            x: selectionCoords.finalTopLeft.x + largeur,
+            y: selectionCoords.finalTopLeft.y + hauteur,
+        };
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
+    }
+
+    getTruePosition(pos: Vec2): Vec2 {
+        console.clear();
+        console.table(pos);
+        const tmp: Vec2 = {
+            x: Math.round(pos.x / this.gridService.squareSize) * this.gridService.squareSize,
+            y: Math.round(pos.y / this.gridService.squareSize) * this.gridService.squareSize,
+        };
+        console.table(pos);
+        return tmp;
     }
 }

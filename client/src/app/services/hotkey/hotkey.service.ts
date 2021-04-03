@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { ClipboardSelectionService } from '@app/services/clipboard-selection/clipboard-selection.service';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
@@ -7,7 +8,6 @@ import { MoveSelectionService } from '@app/services/tools/selection/move-selecti
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { ClipboardSelectionService } from '../clipboard-selection/clipboard-selection.service';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -36,7 +36,7 @@ enum shortCutManager {
     TEXT = 'KeyT',
     FILL_DRIP = 'KeyB',
     GRID = 'KeyG',
-    INCREMENT_SQUARE_SIZE_WITH_EQUAL = 'Equal',
+    INCREMENT_SQUARE_SIZE = 'Equal',
     DECREMENT_SQUARE_SIZE = 'Minus',
     CUT = 'KeyX',
     DELETE = 'Delete',
@@ -81,7 +81,7 @@ export class HotkeyService {
             KeyG: {
                 action: () => {
                     this.toolService.setCurrentTool(this.toolService.gridService);
-                    this.toolService.gridService.handleDrawGrid();
+                    this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
             },
@@ -163,13 +163,13 @@ export class HotkeyService {
 
     private handleIncrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
-        if (this.gridService.squareSize < this.gridService.MAX_SQUARE_SIZE) this.gridService.incrementSquareSize();
+        this.gridService.incrementSquareSize();
         this.drawingService.updateGrid();
     }
 
     private handleDecrementingSquareSize(): void {
         this.toolService.setCurrentTool(this.toolService.gridService);
-        if (this.gridService.squareSize > this.gridService.MIN_SQUARE_SIZE) this.gridService.decrementSquareSize();
+        this.gridService.decrementSquareSize();
         this.drawingService.updateGrid();
     }
 }
