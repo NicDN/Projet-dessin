@@ -1,0 +1,18 @@
+p {
+    padding-top: 15px;
+    font-size: 16px;
+    display: inline-block;
+    color: white;
+}
+
+.point {
+    width: 50px;
+    height: 50px;
+    border-radius: 1px;
+    border-style: solid;
+    border-color: black;
+}
+
+.pointActive {
+    background-color: #e51282;
+}

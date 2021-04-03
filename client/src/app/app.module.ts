@@ -55,6 +55,7 @@ import { SprayCanSettingsSelectorComponent } from './components/tool-settings/sp
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
+import { PointSelectorComponent } from './components/tool-settings/point-selector/point-selector.component';
 
 @NgModule({
     declarations: [
@@ -86,6 +87,7 @@ import { TraceTypeSelectorComponent } from './components/tool-settings/trace-typ
         GridSelectorComponent,
         TextSelectorComponent,
         StampSelectorComponent,
+        PointSelectorComponent,
     ],
     imports: [
         BrowserModule,

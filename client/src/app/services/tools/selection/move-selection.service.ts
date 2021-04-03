@@ -15,6 +15,7 @@ export class MoveSelectionService {
     magnetisme: boolean = false;
 
     readonly arrowMoveDelta: number = 3;
+    pointToMagnetize: number = -1;
     movingWithArrows: boolean = false;
     keyUpIsPressed: boolean = false;
     keyDownIsPressed: boolean = false;
@@ -52,21 +53,6 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        // if ((pos.x - this.mouseMoveOffset.x) % this.gridService.squareSize === 0) {
-        //     selectionCoords.finalTopLeft.x = pos.x - this.mouseMoveOffset.x;
-        //     selectionCoords.finalBottomRight = {
-        //         x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-        //         y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-        //     };
-        // }
-
-        // if ((pos.y - this.mouseMoveOffset.y) % this.gridService.squareSize === 0) {
-        //     selectionCoords.finalTopLeft.y = pos.y - this.mouseMoveOffset.y;
-        //     selectionCoords.finalBottomRight = {
-        //         x: selectionCoords.finalTopLeft.x + (selectionCoords.initialBottomRight.x - selectionCoords.initialTopLeft.x),
-        //         y: selectionCoords.finalTopLeft.y + (selectionCoords.initialBottomRight.y - selectionCoords.initialTopLeft.y),
-        //     };
-        // }
         if (!this.magnetisme) {
             pos = this.getTruePosition(pos);
         }
