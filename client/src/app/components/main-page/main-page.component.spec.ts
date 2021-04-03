@@ -56,9 +56,10 @@ describe('MainPageComponent', () => {
 
     it('#createNewDrawing should navigate to editor page', () => {
         spyOn(component['router'], 'navigate');
+        drawingServiceSpyObj.isNewDrawing = false;
         component.createNewDrawing();
-        expect(drawingServiceSpyObj.newImage).toBeUndefined();
         expect(component['router'].navigate).toHaveBeenCalledWith(['editor']);
+        expect(drawingServiceSpyObj.isNewDrawing).toBeTrue();
     });
 
     // TODO: commented this async test because it is block other test, ask to charger on friday

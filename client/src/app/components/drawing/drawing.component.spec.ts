@@ -6,6 +6,7 @@ import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
@@ -13,12 +14,18 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { DrawingComponent } from './drawing.component';
 
 const MOUSE_POSITION_DEFAULT = 1000;
+const INSIDE_CANVAS_WIDTH = 500;
+const INSIDE_CANVAS_HEIGHT = 500;
 const mouseEventClick = { pageX: MOUSE_POSITION_DEFAULT, pageY: MOUSE_POSITION_DEFAULT, button: 0 } as MouseEvent;
+const mouseEventInsideCanvas = { pageX: INSIDE_CANVAS_WIDTH, pageY: INSIDE_CANVAS_HEIGHT, button: 0 } as MouseEvent;
 const keyBoardEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true });
 const OVER_MINIMUM_WIDTH = 1000;
 const OVER_MINIMUM_HEIGHT = 1000;
 
+const baseImage = new Image();
+
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('DrawingComponent', () => {
     let component: DrawingComponent;
     let fixture: ComponentFixture<DrawingComponent>;
@@ -80,6 +87,36 @@ describe('DrawingComponent', () => {
         expect(component['drawingService'].previewCanvas).toBe(component.previewCanvas.nativeElement);
     });
 
+    it('#ngAfterViewInit should call #loadCanvasWithIncomingImage', () => {
+        spyOn<any>(component, 'loadCanvasWithIncomingImage').and.stub();
+        component.ngAfterViewInit();
+        expect(component['loadCanvasWithIncomingImage']).toHaveBeenCalled();
+    });
+
+    it('#loadCanvasWithIncomingImage should call #handleNewDrawing with base image if the user creates a new drawing', async () => {
+        drawingStub.isNewDrawing = true;
+        spyOn(drawingStub, 'handleNewDrawing');
+        await component['loadCanvasWithIncomingImage'](baseImage);
+        expect(drawingStub.handleNewDrawing).toHaveBeenCalledWith(baseImage);
+        expect(drawingStub.isNewDrawing).toBeFalse();
+    });
+
+    it("#loadCanvasWithIncomingImage should call #handleNewDrawing with drawing service's new image if image is loaded from carousel ", async () => {
+        const newImage = new Image();
+        drawingStub.newImage = newImage;
+        spyOn(drawingStub, 'handleNewDrawing');
+        await component['loadCanvasWithIncomingImage'](baseImage);
+        expect(drawingStub.handleNewDrawing).toHaveBeenCalledWith(newImage);
+        expect(drawingStub.newImage).toBeUndefined();
+    });
+
+    // TODO: commented this async test because it is block other test, ask to charger on friday
+    // it('#loadCanvasWithIncomingImage should call #changeDrawing from drawingService if the user reloads the editor page', async () => {
+    //     spyOn(drawingStub, 'changeDrawing');
+    //     await component['loadCanvasWithIncomingImage'](baseImage);
+    //     expect(drawingStub.changeDrawing).toHaveBeenCalled();
+    // });
+
     it('#disableDrawing Should disable drawing if the resize button is being used', () => {
         const isUsingResizeButtonStub = true;
         component.disableDrawing(isUsingResizeButtonStub);
@@ -105,8 +142,9 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event if canDrawflag is true ", () => {
+    it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event inside the canvas if canDrawflag is true ", () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown');
         component.onMouseDown(mouseEventClick);
         expect(mouseEventSpy).toHaveBeenCalled();
@@ -189,17 +227,9 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it('#ngAfterViewInit should HandleNewDrawing a with an image', () => {
-        const imageStub = new Image();
-        imageStub.src = component['drawingService'].canvas.toDataURL();
-        component['drawingService'].newImage = imageStub;
-        const handleNewDrawing = spyOn(component['drawingService'], 'handleNewDrawing');
-        component.ngAfterViewInit();
-        expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
-    });
-
-    it('#onMouseDown should call undoRedoService if it is not a selectionTool', () => {
+    it('#onMouseDown should call undoRedoService if it is not a selectionTool and is inside the canvas', () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
         component.onMouseDown(mouseEventClick);
         expect(undoRedoServiceSpyObj.disableUndoRedo).toHaveBeenCalled();
@@ -208,6 +238,7 @@ describe('DrawingComponent', () => {
 
     it('#onMouseDown should not call undoRedoService if it is a selectionTool', () => {
         component['canDraw'] = true;
+        spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
         toolsServiceSpy.currentTool = new RectangleSelectionService(
             drawingStub,
             new RectangleDrawingService(drawingStub, colorServiceStub, undoRedoServiceSpyObj),
@@ -218,5 +249,29 @@ describe('DrawingComponent', () => {
         component.onMouseDown(mouseEventClick);
         expect(undoRedoServiceSpyObj.disableUndoRedo).not.toHaveBeenCalled();
         expect(mouseEventSpy).toHaveBeenCalled();
+    });
+
+    it('#onScroll should call #rotateStamp if the current tool is the stamp', () => {
+        const wheelEvent = {} as WheelEvent;
+        toolsServiceSpy.stampService = new StampService(drawingStub, undoRedoServiceSpyObj);
+        toolsServiceSpy.currentTool = toolsServiceSpy.stampService;
+        spyOn(toolsServiceSpy.stampService, 'rotateStamp');
+        component.onScroll(wheelEvent);
+        expect(toolsServiceSpy.stampService.rotateStamp).toHaveBeenCalledWith(wheelEvent);
+    });
+
+    it('#onScroll should not call #rotateStamp if the current tool is not the stamp', () => {
+        const wheelEvent = {} as WheelEvent;
+        toolsServiceSpy.stampService = new StampService(drawingStub, undoRedoServiceSpyObj);
+        spyOn(toolsServiceSpy.stampService, 'rotateStamp');
+        component.onScroll(wheelEvent);
+        expect(toolsServiceSpy.stampService.rotateStamp).not.toHaveBeenCalledWith(wheelEvent);
+    });
+
+    it('#isInsideCanvas should return true if the mouse event click is inside the canvas', () => {
+        drawingStub.canvas.width = MOUSE_POSITION_DEFAULT;
+        drawingStub.canvas.height = MOUSE_POSITION_DEFAULT;
+        component['isInsideCanvas'](mouseEventInsideCanvas);
+        expect(component['isInsideCanvas'](mouseEventInsideCanvas)).toBeTrue();
     });
 });

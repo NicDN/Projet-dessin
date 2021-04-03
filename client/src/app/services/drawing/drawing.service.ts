@@ -9,17 +9,30 @@ export class DrawingService {
     blankHTMLImage: HTMLImageElement;
     baseCtx: CanvasRenderingContext2D;
     previewCtx: CanvasRenderingContext2D;
+    gridCtx: CanvasRenderingContext2D;
+
+    gridCanvas: HTMLCanvasElement;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
-    isNewDrawing: boolean;
+    isNewDrawing: boolean = false;
 
     newImage?: HTMLImageElement = undefined;
+    isStamp: boolean = false;
 
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
+    private gridSubject: Subject<void> = new Subject<void>();
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
+    }
+
+    updateGrid(): void {
+        this.gridSubject.next();
+    }
+
+    newGridSignals(): Observable<void> {
+        return this.gridSubject.asObservable();
     }
 
     private sendBaseLineCommand(image: HTMLImageElement): void {
@@ -39,7 +52,7 @@ export class DrawingService {
     }
 
     clearCanvas(context: CanvasRenderingContext2D): void {
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
     }
 
     executeBaseLine(image: HTMLImageElement): void {
@@ -64,7 +77,6 @@ export class DrawingService {
     }
 
     changeDrawing(image: HTMLImageElement): void {
-        console.log('allo');
         this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
         this.baseCtx.drawImage(image, 0, 0);
         this.sendBaseLineCommand(image);
@@ -95,7 +107,16 @@ export class DrawingService {
     }
 
     onSizeChange(boxsize: BoxSize): void {
-        const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        if (!this.isStamp) {
+            const imageOldPreview = this.previewCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            this.swapDrawings(boxsize);
+            this.previewCtx.putImageData(imageOldPreview, 0, 0);
+        } else {
+            this.swapDrawings(boxsize);
+        }
+    }
+
+    private swapDrawings(boxsize: BoxSize): void {
         this.changeSizeOfCanvas(this.previewCanvas, boxsize);
         this.previewCtx.drawImage(this.canvas, 0, 0);
         this.changeSizeOfCanvas(this.canvas, boxsize);
@@ -103,7 +124,8 @@ export class DrawingService {
         this.baseCtx.drawImage(this.previewCanvas, 0, 0);
         this.clearCanvas(this.previewCtx);
 
-        this.previewCtx.putImageData(imageOldPreview, 0, 0);
+        this.clearCanvas(this.gridCtx);
+        this.updateGrid();
     }
 
     fillWithWhite(context: CanvasRenderingContext2D): void {

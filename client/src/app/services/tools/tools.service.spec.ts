@@ -12,6 +12,7 @@ describe('ToolsService', () => {
     let pencilService: PencilService;
     let ellipseDrawingService: EllipseDrawingService;
     const keyboardEvent = new KeyboardEvent('test');
+    // let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     const snackBarServiceStub = {} as SnackBarService;
 
@@ -55,6 +56,16 @@ describe('ToolsService', () => {
         expect(service['subject'].next).toHaveBeenCalledWith(ellipseDrawingService);
         expect(service.lineService.clearPath).toHaveBeenCalledWith();
         expect(service.lineService.updatePreview).toHaveBeenCalledWith();
+    });
+
+    it('#setCurrentTool should set the isStamp attribute of drawingService to true if the current tool is the stamp ', () => {
+        service.setCurrentTool(service.stampService);
+        expect(service['drawingService'].isStamp).toBeTrue();
+    });
+
+    it('#setCurrentTool should set the isStamp attribute of drawingService to false if the current tool is not the stamp ', () => {
+        service.setCurrentTool(service.pencilService);
+        expect(service['drawingService'].isStamp).toBeFalse();
     });
 
     it('#getCurrentTool should return an observable subject', () => {
