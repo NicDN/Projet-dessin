@@ -7,6 +7,7 @@ import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/e
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from './../undo-redo/undo-redo.service';
 
 interface ClipBoardData {
     clipboardImage: ImageData;
@@ -23,7 +24,7 @@ export class ClipboardSelectionService {
     clipBoardData: ClipBoardData;
     private readonly outsideDrawingZoneCoords: number = 1000000;
     private readonly pasteOffSet: number = 10;
-    constructor(private toolsService: ToolsService, private drawingService: DrawingService) {}
+    constructor(private toolsService: ToolsService, private drawingService: DrawingService, private undoRedoService: UndoRedoService) {}
 
     copy(): void {
         if (!this.canUseClipboardService()) return;
@@ -68,6 +69,7 @@ export class ClipboardSelectionService {
             x: this.pasteOffSet + width,
             y: this.pasteOffSet + height,
         };
+        this.undoRedoService.disableUndoRedo();
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
     }
 
@@ -78,7 +80,7 @@ export class ClipboardSelectionService {
 
     delete(): void {
         if (!this.canUseClipboardService()) return;
-        this.drawingService.fillWithWhite(this.drawingService.previewCtx);
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
 
         (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.x--;
         (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.y--;
