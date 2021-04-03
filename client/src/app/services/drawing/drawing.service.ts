@@ -11,6 +11,7 @@ export class DrawingService {
     previewCtx: CanvasRenderingContext2D;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
+    isNewDrawing: boolean;
 
     newImage?: HTMLImageElement = undefined;
 
@@ -63,6 +64,7 @@ export class DrawingService {
     }
 
     changeDrawing(image: HTMLImageElement): void {
+        console.log('allo');
         this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
         this.baseCtx.drawImage(image, 0, 0);
         this.sendBaseLineCommand(image);

@@ -36,7 +36,8 @@ export class MainPageComponent {
     }
 
     createNewDrawing(): void {
-        this.drawingService.newImage = undefined;
+        // this.drawingService.newImage = undefined;
+        this.drawingService.isNewDrawing = true;
         this.router.navigate(['editor']);
     }
 }

@@ -33,7 +33,7 @@ export class DrawingComponent implements AfterViewInit {
         private undoRedoService: UndoRedoService,
     ) {}
 
-    ngAfterViewInit(): void {
+    async ngAfterViewInit(): Promise<void> {
         this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.previewCtx = this.previewCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.drawingService.canvas = this.baseCanvas.nativeElement;
@@ -44,7 +44,23 @@ export class DrawingComponent implements AfterViewInit {
         baseImage.src = this.drawingService.canvas.toDataURL();
         this.drawingService.blankHTMLImage = baseImage;
 
-        this.drawingService.handleNewDrawing(this.drawingService.newImage ? this.drawingService.newImage : baseImage);
+        // creer nouv dessin
+        if (this.drawingService.isNewDrawing) {
+            this.drawingService.handleNewDrawing(baseImage);
+            this.drawingService.isNewDrawing = false;
+            return;
+        }
+        // carousel
+        if (this.drawingService.newImage) {
+            this.drawingService.handleNewDrawing(this.drawingService.newImage);
+            this.drawingService.newImage = undefined;
+            return;
+        }
+
+        const img = new Image();
+        img.src = localStorage.getItem('canvas') as string;
+        await img.decode();
+        this.drawingService.changeDrawing(img);
     }
 
     @HostListener('window:mousemove', ['$event'])

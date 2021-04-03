@@ -13,6 +13,8 @@ export class LocalStorageService {
 
         try {
             localStorage.setItem('canvas', canvasURLCopy);
+            localStorage.setItem('width', '' + this.drawingService.canvas.width);
+            localStorage.setItem('height', '' + this.drawingService.canvas.height);
         } catch (error) {
             this.snackBarService.openSnackBar('Erreur lors de la sauvegarde automatique.', 'Fermer');
         }
