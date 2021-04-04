@@ -83,7 +83,6 @@ describe('UndoRedoComponent', () => {
 
     it('#handleClickGrid should set the current tool to grid and call handleDrawGrid of grid service', () => {
         component.handleClickGrid();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
         expect(gridServiceSpyObj.handleDrawGrid).toHaveBeenCalled();
     });
 });

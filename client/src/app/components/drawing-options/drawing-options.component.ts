@@ -33,7 +33,6 @@ export class DrawingOptionsComponent implements OnInit {
     }
 
     handleClickGrid(): void {
-        this.toolService.setCurrentTool(this.toolService.gridService);
         this.toolService.gridService.handleDrawGrid();
     }
 }
