@@ -13,7 +13,7 @@ const MAX_RGB_VALUE = 255;
 export class FillDripService extends TraceTool {
     private higherLimit: Uint8ClampedArray;
     private lowerLimit: Uint8ClampedArray;
-    private pourcentage: number = 0.5;
+    pourcentage: number = 0.5; // TODO: should be in english bro maybe acceptancePercentage ?
 
     private mainColor: Uint8ClampedArray;
 
