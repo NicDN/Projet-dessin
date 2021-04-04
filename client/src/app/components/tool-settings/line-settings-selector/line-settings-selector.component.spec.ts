@@ -12,7 +12,8 @@ import { LineSettingsSelectorComponent } from './line-settings-selector.componen
 describe('LineSettingsSelectorComponent', () => {
     let component: LineSettingsSelectorComponent;
     let fixture: ComponentFixture<LineSettingsSelectorComponent>;
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const undoRedoServiceSpy: UndoRedoService = {} as UndoRedoService;
+    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), undoRedoServiceSpy);
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

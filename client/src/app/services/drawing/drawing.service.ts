@@ -14,6 +14,7 @@ export class DrawingService {
     gridCanvas: HTMLCanvasElement;
     canvas: HTMLCanvasElement;
     previewCanvas: HTMLCanvasElement;
+    isNewDrawing: boolean = false;
 
     newImage?: HTMLImageElement = undefined;
     isStamp: boolean = false;
@@ -75,7 +76,7 @@ export class DrawingService {
         return confirm;
     }
 
-    private changeDrawing(image: HTMLImageElement): void {
+    changeDrawing(image: HTMLImageElement): void {
         this.sendNotifToResize({ widthBox: image.width, heightBox: image.height });
         this.baseCtx.drawImage(image, 0, 0);
         this.sendBaseLineCommand(image);

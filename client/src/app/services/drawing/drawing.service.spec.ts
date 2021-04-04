@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { DrawingService } from './drawing.service';
@@ -23,9 +24,12 @@ describe('DrawingService', () => {
     let drawingServiceSpyClearCanvas: jasmine.Spy;
     let imageStub: HTMLImageElement;
 
+    const snackBarServiceStub = {} as SnackBarService;
+
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
+            providers: [{ provide: SnackBarService, useValue: snackBarServiceStub }],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
