@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { FontStyle, TextPositon, TextService } from '@app/services/tools/text/text.service';
+import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/text.service';
 
 interface TextPositionOption {
     icon: string;
     toolTipContent: string;
-    textPositon: TextPositon;
+    textPositon: TextPosition;
 }
 
 interface TextEffect {
@@ -34,19 +34,19 @@ export class TextSelectorComponent implements OnInit {
         {
             icon: 'align-left',
             toolTipContent: 'Gauche',
-            textPositon: TextPositon.Left,
+            textPositon: TextPosition.Left,
         },
 
         {
             icon: 'align-center',
             toolTipContent: 'Centre',
-            textPositon: TextPositon.Center,
+            textPositon: TextPosition.Center,
         },
 
         {
             icon: 'align-right',
             toolTipContent: 'Droite',
-            textPositon: TextPositon.Right,
+            textPositon: TextPosition.Right,
         },
     ];
 
@@ -68,8 +68,8 @@ export class TextSelectorComponent implements OnInit {
         { name: 'Arial', value: FontStyle.Arial },
         { name: 'Times', value: FontStyle.Times },
         { name: 'Comic Sans MS', value: FontStyle.Comic },
-        { name: 'Consolas', value: FontStyle.Consolas },
-        { name: 'Bembo', value: FontStyle.Bembo },
+        { name: 'Calibri', value: FontStyle.Calibri },
+        { name: 'Georgia', value: FontStyle.Georgia },
     ];
 
     ngOnInit(): void {
@@ -83,6 +83,7 @@ export class TextSelectorComponent implements OnInit {
             },
             action: (value: number) => {
                 this.textService.textSize = value;
+                this.updateText();
             },
         };
     }
@@ -96,7 +97,7 @@ export class TextSelectorComponent implements OnInit {
         this.updateText();
     }
 
-    setActiveTextPosition(textPositon: TextPositon): void {
+    setActiveTextPosition(textPositon: TextPosition): void {
         this.textService.textPosition = textPositon;
         this.updateText();
     }
@@ -115,7 +116,10 @@ export class TextSelectorComponent implements OnInit {
     }
 
     updateText(): void {
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.textService.drawText(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+        if (this.textService.isWriting) {
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.textService.drawText(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+            this.textService.drawBox();
+        }
     }
 }
