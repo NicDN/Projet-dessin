@@ -58,16 +58,6 @@ describe('Shape', () => {
         });
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
 
-        shapePropretiesStub = {
-            drawingContext: baseCtxStub,
-            beginCoords: TOP_LEFT_CORNER_COORDS,
-            endCoords: BOTTOM_RIGHT_CORNER_COORDS,
-            drawingThickness: THICKNESS_STUB,
-            mainColor: mainColorStub,
-            secondaryColor: secondaryColorStub,
-            isAlternateShape: true,
-            traceType: TraceType.FilledAndBordered,
-        };
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
@@ -78,6 +68,17 @@ describe('Shape', () => {
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
         previewCtxStub = canvasTestHelper.drawCanvas.getContext('2d') as CanvasRenderingContext2D;
+
+        shapePropretiesStub = {
+            drawingContext: baseCtxStub,
+            beginCoords: TOP_LEFT_CORNER_COORDS,
+            endCoords: BOTTOM_RIGHT_CORNER_COORDS,
+            drawingThickness: THICKNESS_STUB,
+            mainColor: mainColorStub,
+            secondaryColor: secondaryColorStub,
+            isAlternateShape: true,
+            traceType: TraceType.FilledAndBordered,
+        };
 
         shape = new ShapeStub(drawingServiceSpyObj, colorServiceSpyObj);
 

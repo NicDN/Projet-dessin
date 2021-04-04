@@ -13,8 +13,9 @@ describe('TraceTypeSelectorComponent', () => {
     let component: TraceTypeSelectorComponent;
     let fixture: ComponentFixture<TraceTypeSelectorComponent>;
     let colorServiceSpy: jasmine.SpyObj<ColorService>;
+    const undoRedoServiceStub: UndoRedoService = {} as UndoRedoService;
 
-    const shape: Shape = new RectangleDrawingService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const shape: Shape = new RectangleDrawingService(new DrawingService(), new ColorService(), undoRedoServiceStub);
 
     const mainColorMock: Color = {
         rgbValue: 'main color',

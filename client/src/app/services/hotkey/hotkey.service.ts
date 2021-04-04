@@ -129,6 +129,9 @@ export class HotkeyService {
         if (!this.listenToKeyEvents) {
             return;
         }
+        if (event.altKey) {
+            event.preventDefault();
+        }
         if (event.ctrlKey) {
             event.preventDefault();
             event.shiftKey

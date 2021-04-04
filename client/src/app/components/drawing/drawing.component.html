@@ -5,6 +5,8 @@
             ? { cursor: 'none' }
             : this.toolsService.lassoSelectionService && this.toolsService.lassoSelectionService.checkIfLineCrossing()
             ? { cursor: 'not-allowed' }
+            : this.toolsService.currentTool === this.toolsService.eraserService || this.toolsService.currentTool === this.toolsService.stampService
+            ? { cursor: 'none' }
             : { cursor: 'crosshair' }
     "
 >
