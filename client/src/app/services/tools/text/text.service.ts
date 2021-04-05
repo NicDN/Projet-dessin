@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { TextCommand, TextProperties } from '@app/classes/commands/text-command/text-command';
 import { TraceTool } from '@app/classes/trace-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { Observable, Subject } from 'rxjs';
 
 export enum TextPosition {
@@ -47,26 +49,28 @@ export class TextService extends TraceTool {
     private enterPosition: number[] = [];
     private approximateHeight: number = 0;
 
-    constructor(drawingService: DrawingService, colorService: ColorService) {
+    constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Texte');
     }
 
     onMouseDown(event: MouseEvent): void {
         if (this.isWriting === true) {
             if (!this.isInsideTextBox(this.getPositionFromMouse(event))) {
-                this.drawText(this.drawingService.baseCtx, this.writtenOnPreview);
+                this.registerTextCommand(this.drawingService.baseCtx, this.writtenOnPreview);
                 this.disableWriting();
+                this.undoRedoService.enableUndoRedo();
             }
             return;
         }
         this.isWriting = true;
+        this.undoRedoService.disableUndoRedo();
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.disableEnableHotKeyService(false);
         this.initialClickPosition = this.getPositionFromMouse(event);
 
         this.drawingService.previewCtx.save();
-        this.setContextForWriting(this.drawingService.previewCtx);
-        this.displayPreviewBar('', 0, '');
+        this.setContextForWriting(this.loadTextProperties(this.drawingService.previewCtx, ''));
+        this.displayPreviewBar(this.loadTextProperties(this.drawingService.previewCtx, '').textContext, '', 0, '');
         this.drawBox();
         this.drawingService.previewCtx.restore();
     }
@@ -191,7 +195,7 @@ export class TextService extends TraceTool {
         }
         this.writingPosition -= 1;
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
+        this.registerTextCommand(this.drawingService.previewCtx, this.writtenOnPreview);
         this.drawBox();
     }
 
@@ -204,7 +208,7 @@ export class TextService extends TraceTool {
             if (this.writtenOnPreview.length - this.writingPosition < this.enterPosition[i]) this.enterPosition[i] -= 1;
         }
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
+        this.registerTextCommand(this.drawingService.previewCtx, this.writtenOnPreview);
         this.drawBox();
     }
 
@@ -233,7 +237,7 @@ export class TextService extends TraceTool {
             this.changeWrittenOnPreview(event.key, 0, 0);
         }
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        this.drawText(this.drawingService.previewCtx, this.writtenOnPreview);
+        this.registerTextCommand(this.drawingService.previewCtx, this.writtenOnPreview);
         this.drawBox();
     }
 
@@ -244,7 +248,7 @@ export class TextService extends TraceTool {
             this.writtenOnPreview.substring(this.writtenOnPreview.length - this.writingPosition + offset2, this.writtenOnPreview.length);
     }
 
-    private disableWriting(): void {
+    disableWriting(): void {
         this.isWriting = false;
         this.disableEnableHotKeyService(true);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -254,84 +258,100 @@ export class TextService extends TraceTool {
         this.longestCharacterChain = { x: 0, y: 0 };
     }
 
-    // registerTextCommand(): void {
-    //     // draw text
-    //     // loadUpPropreties => Sauver l'etat courant
-    // }
+    registerTextCommand(ctx: CanvasRenderingContext2D, text: string): void {
+        const textCommand = new TextCommand(this, this.loadTextProperties(ctx, text));
+        textCommand.execute();
+        if (ctx === this.drawingService.baseCtx) {
+            this.undoRedoService.addCommand(textCommand);
+        }
+    }
 
-    // loadTextProperties(ctx: CanvasRenderingContext2D): TextProperties {
-    //     return {
-    //         textContext: ctx,
-    //         initialClickPosition: this.initialClickPosition,
-    //         text: this.writtenOnPreview,
-    //         enterPosition: this.enterPosition,
-    //         fontStyle: this.fontStyle,
-    //         writeBold: this.writeBold,
-    //         writeItalic: this.writeItalic,
-    //         textSize: this.textSize,
-    //         textPosition: this.textPosition,
-    //     };
-    // }
+    loadTextProperties(ctx: CanvasRenderingContext2D, text: string): TextProperties {
+        return {
+            textContext: ctx,
+            initialClickPosition: this.initialClickPosition,
+            writtenOnPreview: text,
+            enterPosition: this.enterPosition,
+            fontStyle: this.fontStyle,
+            writeBold: this.writeBold,
+            writeItalic: this.writeItalic,
+            textSize: this.textSize,
+            textPosition: this.textPosition,
+            color: { rgbValue: this.colorService.mainColor.rgbValue, opacity: this.colorService.mainColor.opacity },
+        };
+    }
 
-    drawText(ctx: CanvasRenderingContext2D, text: string): void {
+    drawText(textProperties: TextProperties): void {
         this.longestCharacterChain = { x: 0, y: 0 };
-        ctx.save();
-        this.setContextForWriting(ctx);
-        this.findLongestLineAndHeight(ctx);
+        textProperties.textContext.save();
+        this.setContextForWriting(textProperties);
+        this.findLongestLineAndHeight(textProperties);
 
-        const previewPosition = this.writtenOnPreview.length - this.writingPosition;
+        const previewPosition = textProperties.writtenOnPreview.length - this.writingPosition;
         let asDrawnedPreview = false;
         // You can get a very close approximation of the vertical height by checking the length of a capital M (multiplying by 1.5 for comfort).
-        this.approximateHeight = ctx.measureText('M').width * this.MULTIPLIER;
+        this.approximateHeight = textProperties.textContext.measureText('M').width * this.MULTIPLIER;
         let i = 0;
         let previousPosition = 0;
 
-        for (const position of this.enterPosition) {
+        for (const position of textProperties.enterPosition) {
             if (previewPosition >= previousPosition && previewPosition < position) {
-                this.writeText(ctx, previousPosition, position - 1, this.approximateHeight * i);
+                this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
                 this.displayPreviewBar(
-                    text.substring(previousPosition, previewPosition),
+                    textProperties.textContext,
+                    textProperties.writtenOnPreview.substring(previousPosition, previewPosition),
                     i * this.approximateHeight,
-                    text.substring(previousPosition, position - 1),
+                    textProperties.writtenOnPreview.substring(previousPosition, position - 1),
                 );
                 asDrawnedPreview = true;
-            } else this.writeText(ctx, previousPosition, position - 1, this.approximateHeight * i);
+            } else this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
             i += 1;
             previousPosition = position;
         }
 
-        if (previousPosition !== this.writtenOnPreview.length) {
-            if (previewPosition >= previousPosition && previewPosition <= this.writtenOnPreview.length) {
-                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, this.approximateHeight * i);
+        if (previousPosition !== textProperties.writtenOnPreview.length) {
+            if (previewPosition >= previousPosition && previewPosition <= textProperties.writtenOnPreview.length) {
+                this.writeText(textProperties, previousPosition, textProperties.writtenOnPreview.length, this.approximateHeight * i);
                 this.displayPreviewBar(
-                    text.substring(previousPosition, previewPosition),
+                    textProperties.textContext,
+                    textProperties.writtenOnPreview.substring(previousPosition, previewPosition),
                     this.approximateHeight * i,
-                    text.substring(previousPosition, this.writtenOnPreview.length),
+                    textProperties.writtenOnPreview.substring(previousPosition, textProperties.writtenOnPreview.length),
                 );
             } else {
-                this.writeText(ctx, previousPosition, this.writtenOnPreview.length, this.approximateHeight * i);
+                this.writeText(textProperties, previousPosition, textProperties.writtenOnPreview.length, this.approximateHeight * i);
             }
         } else {
             if (!asDrawnedPreview)
-                this.displayPreviewBar('', this.approximateHeight * i, text.substring(previousPosition, this.writtenOnPreview.length));
+                this.displayPreviewBar(
+                    textProperties.textContext,
+                    '',
+                    this.approximateHeight * i,
+                    textProperties.writtenOnPreview.substring(previousPosition, textProperties.writtenOnPreview.length),
+                );
         }
-        ctx.restore();
+        textProperties.textContext.restore();
+
+        if (textProperties.textContext === this.drawingService.baseCtx) {
+            this.disableWriting();
+        }
     }
 
-    findLongestLineAndHeight(ctx: CanvasRenderingContext2D): void {
-        if (this.enterPosition.length === 0) {
-            this.boxSizeX(ctx, 0, this.writtenOnPreview.length - 1);
+    findLongestLineAndHeight(textProperties: TextProperties): void {
+        if (textProperties.enterPosition.length === 0) {
+            this.boxSizeX(textProperties, 0, textProperties.writtenOnPreview.length - 1);
             return;
         }
         let previousPosition = 0;
         let i = 0;
-        for (const position of this.enterPosition) {
-            this.boxSizeX(ctx, previousPosition, position);
+        for (const position of textProperties.enterPosition) {
+            this.boxSizeX(textProperties, previousPosition, position);
             i += 1;
             previousPosition = position;
         }
         this.longestCharacterChain.y = this.approximateHeight * i;
-        if (previousPosition !== this.writtenOnPreview.length) this.boxSizeX(ctx, previousPosition - 2, this.writtenOnPreview.length - 1);
+        if (previousPosition !== textProperties.writtenOnPreview.length)
+            this.boxSizeX(textProperties, previousPosition - 2, textProperties.writtenOnPreview.length - 1);
     }
 
     drawBox(): void {
@@ -352,34 +372,48 @@ export class TextService extends TraceTool {
         this.drawingService.previewCtx.restore();
     }
 
-    private boxSizeX(ctx: CanvasRenderingContext2D, startingPos: number, endingPos: number): void {
-        const lineWidth = ctx.measureText(this.writtenOnPreview.substring(startingPos, endingPos)).width;
+    private boxSizeX(textProperties: TextProperties, startingPos: number, endingPos: number): void {
+        const lineWidth = textProperties.textContext.measureText(textProperties.writtenOnPreview.substring(startingPos, endingPos)).width;
         if (this.longestCharacterChain.x < lineWidth) this.longestCharacterChain.x = lineWidth;
     }
 
-    private writeText(ctx: CanvasRenderingContext2D, begin: number, end: number, height: number): void {
-        if (this.textPosition === TextPosition.Center && this.enterPosition.length !== 0) {
+    private writeText(textProperties: TextProperties, begin: number, end: number, height: number): void {
+        if (textProperties.textPosition === TextPosition.Center && textProperties.enterPosition.length !== 0) {
             const centerOffSet =
-                this.initialClickPosition.x +
+                textProperties.initialClickPosition.x +
                 this.longestCharacterChain.x / 2 -
-                ctx.measureText(this.writtenOnPreview.substring(begin, end)).width / 2;
-            ctx.fillText(this.writtenOnPreview.substring(begin, end), centerOffSet, this.initialClickPosition.y + height);
+                textProperties.textContext.measureText(textProperties.writtenOnPreview.substring(begin, end)).width / 2;
+            textProperties.textContext.fillText(
+                textProperties.writtenOnPreview.substring(begin, end),
+                centerOffSet,
+                textProperties.initialClickPosition.y + height,
+            );
             return;
         }
-        if (this.textPosition === TextPosition.Right && this.enterPosition.length !== 0) {
+        if (textProperties.textPosition === TextPosition.Right && textProperties.enterPosition.length !== 0) {
             const rightOffSet =
-                this.initialClickPosition.x + this.longestCharacterChain.x - ctx.measureText(this.writtenOnPreview.substring(begin, end)).width;
-            ctx.fillText(this.writtenOnPreview.substring(begin, end), rightOffSet, this.initialClickPosition.y + height);
+                textProperties.initialClickPosition.x +
+                this.longestCharacterChain.x -
+                textProperties.textContext.measureText(textProperties.writtenOnPreview.substring(begin, end)).width;
+            textProperties.textContext.fillText(
+                textProperties.writtenOnPreview.substring(begin, end),
+                rightOffSet,
+                textProperties.initialClickPosition.y + height,
+            );
             return;
         }
-        ctx.fillText(this.writtenOnPreview.substring(begin, end), this.initialClickPosition.x, this.initialClickPosition.y + height);
+        textProperties.textContext.fillText(
+            textProperties.writtenOnPreview.substring(begin, end),
+            textProperties.initialClickPosition.x,
+            textProperties.initialClickPosition.y + height,
+        );
     }
 
-    private displayPreviewBar(text: string, approximateHeightPadding: number, completeCurrentString: string): void {
+    private displayPreviewBar(ctx: CanvasRenderingContext2D, text: string, approximateHeightPadding: number, completeCurrentString: string): void {
+        if (ctx === this.drawingService.baseCtx) return;
         this.drawingService.previewCtx.fillStyle = 'black';
         this.drawingService.previewCtx.fillRect(
             this.currentPositionX(text, completeCurrentString),
-            // Change the next value to make the bar more centered (bar not the right size for some type of fonts)
             this.initialClickPosition.y - this.drawingService.previewCtx.measureText('M').width + approximateHeightPadding,
             1,
             Math.floor(this.drawingService.previewCtx.measureText('M').width * this.MULTIPLIER),
@@ -408,15 +442,15 @@ export class TextService extends TraceTool {
         return 0;
     }
 
-    private setContextForWriting(ctx: CanvasRenderingContext2D): void {
-        ctx.fillStyle = this.colorService.mainColor.rgbValue;
-        ctx.globalAlpha = this.colorService.mainColor.opacity;
+    private setContextForWriting(textProperties: TextProperties): void {
+        textProperties.textContext.fillStyle = textProperties.color.rgbValue;
+        textProperties.textContext.globalAlpha = textProperties.color.opacity;
         let writingType: string;
-        if (this.writeBold && this.writeItalic) writingType = 'italic bold';
-        else if (this.writeBold) writingType = 'bold';
-        else if (this.writeItalic) writingType = 'italic';
+        if (textProperties.writeBold && textProperties.writeItalic) writingType = 'italic bold';
+        else if (textProperties.writeBold) writingType = 'bold';
+        else if (textProperties.writeItalic) writingType = 'italic';
         else writingType = 'normal';
-        ctx.font = writingType + ' ' + this.textSize + 'px ' + this.fontStyleTable[this.fontStyle];
+        textProperties.textContext.font = writingType + ' ' + textProperties.textSize + 'px ' + this.fontStyleTable[textProperties.fontStyle];
     }
 
     private disableEnableHotKeyService(bool: boolean): void {

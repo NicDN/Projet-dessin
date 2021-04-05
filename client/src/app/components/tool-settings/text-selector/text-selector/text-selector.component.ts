@@ -118,7 +118,7 @@ export class TextSelectorComponent implements OnInit {
     updateText(): void {
         if (this.textService.isWriting) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.textService.drawText(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+            this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
             this.textService.drawBox();
         }
     }

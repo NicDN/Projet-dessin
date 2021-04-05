@@ -49,6 +49,15 @@ export class ToolsService {
         this.ellipseSelectionService.cancelSelection();
         this.rectangleSelectionService.cancelSelection();
 
+        if (this.currentTool instanceof TextService) {
+            if ((this.textService as TextService).isWriting) {
+                (this.textService as TextService).registerTextCommand(
+                    this.drawingService.baseCtx,
+                    (this.textService as TextService).writtenOnPreview,
+                );
+            }
+        }
+
         if (this.currentTool === this.lineService) {
             this.lineService.clearPath();
             this.lineService.updatePreview();

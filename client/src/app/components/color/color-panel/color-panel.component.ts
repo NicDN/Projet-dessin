@@ -81,6 +81,7 @@ export class ColorPanelComponent {
     switchColors(): void {
         this.colorService.switchColors();
         this.openColorPicker = false;
+        this.updateText();
     }
 
     updateColor(selectedColor: Color): void {
@@ -155,7 +156,7 @@ export class ColorPanelComponent {
         if (!(this.toolsService.currentTool instanceof TextService)) return;
         if (this.toolsService.textService.isWriting) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.toolsService.textService.drawText(this.drawingService.previewCtx, this.toolsService.textService.writtenOnPreview);
+            this.toolsService.textService.registerTextCommand(this.drawingService.previewCtx, this.toolsService.textService.writtenOnPreview);
             this.toolsService.textService.drawBox();
         }
     }
