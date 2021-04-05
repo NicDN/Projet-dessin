@@ -60,8 +60,8 @@ export class ResizeContainerComponent {
                 },
                 this.drawingService,
             );
-            this.undoRedoService.addCommand(resizeCommand);
             resizeCommand.execute();
+            this.undoRedoService.addCommand(resizeCommand);
         }
         this.setStatus(Status.NOT_RESIZING);
     }

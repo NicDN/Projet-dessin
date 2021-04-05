@@ -3,6 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -13,16 +14,19 @@ import { AttributesPanelComponent } from './attributes-panel.component';
 describe('AttributesPanelComponent', () => {
     let component: AttributesPanelComponent;
     let fixture: ComponentFixture<AttributesPanelComponent>;
+    const undoRedoServiceStub: UndoRedoService = {} as UndoRedoService;
 
     let toolsService: ToolsService;
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), undoRedoServiceStub);
+
+    const snackBarServiceStub = {} as SnackBarService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [AttributesPanelComponent],
-            providers: [ToolsService],
+            providers: [ToolsService, { provide: SnackBarService, useValue: snackBarServiceStub }],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -39,7 +43,7 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#subscribe assings current tool correctly ', async(() => {
-        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), new UndoRedoService(new DrawingService()));
+        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), undoRedoServiceStub);
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         // tslint:disable-next-line: no-string-literal
         component['subscribe']();

@@ -49,7 +49,30 @@ export class DrawingComponent implements AfterViewInit {
         const baseImage = new Image(this.canvasSize.x, this.canvasSize.y);
         baseImage.src = this.drawingService.canvas.toDataURL();
         this.drawingService.blankHTMLImage = baseImage;
-        this.drawingService.handleNewDrawing(this.drawingService.newImage ? this.drawingService.newImage : baseImage);
+
+        this.loadCanvasWithIncomingImage(baseImage);
+    }
+
+    private async loadCanvasWithIncomingImage(baseImage: HTMLImageElement): Promise<void> {
+        // create new drawing
+        if (this.drawingService.isNewDrawing) {
+            this.drawingService.handleNewDrawing(baseImage);
+            this.drawingService.isNewDrawing = false;
+            return;
+        }
+
+        // open drawing from carousel
+        if (this.drawingService.newImage) {
+            this.drawingService.handleNewDrawing(this.drawingService.newImage);
+            this.drawingService.newImage = undefined;
+            return;
+        }
+
+        // reload editor (F5)
+        const img = new Image();
+        img.src = localStorage.getItem('canvas') as string;
+        await img.decode();
+        this.drawingService.changeDrawing(img);
     }
 
     @HostListener('window:mousemove', ['$event'])

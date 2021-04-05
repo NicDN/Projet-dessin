@@ -22,6 +22,8 @@ const keyBoardEvent = new KeyboardEvent('keydown', { code: 'KeyO', ctrlKey: true
 const OVER_MINIMUM_WIDTH = 1000;
 const OVER_MINIMUM_HEIGHT = 1000;
 
+const baseImage = new Image();
+
 // tslint:disable: no-string-literal
 // tslint:disable: no-any
 describe('DrawingComponent', () => {
@@ -84,6 +86,36 @@ describe('DrawingComponent', () => {
         expect(component['drawingService'].canvas).toBe(component.baseCanvas.nativeElement);
         expect(component['drawingService'].previewCanvas).toBe(component.previewCanvas.nativeElement);
     });
+
+    it('#ngAfterViewInit should call #loadCanvasWithIncomingImage', () => {
+        spyOn<any>(component, 'loadCanvasWithIncomingImage').and.stub();
+        component.ngAfterViewInit();
+        expect(component['loadCanvasWithIncomingImage']).toHaveBeenCalled();
+    });
+
+    it('#loadCanvasWithIncomingImage should call #handleNewDrawing with base image if the user creates a new drawing', async () => {
+        drawingStub.isNewDrawing = true;
+        spyOn(drawingStub, 'handleNewDrawing');
+        await component['loadCanvasWithIncomingImage'](baseImage);
+        expect(drawingStub.handleNewDrawing).toHaveBeenCalledWith(baseImage);
+        expect(drawingStub.isNewDrawing).toBeFalse();
+    });
+
+    it("#loadCanvasWithIncomingImage should call #handleNewDrawing with drawing service's new image if image is loaded from carousel ", async () => {
+        const newImage = new Image();
+        drawingStub.newImage = newImage;
+        spyOn(drawingStub, 'handleNewDrawing');
+        await component['loadCanvasWithIncomingImage'](baseImage);
+        expect(drawingStub.handleNewDrawing).toHaveBeenCalledWith(newImage);
+        expect(drawingStub.newImage).toBeUndefined();
+    });
+
+    // TODO: commented this async test because it is block other test, ask to charger on friday
+    // it('#loadCanvasWithIncomingImage should call #changeDrawing from drawingService if the user reloads the editor page', async () => {
+    //     spyOn(drawingStub, 'changeDrawing');
+    //     await component['loadCanvasWithIncomingImage'](baseImage);
+    //     expect(drawingStub.changeDrawing).toHaveBeenCalled();
+    // });
 
     it('#disableDrawing Should disable drawing if the resize button is being used', () => {
         const isUsingResizeButtonStub = true;
@@ -193,15 +225,6 @@ describe('DrawingComponent', () => {
         component.onMouseEnter(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
-    });
-
-    it('#ngAfterViewInit should HandleNewDrawing a with an image', () => {
-        const imageStub = new Image();
-        imageStub.src = component['drawingService'].canvas.toDataURL();
-        component['drawingService'].newImage = imageStub;
-        const handleNewDrawing = spyOn(component['drawingService'], 'handleNewDrawing');
-        component.ngAfterViewInit();
-        expect(handleNewDrawing).toHaveBeenCalledWith(imageStub);
     });
 
     it('#onMouseDown should call undoRedoService if it is not a selectionTool and is inside the canvas', () => {
