@@ -265,11 +265,16 @@ export abstract class SelectionTool extends Tool {
     draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
-        if (
-            ctx === this.drawingService.baseCtx &&
-            (this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x || this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y)
-        )
-            this.undoRedoService.addCommand(selectionCommand);
+        if (ctx === this.drawingService.baseCtx && this.selectionHasChanged()) this.undoRedoService.addCommand(selectionCommand);
+    }
+
+    selectionHasChanged(): boolean {
+        return (
+            this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x ||
+            this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y ||
+            this.coords.finalBottomRight.x !== this.coords.initialBottomRight.x ||
+            this.coords.finalBottomRight.y !== this.coords.initialBottomRight.y
+        );
     }
 
     private drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
