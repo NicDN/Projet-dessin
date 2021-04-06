@@ -52,6 +52,10 @@ export class ResizeSelectionService {
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
+        const distX: number = Math.abs(pos.x - coords.finalTopLeft.x);
+        const distY: number = Math.abs(pos.y - coords.finalTopLeft.y);
+        const endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
+        const endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;
@@ -66,8 +70,10 @@ export class ResizeSelectionService {
                 coords.finalBottomRight.x = pos.x;
                 break;
             case 3:
-                coords.finalBottomRight.x = pos.x;
-                coords.finalBottomRight.y = pos.y;
+                // coords.finalBottomRight.x = pos.x;
+                // coords.finalBottomRight.y = pos.y;
+                coords.finalBottomRight.x = endCoordX;
+                coords.finalBottomRight.y = endCoordY;
                 break;
             case 4:
                 coords.finalTopLeft.y = pos.y;
