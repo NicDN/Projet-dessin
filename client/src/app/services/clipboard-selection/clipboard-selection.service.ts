@@ -42,8 +42,9 @@ export class ClipboardSelectionService {
         if (this.clipBoardData === undefined) return;
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) (this.toolsService.currentTool as SelectionTool).cancelSelection();
         this.switchToStoredClipboardImageSelectionTool();
-        const width = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.x - this.clipBoardData.selectionCoords.finalTopLeft.x);
-        const height = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y);
+        const width = this.clipBoardData.selectionCoords.finalBottomRight.x - this.clipBoardData.selectionCoords.finalTopLeft.x;
+        const height = this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y;
+        this.setFinalCoordsOfStoredImage(width, height);
 
         this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
@@ -53,7 +54,6 @@ export class ClipboardSelectionService {
         }
 
         this.setAsideInitialCoords();
-        this.setFinalCoordsOfStoredImage(width, height);
         this.undoRedoService.disableUndoRedo();
 
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
@@ -92,13 +92,15 @@ export class ClipboardSelectionService {
     }
 
     setFinalCoordsOfStoredImage(width: number, height: number): void {
+        const extraPasteOffSetX = width > 0 ? 0 : Math.abs(width);
+        const extraPasteOffSetY = height > 0 ? 0 : Math.abs(height);
         (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft = {
-            x: this.pasteOffSet,
-            y: this.pasteOffSet,
+            x: this.pasteOffSet + extraPasteOffSetX,
+            y: this.pasteOffSet + extraPasteOffSetY,
         };
         (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight = {
-            x: this.pasteOffSet + width,
-            y: this.pasteOffSet + height,
+            x: this.pasteOffSet + extraPasteOffSetX + width,
+            y: this.pasteOffSet + extraPasteOffSetY + height,
         };
     }
 
