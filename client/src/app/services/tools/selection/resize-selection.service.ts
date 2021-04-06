@@ -12,6 +12,7 @@ export class ResizeSelectionService {
 
     readonly NO_POINT_SELECTED_INDEX: number = -1;
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
+    shiftKeyIsDown: boolean = false;
 
     readonly controlPointWidth: number = 6;
     readonly halfControlPointWidth: number = this.controlPointWidth / 2;
@@ -52,28 +53,60 @@ export class ResizeSelectionService {
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
-        const distX: number = Math.abs(pos.x - coords.finalTopLeft.x);
-        const distY: number = Math.abs(pos.y - coords.finalTopLeft.y);
-        const endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
-        const endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
+        let distX: number;
+        let distY: number;
+        let endCoordX: number;
+        let endCoordY: number;
+        console.clear();
+        console.log(this.shiftKeyIsDown);
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;
                 coords.finalTopLeft.x = pos.x;
+                if (this.shiftKeyIsDown) {
+                    distX = Math.abs(pos.x - coords.finalBottomRight.x);
+                    distY = Math.abs(pos.y - coords.finalBottomRight.y);
+                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * Math.min(distX, distY);
+                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * Math.min(distX, distY);
+                    coords.finalTopLeft.y = endCoordY;
+                    coords.finalTopLeft.x = endCoordX;
+                }
                 break;
             case 1:
                 coords.finalTopLeft.x = pos.x;
                 coords.finalBottomRight.y = pos.y;
+                if (this.shiftKeyIsDown) {
+                    distX = Math.abs(pos.x - coords.finalBottomRight.x);
+                    distY = Math.abs(pos.y - coords.finalTopLeft.y);
+                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * Math.min(distX, distY);
+                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
+                    coords.finalTopLeft.x = endCoordX;
+                    coords.finalBottomRight.y = endCoordY;
+                }
                 break;
             case 2:
                 coords.finalTopLeft.y = pos.y;
                 coords.finalBottomRight.x = pos.x;
+                if (this.shiftKeyIsDown) {
+                    distX = Math.abs(pos.x - coords.finalTopLeft.x);
+                    distY = Math.abs(pos.y - coords.finalBottomRight.y);
+                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
+                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * Math.min(distX, distY);
+                    coords.finalBottomRight.x = endCoordX;
+                    coords.finalTopLeft.y = endCoordY;
+                }
                 break;
             case 3:
-                // coords.finalBottomRight.x = pos.x;
-                // coords.finalBottomRight.y = pos.y;
-                coords.finalBottomRight.x = endCoordX;
-                coords.finalBottomRight.y = endCoordY;
+                coords.finalBottomRight.x = pos.x;
+                coords.finalBottomRight.y = pos.y;
+                if (this.shiftKeyIsDown) {
+                    distX = Math.abs(pos.x - coords.finalTopLeft.x);
+                    distY = Math.abs(pos.y - coords.finalTopLeft.y);
+                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
+                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
+                    coords.finalBottomRight.y = endCoordY;
+                    coords.finalBottomRight.x = endCoordX;
+                }
                 break;
             case 4:
                 coords.finalTopLeft.y = pos.y;

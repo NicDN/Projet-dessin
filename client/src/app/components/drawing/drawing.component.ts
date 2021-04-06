@@ -104,7 +104,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.toolsService.onKeyUp(event);
+        this.hotKeyService.onKeyUp(event);
     }
 
     @HostListener('mouseenter', ['$event'])
