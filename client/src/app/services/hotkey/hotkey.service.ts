@@ -80,7 +80,7 @@ export class HotkeyService {
             },
             KeyG: {
                 action: () => {
-                    this.toolService.setCurrentTool(this.toolService.gridService);
+                    // this.toolService.setCurrentTool(this.toolService.gridService);
                     this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
