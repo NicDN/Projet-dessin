@@ -4,6 +4,18 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 
+export enum SelectedPoint {
+    TOP_LEFT = 0,
+    TOP_MIDDLE = 1,
+    TOP_RIGHT = 2,
+    MIDDLE_LEFT = 3,
+    CENTER = 4,
+    MIDDLE_RIGHT = 5,
+    BOTTOM_LEFT = 6,
+    BOTTOM_MIDDLE = 7,
+    BOTTOM_RIGHT = 8,
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -61,81 +73,126 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        const moveOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
-
+        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
+        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
         if (this.isUsingMagnet) {
-            this.alignToProperMagnetSmthgSmthg(ctx, pos, selectionCoords);
+            this.alignToProperMagnetMousePosition(pos, selectionCoords, width, height);
+        } else {
+            selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
+            selectionCoords.finalBottomRight = {
+                x: selectionCoords.finalTopLeft.x + width,
+                y: selectionCoords.finalTopLeft.y + height,
+            };
         }
 
-        // const magnetizedBottomOffset = this.getMagnetizedPosition(moveOffsetBottom)[1];
-
-        this.alignToProperMagnetSmthgSmthg(ctx, pos, selectionCoords);
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    alignToProperMagnetSmthgSmthg(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
-        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
+    alignToProperMagnetMousePosition(pos: Vec2, selectionCoords: SelectionCoords, width: number, height: number): void {
         const moveOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
-        const magnetizedTopOffset = this.getMagnetizedPosition(moveOffsetTop)[1];
+        const moveOffsetBottom = { x: selectionCoords.finalBottomRight.x - pos.x, y: selectionCoords.finalBottomRight.y - pos.y };
+
+        const magnetizedTopOffset = this.getMagnetizedOffsetPosition(moveOffsetTop);
+        const magnetizedBottomOffset = this.getMagnetizedOffsetPosition(moveOffsetBottom);
 
         switch (this.pointToMagnetize) {
-            case 0:
-                // Nothing to do
+            case SelectedPoint.TOP_LEFT:
+                pos = this.magnetizeX(pos);
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y - magnetizedTopOffset.y };
+                selectionCoords.finalBottomRight = { x: selectionCoords.finalTopLeft.x + width, y: selectionCoords.finalTopLeft.y + height };
+                break;
 
+            case SelectedPoint.TOP_MIDDLE:
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y - magnetizedTopOffset.y };
+                selectionCoords.finalBottomRight = { x: selectionCoords.finalTopLeft.x + width, y: selectionCoords.finalTopLeft.y + height };
                 break;
-            case 1:
+
+            case SelectedPoint.TOP_RIGHT:
+                pos = this.magnetizeX(pos);
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x + magnetizedBottomOffset.x - width, y: pos.y - magnetizedTopOffset.y };
+                selectionCoords.finalBottomRight = {
+                    x: pos.x + magnetizedBottomOffset.x,
+                    y: selectionCoords.finalTopLeft.y + height,
+                };
                 break;
-            case 2:
+
+            case SelectedPoint.MIDDLE_LEFT:
+                pos = this.magnetizeX(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y - magnetizedTopOffset.y };
+                selectionCoords.finalBottomRight = { x: selectionCoords.finalTopLeft.x + width, y: selectionCoords.finalTopLeft.y + height };
+                break;
+
+            case SelectedPoint.CENTER:
+                pos = this.magnetizeX(pos);
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y - magnetizedTopOffset.y };
+                selectionCoords.finalBottomRight = {
+                    x: selectionCoords.finalTopLeft.x + width,
+                    y: selectionCoords.finalTopLeft.y + height,
+                };
+                selectionCoords.finalBottomRight = this.magnetizeX(selectionCoords.finalBottomRight);
+                selectionCoords.finalBottomRight = this.magnetizeY(selectionCoords.finalBottomRight);
+                break;
+
+            case SelectedPoint.MIDDLE_RIGHT:
+                pos = this.magnetizeX(pos);
+                selectionCoords.finalBottomRight = this.magnetizeX(selectionCoords.finalBottomRight);
+                selectionCoords.finalBottomRight = this.magnetizeY(selectionCoords.finalBottomRight);
+                selectionCoords.finalBottomRight = { x: pos.x + magnetizedBottomOffset.x, y: pos.y + magnetizedBottomOffset.y };
+                selectionCoords.finalTopLeft = {
+                    x: selectionCoords.finalBottomRight.x - width,
+                    y: selectionCoords.finalBottomRight.y - height,
+                };
+                break;
+
+            case SelectedPoint.BOTTOM_LEFT:
+                pos = this.magnetizeX(pos);
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y + magnetizedBottomOffset.y - height };
+                selectionCoords.finalBottomRight = {
+                    x: pos.x - magnetizedTopOffset.x + width,
+                    y: pos.y + magnetizedBottomOffset.y,
+                };
+                break;
+
+            case SelectedPoint.BOTTOM_MIDDLE:
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y + magnetizedBottomOffset.y - height };
+                selectionCoords.finalBottomRight = {
+                    x: pos.x - magnetizedTopOffset.x + width,
+                    y: pos.y + magnetizedBottomOffset.y,
+                };
+                break;
+
+            case SelectedPoint.BOTTOM_RIGHT:
+                pos = this.magnetizeX(pos);
+                pos = this.magnetizeY(pos);
+                selectionCoords.finalBottomRight = this.getMagnetizedOffsetPosition(selectionCoords.finalBottomRight);
+                selectionCoords.finalBottomRight = { x: pos.x + magnetizedBottomOffset.x, y: pos.y + magnetizedBottomOffset.y };
+                selectionCoords.finalTopLeft = {
+                    x: selectionCoords.finalBottomRight.x - width,
+                    y: selectionCoords.finalBottomRight.y - height,
+                };
                 break;
         }
-        console.log(this.pointToMagnetize);
     }
 
-    getMagnetizedPosition(pos: Vec2): Vec2[] {
-        const tmp: Vec2 = {
-            x: Math.round(pos.x / this.gridService.squareSize) * this.gridService.squareSize,
-            y: Math.round(pos.y / this.gridService.squareSize) * this.gridService.squareSize,
-        };
+    magnetizeX(pos: Vec2): Vec2 {
+        return { x: Math.round(pos.x / this.gridService.squareSize) * this.gridService.squareSize, y: pos.y };
+    }
 
+    magnetizeY(pos: Vec2): Vec2 {
+        return { x: pos.x, y: Math.round(pos.y / this.gridService.squareSize) * this.gridService.squareSize };
+    }
+
+    getMagnetizedOffsetPosition(pos: Vec2): Vec2 {
         this.adjustedMouseMoveOffSet = {
             x: Math.round(this.mouseMoveOffset.x / this.gridService.squareSize) * this.gridService.squareSize,
             y: Math.round(this.mouseMoveOffset.y / this.gridService.squareSize) * this.gridService.squareSize,
         };
-        return [tmp, this.adjustedMouseMoveOffSet];
+        return this.adjustedMouseMoveOffSet;
     }
 }
-
-// en bas a droite
-
-/*selectionCoords.finalBottomRight = this.getMagnetizedPosition(selectionCoords.finalBottomRight)[0];
-selectionCoords.finalBottomRight = { x: pos.x + adjustedMouseMoveOffSet.x, y: pos.y + adjustedMouseMoveOffSet.y };
-selectionCoords.finalTopLeft = {
-    x: selectionCoords.finalBottomRight.x - width,
-    y: selectionCoords.finalBottomRight.y - height,
-};*/
-
-// en haut a droite
-
-/*selectionCoords.finalTopLeft = { x: pos.x + magnetizedBottomOffset.x - width, y: pos.y - magnetizedTopOffset.y };
-        selectionCoords.finalBottomRight = {
-            x: pos.x + magnetizedBottomOffset.x,
-            y: selectionCoords.finalTopLeft.y + height,
-        };*/
-
-// en bas a gauche
-
-// selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y + magnetizedBottomOffset.y - height };
-// selectionCoords.finalBottomRight = {
-//     x: pos.x - magnetizedTopOffset.x + width,
-//     y: pos.y + magnetizedBottomOffset.y,
-// };
-
-// centre
-
-// selectionCoords.finalTopLeft = { x: pos.x - magnetizedTopOffset.x, y: pos.y - magnetizedTopOffset.y };
-// selectionCoords.finalBottomRight = {
-//     x: selectionCoords.finalTopLeft.x + width,
-//     y: selectionCoords.finalTopLeft.y + height,
-// };
-// selectionCoords.finalBottomRight = this.getMagnetizedPosition(selectionCoords.finalBottomRight)[0];
