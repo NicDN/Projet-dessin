@@ -273,6 +273,17 @@ export class MoveSelectionService {
         }
     }
 
+    finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): void {
+        if (magPosX) this.magnetizeX(pos);
+        if (magPosY) this.magnetizeY(pos);
+    }
+
+    translateCoords(coords: Vec2, width: number, height: number): Vec2 {
+        coords.x += width;
+        coords.y += height;
+        return coords;
+    }
+
     magnetizeX(pos: Vec2): Vec2 {
         return { x: Math.round(pos.x / this.gridService.squareSize) * this.gridService.squareSize, y: pos.y };
     }
