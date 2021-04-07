@@ -2,8 +2,8 @@
     <button
         mat-button
         matTooltip="Activer/Désactiver magnétisme (M)"
-        [class.active]="this.moveSelectionService.magnetisme"
-        (click)="this.moveSelectionService.magnetisme = !this.moveSelectionService.magnetisme"
+        [class.active]="this.moveSelectionService.isUsingMagnet"
+        (click)="this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet"
     >
         <fa-icon icon="magnet"></fa-icon>
     </button>

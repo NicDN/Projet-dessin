@@ -119,7 +119,7 @@ export class HotkeyService {
 
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
-            KeyM: { action: () => (this.moveSelectionService.magnetisme = !this.moveSelectionService.magnetisme) },
+            KeyM: { action: () => (this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet) },
         };
     }
 
