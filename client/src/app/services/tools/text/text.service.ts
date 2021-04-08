@@ -29,6 +29,9 @@ export class TextService extends TraceTool {
     readonly TEXT_MAX_SIZE: number = 50;
     readonly MULTIPLIER: number = 1.5;
     readonly MINUS_ONE: number = -1;
+    readonly FOURTY: number = 40;
+    readonly ONE_POINT_FIVE: number = 1.5;
+    readonly TWENTY: number = 20;
 
     private subject: Subject<boolean> = new Subject<boolean>();
 
@@ -77,10 +80,14 @@ export class TextService extends TraceTool {
 
     private isInsideTextBox(point: Vec2): boolean {
         return (
-            point.x > this.initialClickPosition.x - 20 &&
-            point.x < this.initialClickPosition.x + this.longestCharacterChain.x + (this.textSize * 1.5 < 40 ? 40 : this.textSize * 1.5) &&
+            point.x > this.initialClickPosition.x - this.TWENTY &&
+            point.x <
+                this.initialClickPosition.x +
+                    this.longestCharacterChain.x +
+                    (this.textSize * this.ONE_POINT_FIVE < this.FOURTY ? this.FOURTY : this.textSize * this.ONE_POINT_FIVE) -
+                    this.TWENTY &&
             point.y > this.initialClickPosition.y - this.approximateHeight &&
-            point.y < this.initialClickPosition.y + this.longestCharacterChain.y + this.approximateHeight + this.textSize
+            point.y < this.initialClickPosition.y + this.longestCharacterChain.y + this.textSize
         );
     }
 
@@ -361,12 +368,12 @@ export class TextService extends TraceTool {
         this.drawingService.previewCtx.strokeStyle = 'black';
         this.drawingService.previewCtx.beginPath();
         this.drawingService.previewCtx.rect(
-            this.initialClickPosition.x - 20,
+            this.initialClickPosition.x - this.TWENTY,
             this.initialClickPosition.y - this.approximateHeight,
-            this.longestCharacterChain.x + (this.textSize * 1.5 < 40 ? 40 : this.textSize * 1.5),
+            this.longestCharacterChain.x + (this.textSize * this.ONE_POINT_FIVE < this.FOURTY ? this.FOURTY : this.textSize * this.ONE_POINT_FIVE),
             this.longestCharacterChain.y + this.approximateHeight + this.textSize,
         );
-        this.drawingService.previewCtx.setLineDash([10, 5]);
+        this.drawingService.previewCtx.setLineDash([this.TEXT_MIN_SIZE, this.TEXT_MIN_SIZE / 2]);
         this.drawingService.previewCtx.stroke();
         this.drawingService.previewCtx.closePath();
         this.drawingService.previewCtx.restore();
