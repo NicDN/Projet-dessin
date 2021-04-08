@@ -104,8 +104,8 @@ export class ResizeSelectionService {
                 coords.finalBottomRight.x = pos.x;
                 coords.finalBottomRight.y = pos.y;
                 if (this.shiftKeyIsDown) {
-                    distX = Math.abs(pos.x - coords.finalTopLeft.x) * (width / height);
-                    distY = Math.abs(pos.y - coords.finalTopLeft.y) * (height / width);
+                    distX = Math.abs(pos.x - coords.finalTopLeft.x);
+                    distY = Math.abs(pos.y - coords.finalTopLeft.y);
                     distY = distX * (height / width);
                     endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * distX;
                     endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * distY;
