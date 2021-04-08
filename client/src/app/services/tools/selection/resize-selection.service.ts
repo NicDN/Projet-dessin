@@ -44,7 +44,6 @@ export class ResizeSelectionService {
     }
     checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords, preview: boolean): void {
         if (!preview) this.selectedPointIndex = this.NO_POINT_SELECTED_INDEX;
-        this.previewSelectedPointIndex = this.NO_POINT_SELECTED_INDEX;
 
         this.getControlPointsCoords(selectionCoords.finalTopLeft, selectionCoords.finalBottomRight).forEach((point, index) => {
             if (Math.abs(mousePosition.x - point.x) < this.selectingPointOffSet && Math.abs(mousePosition.y - point.y) < this.selectingPointOffSet) {

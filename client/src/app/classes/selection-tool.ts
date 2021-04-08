@@ -67,6 +67,11 @@ export abstract class SelectionTool extends Tool {
 
     onMouseMove(event: MouseEvent): void {
         // 1 = leftclick
+        if (this.isInsideSelection(this.getPositionFromMouse(event))) {
+            this.resizeSelectionService.previewSelectedPointIndex = 8;
+        } else {
+            this.resizeSelectionService.previewSelectedPointIndex = -1;
+        }
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;

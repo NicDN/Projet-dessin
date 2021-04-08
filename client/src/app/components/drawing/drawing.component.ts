@@ -184,6 +184,8 @@ export class DrawingComponent implements AfterViewInit {
                 case 6:
                 case 7:
                     return 'w-resize';
+                case 8:
+                    return 'move';
                 default:
                     return 'pointer';
             }
