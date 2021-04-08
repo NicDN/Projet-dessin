@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
 import { PointSelectorComponent } from './point-selector.component';
 
@@ -8,6 +9,7 @@ describe('PointSelectorComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
+            providers: [{ provide: MatBottomSheet, useValue: {} }],
             declarations: [PointSelectorComponent],
         }).compileComponents();
     }));
