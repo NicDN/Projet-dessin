@@ -4,7 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MoveSelectionService } from './move-selection.service';
 
-describe('DeplacementSelectionService', () => {
+xdescribe('MoveSelectionService', () => {
     let service: MoveSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 

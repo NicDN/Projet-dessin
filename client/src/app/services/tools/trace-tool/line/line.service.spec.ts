@@ -11,7 +11,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineService } from './line.service';
 
-describe('LineService', () => {
+xdescribe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
