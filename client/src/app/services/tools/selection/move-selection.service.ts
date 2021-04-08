@@ -20,11 +20,7 @@ export enum SelectedPoint {
     providedIn: 'root',
 })
 export class MoveSelectionService {
-    constructor(private drawingService: DrawingService, private gridService: GridService) {
-        this.gridService.gridDrawn = true;
-        this.gridService.squareSize = 40;
-        this.gridService.opacity = 100;
-    }
+    constructor(private drawingService: DrawingService, private gridService: GridService) {}
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2;
@@ -92,7 +88,7 @@ export class MoveSelectionService {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    alignToProperMagnetArrowPosition(selectionCoords: SelectionCoords, deltaX: number, deltaY: number): void {
+    private alignToProperMagnetArrowPosition(selectionCoords: SelectionCoords, deltaX: number, deltaY: number): void {
         const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
         const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
 
@@ -185,7 +181,7 @@ export class MoveSelectionService {
         }
     }
 
-    alignToProperMagnetMousePosition(pos: Vec2, selectionCoords: SelectionCoords, width: number, height: number): void {
+    private alignToProperMagnetMousePosition(pos: Vec2, selectionCoords: SelectionCoords, width: number, height: number): void {
         const moveOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
         const moveOffsetBottom = { x: selectionCoords.finalBottomRight.x - pos.x, y: selectionCoords.finalBottomRight.y - pos.y };
 
@@ -254,26 +250,26 @@ export class MoveSelectionService {
         }
     }
 
-    finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): Vec2 {
+    private finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): Vec2 {
         if (magPosX) pos = this.magnetizeX(pos);
         if (magPosY) pos = this.magnetizeY(pos);
 
         return pos;
     }
 
-    translateCoords(coords: Vec2, mouseOffsetX: number, mouseMoveOffsetY: number, width: number, height: number): Vec2 {
+    private translateCoords(coords: Vec2, mouseOffsetX: number, mouseMoveOffsetY: number, width: number, height: number): Vec2 {
         return { x: coords.x + mouseOffsetX + width, y: coords.y + mouseMoveOffsetY + height };
     }
 
-    magnetizeX(pos: Vec2): Vec2 {
+    private magnetizeX(pos: Vec2): Vec2 {
         return { x: Math.round(pos.x / this.gridService.squareSize) * this.gridService.squareSize, y: pos.y };
     }
 
-    magnetizeY(pos: Vec2): Vec2 {
+    private magnetizeY(pos: Vec2): Vec2 {
         return { x: pos.x, y: Math.round(pos.y / this.gridService.squareSize) * this.gridService.squareSize };
     }
 
-    getMagnetizedOffsetPosition(pos: Vec2): Vec2 {
+    private getMagnetizedOffsetPosition(pos: Vec2): Vec2 {
         this.adjustedMouseMoveOffSet = {
             x: Math.round(this.mouseMoveOffset.x / this.gridService.squareSize) * this.gridService.squareSize,
             y: Math.round(this.mouseMoveOffset.y / this.gridService.squareSize) * this.gridService.squareSize,

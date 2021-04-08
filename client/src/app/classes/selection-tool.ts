@@ -14,7 +14,7 @@ export interface SelectionCoords {
     finalTopLeft: Vec2;
     finalBottomRight: Vec2;
 }
-
+// tslint:disable: no-magic-numbers
 export abstract class SelectionTool extends Tool {
     constructor(
         drawingService: DrawingService,

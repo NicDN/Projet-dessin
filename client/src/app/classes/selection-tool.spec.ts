@@ -595,7 +595,8 @@ xdescribe('SelectionTool', () => {
 
     // it('#drawControlPoints should get all the control points data and draw a rectangle for each one', () => {
     //     const NUMBER_OF_CONTROL_POINTS = 3;
-    //     const getControlPointsCoordsSpy = spyOn<any>(selectionTool, 'getControlPointsCoords').and.returnValue([{} as Vec2, {} as Vec2, {} as Vec2]);
+    //     const getControlPointsCoordsSpy = spyOn<any>(selectionTool, 'getControlPointsCoords').and.returnValue([{}
+    // as Vec2, {} as Vec2, {} as Vec2]);
     //     const rectSpy = spyOn(drawingServiceSpyObj.previewCtx, 'rect');
 
     //     selectionTool['drawControlPoints'](drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);

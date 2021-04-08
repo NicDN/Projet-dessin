@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -46,6 +47,7 @@ describe('CardDrawingComponent', () => {
                 { provide: SnackBarService, useValue: snackbarServiceSpy },
                 { provide: Router, useValue: routerSpy },
                 { provide: CarouselService, useValue: carouselServiceSpy },
+                { provide: MatBottomSheet, useValue: {} },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -78,15 +80,15 @@ describe('CardDrawingComponent', () => {
         expect(component.closeCarousel.emit).toHaveBeenCalled();
     });
 
-    it('#setToCurrentDrawing should close the carousel if #handleNewDrawing returns true', () => {
-        drawingServiceSpyObj.handleNewDrawing.and.returnValue(true);
+    it('#setToCurrentDrawing should close the carousel if #handleNewDrawing returns true', async () => {
+        drawingServiceSpyObj.handleNewDrawing.and.resolveTo(true);
         spyOn(component.closeCarousel, 'emit');
-        component.setToCurrentDrawing();
+        await component.setToCurrentDrawing();
         expect(component.closeCarousel.emit).toHaveBeenCalled();
     });
 
-    it('#setToCurrentDrawing should not close the carousel if #handleNewDrawing returns false', () => {
-        drawingServiceSpyObj.handleNewDrawing.and.returnValue(false);
+    it('#setToCurrentDrawing should not close the carousel if #handleNewDrawing returns false', async () => {
+        drawingServiceSpyObj.handleNewDrawing.and.resolveTo(false);
         spyOn(component.closeCarousel, 'emit');
         component.setToCurrentDrawing();
         expect(component.closeCarousel.emit).not.toHaveBeenCalled();

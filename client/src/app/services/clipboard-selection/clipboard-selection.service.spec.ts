@@ -222,7 +222,8 @@
         expect((toolServiceSpyObj.currentTool as SelectionTool).data).toBe(service.clipBoardData.clipboardImage);
     });
 
-    it('#paste should call the switch to stored clipboard image selection tool and the drawAll method from the current tool ( if it is a selection tool', () => {
+    it('#paste should call the switch to stored clipboard image selection tool and the drawAll method from the 
+    current tool ( if it is a selection tool', () => {
         const drawAllSpy = spyOn(toolServiceSpyObj.currentTool as SelectionTool, 'drawAll').and.returnValue();
         const switchToolSpy = spyOn<any>(service, 'switchToStoredClipboardImageSelectionTool').and.returnValues();
         service.clipBoardData = {

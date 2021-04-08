@@ -33,6 +33,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
+import { BottomSheetConfirmNewDrawingComponent } from './components/bottom-sheet-confirm-new-drawing/bottom-sheet-confirm-new-drawing.component';
 import { CardDrawingComponent } from './components/card-drawing/card-drawing.component';
 import { ColorPaletteComponent } from './components/color/color-palette/color-palette.component';
 import { ColorPanelComponent } from './components/color/color-panel/color-panel.component';
@@ -52,12 +53,12 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
+import { PointSelectorComponent } from './components/tool-settings/point-selector/point-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
 import { TextSelectorComponent } from './components/tool-settings/text-selector/text-selector/text-selector.component';
 import { TraceTypeSelectorComponent } from './components/tool-settings/trace-type-selector/trace-type-selector.component';
-import { PointSelectorComponent } from './components/tool-settings/point-selector/point-selector.component';
 
 @NgModule({
     declarations: [
@@ -90,6 +91,7 @@ import { PointSelectorComponent } from './components/tool-settings/point-selecto
         TextSelectorComponent,
         StampSelectorComponent,
         PointSelectorComponent,
+        BottomSheetConfirmNewDrawingComponent,
     ],
     imports: [
         BrowserModule,

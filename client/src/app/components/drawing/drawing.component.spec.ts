@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -42,7 +43,7 @@ describe('DrawingComponent', () => {
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
 
     beforeEach(async(() => {
-        drawingStub = new DrawingService();
+        drawingStub = new DrawingService({} as MatBottomSheet);
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
