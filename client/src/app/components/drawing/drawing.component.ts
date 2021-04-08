@@ -29,8 +29,6 @@ export class DrawingComponent implements AfterViewInit {
 
     private canDraw: boolean = true;
 
-    private currentMousePosition: MouseEvent;
-
     constructor(
         private drawingService: DrawingService,
         public toolsService: ToolsService,
@@ -80,7 +78,6 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        this.currentMousePosition = event;
         if (this.canDraw) this.toolsService.currentTool.onMouseMove(event);
     }
 
