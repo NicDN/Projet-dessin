@@ -3,6 +3,7 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -28,11 +29,14 @@ export class DrawingComponent implements AfterViewInit {
 
     private canDraw: boolean = true;
 
+    private currentMousePosition: MouseEvent;
+
     constructor(
         private drawingService: DrawingService,
         public toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
+        private resizeSelectionService: ResizeSelectionService,
     ) {}
 
     ngAfterViewInit(): void {
@@ -76,6 +80,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
+        this.currentMousePosition = event;
         if (this.canDraw) this.toolsService.currentTool.onMouseMove(event);
     }
 
@@ -147,6 +152,32 @@ export class DrawingComponent implements AfterViewInit {
             return 'not-allowed';
         }
 
+        if (this.toolsService.currentTool instanceof SelectionTool) {
+            return this.checkIfIsAControlPoint();
+        }
+
         return 'crosshair';
+    }
+
+    checkIfIsAControlPoint(): string {
+        if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
+            switch (this.resizeSelectionService.previewSelectedPointIndex) {
+                case 0:
+                case 3:
+                    return 'nw-resize';
+                case 1:
+                case 2:
+                    return 'ne-resize';
+                case 4:
+                case 5:
+                    return 'n-resize';
+                case 6:
+                case 7:
+                    return 'w-resize';
+                default:
+                    return 'pointer';
+            }
+        }
+        return 'pointer';
     }
 }

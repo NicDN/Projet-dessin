@@ -12,6 +12,7 @@ export class ResizeSelectionService {
 
     readonly NO_POINT_SELECTED_INDEX: number = -1;
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
+    previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     shiftKeyIsDown: boolean = false;
 
     readonly controlPointWidth: number = 6;
@@ -41,15 +42,16 @@ export class ResizeSelectionService {
         ctx.fill();
         ctx.restore();
     }
-    checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords): void {
-        this.selectedPointIndex = this.NO_POINT_SELECTED_INDEX;
+    checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords, preview: boolean): void {
+        if (!preview) this.selectedPointIndex = this.NO_POINT_SELECTED_INDEX;
+        this.previewSelectedPointIndex = this.NO_POINT_SELECTED_INDEX;
 
         this.getControlPointsCoords(selectionCoords.finalTopLeft, selectionCoords.finalBottomRight).forEach((point, index) => {
             if (Math.abs(mousePosition.x - point.x) < this.selectingPointOffSet && Math.abs(mousePosition.y - point.y) < this.selectingPointOffSet) {
-                this.selectedPointIndex = index;
+                if (!preview) this.selectedPointIndex = index;
+                this.previewSelectedPointIndex = index;
             }
         });
-        // console.log(this.selectedPointIndex);
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
@@ -57,8 +59,6 @@ export class ResizeSelectionService {
         let distY: number;
         let endCoordX: number;
         let endCoordY: number;
-        console.clear();
-        console.log(this.shiftKeyIsDown);
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;

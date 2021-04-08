@@ -92,8 +92,6 @@ export class LassoSelectionService extends SelectionTool {
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
-        console.clear();
-        console.table(this.lineService.pathData);
         this.lineService.handleMouseMove(event);
 
         this.updatePerimeter();

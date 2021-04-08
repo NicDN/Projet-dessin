@@ -58,7 +58,7 @@ export abstract class SelectionTool extends Tool {
     }
 
     handleSelectionMouseDown(event: MouseEvent): void {
-        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords);
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
         if (this.resizeSelectionService.selectedPointIndex === -1) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
@@ -67,6 +67,7 @@ export abstract class SelectionTool extends Tool {
 
     onMouseMove(event: MouseEvent): void {
         // 1 = leftclick
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
         if (this.resizeSelectionService.selectedPointIndex !== -1) {
@@ -299,7 +300,7 @@ export abstract class SelectionTool extends Tool {
         } as MouseEvent);
     }
 
-    protected isInsideSelection(point: Vec2): boolean {
+    isInsideSelection(point: Vec2): boolean {
         const minX = Math.min(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
