@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -18,15 +19,15 @@ describe('AttributesPanelComponent', () => {
 
     let toolsService: ToolsService;
 
-    const drawingTool: DrawingTool = new DrawingTool(new DrawingService(), new ColorService(), 'tool');
-    const polygonService: PolygonService = new PolygonService(new DrawingService(), new ColorService(), undoRedoServiceStub);
+    const drawingTool: DrawingTool = new DrawingTool(new DrawingService({} as MatBottomSheet), new ColorService(), 'tool');
+    const polygonService: PolygonService = new PolygonService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceStub);
 
     const snackBarServiceStub = {} as SnackBarService;
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [AttributesPanelComponent],
-            providers: [ToolsService, { provide: SnackBarService, useValue: snackBarServiceStub }],
+            providers: [ToolsService, { provide: SnackBarService, useValue: snackBarServiceStub }, { provide: MatBottomSheet, useValue: {} }],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -43,7 +44,7 @@ describe('AttributesPanelComponent', () => {
     });
 
     it('#subscribe assings current tool correctly ', async(() => {
-        const expectedCurrentTool = new LineService(new DrawingService(), new ColorService(), undoRedoServiceStub);
+        const expectedCurrentTool = new LineService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceStub);
         spyOn(toolsService, 'getCurrentTool').and.returnValue(of(expectedCurrentTool));
         // tslint:disable-next-line: no-string-literal
         component['subscribe']();

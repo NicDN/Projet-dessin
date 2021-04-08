@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
 import { LassoSelectionService } from './lasso-selection.service';
@@ -9,7 +10,10 @@ describe('LassoSelectionService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{ provide: SnackBarService, useValue: snackBarServiceStub }],
+            providers: [
+                { provide: SnackBarService, useValue: snackBarServiceStub },
+                { provide: MatBottomSheet, useValue: {} },
+            ],
         });
         service = TestBed.inject(LassoSelectionService);
     });

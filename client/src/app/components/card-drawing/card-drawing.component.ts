@@ -24,7 +24,7 @@ export class CardDrawingComponent {
         private router: Router,
     ) {}
 
-    setToCurrentDrawing(): void {
+    async setToCurrentDrawing(): Promise<void> {
         const image = new Image();
         image.src = this.drawingForm.drawingData;
 
@@ -32,7 +32,7 @@ export class CardDrawingComponent {
             this.router.navigate(['editor']);
             this.drawingService.newImage = image;
             this.closeCarousel.emit();
-        } else if (this.drawingService.handleNewDrawing(image)) {
+        } else if (await this.drawingService.handleNewDrawing(image)) {
             this.closeCarousel.emit();
         }
     }

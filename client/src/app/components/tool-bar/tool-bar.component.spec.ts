@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { By } from '@angular/platform-browser';
 import { Tool } from '@app/classes/tool';
 import { ColorService } from '@app/services/color/color.service';
@@ -19,11 +20,11 @@ describe('ToolBarComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ToolBarComponent],
-            providers: [ToolsService, { provide: UndoRedoService, useValue: undoRedoServiceStub }],
+            providers: [ToolsService, { provide: UndoRedoService, useValue: undoRedoServiceStub }, { provide: MatBottomSheet, useValue: {} }],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
         undoRedoServiceStub = TestBed.inject(UndoRedoService);
-        tool = new PencilService(new DrawingService(), new ColorService(), undoRedoServiceStub);
+        tool = new PencilService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceStub);
     }));
 
     beforeEach(() => {

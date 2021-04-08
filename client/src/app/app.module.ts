@@ -33,6 +33,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './components/app/app.component';
 import { AttributesPanelComponent } from './components/attributes-panel/attributes-panel.component';
+import { BottomSheetConfirmNewDrawingComponent } from './components/bottom-sheet-confirm-new-drawing/bottom-sheet-confirm-new-drawing.component';
 import { CardDrawingComponent } from './components/card-drawing/card-drawing.component';
 import { ColorPaletteComponent } from './components/color/color-palette/color-palette.component';
 import { ColorPanelComponent } from './components/color/color-panel/color-panel.component';
@@ -88,6 +89,7 @@ import { TraceTypeSelectorComponent } from './components/tool-settings/trace-typ
         GridSelectorComponent,
         TextSelectorComponent,
         StampSelectorComponent,
+        BottomSheetConfirmNewDrawingComponent,
     ],
     imports: [
         BrowserModule,
