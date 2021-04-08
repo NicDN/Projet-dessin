@@ -133,4 +133,20 @@ export class DrawingComponent implements AfterViewInit {
             event.pageX > SIDE_BAR_SIZE
         );
     }
+
+    getRightCursor(): string {
+        if (this.toolsService.currentTool === this.toolsService.eraserService || this.toolsService.currentTool === this.toolsService.stampService) {
+            return 'none';
+        }
+
+        if (
+            this.toolsService.lassoSelectionService &&
+            this.toolsService.lassoSelectionService.checkIfLineCrossing() &&
+            this.toolsService.currentTool !== this.toolsService.lineService
+        ) {
+            return 'not-allowed';
+        }
+
+        return 'crosshair';
+    }
 }
