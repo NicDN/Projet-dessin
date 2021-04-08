@@ -150,6 +150,10 @@ export class DrawingComponent implements AfterViewInit {
             return 'none';
         }
 
+        if (this.toolsService.currentTool === this.toolsService.eyeDropperService) {
+            return 'zoom-in';
+        }
+
         if (
             this.toolsService.lassoSelectionService &&
             this.toolsService.lassoSelectionService.checkIfLineCrossing() &&
