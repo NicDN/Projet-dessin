@@ -58,8 +58,8 @@ export class ResizeSelectionService {
         let distY: number;
         let endCoordX: number;
         let endCoordY: number;
-        const width = coords.finalBottomRight.x - coords.finalTopLeft.x;
-        const height = coords.finalBottomRight.y - coords.finalTopLeft.y;
+        const width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
+        const height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;

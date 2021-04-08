@@ -174,10 +174,10 @@ export class DrawingComponent implements AfterViewInit {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
                 case 0:
                 case 3:
-                    return 'nw-resize';
+                    return this.returnTrueNwSeDiagonalCursor();
                 case 1:
                 case 2:
-                    return 'ne-resize';
+                    return this.returnTrueNeSwDiagonalCursor();
                 case 4:
                 case 5:
                     return 'n-resize';
@@ -191,5 +191,53 @@ export class DrawingComponent implements AfterViewInit {
             }
         }
         return 'pointer';
+    }
+
+    private returnTrueNwSeDiagonalCursor(): string {
+        if (!this.xSelectionIsFlipped()) {
+            if (!this.ySelectionIsFlipped()) {
+                return 'ne-resize';
+            } else {
+                return 'nw-resize';
+            }
+        } else {
+            if (!this.ySelectionIsFlipped()) {
+                return 'nw-resize';
+            } else {
+                return 'ne-resize';
+            }
+        }
+    }
+
+    private returnTrueNeSwDiagonalCursor(): string {
+        if (!this.xSelectionIsFlipped()) {
+            if (!this.ySelectionIsFlipped()) {
+                return 'nw-resize';
+            } else {
+                return 'ne-resize';
+            }
+        } else {
+            if (!this.ySelectionIsFlipped()) {
+                return 'ne-resize';
+            } else {
+                return 'nw-resize';
+            }
+        }
+    }
+
+    xSelectionIsFlipped(): boolean {
+        return (
+            (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x -
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x <
+            0
+        );
+    }
+
+    ySelectionIsFlipped(): boolean {
+        return (
+            (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y >
+            0
+        );
     }
 }
