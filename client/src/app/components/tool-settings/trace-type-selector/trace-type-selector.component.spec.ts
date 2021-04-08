@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { By } from '@angular/platform-browser';
 import { Color } from '@app/classes/color';
 import { Shape, TraceType } from '@app/classes/shape';
@@ -15,7 +16,7 @@ describe('TraceTypeSelectorComponent', () => {
     let colorServiceSpy: jasmine.SpyObj<ColorService>;
     const undoRedoServiceStub: UndoRedoService = {} as UndoRedoService;
 
-    const shape: Shape = new RectangleDrawingService(new DrawingService(), new ColorService(), undoRedoServiceStub);
+    const shape: Shape = new RectangleDrawingService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceStub);
 
     const mainColorMock: Color = {
         rgbValue: 'main color',

@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { MatSliderChange } from '@angular/material/slider';
 import { By } from '@angular/platform-browser';
@@ -13,7 +14,7 @@ describe('LineSettingsSelectorComponent', () => {
     let component: LineSettingsSelectorComponent;
     let fixture: ComponentFixture<LineSettingsSelectorComponent>;
     const undoRedoServiceSpy: UndoRedoService = {} as UndoRedoService;
-    const lineService: LineService = new LineService(new DrawingService(), new ColorService(), undoRedoServiceSpy);
+    const lineService: LineService = new LineService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceSpy);
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

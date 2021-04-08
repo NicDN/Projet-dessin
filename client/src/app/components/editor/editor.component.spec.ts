@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingComponent } from '@app/components/drawing/drawing.component';
@@ -19,6 +20,7 @@ describe('EditorComponent', () => {
             providers: [
                 { provide: MatDialog, useValue: {} },
                 { provide: SnackBarService, useValue: {} },
+                { provide: MatBottomSheet, useValue: {} },
             ],
         }).compileComponents();
     }));
