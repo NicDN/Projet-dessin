@@ -58,6 +58,8 @@ export class ResizeSelectionService {
         let distY: number;
         let endCoordX: number;
         let endCoordY: number;
+        const width = coords.finalBottomRight.x - coords.finalTopLeft.x;
+        const height = coords.finalBottomRight.y - coords.finalTopLeft.y;
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;
@@ -65,8 +67,9 @@ export class ResizeSelectionService {
                 if (this.shiftKeyIsDown) {
                     distX = Math.abs(pos.x - coords.finalBottomRight.x);
                     distY = Math.abs(pos.y - coords.finalBottomRight.y);
-                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * Math.min(distX, distY);
-                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * Math.min(distX, distY);
+                    distY = distX * (height / width);
+                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * distX;
+                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * distY;
                     coords.finalTopLeft.y = endCoordY;
                     coords.finalTopLeft.x = endCoordX;
                 }
@@ -77,8 +80,9 @@ export class ResizeSelectionService {
                 if (this.shiftKeyIsDown) {
                     distX = Math.abs(pos.x - coords.finalBottomRight.x);
                     distY = Math.abs(pos.y - coords.finalTopLeft.y);
-                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * Math.min(distX, distY);
-                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
+                    distY = distX * (height / width);
+                    endCoordX = coords.finalBottomRight.x + Math.sign(pos.x - coords.finalBottomRight.x) * distX;
+                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * distY;
                     coords.finalTopLeft.x = endCoordX;
                     coords.finalBottomRight.y = endCoordY;
                 }
@@ -89,8 +93,9 @@ export class ResizeSelectionService {
                 if (this.shiftKeyIsDown) {
                     distX = Math.abs(pos.x - coords.finalTopLeft.x);
                     distY = Math.abs(pos.y - coords.finalBottomRight.y);
-                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
-                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * Math.min(distX, distY);
+                    distY = distX * (height / width);
+                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * distX;
+                    endCoordY = coords.finalBottomRight.y + Math.sign(pos.y - coords.finalBottomRight.y) * distY;
                     coords.finalBottomRight.x = endCoordX;
                     coords.finalTopLeft.y = endCoordY;
                 }
@@ -99,10 +104,11 @@ export class ResizeSelectionService {
                 coords.finalBottomRight.x = pos.x;
                 coords.finalBottomRight.y = pos.y;
                 if (this.shiftKeyIsDown) {
-                    distX = Math.abs(pos.x - coords.finalTopLeft.x);
-                    distY = Math.abs(pos.y - coords.finalTopLeft.y);
-                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * Math.min(distX, distY);
-                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * Math.min(distX, distY);
+                    distX = Math.abs(pos.x - coords.finalTopLeft.x) * (width / height);
+                    distY = Math.abs(pos.y - coords.finalTopLeft.y) * (height / width);
+                    distY = distX * (height / width);
+                    endCoordX = coords.finalTopLeft.x + Math.sign(pos.x - coords.finalTopLeft.x) * distX;
+                    endCoordY = coords.finalTopLeft.y + Math.sign(pos.y - coords.finalTopLeft.y) * distY;
                     coords.finalBottomRight.y = endCoordY;
                     coords.finalBottomRight.x = endCoordX;
                 }
