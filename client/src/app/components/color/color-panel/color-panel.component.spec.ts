@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -32,7 +33,12 @@ describe('ColorPanelComponent', () => {
         TestBed.configureTestingModule({
             declarations: [ColorPanelComponent],
             imports: [MatDialogModule, MatSnackBarModule],
-            providers: [ColorService, { provide: Router, useValue: routerSpy }, { provide: HotkeyService, useValue: hotkeyServiceSpy }],
+            providers: [
+                ColorService,
+                { provide: Router, useValue: routerSpy },
+                { provide: HotkeyService, useValue: hotkeyServiceSpy },
+                MatBottomSheet,
+            ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));

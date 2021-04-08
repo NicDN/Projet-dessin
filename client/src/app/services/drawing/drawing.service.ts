@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { BoxSize } from '@app/classes/box-size';
 import { BaseLineCommand } from '@app/classes/commands/base-line-command/base-line-command';
+import { BottomSheetConfirmNewDrawingComponent } from '@app/components/bottom-sheet-confirm-new-drawing/bottom-sheet-confirm-new-drawing.component';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
@@ -22,6 +24,11 @@ export class DrawingService {
     private subject: Subject<BoxSize> = new Subject<BoxSize>();
     private baseLineSubject: Subject<BaseLineCommand> = new Subject<BaseLineCommand>();
     private gridSubject: Subject<void> = new Subject<void>();
+    private bottomSheetRef: MatBottomSheetRef | null;
+
+    constructor(private bottomSheet: MatBottomSheet) {
+        this.bottomSheetRef = bottomSheet._openedBottomSheetRef;
+    }
 
     sendNotifToResize(boxSize: BoxSize): void {
         this.subject.next(boxSize);
@@ -61,16 +68,20 @@ export class DrawingService {
         }
     }
 
-    handleNewDrawing(image?: HTMLImageElement): boolean {
+    async handleNewDrawing(image?: HTMLImageElement): Promise<boolean> {
         let confirm = false;
         if (this.canvasIsEmpty()) {
             image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
             return true;
         }
-        if (this.confirmReload()) {
+
+        this.clearCanvas(this.previewCtx);
+
+        if (await this.confirmReload()) {
             confirm = true;
             image === undefined ? this.reloadToBlankDrawing() : this.changeDrawing(image);
         }
+
         this.clearCanvas(this.previewCtx);
 
         return confirm;
@@ -82,8 +93,19 @@ export class DrawingService {
         this.sendBaseLineCommand(image);
     }
 
-    private confirmReload(): boolean {
-        return window.confirm('Si vous créez un nouveau dessin, vos changements non sauvegardés seront perdus.\n\nVoulez-vous continuer ?');
+    private async confirmReload(): Promise<boolean> {
+        let confirmReload = false;
+
+        this.bottomSheetRef = this.bottomSheet.open(BottomSheetConfirmNewDrawingComponent);
+
+        await this.bottomSheetRef
+            .afterDismissed()
+            .toPromise()
+            .then((confirm: boolean) => {
+                confirmReload = confirm;
+            });
+
+        return confirmReload;
     }
 
     private reloadToBlankDrawing(): void {
