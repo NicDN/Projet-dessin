@@ -46,7 +46,7 @@
         <mat-divider></mat-divider>
     </div>
 
-    <div *ngIf="selectionToolIsActive()">
+    <div *ngIf="selectionToolIsActive() && this.moveSelectionService.isUsingMagnet">
         <app-point-selector></app-point-selector>
         <mat-divider></mat-divider>
     </div>

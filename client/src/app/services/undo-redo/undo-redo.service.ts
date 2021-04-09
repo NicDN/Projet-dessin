@@ -27,19 +27,21 @@ export class UndoRedoService {
     }
 
     commandListIsEmpty(): boolean {
-        return this.commandList.length === 1;
+        return this.commandList.length === 1 || this.canUndoRedo === false;
     }
 
     redoListIsEmpty(): boolean {
-        return this.undoneList.length === 0;
+        return this.undoneList.length === 0 || this.canUndoRedo === false;
     }
 
     disableUndoRedo(): void {
         this.canUndoRedo = false;
+        this.sendUndoRedoNotif();
     }
 
     enableUndoRedo(): void {
         this.canUndoRedo = true;
+        this.sendUndoRedoNotif();
     }
 
     addCommand(command: AbstractCommand): void {
