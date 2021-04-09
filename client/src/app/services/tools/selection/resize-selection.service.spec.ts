@@ -1,13 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { ResizeSelectionService } from './resize-selection.service';
 
-import { TextService } from './text.service';
-
-describe('TextService', () => {
-    let service: TextService;
+xdescribe('ResizeSelectionService', () => {
+    let service: ResizeSelectionService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(TextService);
+        service = TestBed.inject(ResizeSelectionService);
     });
 
     it('should be created', () => {

@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 @Component({
-    selector: 'app-undo-redo',
-    templateUrl: './undo-redo.component.html',
-    styleUrls: ['./undo-redo.component.scss'],
+    selector: 'app-drawing-options',
+    templateUrl: './drawing-options.component.html',
+    styleUrls: ['./drawing-options.component.scss'],
 })
-export class UndoRedoComponent implements OnInit {
+export class DrawingOptionsComponent implements OnInit {
     commandListIsEmpty: boolean = true;
     redoListIsEmpty: boolean = true;
 
-    constructor(public undoRedoService: UndoRedoService) {
+    constructor(public undoRedoService: UndoRedoService, public moveSelectionService: MoveSelectionService, public toolService: ToolsService) {
         this.listenToUndoRedoNotification();
     }
 
@@ -28,5 +30,9 @@ export class UndoRedoComponent implements OnInit {
     private updateUndoRedoValues(): void {
         this.commandListIsEmpty = this.undoRedoService.commandListIsEmpty();
         this.redoListIsEmpty = this.undoRedoService.redoListIsEmpty();
+    }
+
+    handleClickGrid(): void {
+        this.toolService.gridService.handleDrawGrid();
     }
 }

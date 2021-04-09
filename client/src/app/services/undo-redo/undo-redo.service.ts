@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
 import { Observable, Subject } from 'rxjs';
 @Injectable({
     providedIn: 'root',
 })
 export class UndoRedoService {
+    constructor(private drawingService: DrawingService, private localStorageService: LocalStorageService) {
+        this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
+            this.setBaseLine(baseLineCommand);
+        });
+    }
     private commandList: AbstractCommand[] = [];
     private undoneList: AbstractCommand[] = [];
     private canUndoRedo: boolean = true;
 
     private updateUndoRedoComponent: Subject<void> = new Subject<void>();
-
-    constructor(private drawingService: DrawingService) {
-        this.drawingService.newBaseLineSignals().subscribe((baseLineCommand) => {
-            this.setBaseLine(baseLineCommand);
-        });
-    }
 
     private sendUndoRedoNotif(): void {
         this.updateUndoRedoComponent.next();
@@ -27,25 +27,29 @@ export class UndoRedoService {
     }
 
     commandListIsEmpty(): boolean {
-        return this.commandList.length === 1;
+        return this.commandList.length === 1 || this.canUndoRedo === false;
     }
 
     redoListIsEmpty(): boolean {
-        return this.undoneList.length === 0;
+        return this.undoneList.length === 0 || this.canUndoRedo === false;
     }
 
     disableUndoRedo(): void {
         this.canUndoRedo = false;
+        this.sendUndoRedoNotif();
     }
 
     enableUndoRedo(): void {
         this.canUndoRedo = true;
+        this.sendUndoRedoNotif();
     }
 
     addCommand(command: AbstractCommand): void {
         this.undoneList = [];
         this.commandList.push(command);
         this.sendUndoRedoNotif();
+
+        this.localStorageService.saveCanvas();
     }
 
     undo(): void {
@@ -77,6 +81,8 @@ export class UndoRedoService {
         this.undoneList = [];
         this.commandList[0] = baseLineCommand;
         this.sendUndoRedoNotif();
+
+        this.localStorageService.saveCanvas();
     }
 
     private executeAllCommands(): void {
@@ -84,5 +90,6 @@ export class UndoRedoService {
         for (const command of this.commandList) {
             command.execute();
         }
+        this.localStorageService.saveCanvas();
     }
 }

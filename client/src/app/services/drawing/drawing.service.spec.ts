@@ -1,8 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { ResizeContainerComponent } from '@app/components/resize-container/resize-container.component';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { DrawingService } from './drawing.service';
@@ -20,13 +22,23 @@ describe('DrawingService', () => {
     let drawingServiceSpyCheckIfEmpty: jasmine.Spy;
     let drawingServiceSpyReloadDrawing: jasmine.Spy;
     let drawingServiceSpyValidateInput: jasmine.Spy;
-    let drawingServiceSpyChangeSizeOfCanvas: jasmine.Spy;
     let drawingServiceSpyClearCanvas: jasmine.Spy;
+
+    let matBottomSheetSpyObj: jasmine.SpyObj<MatBottomSheet>;
     let imageStub: HTMLImageElement;
 
+    const snackBarServiceStub = {} as SnackBarService;
+
+    const bottomSheetRefSpy = jasmine.createSpyObj({ afterDismissed: of({}) });
+
     beforeEach(async(() => {
+        matBottomSheetSpyObj = jasmine.createSpyObj('MatBottomSheet', ['open']);
         TestBed.configureTestingModule({
             declarations: [ResizeContainerComponent],
+            providers: [
+                { provide: SnackBarService, useValue: snackBarServiceStub },
+                { provide: MatBottomSheet, useValue: matBottomSheetSpyObj },
+            ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -53,7 +65,6 @@ describe('DrawingService', () => {
         drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'canvasIsEmpty').and.callThrough();
         drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadToBlankDrawing').and.callThrough();
         drawingServiceSpyValidateInput = spyOn<any>(service, 'confirmReload').and.callThrough();
-        drawingServiceSpyChangeSizeOfCanvas = spyOn<any>(service, 'changeSizeOfCanvas').and.callThrough();
         drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
     });
 
@@ -134,78 +145,79 @@ describe('DrawingService', () => {
         expect(checkNotif).toHaveBeenCalled();
     });
 
-    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is empty', () => {
+    it('handleNewDrawing should reload the drawing which clears the drawing if the canvas is empty', async () => {
         const emptyStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
-        service.handleNewDrawing();
+        await service.handleNewDrawing();
         expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', async () => {
         const emptyStub = false;
         const validateStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         drawingServiceSpyValidateInput.and.returnValue(validateStub);
 
-        service.handleNewDrawing();
+        await service.handleNewDrawing();
 
         expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
         expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).toHaveBeenCalled();
     });
 
-    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', () => {
+    it('#handleNewDrawing should reload the drawing which clears the drawing if the canvas is not empty', async () => {
         const emptyStub = false;
         const cancelStub = false;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         drawingServiceSpyValidateInput.and.returnValue(cancelStub);
 
-        service.handleNewDrawing();
+        await service.handleNewDrawing();
 
         expect(drawingServiceSpyCheckIfEmpty).toHaveBeenCalled();
         expect(drawingServiceSpyValidateInput).toHaveBeenCalled();
         expect(drawingServiceSpyReloadDrawing).not.toHaveBeenCalled();
     });
 
-    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is not empty', () => {
+    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is not empty', async () => {
         const emptyStub = false;
         const cancelStub = true;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         drawingServiceSpyValidateInput.and.returnValue(cancelStub);
         const changeDrawingSpy = spyOn<any>(service, 'changeDrawing');
 
-        service.handleNewDrawing(imageStub);
+        await service.handleNewDrawing(imageStub);
 
         expect(changeDrawingSpy).toHaveBeenCalledWith(imageStub);
     });
 
-    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is empty', () => {
+    it('#handleNewDrawing should call changeDrawing if there is an image and the canvas is empty', async () => {
         const emptyStub = true;
         const cancelStub = false;
         drawingServiceSpyCheckIfEmpty.and.returnValue(emptyStub);
         drawingServiceSpyValidateInput.and.returnValue(cancelStub);
         const changeDrawingSpy = spyOn<any>(service, 'changeDrawing');
 
-        service.handleNewDrawing(imageStub);
+        await service.handleNewDrawing(imageStub);
 
         expect(changeDrawingSpy).toHaveBeenCalledWith(imageStub);
     });
 
-    it('#validateUserInput should return the value of the window.confirm function', () => {
-        const windowConfirmSpy = spyOn(window, 'confirm');
-        windowConfirmSpy.and.returnValue(true);
-        expect(service['confirmReload']()).toEqual(true);
-
-        windowConfirmSpy.and.returnValue(false);
-        expect(service['confirmReload']()).toEqual(false);
+    it('#onSizeChange should change the size of canvas correctly id isStamp is false', () => {
+        boxSizeStub = { widthBox: 1, heightBox: 1 };
+        const swapDrawingsSpy = spyOn<any>(service, 'swapDrawings');
+        const putImageDataSpy = spyOn(service.previewCtx, 'putImageData');
+        service.onSizeChange(boxSizeStub);
+        expect(swapDrawingsSpy).toHaveBeenCalledWith(boxSizeStub);
+        expect(putImageDataSpy).toHaveBeenCalled();
     });
 
-    it('onSizeChange should make the canvas size change', () => {
+    it('#onSizeChange should call #swapDrawings if isStamp is true', () => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
+        const swapDrawingsSpy = spyOn<any>(service, 'swapDrawings');
+        service.isStamp = true;
         service.onSizeChange(boxSizeStub);
-        expect(drawingServiceSpyChangeSizeOfCanvas.and.stub()).toHaveBeenCalledTimes(2);
-        expect(drawingServiceSpyClearCanvas).toHaveBeenCalled();
+        expect(swapDrawingsSpy).toHaveBeenCalledWith(boxSizeStub);
     });
 
     it('#fillWithWhite should fill the context with white', () => {
@@ -222,5 +234,18 @@ describe('DrawingService', () => {
     it('#canvasIsEmpty should return false if the canvas is not empty', () => {
         service.baseCtx.fillRect(0, 0, 1, 1);
         expect(service['canvasIsEmpty']()).toBeFalse();
+    });
+
+    it('#swapDrawings should call #changeSizeOfCanvas', () => {
+        boxSizeStub = { widthBox: 1, heightBox: 1 };
+        const changeSizeOfCanvasSpy = spyOn<any>(service, 'changeSizeOfCanvas');
+        service['swapDrawings'](boxSizeStub);
+        expect(changeSizeOfCanvasSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('#confirmReload should display a confirm modal to the user', async () => {
+        matBottomSheetSpyObj.open.and.returnValue(bottomSheetRefSpy);
+        await service['confirmReload']();
+        expect(matBottomSheetSpyObj.open).toHaveBeenCalled();
     });
 });

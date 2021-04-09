@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Tool } from '@app/classes/tool';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
-import { TextService } from '@app/services/tools/text/text.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { Observable, Subject } from 'rxjs';
 import { FillDripService } from './fill-drip/fill-drip.service';
 import { EllipseSelectionService } from './selection/ellipse/ellipse-selection.service';
@@ -39,6 +40,7 @@ export class ToolsService {
         public textService: TextService,
         public stampService: StampService,
         public gridService: GridService,
+        private drawingService: DrawingService,
     ) {
         this.currentTool = pencilService;
     }
@@ -46,11 +48,29 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.ellipseSelectionService.cancelSelection();
         this.rectangleSelectionService.cancelSelection();
-        if (this.currentTool === this.lineService) {
-            this.lineService.clearPath();
-            this.lineService.updatePreview();
+
+        if (this.currentTool instanceof TextService) {
+            if ((this.textService as TextService).isWriting) {
+                (this.textService as TextService).registerTextCommand(
+                    this.drawingService.baseCtx,
+                    (this.textService as TextService).writtenOnPreview,
+                );
+            }
         }
+
+        if (this.currentTool === this.lineService) {
+            if (this.currentTool === this.lineService || this.currentTool === this.lassoSelectionService) {
+                this.lineService.clearPath();
+                this.lineService.updatePreview();
+            }
+        }
+
         this.currentTool = tool;
+
+        this.drawingService.isStamp = false;
+        if (this.currentTool === this.stampService) {
+            this.drawingService.isStamp = true;
+        }
 
         this.subject.next(tool);
     }

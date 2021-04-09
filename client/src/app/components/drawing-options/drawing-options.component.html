@@ -1,10 +1,20 @@
 <div>
-    <button mat-button matTooltip="Activer/Désactiver magnétisme (M)">
+    <button
+        mat-button
+        matTooltip="Activer/Désactiver magnétisme (M)"
+        [class.active]="this.moveSelectionService.isUsingMagnet"
+        (click)="this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet"
+    >
         <fa-icon icon="magnet"></fa-icon>
     </button>
     <div class="vertical-divider"></div>
-    <button mat-button matTooltip="Activer/Désactiver grille (G)">
-        <fa-icon  icon="border-all"></fa-icon>
+    <button
+        mat-button
+        matTooltip="Activer/Désactiver grille (G)"
+        [class.active]="this.toolService.gridService.gridDrawn"
+        (click)="this.handleClickGrid()"
+    >
+        <fa-icon icon="border-all"></fa-icon>
     </button>
 
     <button

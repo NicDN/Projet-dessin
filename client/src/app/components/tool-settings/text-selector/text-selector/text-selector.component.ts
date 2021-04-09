@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
-import { FontStyle, TextPositon, TextService } from '@app/services/tools/text/text.service';
+import { DrawingService } from '@app/services/drawing/drawing.service';
+import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
 
 interface TextPositionOption {
     icon: string;
     toolTipContent: string;
-    textPositon: TextPositon;
+    textPositon: TextPosition;
 }
 
 interface TextEffect {
@@ -27,25 +28,25 @@ interface FontStyleOption {
 export class TextSelectorComponent implements OnInit {
     textSizeSetting: SliderSetting;
 
-    constructor(public textService: TextService) {}
+    constructor(public textService: TextService, public drawingService: DrawingService) {}
 
     textPositionOptions: TextPositionOption[] = [
         {
             icon: 'align-left',
             toolTipContent: 'Gauche',
-            textPositon: TextPositon.Left,
+            textPositon: TextPosition.Left,
         },
 
         {
             icon: 'align-center',
             toolTipContent: 'Centre',
-            textPositon: TextPositon.Center,
+            textPositon: TextPosition.Center,
         },
 
         {
             icon: 'align-right',
             toolTipContent: 'Droite',
-            textPositon: TextPositon.Right,
+            textPositon: TextPosition.Right,
         },
     ];
 
@@ -53,19 +54,22 @@ export class TextSelectorComponent implements OnInit {
         {
             icon: 'italic',
             toolTipContent: 'Italique',
-            setEffect: () => (this.textService.writeItalic = !this.textService.writeItalic),
+            setEffect: () => this.changeWriteItalic(),
         },
 
         {
             icon: 'bold',
             toolTipContent: 'Gras',
-            setEffect: () => (this.textService.writeBold = !this.textService.writeBold),
+            setEffect: () => this.changeWriteBold(),
         },
     ];
 
     fontStyles: FontStyleOption[] = [
         { name: 'Arial', value: FontStyle.Arial },
         { name: 'Times', value: FontStyle.Times },
+        { name: 'Comic Sans MS', value: FontStyle.Comic },
+        { name: 'Calibri', value: FontStyle.Calibri },
+        { name: 'Georgia', value: FontStyle.Georgia },
     ];
 
     ngOnInit(): void {
@@ -79,12 +83,23 @@ export class TextSelectorComponent implements OnInit {
             },
             action: (value: number) => {
                 this.textService.textSize = value;
+                this.updateText();
             },
         };
     }
 
-    setActiveTextPosition(textPositon: TextPositon): void {
+    changeWriteBold(): void {
+        this.textService.writeBold = !this.textService.writeBold;
+        this.updateText();
+    }
+    changeWriteItalic(): void {
+        this.textService.writeItalic = !this.textService.writeItalic;
+        this.updateText();
+    }
+
+    setActiveTextPosition(textPositon: TextPosition): void {
         this.textService.textPosition = textPositon;
+        this.updateText();
     }
 
     checkActiveEffect(icon: string): boolean {
@@ -97,5 +112,14 @@ export class TextSelectorComponent implements OnInit {
 
     applyFontStyle(fontStyle: FontStyle): void {
         this.textService.fontStyle = fontStyle;
+        this.updateText();
+    }
+
+    updateText(): void {
+        if (this.textService.isWriting) {
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+            this.textService.drawBox();
+        }
     }
 }

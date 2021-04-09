@@ -1,11 +1,14 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
+import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { ColorPanelComponent } from './color-panel.component';
 
 // tslint:disable:no-string-literal
@@ -16,17 +19,26 @@ describe('ColorPanelComponent', () => {
     const DEFAULT_COLOR: Color = { rgbValue: 'rgb(1,2,3)', opacity: 1 };
     const DEFAULT_RGB_ARRAY = ['1', '2', '3'];
     let colorService: ColorService;
+
     let routerSpy: jasmine.SpyObj<Router>;
+    let hotkeyServiceSpy: jasmine.SpyObj<HotkeyService>;
 
     const CHANGED_RGB_VALUE = 'rgb(5,2,12)';
     let RGB_INDEX = 1;
 
     beforeEach(async(() => {
         routerSpy = jasmine.createSpyObj('Router', ['']);
+        hotkeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['']);
+
         TestBed.configureTestingModule({
             declarations: [ColorPanelComponent],
-            imports: [MatDialogModule],
-            providers: [ColorService, { provide: Router, useValue: routerSpy }],
+            imports: [MatDialogModule, MatSnackBarModule],
+            providers: [
+                ColorService,
+                { provide: Router, useValue: routerSpy },
+                { provide: HotkeyService, useValue: hotkeyServiceSpy },
+                MatBottomSheet,
+            ],
             schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
         }).compileComponents();
     }));

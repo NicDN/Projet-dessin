@@ -5,9 +5,10 @@ import { Shape } from '@app/classes/shape';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { Tool } from '@app/classes/tool';
 import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
-import { TextService } from '@app/services/tools/text/text.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 @Component({
@@ -22,7 +23,7 @@ export class AttributesPanelComponent implements OnInit {
     polygonSetting: SliderSetting;
     fillDripSetting: SliderSetting;
 
-    constructor(public toolsService: ToolsService, private polygonService: PolygonService) {
+    constructor(public toolsService: ToolsService, private polygonService: PolygonService, public moveSelectionService: MoveSelectionService) {
         this.subscribe();
     }
 
@@ -89,7 +90,6 @@ export class AttributesPanelComponent implements OnInit {
     }
 
     needsTraceThickness(): boolean {
-        // TODO: refactor the tools to remove the if condition
         if (this.currentTool instanceof SprayCanService || this.currentTool instanceof FillDripService || this.currentTool instanceof TextService) {
             return false;
         }

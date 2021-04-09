@@ -8,16 +8,19 @@ import { StampService } from '@app/services/tools/stamp/stamp.service';
     styleUrls: ['./stamp-selector.component.scss'],
 })
 export class StampSelectorComponent implements OnInit {
-    constructor(private stampService: StampService) {}
-
     scalingSetting: SliderSetting;
     angleSetting: SliderSetting;
+
+    private readonly PERCENTAGE_FACTOR: number = 180;
+    private readonly FULL_CIRCLE_DEGREES: number = 360;
+
+    constructor(public stampService: StampService) {}
 
     ngOnInit(): void {
         this.scalingSetting = {
             title: "Facteur de mise à l'échelle",
-            unit: '',
-            min: 1,
+            unit: '%',
+            min: this.stampService.SCALING_MIN_VALUE,
             max: this.stampService.SCALING_MAX_VALUE,
 
             getAttribute: () => {
@@ -30,12 +33,12 @@ export class StampSelectorComponent implements OnInit {
             title: "Angle d'orientation",
             unit: 'Degrés',
             min: this.stampService.ANGLE_MIN_VALUE,
-            max: this.stampService.ANGLE_MAX_VALUE,
+            max: this.FULL_CIRCLE_DEGREES - 1,
 
             getAttribute: () => {
-                return this.stampService.angle;
+                return Math.ceil(Math.abs((this.stampService.angle * this.PERCENTAGE_FACTOR) / Math.PI)) % this.FULL_CIRCLE_DEGREES;
             },
-            action: (value: number) => (this.stampService.angle = value),
+            action: (value: number) => (this.stampService.angle = (value * Math.PI) / this.PERCENTAGE_FACTOR),
         };
     }
 }

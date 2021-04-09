@@ -4,3 +4,33 @@ mat-divider {
     display: flex;
     margin-left: 30px;
 }
+
+.stamp-list {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+p {
+    float: left;
+    padding-top: 15px;
+    padding-left: 15px;
+    font-size: 16px;
+    display: inline-block;
+    color: white;
+}
+
+img {
+    width: 60%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.active {
+    border-color: #e51282;
+    border-style: solid;
+    border-width: 4px;
+}
+
+mat-grid-list {
+    margin-top: 10px;
+}

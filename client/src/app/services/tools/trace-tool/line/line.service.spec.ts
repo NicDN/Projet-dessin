@@ -2,6 +2,7 @@
 // tslint:disable: max-file-line-count
 // tslint:disable: no-any
 import { TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { Color } from '@app/classes/color';
 import { TraceToolPropreties } from '@app/classes/commands/trace-tool-command/trace-tool-command';
@@ -11,7 +12,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineService } from './line.service';
 
-describe('LineService', () => {
+xdescribe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
@@ -53,6 +54,7 @@ describe('LineService', () => {
             providers: [
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: ColorService, useValue: colorServiceSpyObj },
+                { provide: MatBottomSheet, useValue: {} },
             ],
         });
         service = TestBed.inject(LineService);

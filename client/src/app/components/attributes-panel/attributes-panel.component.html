@@ -29,7 +29,7 @@
         <app-stamp-selector></app-stamp-selector>
     </div>
 
-    <div *ngIf="this.currentTool===this.toolsService.gridService">
+    <div *ngIf="this.currentTool === this.toolsService.gridService">
         <app-grid-selector [tool]="currentTool"></app-grid-selector>
     </div>
 
@@ -51,13 +51,18 @@
         <mat-divider></mat-divider>
     </div>
 
+    <div *ngIf="selectionToolIsActive() && this.moveSelectionService.isUsingMagnet">
+        <app-point-selector></app-point-selector>
+        <mat-divider></mat-divider>
+    </div>
+
     <div class="selection-options">
         <mat-divider></mat-divider>
         <app-selection-options></app-selection-options>
     </div>
 
-    <div class="undo-redo">
+    <div class="drawing-options">
         <mat-divider></mat-divider>
-        <app-undo-redo></app-undo-redo>
+        <app-drawing-options></app-drawing-options>
     </div>
 </mat-drawer-content>
