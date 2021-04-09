@@ -38,9 +38,12 @@ describe('DrawingComponent', () => {
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
     let resizeSelectionSpyObj: jasmine.SpyObj<ResizeSelectionService>;
+    let imageSpyObj: jasmine.SpyObj<HTMLImageElement>;
 
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
+
+    const canvasMock = document.createElement('canvas');
 
     beforeEach(async(() => {
         drawingStub = new DrawingService({} as MatBottomSheet);
@@ -50,6 +53,8 @@ describe('DrawingComponent', () => {
         undoRedoServiceSpyObj = jasmine.createSpyObj('undoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
         moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
         resizeSelectionSpyObj = jasmine.createSpyObj('ResizeSelectionService', ['']);
+
+        imageSpyObj = jasmine.createSpyObj('Image', ['decode']);
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -75,6 +80,8 @@ describe('DrawingComponent', () => {
         colorServiceStub = TestBed.inject(ColorService);
         drawingStub = TestBed.inject(DrawingService);
         toolsServiceSpy.currentTool = new PencilService(drawingStub, colorServiceStub, undoRedoServiceSpyObj);
+
+        localStorage.setItem('canvas', canvasMock.toDataURL());
 
         fixture.detectChanges();
     });
@@ -114,12 +121,15 @@ describe('DrawingComponent', () => {
         expect(drawingStub.newImage).toBeUndefined();
     });
 
-    // TODO: commented this async test because it is block other test, ask to charger on friday
-    // it('#loadCanvasWithIncomingImage should call #changeDrawing from drawingService if the user reloads the editor page', async () => {
-    //     spyOn(drawingStub, 'changeDrawing');
-    //     await component['loadCanvasWithIncomingImage'](baseImage);
-    //     expect(drawingStub.changeDrawing).toHaveBeenCalled();
-    // });
+    it('#loadCanvasWithIncomingImage should call #changeDrawing from drawingService if the user reloads the editor page', async () => {
+        component['refreshedImage'] = imageSpyObj;
+        drawingStub.isNewDrawing = false;
+        drawingStub.newImage = undefined;
+
+        spyOn(drawingStub, 'changeDrawing');
+        await component['loadCanvasWithIncomingImage'](baseImage);
+        expect(drawingStub.changeDrawing).toHaveBeenCalled();
+    });
 
     it('#disableDrawing Should disable drawing if the resize button is being used', () => {
         const isUsingResizeButtonStub = true;

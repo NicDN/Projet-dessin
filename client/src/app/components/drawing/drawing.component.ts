@@ -31,6 +31,8 @@ export class DrawingComponent implements AfterViewInit {
 
     private canDraw: boolean = true;
 
+    private refreshedImage: HTMLImageElement = new Image();
+
     constructor(
         private drawingService: DrawingService,
         public toolsService: ToolsService,
@@ -57,15 +59,6 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private async loadCanvasWithIncomingImage(baseImage: HTMLImageElement): Promise<void> {
-        // if (this.drawingService.isNewDrawing || this.drawingService.newImage) {
-        //     if (localStorage.getItem('canvas') !== null) {
-        //         if (!(await this.drawingService.confirmReload())) {
-        //             this.drawingService.isNewDrawing = false;
-        //             this.drawingService.newImage = undefined;
-        //         }
-        //     }
-        // }
-
         // create new drawing
         if (this.drawingService.isNewDrawing) {
             this.drawingService.handleNewDrawing(baseImage);
@@ -81,10 +74,9 @@ export class DrawingComponent implements AfterViewInit {
         }
 
         // reload editor (F5)
-        const img = new Image();
-        img.src = localStorage.getItem('canvas') as string;
-        await img.decode();
-        this.drawingService.changeDrawing(img);
+        this.refreshedImage.src = localStorage.getItem('canvas') as string;
+        await this.refreshedImage.decode();
+        this.drawingService.changeDrawing(this.refreshedImage);
     }
 
     @HostListener('window:mousemove', ['$event'])

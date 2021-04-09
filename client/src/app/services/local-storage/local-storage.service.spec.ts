@@ -8,20 +8,20 @@ import { LocalStorageService } from './local-storage.service';
 describe('LocalStorageService', () => {
     let service: LocalStorageService;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
+    let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
 
     const canvasMock = document.createElement('canvas');
 
-    const drawingServiceStub = {
-        canvas: canvasMock,
-    } as DrawingService;
-
     beforeEach(() => {
         snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['confirmReload'], {
+            canvas: canvasMock,
+        });
 
         TestBed.configureTestingModule({
             providers: [
                 { provide: SnackBarService, useValue: snackbarServiceSpy },
-                { provide: DrawingService, useValue: drawingServiceStub },
+                { provide: DrawingService, useValue: drawingServiceSpyObj },
             ],
         });
         service = TestBed.inject(LocalStorageService);
@@ -50,5 +50,17 @@ describe('LocalStorageService', () => {
     it('#storageIsEmpty should return false if the storage is not empty', () => {
         spyOn(localStorage, 'getItem').and.returnValue('not empty!');
         expect(service.storageIsEmpty()).toBeFalse();
+    });
+
+    it('#confirmNewDrawing should return true if the storage is empty', async () => {
+        spyOn(service, 'storageIsEmpty').and.returnValue(true);
+        expect(await service.confirmNewDrawing()).toBeTrue();
+    });
+
+    it('#confirmNewDrawing should return #drawingService return value', async () => {
+        drawingServiceSpyObj.confirmReload.and.resolveTo(true);
+        spyOn(service, 'storageIsEmpty').and.returnValue(false);
+
+        expect(await service.confirmNewDrawing()).toBeTrue();
     });
 });
