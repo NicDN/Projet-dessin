@@ -40,6 +40,8 @@ describe('DrawingComponent', () => {
     let resizeSelectionSpyObj: jasmine.SpyObj<ResizeSelectionService>;
     let imageSpyObj: jasmine.SpyObj<HTMLImageElement>;
 
+    let loadCanvasSpy: jasmine.Spy;
+
     let hotKeyServiceSpy: jasmine.SpyObj<HotkeyService>;
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
 
@@ -77,7 +79,9 @@ describe('DrawingComponent', () => {
         fixture = TestBed.createComponent(DrawingComponent);
         component = fixture.componentInstance;
 
-        colorServiceStub = TestBed.inject(ColorService);
+        loadCanvasSpy = spyOn<any>(component, 'loadCanvasWithIncomingImage');
+
+        colorServiceStub = TestBed.inject(ColorService); // Inutile
         drawingStub = TestBed.inject(DrawingService);
         toolsServiceSpy.currentTool = new PencilService(drawingStub, colorServiceStub, undoRedoServiceSpyObj);
 
@@ -99,12 +103,13 @@ describe('DrawingComponent', () => {
     });
 
     it('#ngAfterViewInit should call #loadCanvasWithIncomingImage', () => {
-        spyOn<any>(component, 'loadCanvasWithIncomingImage').and.stub();
         component.ngAfterViewInit();
-        expect(component['loadCanvasWithIncomingImage']).toHaveBeenCalled();
+        expect(loadCanvasSpy).toHaveBeenCalled();
     });
 
     it('#loadCanvasWithIncomingImage should call #handleNewDrawing with base image if the user creates a new drawing', async () => {
+        component['refreshedImage'] = imageSpyObj;
+        loadCanvasSpy.and.callThrough();
         drawingStub.isNewDrawing = true;
         spyOn(drawingStub, 'handleNewDrawing');
         await component['loadCanvasWithIncomingImage'](baseImage);
@@ -113,6 +118,8 @@ describe('DrawingComponent', () => {
     });
 
     it("#loadCanvasWithIncomingImage should call #handleNewDrawing with drawing service's new image if image is loaded from carousel ", async () => {
+        component['refreshedImage'] = imageSpyObj;
+        loadCanvasSpy.and.callThrough();
         const newImage = new Image();
         drawingStub.newImage = newImage;
         spyOn(drawingStub, 'handleNewDrawing');
@@ -123,6 +130,7 @@ describe('DrawingComponent', () => {
 
     it('#loadCanvasWithIncomingImage should call #changeDrawing from drawingService if the user reloads the editor page', async () => {
         component['refreshedImage'] = imageSpyObj;
+        loadCanvasSpy.and.callThrough();
         drawingStub.isNewDrawing = false;
         drawingStub.newImage = undefined;
 
