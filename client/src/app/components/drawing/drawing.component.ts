@@ -15,6 +15,7 @@ export const MINIMUM_WORKSPACE_SIZE = 500;
 export const SIDE_BAR_SIZE = 400;
 export const HALF_RATIO = 0.5;
 
+// tslint:disable: no-magic-numbers
 @Component({
     selector: 'app-drawing',
     templateUrl: './drawing.component.html',

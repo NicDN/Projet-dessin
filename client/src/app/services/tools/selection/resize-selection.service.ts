@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
-
+// tslint:disable: no-magic-numbers
 @Injectable({
     providedIn: 'root',
 })
@@ -115,6 +115,7 @@ export class ResizeSelectionService {
                     coords.finalBottomRight.x = endCoordX;
                 }
                 break;
+
             case 4:
                 coords.finalTopLeft.y = pos.y;
                 break;

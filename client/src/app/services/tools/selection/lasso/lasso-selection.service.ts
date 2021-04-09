@@ -46,7 +46,7 @@ export class LassoSelectionService extends SelectionTool {
             this.lineService.isShiftDown = false;
         }
     }
-
+    // tslint:disable: no-magic-numbers
     onMouseUp(event: MouseEvent): void {
         if (!this.mouseDown) return;
         this.mouseDown = false;

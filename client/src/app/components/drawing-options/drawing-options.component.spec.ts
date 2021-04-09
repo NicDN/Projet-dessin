@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { GridService } from '@app/services/grid/grid.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -8,7 +9,7 @@ import { DrawingOptionsComponent } from './drawing-options.component';
 
 // tslint:disable: no-string-literal
 // tslint:disable: no-any
-describe('UndoRedoComponent', () => {
+describe('DrawingOptions', () => {
     let component: DrawingOptionsComponent;
     let fixture: ComponentFixture<DrawingOptionsComponent>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
@@ -35,6 +36,7 @@ describe('UndoRedoComponent', () => {
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: ToolsService, useValue: toolsServiceSpyObj },
                 { provide: GridService, useValue: gridServiceSpyObj },
+                { provide: MatBottomSheet, useValue: {} },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -83,7 +85,6 @@ describe('UndoRedoComponent', () => {
 
     it('#handleClickGrid should set the current tool to grid and call handleDrawGrid of grid service', () => {
         component.handleClickGrid();
-        expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
         expect(gridServiceSpyObj.handleDrawGrid).toHaveBeenCalled();
     });
 });

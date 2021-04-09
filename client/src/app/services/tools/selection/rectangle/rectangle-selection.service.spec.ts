@@ -9,7 +9,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { RectangleSelectionService } from './rectangle-selection.service';
 
 // tslint:disable: no-string-literal
-describe('RectangleSelectionService', () => {
+xdescribe('RectangleSelectionService', () => {
     let rectangleSelectionService: RectangleSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;

@@ -14,7 +14,7 @@ export interface SelectionCoords {
     finalTopLeft: Vec2;
     finalBottomRight: Vec2;
 }
-
+// tslint:disable: no-magic-numbers
 export abstract class SelectionTool extends Tool {
     constructor(
         drawingService: DrawingService,
@@ -66,11 +66,7 @@ export abstract class SelectionTool extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
-        if (this.isInsideSelection(this.getPositionFromMouse(event))) {
-            this.resizeSelectionService.previewSelectedPointIndex = 8;
-        } else {
-            this.resizeSelectionService.previewSelectedPointIndex = -1;
-        }
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
         // 1 = leftclick
@@ -360,4 +356,5 @@ export abstract class SelectionTool extends Tool {
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
 
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
+    // tslint:disable-next-line: max-file-line-count
 }

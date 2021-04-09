@@ -7,7 +7,7 @@ import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/e
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
-import { UndoRedoService } from './../undo-redo/undo-redo.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 interface ClipBoardData {
     clipboardImage: ImageData;
