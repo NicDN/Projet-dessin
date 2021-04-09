@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
@@ -21,6 +22,7 @@ export class CardDrawingComponent {
         private carouselService: CarouselService,
         private snackBarService: SnackBarService,
         private drawingService: DrawingService,
+        private localStorageService: LocalStorageService,
         private router: Router,
     ) {}
 
@@ -29,6 +31,12 @@ export class CardDrawingComponent {
         image.src = this.drawingForm.drawingData;
 
         if (this.router.url === '/home') {
+            if (!this.localStorageService.storageIsEmpty()) {
+                if (!(await this.drawingService.confirmReload())) {
+                    return;
+                }
+            }
+
             this.router.navigate(['editor']);
             this.drawingService.newImage = image;
             this.closeCarousel.emit();

@@ -8,6 +8,16 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 export class LocalStorageService {
     constructor(private drawingService: DrawingService, private snackBarService: SnackBarService) {}
 
+    async storageNotEmptyConfirm(): Promise<boolean> {
+        if (!this.storageIsEmpty()) {
+            if (!(await this.drawingService.confirmReload())) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
     saveCanvas(): void {
         const canvasURLCopy = (' ' + this.drawingService.canvas.toDataURL()).slice(1); // deep copy of canvas url
 

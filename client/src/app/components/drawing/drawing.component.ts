@@ -53,15 +53,6 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private async loadCanvasWithIncomingImage(baseImage: HTMLImageElement): Promise<void> {
-        // if (this.drawingService.isNewDrawing || this.drawingService.newImage) {
-        //     if (localStorage.getItem('canvas') !== null) {
-        //         if (!(await this.drawingService.confirmReload())) {
-        //             this.drawingService.isNewDrawing = false;
-        //             this.drawingService.newImage = undefined;
-        //         }
-        //     }
-        // }
-
         // create new drawing
         if (this.drawingService.isNewDrawing) {
             this.drawingService.handleNewDrawing(baseImage);

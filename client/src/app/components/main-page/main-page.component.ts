@@ -35,7 +35,12 @@ export class MainPageComponent {
         this.drawingService.changeDrawing(this.image);
     }
 
-    createNewDrawing(): void {
+    async createNewDrawing(): Promise<void> {
+        if (!this.localStorageService.storageIsEmpty()) {
+            if (!(await this.drawingService.confirmReload())) {
+                return;
+            }
+        }
         this.drawingService.isNewDrawing = true;
         this.router.navigate(['editor']);
     }
