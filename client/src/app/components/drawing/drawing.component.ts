@@ -3,7 +3,9 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -14,6 +16,7 @@ export const MINIMUM_WORKSPACE_SIZE = 500;
 export const SIDE_BAR_SIZE = 400;
 export const HALF_RATIO = 0.5;
 
+// tslint:disable: no-magic-numbers
 @Component({
     selector: 'app-drawing',
     templateUrl: './drawing.component.html',
@@ -35,6 +38,7 @@ export class DrawingComponent implements AfterViewInit {
         public toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
+        private resizeSelectionService: ResizeSelectionService,
     ) {}
 
     ngAfterViewInit(): void {
@@ -105,7 +109,7 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.toolsService.onKeyUp(event);
+        this.hotKeyService.onKeyUp(event);
     }
 
     @HostListener('mouseenter', ['$event'])
@@ -132,6 +136,107 @@ export class DrawingComponent implements AfterViewInit {
             event.pageX < this.drawingService.canvas.width + SIDE_BAR_SIZE &&
             event.pageY < this.drawingService.canvas.height &&
             event.pageX > SIDE_BAR_SIZE
+        );
+    }
+
+    getRightCursor(): string {
+        if (this.toolsService.currentTool === this.toolsService.eraserService || this.toolsService.currentTool === this.toolsService.stampService) {
+            return 'none';
+        }
+
+        if (this.toolsService.currentTool === this.toolsService.eyeDropperService) {
+            return 'zoom-in';
+        }
+
+        if (
+            this.toolsService.lassoSelectionService &&
+            this.toolsService.lassoSelectionService.checkIfLineCrossing() &&
+            this.toolsService.currentTool !== this.toolsService.lineService
+        ) {
+            return 'not-allowed';
+        }
+
+        if (this.toolsService.currentTool instanceof TextService) {
+            if (!(this.toolsService.currentTool as TextService).isWriting) return 'text';
+            else return 'pointer';
+        }
+
+        if (this.toolsService.currentTool instanceof SelectionTool) {
+            return this.checkIfIsAControlPoint();
+        }
+
+        return 'crosshair';
+    }
+
+    checkIfIsAControlPoint(): string {
+        if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
+            switch (this.resizeSelectionService.previewSelectedPointIndex) {
+                case 0:
+                case 3:
+                    return this.returnTrueNwSeDiagonalCursor();
+                case 1:
+                case 2:
+                    return this.returnTrueNeSwDiagonalCursor();
+                case 4:
+                case 5:
+                    return 'n-resize';
+                case 6:
+                case 7:
+                    return 'w-resize';
+                case 8:
+                    return 'move';
+                default:
+                    return 'pointer';
+            }
+        }
+        return 'pointer';
+    }
+
+    private returnTrueNwSeDiagonalCursor(): string {
+        if (!this.xSelectionIsFlipped()) {
+            if (!this.ySelectionIsFlipped()) {
+                return 'ne-resize';
+            } else {
+                return 'nw-resize';
+            }
+        } else {
+            if (!this.ySelectionIsFlipped()) {
+                return 'nw-resize';
+            } else {
+                return 'ne-resize';
+            }
+        }
+    }
+
+    private returnTrueNeSwDiagonalCursor(): string {
+        if (!this.xSelectionIsFlipped()) {
+            if (!this.ySelectionIsFlipped()) {
+                return 'nw-resize';
+            } else {
+                return 'ne-resize';
+            }
+        } else {
+            if (!this.ySelectionIsFlipped()) {
+                return 'ne-resize';
+            } else {
+                return 'nw-resize';
+            }
+        }
+    }
+
+    xSelectionIsFlipped(): boolean {
+        return (
+            (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x -
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x <
+            0
+        );
+    }
+
+    ySelectionIsFlipped(): boolean {
+        return (
+            (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y >
+            0
         );
     }
 }

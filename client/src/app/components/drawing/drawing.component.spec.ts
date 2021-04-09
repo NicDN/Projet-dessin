@@ -49,7 +49,7 @@ describe('DrawingComponent', () => {
         drawingStub = new DrawingService({} as MatBottomSheet);
 
         toolsServiceSpy = jasmine.createSpyObj('ToolsService', ['onKeyUp']);
-        hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown']);
+        hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown', 'onKeyUp']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('undoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
         moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
         resizeSelectionSpyObj = jasmine.createSpyObj('ResizeSelectionService', ['']);
@@ -223,7 +223,7 @@ describe('DrawingComponent', () => {
 
     it("#onKeyUp should call tools service's #onKeyUp", () => {
         component.onKeyUp(keyBoardEvent);
-        expect(toolsServiceSpy.onKeyUp).toHaveBeenCalled();
+        expect(hotKeyServiceSpy.onKeyUp).toHaveBeenCalled();
     });
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {

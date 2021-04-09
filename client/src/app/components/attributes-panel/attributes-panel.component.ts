@@ -5,9 +5,10 @@ import { Shape } from '@app/classes/shape';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { Tool } from '@app/classes/tool';
 import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
-import { TextService } from '@app/services/tools/text/text.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 @Component({
@@ -17,11 +18,12 @@ import { ToolsService } from '@app/services/tools/tools.service';
 })
 export class AttributesPanelComponent implements OnInit {
     currentTool: Tool;
-
+    private readonly PERCENTAGE: number = 100;
     thicknessSetting: SliderSetting;
     polygonSetting: SliderSetting;
+    fillDripSetting: SliderSetting;
 
-    constructor(public toolsService: ToolsService, private polygonService: PolygonService) {
+    constructor(public toolsService: ToolsService, private polygonService: PolygonService, public moveSelectionService: MoveSelectionService) {
         this.subscribe();
     }
 
@@ -53,6 +55,20 @@ export class AttributesPanelComponent implements OnInit {
             },
             action: (value: number) => {
                 (this.currentTool as PolygonService).numberOfSides = value;
+            },
+        };
+
+        this.fillDripSetting = {
+            title: "Tolérance d'écart",
+            unit: '%',
+            min: 0,
+            max: 100,
+            getAttribute: () => {
+                return Math.round((this.currentTool as FillDripService).percentage * this.PERCENTAGE);
+            },
+            action: (value: number) => {
+                (this.currentTool as FillDripService).percentage = value / this.PERCENTAGE;
+                console.log((this.currentTool as FillDripService).percentage);
             },
         };
     }
