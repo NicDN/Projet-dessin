@@ -140,10 +140,6 @@ export class HotkeyService {
         });
     }
 
-    // private disableEnableKeyEvents(bool: boolean): void {
-    //     this.listenToKeyEvents = bool;
-    // }
-
     onKeyDown(event: KeyboardEvent): void {
         if (this.toolService.currentTool instanceof TextService) this.onKeyDownTextService(event);
         if (!this.listenToKeyEvents) {
@@ -171,9 +167,6 @@ export class HotkeyService {
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        // if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
-        //     //this.resizeSelectionService.shiftKeyIsDown = false;
-        // }
         this.toolService.onKeyUp(event);
     }
 
@@ -202,6 +195,7 @@ export class HotkeyService {
         this.drawingService.updateGrid();
     }
 
+    // TODO: AQ
     onKeyDownTextService(event: KeyboardEvent): void {
         switch (event.code) {
             case 'Escape':

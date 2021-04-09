@@ -72,6 +72,11 @@ export class ToolsService {
             this.drawingService.isStamp = true;
         }
 
+        if (this.currentTool instanceof GridService) {
+            this.currentTool.gridDrawn = true;
+            this.currentTool.drawGrid();
+        }
+
         this.subject.next(tool);
     }
 

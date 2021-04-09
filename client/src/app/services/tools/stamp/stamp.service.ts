@@ -9,14 +9,11 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 })
 export class StampService extends Tool {
     stamps: string[] = [
-        ' ../../../../../assets/stamps/kali.jpeg',
         ' ../../../../../assets/stamps/github.png',
         ' ../../../../../assets/stamps/mario.jpeg',
         ' ../../../../../assets/stamps/emoji.png',
         ' ../../../../../assets/stamps/minecraft.png',
-        ' ../../../../../assets/stamps/creeper.png',
         ' ../../../../../assets/stamps/winnie.png',
-        ' ../../../../../assets/stamps/copier0.jpg',
         ' ../../../../../assets/stamps/catKun.png',
     ];
 
