@@ -66,15 +66,17 @@ export abstract class SelectionTool extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
-        // 1 = leftclick
         if (this.isInsideSelection(this.getPositionFromMouse(event))) {
             this.resizeSelectionService.previewSelectedPointIndex = 8;
         } else {
             this.resizeSelectionService.previewSelectedPointIndex = -1;
         }
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
+
+        // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
+
         if (this.resizeSelectionService.selectedPointIndex !== -1) {
             this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -122,12 +124,28 @@ export abstract class SelectionTool extends Tool {
 
     onKeyDown(event: KeyboardEvent): void {
         if (event.code === 'Escape') this.cancelSelection();
-        if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyDown);
+        if (event.code === 'ShiftLeft') {
+            if (!this.selectionExists) {
+                this.handleLeftShift(event, this.shapeService.onKeyDown);
+            } else {
+                this.resizeSelectionService.shiftKeyIsDown = true;
+            }
+        }
         if (this.selectionExists) this.handleMovingArrowsKeyDown(event);
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyUp);
+        if (event.code === 'ShiftLeft') {
+            if (!this.selectionExists) {
+                this.handleLeftShift(event, this.shapeService.onKeyUp);
+            } else {
+                this.resizeSelectionService.shiftKeyIsDown = false;
+                this.resizeSelectionService.resizeSelection(this.resizeSelectionService.lastMousePos, this.coords);
+                this.drawingService.clearCanvas(this.drawingService.previewCtx);
+                this.drawAll(this.drawingService.previewCtx);
+            }
+        }
+
         this.handleMovingArrowsKeyUp(event);
     }
 

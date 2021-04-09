@@ -14,6 +14,7 @@ export class ResizeSelectionService {
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     shiftKeyIsDown: boolean = false;
+    lastMousePos: Vec2;
 
     readonly controlPointWidth: number = 6;
     readonly halfControlPointWidth: number = this.controlPointWidth / 2;
@@ -60,6 +61,7 @@ export class ResizeSelectionService {
         let endCoordY: number;
         const width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
         const height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
+        this.lastMousePos = pos;
         switch (this.selectedPointIndex) {
             case 0:
                 coords.finalTopLeft.y = pos.y;

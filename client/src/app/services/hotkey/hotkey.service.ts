@@ -7,7 +7,6 @@ import { GridService } from '@app/services/grid/grid.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { ResizeSelectionService } from '../tools/selection/resize-selection.service';
 
 interface ShortcutFunctions {
     action?: () => void;
@@ -62,7 +61,6 @@ export class HotkeyService {
         private rectangleSelectionService: RectangleSelectionService,
         private gridService: GridService,
         private clipboardSelectionService: ClipboardSelectionService,
-        private resizeSelectionService: ResizeSelectionService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -141,7 +139,7 @@ export class HotkeyService {
                 : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else if (event.shiftKey) {
             event.preventDefault();
-            this.resizeSelectionService.shiftKeyIsDown = true;
+            // this.resizeSelectionService.shiftKeyIsDown = true;
             this.shortCutManager[event.code as shortCutManager]?.actionShift?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
@@ -151,9 +149,9 @@ export class HotkeyService {
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
-            this.resizeSelectionService.shiftKeyIsDown = false;
-        }
+        // if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+        //     //this.resizeSelectionService.shiftKeyIsDown = false;
+        // }
         this.toolService.onKeyUp(event);
     }
 
