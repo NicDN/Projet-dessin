@@ -1,7 +1,7 @@
 import { Color } from '@app/classes/color';
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
 import { Vec2 } from '@app/classes/vec2';
-import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/text.service';
+import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
 
 export interface TextProperties {
     textContext: CanvasRenderingContext2D;

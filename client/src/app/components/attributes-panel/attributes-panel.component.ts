@@ -7,7 +7,7 @@ import { Tool } from '@app/classes/tool';
 import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
-import { TextService } from '@app/services/tools/text/text.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 @Component({

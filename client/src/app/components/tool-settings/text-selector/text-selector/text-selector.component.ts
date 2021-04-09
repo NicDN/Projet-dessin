@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/text.service';
+import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
 
 interface TextPositionOption {
     icon: string;

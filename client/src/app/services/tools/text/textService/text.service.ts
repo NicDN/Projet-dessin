@@ -47,9 +47,9 @@ export class TextService extends TraceTool {
     fontStyle: FontStyle = FontStyle.Arial;
     writtenOnPreview: string = '';
     private initialClickPosition: Vec2 = { x: 0, y: 0 };
-    private writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
+    writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
     private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Calibri', 'Georgia'];
-    private enterPosition: number[] = [];
+    enterPosition: number[] = [];
     private approximateHeight: number = 0;
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
@@ -307,7 +307,7 @@ export class TextService extends TraceTool {
                 this.displayPreviewBar(
                     textProperties.textContext,
                     textProperties.writtenOnPreview.substring(previousPosition, previewPosition),
-                    i * this.approximateHeight,
+                    this.approximateHeight * i,
                     textProperties.writtenOnPreview.substring(previousPosition, position - 1),
                 );
                 asDrawnedPreview = true;
@@ -366,6 +366,7 @@ export class TextService extends TraceTool {
 
         this.drawingService.previewCtx.save();
         this.drawingService.previewCtx.strokeStyle = 'black';
+        this.drawingService.previewCtx.lineWidth = 1;
         this.drawingService.previewCtx.beginPath();
         this.drawingService.previewCtx.rect(
             this.initialClickPosition.x - this.TWENTY,
@@ -467,4 +468,5 @@ export class TextService extends TraceTool {
     disableEnableKeyEvents(): Observable<boolean> {
         return this.subject.asObservable();
     }
+    // tslint:disable-next-line: max-file-line-count
 }

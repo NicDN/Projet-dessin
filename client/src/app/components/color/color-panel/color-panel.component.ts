@@ -4,7 +4,7 @@ import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { TextService } from '@app/services/tools/text/text.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 
 interface RGBInput {
