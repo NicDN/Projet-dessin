@@ -36,11 +36,10 @@ export class MainPageComponent {
     }
 
     async createNewDrawing(): Promise<void> {
-        if (!this.localStorageService.storageIsEmpty()) {
-            if (!(await this.drawingService.confirmReload())) {
-                return;
-            }
+        if (!(await this.localStorageService.confirmNewDrawing())) {
+            return;
         }
+
         this.drawingService.isNewDrawing = true;
         this.router.navigate(['editor']);
     }

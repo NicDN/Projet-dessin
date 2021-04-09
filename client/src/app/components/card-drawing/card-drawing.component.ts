@@ -31,10 +31,8 @@ export class CardDrawingComponent {
         image.src = this.drawingForm.drawingData;
 
         if (this.router.url === '/home') {
-            if (!this.localStorageService.storageIsEmpty()) {
-                if (!(await this.drawingService.confirmReload())) {
-                    return;
-                }
+            if (!(await this.localStorageService.confirmNewDrawing())) {
+                return;
             }
 
             this.router.navigate(['editor']);

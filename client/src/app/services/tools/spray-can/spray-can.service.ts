@@ -17,7 +17,7 @@ export class SprayCanService extends TraceTool {
     readonly MIN_EMISSION_RATE: number = 25;
 
     readonly MAX_DROPLETS_DIAMETER: number = 15;
-    readonly MAX_SPRAY_DIAMETER: number = 70;
+    readonly MAX_SPRAY_DIAMETER: number = 300;
     readonly MAX_EMISSION_RATE: number = 70;
 
     private readonly ONE_SEC_MS: number = 1000;

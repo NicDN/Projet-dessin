@@ -8,14 +8,11 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 export class LocalStorageService {
     constructor(private drawingService: DrawingService, private snackBarService: SnackBarService) {}
 
-    async storageNotEmptyConfirm(): Promise<boolean> {
+    async confirmNewDrawing(): Promise<boolean> {
         if (!this.storageIsEmpty()) {
-            if (!(await this.drawingService.confirmReload())) {
-                return false;
-            }
+            return await this.drawingService.confirmReload();
         }
-
-        return false;
+        return true;
     }
 
     saveCanvas(): void {
@@ -23,8 +20,6 @@ export class LocalStorageService {
 
         try {
             localStorage.setItem('canvas', canvasURLCopy);
-            localStorage.setItem('width', '' + this.drawingService.canvas.width);
-            localStorage.setItem('height', '' + this.drawingService.canvas.height);
         } catch (error) {
             this.snackBarService.openSnackBar('Erreur lors de la sauvegarde automatique.', 'Fermer');
         }

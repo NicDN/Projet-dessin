@@ -13,7 +13,7 @@ describe('ExportService', () => {
     const FILE_NAME = 'test';
     const EXPECTED_URL = 'expected url';
 
-    const exportLink = document.createElement('a');
+    const exportLinkSpyObj = jasmine.createSpyObj('HTMLAnchorElement', ['click', 'setAttribute']);
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -22,7 +22,9 @@ describe('ExportService', () => {
         });
         service = TestBed.inject(ExportService);
         service.canvasToExport = canvasMock;
-        service['exportLink'] = exportLink;
+        service['exportLink'] = exportLinkSpyObj;
+
+        spyOn(document, 'createElement').and.returnValue(exportLinkSpyObj);
     });
 
     it('should be created', () => {
@@ -30,17 +32,17 @@ describe('ExportService', () => {
     });
 
     it('#handleLocalExport should export canvas to jpeg if jpeg format is provided by the user', () => {
-        spyOn(service.canvasToExport, 'toBlob');
+        spyOn(service.canvasToExport, 'toBlob').and.callThrough();
         service.handleLocalExport(FILE_NAME, JPEG_FILE_FORMAT);
-        expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + JPEG_FILE_FORMAT);
+
         expect(service['downloadFormat']).toBe('image/jpeg');
         expect(service.canvasToExport.toBlob).toHaveBeenCalled();
     });
 
     it('#handleLocalExport should export canvas to png if png format is provided by the user', () => {
-        spyOn(service.canvasToExport, 'toBlob');
+        spyOn(service.canvasToExport, 'toBlob').and.callThrough();
         service.handleLocalExport(FILE_NAME, PNG_FILE_FORMAT);
-        expect(service['exportLink'].getAttribute('download')).toBe(FILE_NAME + '.' + PNG_FILE_FORMAT);
+
         expect(service['downloadFormat']).toBe('image/png');
         expect(service.canvasToExport.toBlob).toHaveBeenCalled();
     });
@@ -50,7 +52,7 @@ describe('ExportService', () => {
         const DEFAULT_FILE_NAME = 'Sans titre';
         const NOT_PROVIDED_FILE_NAME = '';
         service.handleLocalExport(NOT_PROVIDED_FILE_NAME, PNG_FILE_FORMAT);
-        expect(service['exportLink'].getAttribute('download')).toBe(DEFAULT_FILE_NAME + '.' + PNG_FILE_FORMAT);
+        expect(service['fileName']).toEqual(DEFAULT_FILE_NAME);
     });
 
     it('#handleImgurExport should return the correct url of the uploaded image ', async () => {
