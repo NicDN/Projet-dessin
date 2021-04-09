@@ -4,7 +4,9 @@ import { ClipboardSelectionService } from '@app/services/clipboard-selection/cli
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
+import { TextHotkeyService } from '@app/services/tools/text/textHotkey/text-hotkey.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -40,6 +42,7 @@ enum shortCutManager {
     DECREMENT_SQUARE_SIZE = 'Minus',
     CUT = 'KeyX',
     DELETE = 'Delete',
+    MAGNETISME = 'KeyM',
 }
 
 type ShortcutManager = {
@@ -63,6 +66,8 @@ export class HotkeyService {
         private textService: TextService,
         private gridService: GridService,
         private clipboardSelectionService: ClipboardSelectionService,
+        private moveSelectionService: MoveSelectionService,
+        private textHotKeyService: TextHotkeyService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -80,7 +85,7 @@ export class HotkeyService {
             },
             KeyG: {
                 action: () => {
-                    this.toolService.setCurrentTool(this.toolService.gridService);
+                    // this.toolService.setCurrentTool(this.toolService.gridService);
                     this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
@@ -119,6 +124,7 @@ export class HotkeyService {
 
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
+            KeyM: { action: () => (this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet) },
         };
     }
 
@@ -139,6 +145,7 @@ export class HotkeyService {
     // }
 
     onKeyDown(event: KeyboardEvent): void {
+        if (this.toolService.currentTool instanceof TextService) this.onKeyDownTextService(event);
         if (!this.listenToKeyEvents) {
             return;
         }
@@ -152,12 +159,22 @@ export class HotkeyService {
                 : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else if (event.shiftKey) {
             event.preventDefault();
+            // this.resizeSelectionService.shiftKeyIsDown = true;
             this.shortCutManager[event.code as shortCutManager]?.actionShift?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
+
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
+
         event.returnValue = true; // To accept default web shortCutManager
+    }
+
+    onKeyUp(event: KeyboardEvent): void {
+        // if (event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+        //     //this.resizeSelectionService.shiftKeyIsDown = false;
+        // }
+        this.toolService.onKeyUp(event);
     }
 
     private handleSelectAll(): void {
@@ -183,5 +200,37 @@ export class HotkeyService {
         this.toolService.setCurrentTool(this.toolService.gridService);
         this.gridService.decrementSquareSize();
         this.drawingService.updateGrid();
+    }
+
+    onKeyDownTextService(event: KeyboardEvent): void {
+        switch (event.code) {
+            case 'Escape':
+                this.textService.disableWriting();
+                return;
+            case 'ArrowLeft':
+                this.textHotKeyService.arrowLeftPressed();
+                break;
+            case 'ArrowRight':
+                this.textHotKeyService.arrowRightPressed();
+                break;
+            case 'ArrowUp':
+                this.textHotKeyService.arrowUpPressed();
+                break;
+            case 'ArrowDown':
+                this.textHotKeyService.arrowDownPressed();
+                break;
+            case 'Delete':
+                this.textHotKeyService.deletePressed();
+                return;
+            case 'Backspace':
+                this.textHotKeyService.backSpacePressed();
+                return;
+            case 'Enter':
+                this.textHotKeyService.enterPressed();
+                break;
+            default:
+                break;
+        }
+        this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
     }
 }

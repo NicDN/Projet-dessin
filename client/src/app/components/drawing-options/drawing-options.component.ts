@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -11,7 +12,7 @@ export class DrawingOptionsComponent implements OnInit {
     commandListIsEmpty: boolean = true;
     redoListIsEmpty: boolean = true;
 
-    constructor(public undoRedoService: UndoRedoService, public toolService: ToolsService) {
+    constructor(public undoRedoService: UndoRedoService, public moveSelectionService: MoveSelectionService, public toolService: ToolsService) {
         this.listenToUndoRedoNotification();
     }
 
@@ -32,7 +33,6 @@ export class DrawingOptionsComponent implements OnInit {
     }
 
     handleClickGrid(): void {
-        this.toolService.setCurrentTool(this.toolService.gridService);
         this.toolService.gridService.handleDrawGrid();
     }
 }

@@ -59,8 +59,10 @@ export class ToolsService {
         }
 
         if (this.currentTool === this.lineService) {
-            this.lineService.clearPath();
-            this.lineService.updatePreview();
+            if (this.currentTool === this.lineService || this.currentTool === this.lassoSelectionService) {
+                this.lineService.clearPath();
+                this.lineService.updatePreview();
+            }
         }
 
         this.currentTool = tool;
