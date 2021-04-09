@@ -18,9 +18,10 @@ import { ToolsService } from '@app/services/tools/tools.service';
 })
 export class AttributesPanelComponent implements OnInit {
     currentTool: Tool;
-
+    private readonly PERCENTAGE: number = 100;
     thicknessSetting: SliderSetting;
     polygonSetting: SliderSetting;
+    fillDripSetting: SliderSetting;
 
     constructor(public toolsService: ToolsService, private polygonService: PolygonService, public moveSelectionService: MoveSelectionService) {
         this.subscribe();
@@ -54,6 +55,20 @@ export class AttributesPanelComponent implements OnInit {
             },
             action: (value: number) => {
                 (this.currentTool as PolygonService).numberOfSides = value;
+            },
+        };
+
+        this.fillDripSetting = {
+            title: "Tolérance d'écart",
+            unit: '%',
+            min: 0,
+            max: 100,
+            getAttribute: () => {
+                return Math.round((this.currentTool as FillDripService).percentage * this.PERCENTAGE);
+            },
+            action: (value: number) => {
+                (this.currentTool as FillDripService).percentage = value / this.PERCENTAGE;
+                console.log((this.currentTool as FillDripService).percentage);
             },
         };
     }
