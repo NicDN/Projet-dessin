@@ -6,6 +6,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
 const MAX_RGB_VALUE = 255;
+const VALUES_PER_PIXEL = 4;
 
 @Injectable({
     providedIn: 'root',
@@ -66,15 +67,14 @@ export class FillDripService extends TraceTool {
 
     // a la place d'update un pixel apres l'autre, former progressivement une image et l'update a la fin
     nonContiguousFilling(): void {
-        for (let i = 0; i < this.drawingService.canvas.width; i++) {
-            for (let j = 0; j < this.drawingService.canvas.height; j++) {
-                const pixel = this.drawingService.baseCtx.getImageData(i, j, 1, 1);
-                if (this.inRange(pixel.data)) {
-                    pixel.data.set(this.mainColor);
-                    this.drawingService.baseCtx.putImageData(pixel, i, j);
-                }
+        const pixels: ImageData = this.drawingService.baseCtx.getImageData(0, 0, this.drawingService.canvas.width, this.drawingService.canvas.height);
+
+        for (let i = 0; i < pixels.height * pixels.width * VALUES_PER_PIXEL; i += VALUES_PER_PIXEL) {
+            if (this.inRange(pixels.data.slice(i, i + VALUES_PER_PIXEL))) {
+                pixels.data.set(this.mainColor, i);
             }
         }
+        this.drawingService.baseCtx.putImageData(pixels, 0, 0);
     }
 
     areEqualColors(colorA: Uint8ClampedArray, colorB: Uint8ClampedArray): boolean {
@@ -82,31 +82,44 @@ export class FillDripService extends TraceTool {
     }
 
     contiguousFilling(mousePos: Vec2): void {
-        const neighbors: ImageData[] = [this.drawingService.baseCtx.getImageData(mousePos.x, mousePos.y, 1, 1)];
-        const neighborsPos: Vec2[] = [mousePos];
+        const linearMousePos = mousePos.y * this.drawingService.canvas.width + mousePos.x;
+
+        const pixels: ImageData = this.drawingService.baseCtx.getImageData(0, 0, this.drawingService.canvas.width, this.drawingService.canvas.height);
+
+        const neighbors: number[] = [linearMousePos];
+
+        const searchedPixels: boolean[] = [];
+        for (let i = 0; i < this.drawingService.canvas.width * this.drawingService.canvas.height; i++) {
+            searchedPixels.push(false);
+        }
+        searchedPixels[linearMousePos] = true;
 
         while (neighbors.length !== 0) {
-            neighbors[0].data.set(this.mainColor);
-            this.drawingService.baseCtx.putImageData(neighbors[0], neighborsPos[0].x, neighborsPos[0].y);
-            this.getValidNeighbors(neighbors, neighborsPos);
+            pixels.data.set(this.mainColor, neighbors[0] * VALUES_PER_PIXEL);
+
+            this.getValidNeighbors(pixels.data, neighbors, searchedPixels);
+
             neighbors.shift();
-            neighborsPos.shift();
         }
+
+        this.drawingService.baseCtx.putImageData(pixels, 0, 0);
     }
 
-    getValidNeighbors(neighbors: ImageData[], neighborsPos: Vec2[]): void {
-        const currentPos: Vec2 = neighborsPos[0];
-        const neighborsIdx: Vec2[] = [];
-        if (currentPos.x > 0) neighborsIdx.push({ x: currentPos.x - 1, y: currentPos.y });
-        if (currentPos.x < this.drawingService.canvas.width - 1) neighborsIdx.push({ x: currentPos.x + 1, y: currentPos.y });
-        if (currentPos.y > 0) neighborsIdx.push({ x: currentPos.x, y: currentPos.y - 1 });
-        if (currentPos.y < this.drawingService.canvas.height - 1) neighborsIdx.push({ x: currentPos.x, y: currentPos.y + 1 });
+    getValidNeighbors(pixelsData: Uint8ClampedArray, neighbors: number[], searchedPixels: boolean[]): void {
+        const currentPos: number = neighbors[0];
 
-        for (const pos of neighborsIdx) {
-            const neighbor: ImageData = this.drawingService.baseCtx.getImageData(pos.x, pos.y, 1, 1);
-            if (this.inRange(neighbor.data) && !this.areEqualColors(neighbor.data, this.mainColor) && !neighbors.includes(neighbor)) {
-                neighbors.push(neighbor);
-                neighborsPos.push(pos);
+        const possibleNeighbors: number[] = [];
+        if (currentPos > 0) possibleNeighbors.push(currentPos - 1);
+        if (currentPos < this.drawingService.canvas.width * this.drawingService.canvas.height - 1) possibleNeighbors.push(currentPos + 1);
+        if (currentPos >= this.drawingService.canvas.width) possibleNeighbors.push(currentPos - this.drawingService.canvas.width);
+        if (currentPos < this.drawingService.canvas.height * this.drawingService.canvas.width - this.drawingService.canvas.width - 1)
+            possibleNeighbors.push(currentPos + this.drawingService.canvas.width);
+
+        for (const pos of possibleNeighbors) {
+            const currentPixel: Uint8ClampedArray = pixelsData.slice(pos * VALUES_PER_PIXEL, pos * VALUES_PER_PIXEL + VALUES_PER_PIXEL);
+            if (this.inRange(currentPixel) && !this.areEqualColors(currentPixel, this.mainColor) && searchedPixels[pos] === false) {
+                neighbors.push(pos);
+                searchedPixels[pos] = true;
             }
         }
     }
