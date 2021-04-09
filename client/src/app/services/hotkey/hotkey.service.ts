@@ -6,6 +6,8 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
+import { TextHotkeyService } from '@app/services/tools/text/textHotkey/text-hotkey.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -61,12 +63,15 @@ export class HotkeyService {
         private dialogService: DialogService,
         private undoRedoService: UndoRedoService,
         private rectangleSelectionService: RectangleSelectionService,
+        private textService: TextService,
         private gridService: GridService,
         private clipboardSelectionService: ClipboardSelectionService,
         private moveSelectionService: MoveSelectionService,
+        private textHotKeyService: TextHotkeyService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
+        this.observeTextService();
     }
 
     private initializeShorcutManager(): void {
@@ -129,7 +134,18 @@ export class HotkeyService {
         });
     }
 
+    private observeTextService(): void {
+        this.textService.disableEnableKeyEvents().subscribe((listenToKeyEvents) => {
+            this.listenToKeyEvents = listenToKeyEvents;
+        });
+    }
+
+    // private disableEnableKeyEvents(bool: boolean): void {
+    //     this.listenToKeyEvents = bool;
+    // }
+
     onKeyDown(event: KeyboardEvent): void {
+        if (this.toolService.currentTool instanceof TextService) this.onKeyDownTextService(event);
         if (!this.listenToKeyEvents) {
             return;
         }
@@ -148,7 +164,9 @@ export class HotkeyService {
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
         }
+
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
+
         event.returnValue = true; // To accept default web shortCutManager
     }
 
@@ -182,5 +200,37 @@ export class HotkeyService {
         this.toolService.setCurrentTool(this.toolService.gridService);
         this.gridService.decrementSquareSize();
         this.drawingService.updateGrid();
+    }
+
+    onKeyDownTextService(event: KeyboardEvent): void {
+        switch (event.code) {
+            case 'Escape':
+                this.textService.disableWriting();
+                return;
+            case 'ArrowLeft':
+                this.textHotKeyService.arrowLeftPressed();
+                break;
+            case 'ArrowRight':
+                this.textHotKeyService.arrowRightPressed();
+                break;
+            case 'ArrowUp':
+                this.textHotKeyService.arrowUpPressed();
+                break;
+            case 'ArrowDown':
+                this.textHotKeyService.arrowDownPressed();
+                break;
+            case 'Delete':
+                this.textHotKeyService.deletePressed();
+                return;
+            case 'Backspace':
+                this.textHotKeyService.backSpacePressed();
+                return;
+            case 'Enter':
+                this.textHotKeyService.enterPressed();
+                break;
+            default:
+                break;
+        }
+        this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
     }
 }

@@ -5,6 +5,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -161,6 +162,11 @@ export class DrawingComponent implements AfterViewInit {
             this.toolsService.currentTool !== this.toolsService.lineService
         ) {
             return 'not-allowed';
+        }
+
+        if (this.toolsService.currentTool instanceof TextService) {
+            if (!(this.toolsService.currentTool as TextService).isWriting) return 'text';
+            else return 'pointer';
         }
 
         if (this.toolsService.currentTool instanceof SelectionTool) {

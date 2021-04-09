@@ -2,7 +2,10 @@ import { Component } from '@angular/core';
 import { MatSliderChange } from '@angular/material/slider';
 import { Color } from '@app/classes/color';
 import { ColorService } from '@app/services/color/color.service';
+import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
+import { ToolsService } from '@app/services/tools/tools.service';
 
 interface RGBInput {
     color: string;
@@ -38,7 +41,12 @@ export class ColorPanelComponent {
 
     private rgbArray: string[]; // represents R/G/B decimal values
 
-    constructor(public colorService: ColorService, public hotKeyService: HotkeyService) {
+    constructor(
+        public colorService: ColorService,
+        public hotKeyService: HotkeyService,
+        private toolsService: ToolsService,
+        private drawingService: DrawingService,
+    ) {
         this.colorService = colorService;
         this.previousColors = this.colorService.previousColors;
     }
@@ -73,12 +81,14 @@ export class ColorPanelComponent {
     switchColors(): void {
         this.colorService.switchColors();
         this.openColorPicker = false;
+        this.updateText();
     }
 
     updateColor(selectedColor: Color): void {
         this.updatePreviousColors(selectedColor);
         this.colorService.updateColor(selectedColor, { rgbValue: this.rgbValue, opacity: this.opacity });
         this.openColorPicker = false;
+        this.updateText();
     }
 
     private updatePreviousColors(selectedColor: Color): void {
@@ -90,6 +100,7 @@ export class ColorPanelComponent {
     setPrimaryColor(index: number): void {
         this.colorService.updateMainColor(this.colorService.previousColors[index]);
         this.closeColorPicker();
+        this.updateText();
     }
 
     setSecondaryColor(index: number): void {
@@ -139,5 +150,14 @@ export class ColorPanelComponent {
             }
         }
         return false;
+    }
+
+    updateText(): void {
+        if (!(this.toolsService.currentTool instanceof TextService)) return;
+        if (this.toolsService.textService.isWriting) {
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.toolsService.textService.registerTextCommand(this.drawingService.previewCtx, this.toolsService.textService.writtenOnPreview);
+            this.toolsService.textService.drawBox();
+        }
     }
 }
