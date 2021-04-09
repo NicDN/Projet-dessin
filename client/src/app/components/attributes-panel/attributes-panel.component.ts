@@ -18,7 +18,7 @@ import { ToolsService } from '@app/services/tools/tools.service';
 })
 export class AttributesPanelComponent implements OnInit {
     currentTool: Tool;
-
+    private readonly PERCENTAGE: number = 100;
     thicknessSetting: SliderSetting;
     polygonSetting: SliderSetting;
     fillDripSetting: SliderSetting;
@@ -64,11 +64,11 @@ export class AttributesPanelComponent implements OnInit {
             min: 0,
             max: 100,
             getAttribute: () => {
-                return Math.round((this.currentTool as FillDripService).pourcentage * 100);
+                return Math.round((this.currentTool as FillDripService).percentage * this.PERCENTAGE);
             },
             action: (value: number) => {
-                (this.currentTool as FillDripService).pourcentage = value / 100;
-                console.log((this.currentTool as FillDripService).pourcentage);
+                (this.currentTool as FillDripService).percentage = value / this.PERCENTAGE;
+                console.log((this.currentTool as FillDripService).percentage);
             },
         };
     }

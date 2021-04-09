@@ -15,6 +15,9 @@ export class StampService extends Tool {
         ' ../../../../../assets/stamps/emoji.png',
         ' ../../../../../assets/stamps/minecraft.png',
         ' ../../../../../assets/stamps/creeper.png',
+        ' ../../../../../assets/stamps/winnie.png',
+        ' ../../../../../assets/stamps/copier0.jpg',
+        ' ../../../../../assets/stamps/catKun.png',
     ];
 
     readonly SCALING_MAX_VALUE: number = 300;
