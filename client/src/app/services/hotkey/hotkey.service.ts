@@ -4,6 +4,7 @@ import { ClipboardSelectionService } from '@app/services/clipboard-selection/cli
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -39,6 +40,7 @@ enum shortCutManager {
     DECREMENT_SQUARE_SIZE = 'Minus',
     CUT = 'KeyX',
     DELETE = 'Delete',
+    MAGNETISME = 'KeyM',
 }
 
 type ShortcutManager = {
@@ -61,6 +63,7 @@ export class HotkeyService {
         private rectangleSelectionService: RectangleSelectionService,
         private gridService: GridService,
         private clipboardSelectionService: ClipboardSelectionService,
+        private moveSelectionService: MoveSelectionService,
     ) {
         this.initializeShorcutManager();
         this.observeDialogService();
@@ -77,7 +80,7 @@ export class HotkeyService {
             },
             KeyG: {
                 action: () => {
-                    this.toolService.setCurrentTool(this.toolService.gridService);
+                    // this.toolService.setCurrentTool(this.toolService.gridService);
                     this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
@@ -116,6 +119,7 @@ export class HotkeyService {
 
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
+            KeyM: { action: () => (this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet) },
         };
     }
 

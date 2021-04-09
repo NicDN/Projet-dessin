@@ -1,0 +1,93 @@
+<p>Point sélectionné</p>
+<div>
+    <mat-button-toggle
+        matTooltip="{{ points[0].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[0].position)"
+        class="point"
+        [class.pointActive]="points[0].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[1].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[1].position)"
+        class="point"
+        [class.pointActive]="points[1].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[2].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[2].position)"
+        class="point"
+        [class.pointActive]="points[2].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+
+    <br />
+
+    <mat-button-toggle
+        matTooltip="{{ points[3].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[3].position)"
+        class="point"
+        [class.pointActive]="points[3].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[4].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[4].position)"
+        class="point"
+        [class.pointActive]="points[4].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[5].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[5].position)"
+        class="point"
+        [class.pointActive]="points[5].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+
+    <br />
+    <mat-button-toggle
+        matTooltip="{{ points[6].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[6].position)"
+        class="point"
+        [class.pointActive]="points[6].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[7].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[7].position)"
+        class="point"
+        [class.pointActive]="points[7].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+    <mat-button-toggle
+        matTooltip="{{ points[8].selectionTipContent }}"
+        matTooltipPosition="below"
+        (click)="toggleActivePoint(points[8].position)"
+        class="point"
+        [class.pointActive]="points[8].position === this.moveSelectionService.pointToMagnetize"
+    >
+        <fa-icon icon="circle"></fa-icon>
+    </mat-button-toggle>
+</div>
+
+<div class="lineJoin"></div>
+
+<br />

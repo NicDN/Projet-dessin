@@ -48,8 +48,7 @@ export class ToolsService {
     setCurrentTool(tool: Tool): void {
         this.ellipseSelectionService.cancelSelection();
         this.rectangleSelectionService.cancelSelection();
-
-        if (this.currentTool === this.lineService) {
+        if (this.currentTool === this.lineService || this.currentTool === this.lassoSelectionService) {
             this.lineService.clearPath();
             this.lineService.updatePreview();
         }

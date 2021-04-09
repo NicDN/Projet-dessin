@@ -46,6 +46,11 @@
         <mat-divider></mat-divider>
     </div>
 
+    <div *ngIf="selectionToolIsActive()">
+        <app-point-selector></app-point-selector>
+        <mat-divider></mat-divider>
+    </div>
+
     <div class="selection-options">
         <mat-divider></mat-divider>
         <app-selection-options></app-selection-options>

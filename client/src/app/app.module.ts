@@ -53,6 +53,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { GenericSliderComponent } from './components/tool-settings/generic-slider/generic-slider.component';
 import { GridSelectorComponent } from './components/tool-settings/grid-selector/grid-selector/grid-selector.component';
+import { PointSelectorComponent } from './components/tool-settings/point-selector/point-selector.component';
 import { SelectionSelectorComponent } from './components/tool-settings/selection-selector/selection-selector.component';
 import { SprayCanSettingsSelectorComponent } from './components/tool-settings/spray-can-settings-selector/spray-can-settings-selector.component';
 import { StampSelectorComponent } from './components/tool-settings/stamp-selector/stamp-selector/stamp-selector.component';
@@ -89,6 +90,7 @@ import { TraceTypeSelectorComponent } from './components/tool-settings/trace-typ
         GridSelectorComponent,
         TextSelectorComponent,
         StampSelectorComponent,
+        PointSelectorComponent,
         BottomSheetConfirmNewDrawingComponent,
     ],
     imports: [
