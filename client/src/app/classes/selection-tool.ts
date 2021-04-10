@@ -1,4 +1,3 @@
-import { Color } from '@app/classes/color';
 import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
@@ -7,6 +6,7 @@ import { MoveSelectionService } from '@app/services/tools/selection/move-selecti
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { SelectedPoint } from './../services/tools/selection/move-selection.service';
 
 export interface SelectionCoords {
     initialTopLeft: Vec2;
@@ -27,7 +27,6 @@ export abstract class SelectionTool extends Tool {
         super(drawingService, toolName);
     }
 
-    readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
@@ -59,21 +58,27 @@ export abstract class SelectionTool extends Tool {
 
     handleSelectionMouseDown(event: MouseEvent): void {
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
-        if (this.resizeSelectionService.selectedPointIndex === -1) {
+        if (
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.NO_POINT ||
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.CENTER
+        ) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
         }
     }
 
     onMouseMove(event: MouseEvent): void {
-        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 9 : SelectedPoint.NO_POINT;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
 
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+        if (
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
+        ) {
             this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawAll(this.drawingService.previewCtx);
@@ -279,7 +284,7 @@ export abstract class SelectionTool extends Tool {
     drawAll(ctx: CanvasRenderingContext2D): void {
         this.draw(ctx);
         this.drawPerimeter(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
-        this.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
+        this.resizeSelectionService.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -295,19 +300,6 @@ export abstract class SelectionTool extends Tool {
             this.coords.finalBottomRight.x !== this.coords.initialBottomRight.x ||
             this.coords.finalBottomRight.y !== this.coords.initialBottomRight.y
         );
-    }
-
-    private drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-        ctx.lineWidth = 1;
-        ctx.lineJoin = 'miter';
-        ctx.strokeStyle = this.boxColor.rgbValue;
-        ctx.globalAlpha = this.boxColor.opacity;
-        ctx.beginPath();
-        ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
-        ctx.stroke();
-        ctx.restore();
-        this.resizeSelectionService.drawControlPoints(ctx, begin, end);
     }
 
     selectAll(): void {

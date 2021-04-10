@@ -9,6 +9,7 @@ import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { SelectedPoint } from './../../services/tools/selection/move-selection.service';
 
 export const DEFAULT_WIDTH = 250;
 export const DEFAULT_HEIGHT = 250;
@@ -171,19 +172,21 @@ export class DrawingComponent implements AfterViewInit {
     checkIfIsAControlPoint(): string {
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
-                case 0:
-                case 3:
+                case SelectedPoint.TOP_LEFT:
+                case SelectedPoint.BOTTOM_RIGHT:
                     return this.returnTrueNwSeDiagonalCursor();
-                case 1:
-                case 2:
+                case SelectedPoint.TOP_RIGHT:
+                case SelectedPoint.BOTTOM_LEFT:
                     return this.returnTrueNeSwDiagonalCursor();
-                case 4:
-                case 5:
+
+                case SelectedPoint.TOP_MIDDLE:
+                case SelectedPoint.BOTTOM_MIDDLE:
                     return 'n-resize';
-                case 6:
-                case 7:
+                case SelectedPoint.MIDDLE_RIGHT:
+                case SelectedPoint.MIDDLE_LEFT:
                     return 'w-resize';
-                case 8:
+                case SelectedPoint.CENTER:
+                case 9:
                     return 'move';
                 default:
                     return 'pointer';

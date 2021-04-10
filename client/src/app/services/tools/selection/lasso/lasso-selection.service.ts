@@ -5,7 +5,7 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -51,8 +51,11 @@ export class LassoSelectionService extends SelectionTool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
-            this.resizeSelectionService.selectedPointIndex = -1;
+        if (
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
+        ) {
+            this.resizeSelectionService.selectedPointIndex = SelectedPoint.NO_POINT;
             return;
         }
         if (this.moveSelectionService.movingWithMouse) {
@@ -76,14 +79,17 @@ export class LassoSelectionService extends SelectionTool {
     }
 
     onMouseMove(event: MouseEvent): void {
-        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 9 : SelectedPoint.NO_POINT;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown && this.selectionExists) return;
 
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+        if (
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
+        ) {
             this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawAll(this.drawingService.previewCtx);
