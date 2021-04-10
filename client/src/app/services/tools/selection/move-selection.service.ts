@@ -62,7 +62,9 @@ export class MoveSelectionService {
 
     moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
         if (this.isUsingMagnet) {
-            this.alignToProperMagnetArrowPosition(selectionCoords, delta.x, delta.y);
+            const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
+            const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
+            this.alignToProperMagnetArrowPosition(selectionCoords, delta.x, delta.y, width, height);
         } else {
             selectionCoords.finalTopLeft.x += delta.x;
             selectionCoords.finalTopLeft.y += delta.y;
@@ -73,8 +75,9 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
-        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
+        const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
+        const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
+
         if (this.isUsingMagnet) {
             this.alignToProperMagnetMousePosition(pos, selectionCoords, width, height);
         } else {
@@ -88,10 +91,7 @@ export class MoveSelectionService {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    private alignToProperMagnetArrowPosition(selectionCoords: SelectionCoords, deltaX: number, deltaY: number): void {
-        const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
-        const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
-
+    private alignToProperMagnetArrowPosition(selectionCoords: SelectionCoords, deltaX: number, deltaY: number, width: number, height: number): void {
         let trueDeltaX = deltaX > 0 ? this.gridService.squareSize : -this.gridService.squareSize;
         if (deltaX === 0) trueDeltaX = 0;
 
@@ -187,7 +187,6 @@ export class MoveSelectionService {
 
         const magnetizedTopOffset = this.getMagnetizedOffsetPosition(moveOffsetTop);
         const magnetizedBottomOffset = this.getMagnetizedOffsetPosition(moveOffsetBottom);
-        this.pointToMagnetize = this.switchSelectedPointsMirror(selectionCoords, width, height);
 
         switch (this.pointToMagnetize) {
             case SelectedPoint.TOP_LEFT:
@@ -249,22 +248,6 @@ export class MoveSelectionService {
                 selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
                 break;
         }
-    }
-
-    switchSelectedPointsMirror(selectionCoords: SelectionCoords, width: number, height: number): number {
-        this.pointToMagnetize = SelectedPoint.TOP_LEFT;
-        if (selectionCoords.finalTopLeft.x + width < selectionCoords.finalTopLeft.x && this.pointToMagnetize === SelectedPoint.TOP_LEFT)
-            this.pointToMagnetize = SelectedPoint.TOP_RIGHT;
-
-        else if (selectionCoords.finalTopLeft.y + height < selectionCoords.finalTopLeft.y && this.pointToMagnetize === SelectedPoint.TOP_LEFT)
-            this.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
-
-        else if (
-            selectionCoords.finalTopLeft.y + width / 2 < selectionCoords.finalBottomRight.y - width / 2 &&
-            this.pointToMagnetize === SelectedPoint.TOP_MIDDLE
-        )
-            this.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
-        return this.pointToMagnetize;
     }
 
     private finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): Vec2 {

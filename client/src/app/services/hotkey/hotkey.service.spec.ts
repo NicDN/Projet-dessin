@@ -301,7 +301,6 @@ describe('HotkeyService', () => {
         '#handleIncrementingSquareSize should call appropriate function to increment the squareSize' + 'if it is less then the maximum square size',
         () => {
             service['handleIncrementingSquareSize']();
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
             expect(gridServiceSpyObj.incrementSquareSize).toHaveBeenCalled();
             expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
         },
@@ -311,7 +310,6 @@ describe('HotkeyService', () => {
         '#handleDecrementingSquareSize should call appropriate function to decrement the squareSize' + 'if it is more then the minimum square size',
         () => {
             service['handleDecrementingSquareSize']();
-            expect(toolsServiceSpyObj.setCurrentTool).toHaveBeenCalledWith(toolsServiceSpyObj.gridService);
             expect(gridServiceSpyObj.decrementSquareSize).toHaveBeenCalled();
             expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
         },
