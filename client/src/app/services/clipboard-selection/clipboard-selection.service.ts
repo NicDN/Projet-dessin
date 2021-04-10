@@ -35,7 +35,6 @@ export class ClipboardSelectionService {
             selectionPathData: this.toolsService.lineService.pathData,
             firstPointOffSet: this.loadFirstPointOffSet(),
         };
-        console.log(this.clipBoardData.selectionCoords.finalBottomRight.x);
     }
 
     paste(): void {
@@ -46,7 +45,9 @@ export class ClipboardSelectionService {
         const height = this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y;
         this.setFinalCoordsOfStoredImage(width, height);
 
-        this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
+        if (this.toolsService.lineService !== undefined) {
+            this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
+        }
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
 
         if (this.clipBoardData.selectionType === SelectionType.Lasso) {
@@ -106,7 +107,7 @@ export class ClipboardSelectionService {
 
     deleteCurrentSelection(): void {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-
+        console.log('allo');
         (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x,
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y,
