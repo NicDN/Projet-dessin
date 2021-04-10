@@ -74,7 +74,6 @@ export class AttributesPanelComponent implements OnInit {
     }
 
     needsTraceThickness(): boolean {
-        // TODO: refactor the tools to remove the if condition
         if (this.currentTool instanceof SprayCanService || this.currentTool instanceof FillDripService || this.currentTool instanceof TextService) {
             return false;
         }
