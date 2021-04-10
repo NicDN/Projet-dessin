@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-
 import { FillDripService } from './fill-drip.service';
 
-describe('FillDripService', () => {
+xdescribe('FillDripService', () => {
     let service: FillDripService;
 
     beforeEach(() => {

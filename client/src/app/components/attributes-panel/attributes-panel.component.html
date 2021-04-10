@@ -41,12 +41,17 @@
         <app-eye-dropper></app-eye-dropper>
     </div>
 
+    <div *ngIf="this.currentTool === this.toolsService.fillDripService">
+        <app-generic-slider [sliderSetting]="fillDripSetting"></app-generic-slider>
+        <mat-divider></mat-divider>
+    </div>
+
     <div *ngIf="selectionToolIsActive()">
         <app-selection-selector></app-selection-selector>
         <mat-divider></mat-divider>
     </div>
 
-    <div *ngIf="selectionToolIsActive()">
+    <div *ngIf="selectionToolIsActive() && this.moveSelectionService.isUsingMagnet">
         <app-point-selector></app-point-selector>
         <mat-divider></mat-divider>
     </div>

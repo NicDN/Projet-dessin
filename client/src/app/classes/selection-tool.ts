@@ -58,7 +58,7 @@ export abstract class SelectionTool extends Tool {
     }
 
     handleSelectionMouseDown(event: MouseEvent): void {
-        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords);
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
         if (this.resizeSelectionService.selectedPointIndex === -1) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
@@ -66,9 +66,13 @@ export abstract class SelectionTool extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
+
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
+
         if (this.resizeSelectionService.selectedPointIndex !== -1) {
             this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -116,12 +120,28 @@ export abstract class SelectionTool extends Tool {
 
     onKeyDown(event: KeyboardEvent): void {
         if (event.code === 'Escape') this.cancelSelection();
-        if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyDown);
+        if (event.code === 'ShiftLeft') {
+            if (!this.selectionExists) {
+                this.handleLeftShift(event, this.shapeService.onKeyDown);
+            } else {
+                this.resizeSelectionService.shiftKeyIsDown = true;
+            }
+        }
         if (this.selectionExists) this.handleMovingArrowsKeyDown(event);
     }
 
     onKeyUp(event: KeyboardEvent): void {
-        if (event.code === 'ShiftLeft' && !this.selectionExists) this.handleLeftShift(event, this.shapeService.onKeyUp);
+        if (event.code === 'ShiftLeft') {
+            if (!this.selectionExists) {
+                this.handleLeftShift(event, this.shapeService.onKeyUp);
+            } else {
+                this.resizeSelectionService.shiftKeyIsDown = false;
+                this.resizeSelectionService.resizeSelection(this.resizeSelectionService.lastMousePos, this.coords);
+                this.drawingService.clearCanvas(this.drawingService.previewCtx);
+                this.drawAll(this.drawingService.previewCtx);
+            }
+        }
+
         this.handleMovingArrowsKeyUp(event);
     }
 
@@ -265,11 +285,16 @@ export abstract class SelectionTool extends Tool {
     draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
-        if (
-            ctx === this.drawingService.baseCtx &&
-            (this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x || this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y)
-        )
-            this.undoRedoService.addCommand(selectionCommand);
+        if (ctx === this.drawingService.baseCtx && this.selectionHasChanged()) this.undoRedoService.addCommand(selectionCommand);
+    }
+
+    selectionHasChanged(): boolean {
+        return (
+            this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x ||
+            this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y ||
+            this.coords.finalBottomRight.x !== this.coords.initialBottomRight.x ||
+            this.coords.finalBottomRight.y !== this.coords.initialBottomRight.y
+        );
     }
 
     private drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
@@ -294,7 +319,7 @@ export abstract class SelectionTool extends Tool {
         } as MouseEvent);
     }
 
-    protected isInsideSelection(point: Vec2): boolean {
+    isInsideSelection(point: Vec2): boolean {
         const minX = Math.min(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
@@ -331,4 +356,5 @@ export abstract class SelectionTool extends Tool {
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
 
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
+    // tslint:disable-next-line: max-file-line-count
 }

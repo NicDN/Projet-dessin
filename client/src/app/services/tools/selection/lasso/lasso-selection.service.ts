@@ -76,6 +76,9 @@ export class LassoSelectionService extends SelectionTool {
     }
 
     onMouseMove(event: MouseEvent): void {
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
+
         // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown && this.selectionExists) return;
@@ -92,8 +95,6 @@ export class LassoSelectionService extends SelectionTool {
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
-        console.clear();
-        console.table(this.lineService.pathData);
         this.lineService.handleMouseMove(event);
 
         this.updatePerimeter();

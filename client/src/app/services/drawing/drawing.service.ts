@@ -93,7 +93,7 @@ export class DrawingService {
         this.sendBaseLineCommand(image);
     }
 
-    private async confirmReload(): Promise<boolean> {
+    async confirmReload(): Promise<boolean> {
         let confirmReload = false;
 
         this.bottomSheetRef = this.bottomSheet.open(BottomSheetConfirmNewDrawingComponent);

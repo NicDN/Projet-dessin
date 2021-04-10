@@ -7,6 +7,7 @@ import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/e
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
 interface ClipBoardData {
     clipboardImage: ImageData;
@@ -23,7 +24,7 @@ export class ClipboardSelectionService {
     clipBoardData: ClipBoardData;
     private readonly outsideDrawingZoneCoords: number = 1000000;
     private readonly pasteOffSet: number = 10;
-    constructor(private toolsService: ToolsService, private drawingService: DrawingService) {}
+    constructor(private toolsService: ToolsService, private drawingService: DrawingService, private undoRedoService: UndoRedoService) {}
 
     copy(): void {
         if (!this.canUseClipboardService()) return;
@@ -41,8 +42,9 @@ export class ClipboardSelectionService {
         if (this.clipBoardData === undefined) return;
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) (this.toolsService.currentTool as SelectionTool).cancelSelection();
         this.switchToStoredClipboardImageSelectionTool();
-        const width = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.x - this.clipBoardData.selectionCoords.finalTopLeft.x);
-        const height = Math.abs(this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y);
+        const width = this.clipBoardData.selectionCoords.finalBottomRight.x - this.clipBoardData.selectionCoords.finalTopLeft.x;
+        const height = this.clipBoardData.selectionCoords.finalBottomRight.y - this.clipBoardData.selectionCoords.finalTopLeft.y;
+        this.setFinalCoordsOfStoredImage(width, height);
 
         this.toolsService.lineService.pathData = this.clipBoardData.selectionPathData;
         (this.toolsService.currentTool as SelectionTool).data = this.clipBoardData.clipboardImage;
@@ -51,23 +53,9 @@ export class ClipboardSelectionService {
             (this.toolsService.currentTool as LassoSelectionService).firstPointOffset = this.clipBoardData.firstPointOffSet;
         }
 
-        (this.toolsService.currentTool as SelectionTool).selectionExists = true;
-        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft = {
-            x: this.outsideDrawingZoneCoords,
-            y: this.outsideDrawingZoneCoords,
-        };
-        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight = {
-            x: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.width,
-            y: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.height,
-        };
-        (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft = {
-            x: this.pasteOffSet,
-            y: this.pasteOffSet,
-        };
-        (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight = {
-            x: this.pasteOffSet + width,
-            y: this.pasteOffSet + height,
-        };
+        this.setAsideInitialCoords();
+        this.undoRedoService.disableUndoRedo();
+
         (this.toolsService.currentTool as SelectionTool).drawAll(this.drawingService.previewCtx);
     }
 
@@ -78,20 +66,61 @@ export class ClipboardSelectionService {
 
     delete(): void {
         if (!this.canUseClipboardService()) return;
-        this.drawingService.fillWithWhite(this.drawingService.previewCtx);
 
-        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.x--;
-        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.y--;
-        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.x--;
-        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.y--;
+        this.deleteCurrentSelection();
+        this.moveInitialCoordsToCountAsAction();
+
+        (this.toolsService.currentTool as SelectionTool).selectionExists = true;
+        (this.toolsService.currentTool as SelectionTool).cancelSelection();
+
+        if (this.toolsService.currentTool === this.toolsService.lassoSelectionService) {
+            this.toolsService.lineService.clearPath();
+            this.toolsService.lineService.isShiftDown = false;
+        }
+    }
+
+    setAsideInitialCoords(): void {
+        (this.toolsService.currentTool as SelectionTool).selectionExists = true;
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft = {
+            x: this.outsideDrawingZoneCoords,
+            y: this.outsideDrawingZoneCoords,
+        };
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight = {
+            x: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.width,
+            y: this.outsideDrawingZoneCoords + this.clipBoardData.clipboardImage.height,
+        };
+    }
+
+    setFinalCoordsOfStoredImage(width: number, height: number): void {
+        const extraPasteOffSetX = width > 0 ? 0 : Math.abs(width);
+        const extraPasteOffSetY = height > 0 ? 0 : Math.abs(height);
+        (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft = {
+            x: this.pasteOffSet + extraPasteOffSetX,
+            y: this.pasteOffSet + extraPasteOffSetY,
+        };
+        (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight = {
+            x: this.pasteOffSet + extraPasteOffSetX + width,
+            y: this.pasteOffSet + extraPasteOffSetY + height,
+        };
+    }
+
+    deleteCurrentSelection(): void {
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+
         (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x,
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y,
             (this.toolsService.currentTool as SelectionTool).data.width,
             (this.toolsService.currentTool as SelectionTool).data.height,
         );
+    }
 
-        (this.toolsService.currentTool as SelectionTool).cancelSelection();
+    // In order for a selection to be counted as a selection, final coords must be different from initial coords
+    moveInitialCoordsToCountAsAction(): void {
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.x--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialTopLeft.y--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.x--;
+        (this.toolsService.currentTool as SelectionTool).coords.initialBottomRight.y--;
     }
 
     private getSelectionType(): SelectionType {
