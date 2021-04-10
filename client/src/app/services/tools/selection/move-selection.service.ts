@@ -187,6 +187,7 @@ export class MoveSelectionService {
 
         const magnetizedTopOffset = this.getMagnetizedOffsetPosition(moveOffsetTop);
         const magnetizedBottomOffset = this.getMagnetizedOffsetPosition(moveOffsetBottom);
+        this.pointToMagnetize = this.switchSelectedPointsMirror(selectionCoords, width, height);
 
         switch (this.pointToMagnetize) {
             case SelectedPoint.TOP_LEFT:
@@ -250,10 +251,25 @@ export class MoveSelectionService {
         }
     }
 
+    switchSelectedPointsMirror(selectionCoords: SelectionCoords, width: number, height: number): number {
+        this.pointToMagnetize = SelectedPoint.TOP_LEFT;
+        if (selectionCoords.finalTopLeft.x + width < selectionCoords.finalTopLeft.x && this.pointToMagnetize === SelectedPoint.TOP_LEFT)
+            this.pointToMagnetize = SelectedPoint.TOP_RIGHT;
+
+        else if (selectionCoords.finalTopLeft.y + height < selectionCoords.finalTopLeft.y && this.pointToMagnetize === SelectedPoint.TOP_LEFT)
+            this.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
+
+        else if (
+            selectionCoords.finalTopLeft.y + width / 2 < selectionCoords.finalBottomRight.y - width / 2 &&
+            this.pointToMagnetize === SelectedPoint.TOP_MIDDLE
+        )
+            this.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
+        return this.pointToMagnetize;
+    }
+
     private finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): Vec2 {
         if (magPosX) pos = this.magnetizeX(pos);
         if (magPosY) pos = this.magnetizeY(pos);
-
         return pos;
     }
 

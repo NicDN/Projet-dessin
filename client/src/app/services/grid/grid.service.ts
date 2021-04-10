@@ -8,7 +8,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class GridService extends Tool {
     readonly MIN_SQUARE_SIZE: number = 20;
-    readonly MAX_SQUARE_SIZE: number = 40;
+    readonly MAX_SQUARE_SIZE: number = 80;
 
     readonly MIN_OPACITY_PERCENTAGE: number = 20;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
