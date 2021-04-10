@@ -9,13 +9,14 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { RectangleSelectionService } from './rectangle-selection.service';
 
 // tslint:disable: no-string-literal
-xdescribe('RectangleSelectionService', () => {
+describe('RectangleSelectionService', () => {
     let rectangleSelectionService: RectangleSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let canvasTestHelper: CanvasTestHelper;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
+    const IMAGE_DATA_SIZE = 20;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -54,7 +55,7 @@ xdescribe('RectangleSelectionService', () => {
 
         selectionProperties = {
             selectionCtx: drawingServiceSpyObj.baseCtx,
-            imageData: {} as ImageData,
+            imageData: drawingServiceSpyObj.baseCtx.getImageData(0, 0, IMAGE_DATA_SIZE, IMAGE_DATA_SIZE),
             topLeft: TOP_LEFT_SELECTION,
             bottomRight: BOTTOM_RIGHT_SELECTION,
             finalTopLeft: TOP_LEFT_SELECTION,
@@ -108,7 +109,8 @@ xdescribe('RectangleSelectionService', () => {
     });
 
     it('#drawSelection should put the image data at the final coords', () => {
-        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'putImageData');
+        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'translate');
+        debugger;
         rectangleSelectionService.drawSelection(selectionProperties);
         expect(putImageDataSpy).toHaveBeenCalled();
     });
