@@ -129,6 +129,10 @@ export abstract class SelectionTool extends Tool {
             if (!this.selectionExists) {
                 this.handleLeftShift(event, this.shapeService.onKeyDown);
             } else {
+                this.resizeSelectionService.lastDimensions = {
+                    x: Math.abs(this.coords.finalBottomRight.x - this.coords.finalTopLeft.x),
+                    y: Math.abs(this.coords.finalBottomRight.y - this.coords.finalTopLeft.y),
+                };
                 this.resizeSelectionService.shiftKeyIsDown = true;
             }
         }

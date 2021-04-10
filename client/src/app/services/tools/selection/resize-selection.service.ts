@@ -2,14 +2,12 @@ import { Injectable } from '@angular/core';
 import { Color } from '@app/classes/color';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { SelectedPoint } from './move-selection.service';
 // tslint:disable: no-magic-numbers
 @Injectable({
     providedIn: 'root',
 })
 export class ResizeSelectionService {
-    constructor(protected shapeService: ShapeService) {}
     private readonly selectingPointOffSet: number = 13;
     readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
 
@@ -17,7 +15,8 @@ export class ResizeSelectionService {
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     shiftKeyIsDown: boolean = false;
-    lastMousePos: Vec2;
+    lastMousePos: Vec2 = { x: 0, y: 0 };
+    lastDimensions: Vec2 = { x: 0, y: 0 };
 
     readonly controlPointWidth: number = 6;
     readonly halfControlPointWidth: number = this.controlPointWidth / 2;
@@ -71,8 +70,6 @@ export class ResizeSelectionService {
                 this.previewSelectedPointIndex = index;
             }
         });
-        console.clear();
-        console.log(this.previewSelectedPointIndex);
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
@@ -140,6 +137,12 @@ export class ResizeSelectionService {
     }
 
     findDistance(pos: Vec2, offSetX: number, height: number, width: number): Vec2 {
+        if (height === 0) {
+            height = this.lastDimensions.y;
+        }
+        if (width === 0) {
+            width = this.lastDimensions.x;
+        }
         const distX = Math.abs(pos.x - offSetX);
         const distY = distX * (height / width);
         return { x: distX, y: distY };

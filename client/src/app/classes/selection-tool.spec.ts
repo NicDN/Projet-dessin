@@ -51,7 +51,7 @@ xdescribe('SelectionTool', () => {
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
     const LEFT_BUTTON_PRESSED = 1;
     const NO_BUTTON_PRESSED = 0;
-    const RGB_MAX = 255;
+    // const RGB_MAX = 255;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
@@ -575,36 +575,6 @@ xdescribe('SelectionTool', () => {
         expect(undoRedoSpyObj.addCommand).not.toHaveBeenCalled();
     });
 
-    it('#drawBox should draw a blue hollow rectangle and draw the controlPoints', () => {
-        const drawControlPointsSpy = spyOn<any>(selectionTool, 'drawControlPoints');
-
-        selectionTool['drawBox'](drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
-        const borderPoint: Vec2 = { x: 0, y: 0 };
-        const borderPoint2: Vec2 = { x: 20, y: 20 };
-        const centerPoint: Vec2 = { x: 10, y: 10 };
-
-        const imageDataBorder: ImageData = previewCtxStub.getImageData(borderPoint.x, borderPoint.y, 1, 1);
-        expect(imageDataBorder.data[2]).toEqual(RGB_MAX);
-        const imageDataBorder2: ImageData = previewCtxStub.getImageData(borderPoint2.x, borderPoint2.y, 1, 1);
-        expect(imageDataBorder2.data[2]).toEqual(RGB_MAX);
-        const imageDataCenter: ImageData = previewCtxStub.getImageData(centerPoint.x, centerPoint.y, 1, 1);
-        expect(imageDataCenter.data).toEqual(Uint8ClampedArray.of(0, 0, 0, 0));
-        expect(drawControlPointsSpy).toHaveBeenCalled();
-    });
-
-    // it('#drawControlPoints should get all the control points data and draw a rectangle for each one', () => {
-    //     const NUMBER_OF_CONTROL_POINTS = 3;
-    //     const getControlPointsCoordsSpy = spyOn<any>(selectionTool, 'getControlPointsCoords').and.returnValue([{}
-    // as Vec2, {} as Vec2, {} as Vec2]);
-    //     const rectSpy = spyOn(drawingServiceSpyObj.previewCtx, 'rect');
-
-    //     selectionTool['drawControlPoints'](drawingServiceSpyObj.previewCtx, TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-
-    //     expect(getControlPointsCoordsSpy).toHaveBeenCalledWith(TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS);
-    //     expect(rectSpy).toHaveBeenCalledTimes(NUMBER_OF_CONTROL_POINTS);
-    // });
-
     it('#selectAll should execute a mouseDown followed by a mouseUp to simulate the user selecting the whole canvas', () => {
         const onMouseDownSpy = spyOn(selectionTool, 'onMouseDown');
         const onMouseUpSpy = spyOn(selectionTool, 'onMouseUp');
@@ -634,10 +604,7 @@ xdescribe('SelectionTool', () => {
         expect(moveSelectionServiceSpyObj.mouseMoveOffset).toEqual({ x: MOUSE_OFFSET, y: MOUSE_OFFSET });
     });
 
-    // it('#getControlPointsCoords should return an array of 8 coords representing the control points positions', () => {
-    //     const NO_OF_EXPECTED_POINTS = 8;
-    //     expect(selectionTool['getControlPointsCoords'](TOP_LEFT_CORNER_COORDS, BOTTOM_RIGHT_CORNER_COORDS).length).toEqual(NO_OF_EXPECTED_POINTS);
-    // });
+
 
     it('#loadUpProperties should create a SelectionProperties object with the right properties', () => {
         const TEST_DATA = drawingServiceSpyObj.previewCtx.getImageData(
