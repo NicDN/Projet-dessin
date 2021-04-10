@@ -20,7 +20,7 @@ import { UndoRedoService } from '../undo-redo/undo-redo.service';
 import { ClipboardSelectionService } from './clipboard-selection.service';
 
 // tslint:disable: max-file-line-count
-fdescribe('ClipboardService', () => {
+describe('ClipboardService', () => {
     let service: ClipboardSelectionService;
     let toolServiceSpyObj: jasmine.SpyObj<ToolsService>;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -30,6 +30,7 @@ fdescribe('ClipboardService', () => {
     let resizeSelectionServiceSpyObj: jasmine.SpyObj<ResizeSelectionService>;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
+    let lineServiceSpyObj: jasmine.SpyObj<LineService>;
 
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
@@ -60,6 +61,7 @@ fdescribe('ClipboardService', () => {
         rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', ['']);
         colorServiceSpyObj = jasmine.createSpyObj('ColorService', ['']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['disableUndoRedo']);
+        lineServiceSpyObj = jasmine.createSpyObj('LineService', ['clearPath']);
         moveSelectionService = jasmine.createSpyObj('MoveSelectionService', ['']);
         TestBed.configureTestingModule({
             providers: [
@@ -265,10 +267,19 @@ fdescribe('ClipboardService', () => {
     });
 
     it('#delete if current tool is a lasso service, should call the clear path and set isShift down to false of lineservice', () => {
-        service['toolsService'].currentTool = lassoSelectionServiceStub;
-        const clearPathSpy = spyOn<any>(lassoSelectionServiceStub['lineService'], 'clearPath').and.stub();
+        spyOn(service, 'canUseClipboardService').and.returnValue(true);
+        spyOn(service, 'deleteCurrentSelection').and.returnValue();
+        spyOn(service, 'moveInitialCoordsToCountAsAction').and.returnValue();
+
+        let localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
+            lassoSelectionService: lassoSelectionServiceStub,
+            lineService: lineServiceSpyObj,
+            currentTool: lassoSelectionServiceStub,
+        });
+        service['toolsService'] = localSpyObjectToolsService;
+        spyOn(service['toolsService'].lassoSelectionService, 'cancelSelection').and.returnValue();
         service.delete();
-        expect(clearPathSpy).toHaveBeenCalled();
+        expect(lineServiceSpyObj.clearPath).toHaveBeenCalled();
     });
 
     it('#delete should set all the pixels of the image to white', () => {
@@ -541,10 +552,13 @@ fdescribe('ClipboardService', () => {
     });
 
     it('#loadFirstPointOffSet should change the firstPointOffSet of selectionService ', () => {
-        service['toolsService'].lassoSelectionService = lassoSelectionServiceStub;
-        service['toolsService'].currentTool = lassoSelectionServiceStub;
-        service['toolsService'].lassoSelectionService.firstPointOffset.x = 1;
-        service['toolsService'].lassoSelectionService.firstPointOffset.y = 1;
+        lassoSelectionServiceStub.firstPointOffset = { x: 1, y: 1 };
+        let localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
+            lassoSelectionService: lassoSelectionServiceStub,
+            lineService: lineServiceSpyObj,
+            currentTool: lassoSelectionServiceStub,
+        });
+        service['toolsService'] = localSpyObjectToolsService;
         let result = service['loadFirstPointOffSet']();
         expect(result).toEqual({ x: 1, y: 1 });
     });
