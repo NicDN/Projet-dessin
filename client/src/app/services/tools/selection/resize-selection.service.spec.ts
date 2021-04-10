@@ -5,7 +5,7 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { SelectedPoint } from './move-selection.service';
 import { ResizeSelectionService } from './resize-selection.service';
 
-fdescribe('ResizeSelectionService', () => {
+describe('ResizeSelectionService', () => {
     let service: ResizeSelectionService;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
 
