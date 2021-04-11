@@ -68,7 +68,6 @@ export class AttributesPanelComponent implements OnInit {
             },
             action: (value: number) => {
                 (this.currentTool as FillDripService).percentage = value / this.PERCENTAGE;
-                console.log((this.currentTool as FillDripService).percentage);
             },
         };
     }

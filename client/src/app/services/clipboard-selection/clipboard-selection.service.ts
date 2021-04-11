@@ -107,7 +107,6 @@ export class ClipboardSelectionService {
 
     deleteCurrentSelection(): void {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
-        console.log('allo');
         (this.toolsService.currentTool as SelectionTool).data = this.drawingService.previewCtx.getImageData(
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x,
             (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y,
