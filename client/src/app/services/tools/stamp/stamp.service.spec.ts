@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { StampPropreties } from '@app/classes/commands/stamp-command/stamp-command';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-
 import { StampService } from './stamp.service';
 
 // tslint:disable: no-string-literal no-any

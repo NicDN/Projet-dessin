@@ -14,6 +14,7 @@ export enum SelectedPoint {
     BOTTOM_LEFT = 6,
     BOTTOM_MIDDLE = 7,
     BOTTOM_RIGHT = 8,
+    NO_POINT = -1,
 }
 
 @Injectable({

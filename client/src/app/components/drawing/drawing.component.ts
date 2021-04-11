@@ -4,6 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';
@@ -29,7 +30,7 @@ export class DrawingComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) gridCanvas: ElementRef<HTMLCanvasElement>;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-
+    private readonly OUTSIDE_SELECTION_ZONE: number = 9;
     private canDraw: boolean = true;
     private aDialogIsNotOpened: boolean = true;
 
@@ -167,7 +168,7 @@ export class DrawingComponent implements AfterViewInit {
             return 'not-allowed';
         }
 
-        if (this.toolsService.currentTool instanceof TextService) {
+        if (this.toolsService.currentTool === this.toolsService.textService) {
             if (!(this.toolsService.currentTool as TextService).isWriting) return 'text';
             else return 'pointer';
         }
@@ -182,19 +183,21 @@ export class DrawingComponent implements AfterViewInit {
     checkIfIsAControlPoint(): string {
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
-                case 0:
-                case 3:
-                    return this.returnTrueNwSeDiagonalCursor();
-                case 1:
-                case 2:
-                    return this.returnTrueNeSwDiagonalCursor();
-                case 4:
-                case 5:
+                case SelectedPoint.TOP_LEFT:
+                case SelectedPoint.BOTTOM_RIGHT:
+                    return this.returnTrueFirstDiagonalCursor();
+                case SelectedPoint.TOP_RIGHT:
+                case SelectedPoint.BOTTOM_LEFT:
+                    return this.returnTrueSecondDiagonalCursor();
+
+                case SelectedPoint.TOP_MIDDLE:
+                case SelectedPoint.BOTTOM_MIDDLE:
                     return 'n-resize';
-                case 6:
-                case 7:
+                case SelectedPoint.MIDDLE_RIGHT:
+                case SelectedPoint.MIDDLE_LEFT:
                     return 'w-resize';
-                case 8:
+                case SelectedPoint.CENTER:
+                case this.OUTSIDE_SELECTION_ZONE:
                     return 'move';
                 default:
                     return 'pointer';
@@ -203,34 +206,34 @@ export class DrawingComponent implements AfterViewInit {
         return 'pointer';
     }
 
-    private returnTrueNwSeDiagonalCursor(): string {
+    private returnTrueFirstDiagonalCursor(): string {
         if (!this.xSelectionIsFlipped()) {
             if (!this.ySelectionIsFlipped()) {
-                return 'ne-resize';
-            } else {
                 return 'nw-resize';
+            } else {
+                return 'ne-resize';
             }
         } else {
             if (!this.ySelectionIsFlipped()) {
-                return 'nw-resize';
-            } else {
                 return 'ne-resize';
+            } else {
+                return 'nw-resize';
             }
         }
     }
 
-    private returnTrueNeSwDiagonalCursor(): string {
+    private returnTrueSecondDiagonalCursor(): string {
         if (!this.xSelectionIsFlipped()) {
             if (!this.ySelectionIsFlipped()) {
-                return 'nw-resize';
-            } else {
                 return 'ne-resize';
+            } else {
+                return 'nw-resize';
             }
         } else {
             if (!this.ySelectionIsFlipped()) {
-                return 'ne-resize';
-            } else {
                 return 'nw-resize';
+            } else {
+                return 'ne-resize';
             }
         }
     }
@@ -246,7 +249,7 @@ export class DrawingComponent implements AfterViewInit {
     ySelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
-                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y >
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y <
             0
         );
     }
