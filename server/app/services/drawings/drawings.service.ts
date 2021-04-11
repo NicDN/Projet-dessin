@@ -26,26 +26,25 @@ export class DrawingsService {
     }
 
     async storeDrawing(drawingForm: DrawingForm): Promise<void> {
-        if (this.validateDrawing(drawingForm)) {
-            const drawingData: DrawingData = { name: drawingForm.name, tags: drawingForm.tags };
-            await this.collection
-                .insertOne(drawingData)
-                .then(async (data) => {
-                    drawingForm.id = data.insertedId.toString();
-                    await this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData).catch(() => {
-                        throw new Error('FAILED_TO_SAVE_DRAWING');
-                    });
-                })
-                .catch((error: Error) => {
-                    if (error.message === 'FAILED_TO_SAVE_DRAWING') {
-                        throw new Error('FAILED_TO_SAVE_DRAWING');
-                    } else {
-                        throw new Error('DATABASE_ERROR');
-                    }
-                });
-        } else {
+        if (!this.validateDrawing(drawingForm)) {
             throw new Error('INVALID_DRAWING');
         }
+        const drawingData: DrawingData = { name: drawingForm.name, tags: drawingForm.tags };
+        await this.collection
+            .insertOne(drawingData)
+            .then(async (data) => {
+                drawingForm.id = data.insertedId.toString();
+                await this.writeFile(`${this.DRAWINGS_DIRECTORY}/` + drawingForm.id, drawingForm.drawingData).catch(() => {
+                    throw new Error('FAILED_TO_SAVE_DRAWING');
+                });
+            })
+            .catch((error: Error) => {
+                if (error.message === 'FAILED_TO_SAVE_DRAWING') {
+                    throw new Error('FAILED_TO_SAVE_DRAWING');
+                } else {
+                    throw new Error('DATABASE_ERROR');
+                }
+            });
     }
 
     async getDrawings(tags: string[], index: number): Promise<DrawingForm[]> {
