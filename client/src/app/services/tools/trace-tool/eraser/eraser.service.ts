@@ -26,7 +26,7 @@ export class EraserService extends PencilService {
         this.undoRedoService.addCommand(eraserCommand);
     }
 
-    drawLine(ctx: CanvasRenderingContext2D, path: Vec2[]): void {
+    drawLine(): void {
         const eraserCommand: TraceToolCommand = new TraceToolCommand(this.loadUpEraserPropreties(this.drawingService.baseCtx, this.pathData), this);
         eraserCommand.execute();
     }

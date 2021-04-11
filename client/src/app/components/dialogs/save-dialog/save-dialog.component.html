@@ -22,7 +22,7 @@
                 </mat-chip>
                 <input #tagInput
                     pattern="[a-zA-Z ]*"
-                    placeholder="Ajoutez des étiquettes"
+                    placeholder="Ajoutez des étiquettes (Touche Enter)"
                     type="text"
                     [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
@@ -44,7 +44,7 @@
             <p>Règles pour avoir une étiquette valide:</p>
             <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum</mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum</mat-list-item>
-            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Doit contenir uniquement des lettres</mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Doit contenir uniquement des lettres (Espaces acceptées)</mat-list-item>
             <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée</mat-list-item>
         </mat-list>
     </div>

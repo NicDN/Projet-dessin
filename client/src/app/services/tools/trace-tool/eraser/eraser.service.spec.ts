@@ -168,7 +168,7 @@ describe('EraserService', () => {
     it('#drawLine should load propreties', () => {
         const loadUpSpy = spyOn<any>(service, 'loadUpEraserPropreties').and.returnValue(drawingToolPropretiesStub);
         drawingToolPropretiesStub.drawingPath = pathArrayStub;
-        service.drawLine(drawingToolPropretiesStub.drawingContext, drawingToolPropretiesStub.drawingPath);
+        service.drawLine();
 
         expect(loadUpSpy).toHaveBeenCalled();
     });
