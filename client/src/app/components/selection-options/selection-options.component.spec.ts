@@ -83,16 +83,6 @@
         expect(component).toBeTruthy();
     });
 
-    it('#selectionIsActive should return false if there are no selection in process', () => {
-        clipboardSelectionServiceSpyObj.canUseClipboardService.and.returnValue(false);
-        expect(component.selectionIsActive()).toBeFalse();
-    });
-
-    it('#selectionIsActive should return true if there is a selection in process', () => {
-        clipboardSelectionServiceSpyObj.canUseClipboardService.and.returnValue(true);
-        expect(component.selectionIsActive()).toBeTrue();
-    });
-
     it('#selectAll should change the current tool to rectangleSelectionService', () => {
         component.selectAll();
         expect(toolServiceSpyObj.setCurrentTool).toHaveBeenCalled();

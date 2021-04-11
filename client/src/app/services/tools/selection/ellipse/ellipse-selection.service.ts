@@ -7,14 +7,11 @@ import { MoveSelectionService } from '@app/services/tools/selection/move-selecti
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { Subscription } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class EllipseSelectionService extends SelectionTool {
-    subscription: Subscription;
-
     constructor(
         drawingService: DrawingService,
         rectangleDrawingService: RectangleDrawingService,
