@@ -110,7 +110,6 @@ describe('RectangleSelectionService', () => {
 
     it('#drawSelection should put the image data at the final coords', () => {
         const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'translate');
-        debugger;
         rectangleSelectionService.drawSelection(selectionProperties);
         expect(putImageDataSpy).toHaveBeenCalled();
     });

@@ -64,10 +64,10 @@ export class AttributesPanelComponent implements OnInit {
             min: 0,
             max: 100,
             getAttribute: () => {
-                return Math.round((this.currentTool as FillDripService).percentage * this.PERCENTAGE);
+                return Math.round((this.currentTool as FillDripService).acceptancePercentage * this.PERCENTAGE);
             },
             action: (value: number) => {
-                (this.currentTool as FillDripService).percentage = value / this.PERCENTAGE;
+                (this.currentTool as FillDripService).acceptancePercentage = value / this.PERCENTAGE;
             },
         };
     }

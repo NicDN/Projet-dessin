@@ -5,8 +5,11 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { SelectedPoint } from './move-selection.service';
 import { ResizeSelectionService } from './resize-selection.service';
 
+// tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('ResizeSelectionService', () => {
     let service: ResizeSelectionService;
+    // tslint:disable-next-line: prefer-const
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
@@ -18,6 +21,7 @@ describe('ResizeSelectionService', () => {
     const widthStub = 100;
     const heightStub = 100;
     const expectedResult = 90;
+    const expectedCoords = 100;
 
     const offSetXStub = 10;
 
@@ -35,7 +39,7 @@ describe('ResizeSelectionService', () => {
         nativeElement: previewCanvasMock,
     };
 
-    let previewCtxStub = previewCanvasRef.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+    const previewCtxStub = previewCanvasRef.nativeElement.getContext('2d') as CanvasRenderingContext2D;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -94,59 +98,59 @@ describe('ResizeSelectionService', () => {
     it('#resizeSelection should resizeCoords if TOP_LEFT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.TOP_LEFT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalTopLeft.y).toEqual(100);
-        expect(coordsStub.finalTopLeft.x).toEqual(100);
+        expect(coordsStub.finalTopLeft.y).toEqual(expectedCoords);
+        expect(coordsStub.finalTopLeft.x).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if TOP_MIDDLE has been selected', () => {
         service.selectedPointIndex = SelectedPoint.TOP_MIDDLE;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalTopLeft.y).toEqual(100);
+        expect(coordsStub.finalTopLeft.y).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if TOP_RIGHT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.TOP_RIGHT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalBottomRight.x).toEqual(100);
-        expect(coordsStub.finalTopLeft.y).toEqual(100);
+        expect(coordsStub.finalBottomRight.x).toEqual(expectedCoords);
+        expect(coordsStub.finalTopLeft.y).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if MIDDLE_LEFT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.MIDDLE_LEFT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalTopLeft.x).toEqual(100);
+        expect(coordsStub.finalTopLeft.x).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if MIDDLE_RIGHT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.MIDDLE_RIGHT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalBottomRight.x).toEqual(100);
+        expect(coordsStub.finalBottomRight.x).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if BOTTOM_LEFT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.BOTTOM_LEFT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalTopLeft.x).toEqual(100);
-        expect(coordsStub.finalBottomRight.y).toEqual(100);
+        expect(coordsStub.finalTopLeft.x).toEqual(expectedCoords);
+        expect(coordsStub.finalBottomRight.y).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if BOTTOM_MIDDLE has been selected', () => {
         service.selectedPointIndex = SelectedPoint.BOTTOM_MIDDLE;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalBottomRight.y).toEqual(100);
+        expect(coordsStub.finalBottomRight.y).toEqual(expectedCoords);
     });
 
     it('#resizeSelection should resizeCoords if BOTTOM_RIGHT has been selected', () => {
         service.selectedPointIndex = SelectedPoint.BOTTOM_RIGHT;
         service.resizeSelection(posStub, coordsStub);
-        expect(coordsStub.finalBottomRight.y).toEqual(100);
-        expect(coordsStub.finalBottomRight.x).toEqual(100);
+        expect(coordsStub.finalBottomRight.y).toEqual(expectedCoords);
+        expect(coordsStub.finalBottomRight.x).toEqual(expectedCoords);
     });
 
     it('#resizeSelection top_left should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.TOP_LEFT;
-        const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
+        const findEndCoordsSpy = spyOn<any>(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
@@ -154,7 +158,7 @@ describe('ResizeSelectionService', () => {
     it('#resizeSelection top_right should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.TOP_RIGHT;
-        const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
+        const findEndCoordsSpy = spyOn<any>(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
@@ -162,7 +166,7 @@ describe('ResizeSelectionService', () => {
     it('#resizeSelection bottom_right should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.BOTTOM_RIGHT;
-        const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
+        const findEndCoordsSpy = spyOn<any>(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
@@ -170,25 +174,25 @@ describe('ResizeSelectionService', () => {
     it('#resizeSelection with bottom_left should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.BOTTOM_LEFT;
-        const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
+        const findEndCoordsSpy = spyOn<any>(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
 
     it('#findDistance should change the width if it is equal to 0', () => {
         service.lastDimensions = { x: widthStub, y: heightStub };
-        const result = service.findDistance(posStub, offSetXStub, 0, heightStub);
+        const result = service['findDistance'](posStub, offSetXStub, 0, heightStub);
         expect(result.x).toEqual(expectedResult);
     });
 
     it('#findDistance should change the height if it is equal to 0', () => {
         service.lastDimensions = { x: 100, y: 100 };
-        const result = service.findDistance(posStub, offSetXStub, widthStub, 0);
+        const result = service['findDistance'](posStub, offSetXStub, widthStub, 0);
         expect(result.y).toEqual(expectedResult);
     });
 
     it('#findDistance should find the right distance', () => {
-        const result = service.findDistance(posStub, offSetXStub, widthStub, heightStub);
+        const result = service['findDistance'](posStub, offSetXStub, widthStub, heightStub);
         expect(result.y).toEqual(expectedResult);
         expect(result.x).toEqual(expectedResult);
     });
@@ -196,14 +200,15 @@ describe('ResizeSelectionService', () => {
     it('#findEndCoords should return the appropriate end coords', () => {
         const coordsXStub = 80;
         const coordsYStub = 80;
-        spyOn(service, 'findDistance').and.returnValue({ x: 10, y: 10 });
-        const result = service.findEndCoords(posStub, coordsXStub, coordsYStub, heightStub, widthStub);
+        spyOn<any>(service, 'findDistance').and.returnValue({ x: 10, y: 10 });
+        const result = service['findEndCoords'](posStub, coordsXStub, coordsYStub, heightStub, widthStub);
         expect(result.x).toEqual(expectedResult);
         expect(result.y).toEqual(expectedResult);
     });
 
     it('#checkIfAControlPointHasBeenSelected should return the right point, should be no point if no point is selected', () => {
         const posBottomRightStub = { x: -1, y: -1 };
+        service.selectedPointIndex = SelectedPoint.NO_POINT;
         service.checkIfAControlPointHasBeenSelected(posBottomRightStub, coordsStub, false);
         expect(service.selectedPointIndex).toEqual(SelectedPoint.NO_POINT);
     });

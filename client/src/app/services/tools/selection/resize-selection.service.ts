@@ -76,8 +76,8 @@ export class ResizeSelectionService {
         const width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
         const height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
         let endCoords = { x: 0, y: 0 };
-
         this.lastMousePos = pos;
+
         switch (this.selectedPointIndex) {
             case SelectedPoint.TOP_LEFT:
                 coords.finalTopLeft.y = pos.y;
@@ -131,7 +131,7 @@ export class ResizeSelectionService {
         }
     }
 
-    findDistance(pos: Vec2, offSetX: number, height: number, width: number): Vec2 {
+    private findDistance(pos: Vec2, offSetX: number, height: number, width: number): Vec2 {
         if (height === 0) {
             height = this.lastDimensions.y;
         }
@@ -143,7 +143,7 @@ export class ResizeSelectionService {
         return { x: distX, y: distY };
     }
 
-    findEndCoords(pos: Vec2, coordsX: number, coordsY: number, height: number, width: number): Vec2 {
+    private findEndCoords(pos: Vec2, coordsX: number, coordsY: number, height: number, width: number): Vec2 {
         const dist = this.findDistance(pos, coordsX, height, width);
         return { x: coordsX + Math.sign(pos.x - coordsX) * dist.x, y: coordsY + Math.sign(pos.y - coordsY) * dist.y };
     }

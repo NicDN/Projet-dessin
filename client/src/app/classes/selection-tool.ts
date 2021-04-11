@@ -2,11 +2,10 @@ import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/sel
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { SelectedPoint } from './../services/tools/selection/move-selection.service';
 
 export interface SelectionCoords {
     initialTopLeft: Vec2;

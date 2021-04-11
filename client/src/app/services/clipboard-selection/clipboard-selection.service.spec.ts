@@ -5,18 +5,18 @@ import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { SelectionType } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
+import { ColorService } from '@app/services/color/color.service';
+import { DrawingService } from '@app/services/drawing/drawing.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
+import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
-import { ColorService } from '../color/color.service';
-import { DrawingService } from '../drawing/drawing.service';
-import { SnackBarService } from '../snack-bar/snack-bar.service';
-import { EllipseSelectionService } from '../tools/selection/ellipse/ellipse-selection.service';
-import { MoveSelectionService } from '../tools/selection/move-selection.service';
-import { RectangleSelectionService } from '../tools/selection/rectangle/rectangle-selection.service';
-import { ResizeSelectionService } from '../tools/selection/resize-selection.service';
-import { RectangleDrawingService } from '../tools/shape/rectangle/rectangle-drawing.service';
-import { ToolsService } from '../tools/tools.service';
-import { LineService } from '../tools/trace-tool/line/line.service';
-import { UndoRedoService } from '../undo-redo/undo-redo.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { ToolsService } from '@app/services/tools/tools.service';
+import { LineService } from '@app/services/tools/trace-tool/line/line.service';
+import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { ClipboardSelectionService } from './clipboard-selection.service';
 
 // tslint:disable: max-file-line-count
@@ -28,6 +28,7 @@ describe('ClipboardService', () => {
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let moveSelectionService: jasmine.SpyObj<MoveSelectionService>;
     let resizeSelectionServiceSpyObj: jasmine.SpyObj<ResizeSelectionService>;
+    // tslint:disable-next-line: prefer-const
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
     let lineServiceSpyObj: jasmine.SpyObj<LineService>;
@@ -212,22 +213,6 @@ describe('ClipboardService', () => {
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
-    // it('#delete should change by 1 pixel the position of initial coords', () => {
-    //     spyOn(service, 'canUseClipboardService').and.returnValue(true);
-
-    //     (toolServiceSpyObj.currentTool as SelectionTool).data = drawingServiceSpyObj.previewCtx.getImageData(
-    //         0,
-    //         0,
-    //         drawingServiceSpyObj.previewCtx.canvas.width,
-    //         drawingServiceSpyObj.previewCtx.canvas.height,
-    //     );
-    //     (toolServiceSpyObj.currentTool as SelectionTool).coords.initialBottomRight = { x: 1, y: 1 };
-    //     (toolServiceSpyObj.currentTool as SelectionTool).coords.initialTopLeft = { x: 1, y: 1 };
-    //     service.delete();
-    //     expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialBottomRight).toEqual({ x: 0, y: 0 });
-    //     expect((toolServiceSpyObj.currentTool as SelectionTool).coords.initialTopLeft).toEqual({ x: 0, y: 0 });
-    // });
-
     it('setAsideInitialCoords should set aside initialCoords', () => {
         service.clipBoardData = {
             clipboardImage: drawingServiceSpyObj.previewCtx.getImageData(
@@ -268,10 +253,10 @@ describe('ClipboardService', () => {
 
     it('#delete if current tool is a lasso service, should call the clear path and set isShift down to false of lineservice', () => {
         spyOn(service, 'canUseClipboardService').and.returnValue(true);
-        spyOn(service, 'deleteCurrentSelection').and.returnValue();
-        spyOn(service, 'moveInitialCoordsToCountAsAction').and.returnValue();
+        spyOn<any>(service, 'deleteCurrentSelection').and.returnValues();
+        spyOn<any>(service, 'moveInitialCoordsToCountAsAction').and.returnValues();
 
-        let localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
+        const localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
             lassoSelectionService: lassoSelectionServiceStub,
             lineService: lineServiceSpyObj,
             currentTool: lassoSelectionServiceStub,
@@ -360,6 +345,7 @@ describe('ClipboardService', () => {
     it('#paste should not change path data if lineService is undefined', () => {
         const drawAllSpy = spyOn(toolServiceSpyObj.currentTool as SelectionTool, 'drawAll').and.returnValue();
         const switchToolSpy = spyOn<any>(service, 'switchToStoredClipboardImageSelectionTool').and.returnValues();
+        // tslint:disable-next-line: prefer-const
         let undefinedTmp: any;
         service['toolsService'].lineService = undefinedTmp;
         service.clipBoardData = {
@@ -529,7 +515,8 @@ describe('ClipboardService', () => {
     });
 
     it('#setFinalCoordsOfStoredImage should put final coords to the right position', () => {
-        service.setFinalCoordsOfStoredImage(90, 90);
+        const TMP_COORDS = 90;
+        service['setFinalCoordsOfStoredImage'](TMP_COORDS, TMP_COORDS);
 
         expect((toolServiceSpyObj.currentTool as SelectionTool).coords.finalBottomRight).toEqual({
             x: 100,
@@ -538,7 +525,8 @@ describe('ClipboardService', () => {
     });
 
     it('#setFinalCoordsOfStoredImage should put final coords to the right position if width and height < 0', () => {
-        service.setFinalCoordsOfStoredImage(-90, -90);
+        const TMP_COORDS = 90;
+        service['setFinalCoordsOfStoredImage'](-TMP_COORDS, -TMP_COORDS);
 
         expect((toolServiceSpyObj.currentTool as SelectionTool).coords.finalTopLeft).toEqual({
             x: 100,
@@ -553,13 +541,13 @@ describe('ClipboardService', () => {
 
     it('#loadFirstPointOffSet should change the firstPointOffSet of selectionService ', () => {
         lassoSelectionServiceStub.firstPointOffset = { x: 1, y: 1 };
-        let localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
+        const localSpyObjectToolsService = jasmine.createSpyObj<ToolsService>('ToolsService', ['setCurrentTool'], {
             lassoSelectionService: lassoSelectionServiceStub,
             lineService: lineServiceSpyObj,
             currentTool: lassoSelectionServiceStub,
         });
         service['toolsService'] = localSpyObjectToolsService;
-        let result = service['loadFirstPointOffSet']();
+        const result = service['loadFirstPointOffSet']();
         expect(result).toEqual({ x: 1, y: 1 });
     });
 });

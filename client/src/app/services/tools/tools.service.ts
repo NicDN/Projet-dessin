@@ -46,38 +46,62 @@ export class ToolsService {
     }
 
     setCurrentTool(tool: Tool): void {
-        this.ellipseSelectionService.cancelSelection();
-        this.rectangleSelectionService.cancelSelection();
-
-        if (this.currentTool instanceof TextService) {
-            if ((this.textService as TextService).isWriting) {
-                (this.textService as TextService).registerTextCommand(
-                    this.drawingService.baseCtx,
-                    (this.textService as TextService).writtenOnPreview,
-                );
-            }
-        }
-
-        if (this.currentTool === this.lineService) {
-            if (this.currentTool === this.lineService || this.currentTool === this.lassoSelectionService) {
-                this.lineService.clearPath();
-                this.lineService.updatePreview();
-            }
-        }
+        this.cancelSelectionOnToolChange();
+        this.registerTextCommandOnToolChange();
+        this.removeLinePreview();
 
         this.currentTool = tool;
 
+        this.handleStampCurrentTool();
+        this.handleGridCurrentTool();
+
+        // to notifiy attributes panel component that a the current tool has changed
+        this.subject.next(tool);
+    }
+
+    private registerTextCommandOnToolChange(): void {
+        if (!(this.currentTool instanceof TextService)) {
+            return;
+        }
+        if ((this.textService as TextService).isWriting) {
+            (this.textService as TextService).registerTextCommand(this.drawingService.baseCtx, (this.textService as TextService).writtenOnPreview);
+        }
+    }
+
+    private removeLinePreview(): void {
+        if (!(this.currentTool === this.lineService)) {
+            return;
+        }
+        this.lineService.clearPath();
+        this.lineService.updatePreview();
+    }
+
+    private handleStampCurrentTool(): void {
         this.drawingService.isStamp = false;
         if (this.currentTool === this.stampService) {
             this.drawingService.isStamp = true;
         }
+    }
 
+    private handleGridCurrentTool(): void {
         if (this.currentTool instanceof GridService) {
             this.currentTool.gridDrawn = true;
             this.currentTool.drawGrid();
         }
+    }
 
-        this.subject.next(tool);
+    private cancelSelectionOnToolChange(): void {
+        switch (this.currentTool) {
+            case this.ellipseSelectionService:
+                this.ellipseSelectionService.cancelSelection();
+                break;
+            case this.rectangleSelectionService:
+                this.rectangleSelectionService.cancelSelection();
+                break;
+            case this.lassoSelectionService:
+                this.lassoSelectionService.cancelSelection();
+                break;
+        }
     }
 
     getCurrentTool(): Observable<Tool> {

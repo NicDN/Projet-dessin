@@ -604,8 +604,6 @@ xdescribe('SelectionTool', () => {
         expect(moveSelectionServiceSpyObj.mouseMoveOffset).toEqual({ x: MOUSE_OFFSET, y: MOUSE_OFFSET });
     });
 
-
-
     it('#loadUpProperties should create a SelectionProperties object with the right properties', () => {
         const TEST_DATA = drawingServiceSpyObj.previewCtx.getImageData(
             TOP_LEFT_CORNER_COORDS.x,

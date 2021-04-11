@@ -152,7 +152,7 @@ export class ColorPanelComponent {
         return false;
     }
 
-    updateText(): void {
+    private updateText(): void {
         if (!(this.toolsService.currentTool instanceof TextService)) return;
         if (this.toolsService.textService.isWriting) {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
