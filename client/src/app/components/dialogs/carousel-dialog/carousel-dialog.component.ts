@@ -54,11 +54,7 @@ export class CarouselDialogComponent implements OnInit {
             return;
         }
 
-        if (this.drawings.length === 0) {
-            this.tagList.errorState = true;
-        } else {
-            this.tagList.errorState = false;
-        }
+        this.drawings.length === 0 ? (this.tagList.errorState = true) : (this.tagList.errorState = false);
     }
 
     forwardDrawings(): void {

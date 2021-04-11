@@ -15,10 +15,6 @@ export class SelectionOptionsComponent {
         private toolsService: ToolsService,
     ) {}
 
-    selectionIsActive(): boolean {
-        return this.clipboardSelectionService.canUseClipboardService();
-    }
-
     canPaste(): boolean {
         return this.clipboardSelectionService.clipBoardData !== undefined;
     }
