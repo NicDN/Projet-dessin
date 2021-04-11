@@ -128,7 +128,6 @@ describe('TextSelectorComponent', () => {
         expect(textServiceSpy.drawBox).toHaveBeenCalled();
     });
 
-
     it('#updateText should not update the text if the boolean isWriting is set to false', () => {
         const textServiceSpy = jasmine.createSpyObj<TextService>('TextService', ['registerTextCommand', 'drawBox'], {
             isWriting: false,
