@@ -8,7 +8,7 @@ export interface FillDripProperties {
     mousePosition: Vec2;
     isContiguous: boolean;
     mainColor: Uint8ClampedArray;
-    percentage: number;
+    acceptancePercentage: number;
     higherLimit: Uint8ClampedArray;
     lowerLimit: Uint8ClampedArray;
 }

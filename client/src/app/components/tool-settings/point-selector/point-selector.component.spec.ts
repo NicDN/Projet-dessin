@@ -1,3 +1,4 @@
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 
@@ -10,6 +11,7 @@ describe('PointSelectorComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             providers: [{ provide: MatBottomSheet, useValue: {} }],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
             declarations: [PointSelectorComponent],
         }).compileComponents();
     }));

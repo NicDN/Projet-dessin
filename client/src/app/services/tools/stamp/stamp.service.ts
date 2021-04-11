@@ -17,7 +17,7 @@ export class StampService extends Tool {
         ' ../../../../../assets/stamps/catKun.png',
     ];
 
-    readonly SCALING_MAX_VALUE: number = 300;
+    readonly SCALING_MAX_VALUE: number = 200;
     readonly SCALING_MIN_VALUE: number = 10;
     readonly ANGLE_MIN_VALUE: number = 0;
 

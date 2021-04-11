@@ -25,8 +25,8 @@ export enum FontStyle {
     providedIn: 'root',
 })
 export class TextService extends TraceTool {
-    readonly TEXT_MIN_SIZE: number = 10;
-    readonly TEXT_MAX_SIZE: number = 50;
+    readonly TEXT_MIN_SIZE: number = 25;
+    readonly TEXT_MAX_SIZE: number = 70;
     readonly MULTIPLIER: number = 1.5;
     readonly MINUS_ONE: number = -1;
     readonly FOURTY: number = 40;

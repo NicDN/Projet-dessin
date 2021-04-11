@@ -35,7 +35,6 @@ export class ClipboardSelectionService {
             selectionPathData: this.toolsService.lineService.pathData,
             firstPointOffSet: this.loadFirstPointOffSet(),
         };
-        console.log(this.clipBoardData.selectionCoords.finalBottomRight.x);
     }
 
     paste(): void {

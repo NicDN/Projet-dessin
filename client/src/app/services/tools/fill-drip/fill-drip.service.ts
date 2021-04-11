@@ -16,7 +16,7 @@ const VALUES_PER_PIXEL = 4;
 export class FillDripService extends TraceTool {
     private higherLimit: Uint8ClampedArray;
     private lowerLimit: Uint8ClampedArray;
-    percentage: number = 0.5;
+    acceptancePercentage: number = 0.5;
     private mainColor: Uint8ClampedArray;
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Sceau de peinture');
@@ -49,7 +49,7 @@ export class FillDripService extends TraceTool {
             mousePosition: mousePos,
             isContiguous,
             mainColor: this.mainColor,
-            percentage: this.percentage,
+            acceptancePercentage: this.acceptancePercentage,
             higherLimit: this.higherLimit,
             lowerLimit: this.lowerLimit,
         };
@@ -57,14 +57,14 @@ export class FillDripService extends TraceTool {
     getColorRange(mousePos: Vec2): void {
         const currentPixel: ImageData = this.drawingService.baseCtx.getImageData(mousePos.x, mousePos.y, 1, 1);
 
-        const highR: number = currentPixel.data[0] + (MAX_RGB_VALUE - currentPixel.data[0]) * this.percentage;
-        const highG: number = currentPixel.data[1] + (MAX_RGB_VALUE - currentPixel.data[1]) * this.percentage;
-        const highB: number = currentPixel.data[2] + (MAX_RGB_VALUE - currentPixel.data[2]) * this.percentage;
+        const highR: number = currentPixel.data[0] + (MAX_RGB_VALUE - currentPixel.data[0]) * this.acceptancePercentage;
+        const highG: number = currentPixel.data[1] + (MAX_RGB_VALUE - currentPixel.data[1]) * this.acceptancePercentage;
+        const highB: number = currentPixel.data[2] + (MAX_RGB_VALUE - currentPixel.data[2]) * this.acceptancePercentage;
         this.higherLimit = new Uint8ClampedArray([highR, highG, highB]);
 
-        const lowR = currentPixel.data[0] - currentPixel.data[0] * this.percentage;
-        const lowG = currentPixel.data[1] - currentPixel.data[1] * this.percentage;
-        const lowB = currentPixel.data[2] - currentPixel.data[2] * this.percentage;
+        const lowR = currentPixel.data[0] - currentPixel.data[0] * this.acceptancePercentage;
+        const lowG = currentPixel.data[1] - currentPixel.data[1] * this.acceptancePercentage;
+        const lowB = currentPixel.data[2] - currentPixel.data[2] * this.acceptancePercentage;
         this.lowerLimit = new Uint8ClampedArray([lowR, lowG, lowB]);
     }
 
