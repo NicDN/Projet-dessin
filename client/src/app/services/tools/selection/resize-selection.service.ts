@@ -75,7 +75,6 @@ export class ResizeSelectionService {
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
         const width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
         const height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
-        let dist = { x: 0, y: 0 };
         let endCoords = { x: 0, y: 0 };
 
         this.lastMousePos = pos;
@@ -84,8 +83,7 @@ export class ResizeSelectionService {
                 coords.finalTopLeft.y = pos.y;
                 coords.finalTopLeft.x = pos.x;
                 if (this.shiftKeyIsDown) {
-                    dist = this.findDistance(pos, coords.finalBottomRight.x, height, width);
-                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalBottomRight.y, dist);
+                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalBottomRight.y, height, width);
                     coords.finalTopLeft.y = endCoords.y;
                     coords.finalTopLeft.x = endCoords.x;
                 }
@@ -94,8 +92,7 @@ export class ResizeSelectionService {
                 coords.finalTopLeft.x = pos.x;
                 coords.finalBottomRight.y = pos.y;
                 if (this.shiftKeyIsDown) {
-                    dist = this.findDistance(pos, coords.finalBottomRight.x, height, width);
-                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalTopLeft.y, dist);
+                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalTopLeft.y, height, width);
                     coords.finalTopLeft.x = endCoords.x;
                     coords.finalBottomRight.y = endCoords.y;
                 }
@@ -104,8 +101,7 @@ export class ResizeSelectionService {
                 coords.finalTopLeft.y = pos.y;
                 coords.finalBottomRight.x = pos.x;
                 if (this.shiftKeyIsDown) {
-                    dist = this.findDistance(pos, coords.finalTopLeft.x, height, width);
-                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalBottomRight.y, dist);
+                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalBottomRight.y, height, width);
                     coords.finalBottomRight.x = endCoords.x;
                     coords.finalTopLeft.y = endCoords.y;
                 }
@@ -114,8 +110,7 @@ export class ResizeSelectionService {
                 coords.finalBottomRight.x = pos.x;
                 coords.finalBottomRight.y = pos.y;
                 if (this.shiftKeyIsDown) {
-                    dist = this.findDistance(pos, coords.finalTopLeft.x, height, width);
-                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalTopLeft.y, dist);
+                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalTopLeft.y, height, width);
                     coords.finalBottomRight.y = endCoords.y;
                     coords.finalBottomRight.x = endCoords.x;
                 }
@@ -148,7 +143,8 @@ export class ResizeSelectionService {
         return { x: distX, y: distY };
     }
 
-    findEndCoords(pos: Vec2, coordsX: number, coordsY: number, distance: Vec2): Vec2 {
-        return { x: coordsX + Math.sign(pos.x - coordsX) * distance.x, y: coordsY + Math.sign(pos.y - coordsY) * distance.y };
+    findEndCoords(pos: Vec2, coordsX: number, coordsY: number, height: number, width: number): Vec2 {
+        const dist = this.findDistance(pos, coordsX, height, width);
+        return { x: coordsX + Math.sign(pos.x - coordsX) * dist.x, y: coordsY + Math.sign(pos.y - coordsY) * dist.y };
     }
 }

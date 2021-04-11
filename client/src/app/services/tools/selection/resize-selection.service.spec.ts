@@ -5,7 +5,7 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { SelectedPoint } from './move-selection.service';
 import { ResizeSelectionService } from './resize-selection.service';
 
-describe('ResizeSelectionService', () => {
+fdescribe('ResizeSelectionService', () => {
     let service: ResizeSelectionService;
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
 
@@ -146,40 +146,32 @@ describe('ResizeSelectionService', () => {
     it('#resizeSelection top_left should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.TOP_LEFT;
-        const findDistanceSpy = spyOn(service, 'findDistance').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
-        expect(findDistanceSpy).toHaveBeenCalled();
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
 
     it('#resizeSelection top_right should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.TOP_RIGHT;
-        const findDistanceSpy = spyOn(service, 'findDistance').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
-        expect(findDistanceSpy).toHaveBeenCalled();
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
 
     it('#resizeSelection bottom_right should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.BOTTOM_RIGHT;
-        const findDistanceSpy = spyOn(service, 'findDistance').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
-        expect(findDistanceSpy).toHaveBeenCalled();
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
 
     it('#resizeSelection with bottom_left should call the find distance and find end coords', () => {
         service.shiftKeyIsDown = true;
         service.selectedPointIndex = SelectedPoint.BOTTOM_LEFT;
-        const findDistanceSpy = spyOn(service, 'findDistance').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         const findEndCoordsSpy = spyOn(service, 'findEndCoords').and.returnValue(BOTTOM_RIGHT_CORNER_COORDS);
         service.resizeSelection(posStub, coordsStub);
-        expect(findDistanceSpy).toHaveBeenCalled();
         expect(findEndCoordsSpy).toHaveBeenCalled();
     });
 
@@ -202,15 +194,15 @@ describe('ResizeSelectionService', () => {
     });
 
     it('#findEndCoords should return the appropriate end coords', () => {
-        const distanceStub = { x: 10, y: 10 };
         const coordsXStub = 80;
         const coordsYStub = 80;
-        const result = service.findEndCoords(posStub, coordsXStub, coordsYStub, distanceStub);
+        spyOn(service, 'findDistance').and.returnValue({ x: 10, y: 10 });
+        const result = service.findEndCoords(posStub, coordsXStub, coordsYStub, heightStub, widthStub);
         expect(result.x).toEqual(expectedResult);
         expect(result.y).toEqual(expectedResult);
     });
 
-    it('#checkIfAControlPointHasBeenSelected should return the right point', () => {
+    it('#checkIfAControlPointHasBeenSelected should return the right point, should be no point if no point is selected', () => {
         const posBottomRightStub = { x: -1, y: -1 };
         service.checkIfAControlPointHasBeenSelected(posBottomRightStub, coordsStub, false);
         expect(service.selectedPointIndex).toEqual(SelectedPoint.NO_POINT);
