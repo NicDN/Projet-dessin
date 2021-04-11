@@ -1,6 +1,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
@@ -67,6 +69,8 @@ describe('DrawingComponent', () => {
                 { provide: ColorService, useValue: colorServiceStub },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
+                { provide: MatDialog, useValue: {} },
+                { provide: Router, useValue: {} },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();

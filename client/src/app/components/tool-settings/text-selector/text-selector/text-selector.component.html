@@ -24,7 +24,7 @@
         <mat-button-toggle-group>
             <mat-button-toggle *ngFor="let textEffect of textEffects" matTooltip="{{ textEffect.toolTipContent }}"
                 matTooltipPosition="below" (click)="textEffect.setEffect()"
-                [class.active]="checkActiveEffect(textEffect.icon)">
+                [class.active]="checkActiveTextEffect(textEffect.icon)">
                 <fa-icon icon={{textEffect.icon}}></fa-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
@@ -36,9 +36,9 @@
 <div class="font-style">
     <p>Police du texte</p>
     <mat-form-field>
-        <mat-select>
+        <mat-select [(value)]="selectedFontStyle">
             <mat-option *ngFor="let fontStyle of this.fontStyles" [value]="fontStyle.name"
-                (click)="applyFontStyle(fontStyle.value)"
+                (click)="applyFontStyle(fontStyle)"
                 [ngStyle]="{'font-family':fontStyle.name}">{{fontStyle.name}}</mat-option>
         </mat-select>
     </mat-form-field>

@@ -288,4 +288,44 @@ describe('ColorPanelComponent', () => {
 
         expect(component.rgbInputHasErrors()).toBeTrue();
     });
+
+    it('#updateText should not update the text if the current tool is not the text', () => {
+        component['toolsService'].currentTool = component['toolsService'].pencilService;
+        spyOn(component['drawingService'], 'clearCanvas');
+        const registerTextCommandSpy = spyOn(component['toolsService'].textService, 'registerTextCommand');
+        const drawBoxSpy = spyOn(component['toolsService'].textService, 'drawBox');
+        component['updateText']();
+
+        expect(component['drawingService'].clearCanvas).not.toHaveBeenCalled();
+        expect(registerTextCommandSpy).not.toHaveBeenCalled();
+        expect(drawBoxSpy).not.toHaveBeenCalled();
+    });
+
+    it('#updateText should not update the text if isWriting is set to false', () => {
+        component['toolsService'].textService.isWriting = false;
+        component['toolsService'].currentTool = component['toolsService'].textService;
+
+        spyOn(component['drawingService'], 'clearCanvas');
+        const registerTextCommandSpy = spyOn(component['toolsService'].textService, 'registerTextCommand');
+        const drawBoxSpy = spyOn(component['toolsService'].textService, 'drawBox');
+        component['updateText']();
+
+        expect(component['drawingService'].clearCanvas).not.toHaveBeenCalled();
+        expect(registerTextCommandSpy).not.toHaveBeenCalled();
+        expect(drawBoxSpy).not.toHaveBeenCalled();
+    });
+
+    it('#updateText should  update the text if isWriting is set to true and teh current tool is text', () => {
+        component['toolsService'].textService.isWriting = true;
+        component['toolsService'].currentTool = component['toolsService'].textService;
+
+        spyOn(component['drawingService'], 'clearCanvas');
+        const registerTextCommandSpy = spyOn(component['toolsService'].textService, 'registerTextCommand');
+        const drawBoxSpy = spyOn(component['toolsService'].textService, 'drawBox');
+        component['updateText']();
+
+        expect(component['drawingService'].clearCanvas).toHaveBeenCalled();
+        expect(registerTextCommandSpy).toHaveBeenCalled();
+        expect(drawBoxSpy).toHaveBeenCalled();
+    });
 });
