@@ -65,7 +65,6 @@ describe('DrawingService', () => {
         drawingServiceSpyCheckIfEmpty = spyOn<any>(service, 'canvasIsEmpty').and.callThrough();
         drawingServiceSpyReloadDrawing = spyOn<any>(service, 'reloadToBlankDrawing').and.callThrough();
         drawingServiceSpyValidateInput = spyOn<any>(service, 'confirmReload').and.callThrough();
-        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
     });
 
     it('should be created', () => {
@@ -94,6 +93,7 @@ describe('DrawingService', () => {
 
     it('#reloadToBlankDrawing should clear the canvas and have default height and width', () => {
         const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn<any>(service, 'resetCanvas').and.returnValue(of());
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
         spyOn(service, 'fillWithWhite').and.returnValue();
         spyOn<any>(service, 'sendBaseLineCommand').and.returnValue(of());
         service['reloadToBlankDrawing']();
@@ -103,6 +103,7 @@ describe('DrawingService', () => {
 
     it('#resetCanvas should call sendNotifReload saying the canvas is resizing', () => {
         const drawingServiceSpyResetCanvas: jasmine.Spy = spyOn<any>(service, 'resetCanvas');
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
         service['resetCanvas']();
         expect(drawingServiceSpyResetCanvas).toHaveBeenCalled();
     });
@@ -116,6 +117,7 @@ describe('DrawingService', () => {
     it('#changeDrawing should change the current drawing on canvas', () => {
         const fillTmpValue = 4;
         const image1 = new Image();
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
         service.baseCtx.fillRect(0, 0, fillTmpValue, fillTmpValue);
         image1.src = service.canvas.toDataURL();
 
@@ -238,6 +240,7 @@ describe('DrawingService', () => {
 
     it('#swapDrawings should call #changeSizeOfCanvas', () => {
         boxSizeStub = { widthBox: 1, heightBox: 1 };
+        drawingServiceSpyClearCanvas = spyOn(service, 'clearCanvas').and.returnValue();
         const changeSizeOfCanvasSpy = spyOn<any>(service, 'changeSizeOfCanvas');
         service['swapDrawings'](boxSizeStub);
         expect(changeSizeOfCanvasSpy).toHaveBeenCalledTimes(2);
