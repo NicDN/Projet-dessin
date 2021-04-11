@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
@@ -17,7 +17,7 @@ describe('PointSelectorComponent', () => {
                 { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
             ],
             declarations: [PointSelectorComponent],
-            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
 

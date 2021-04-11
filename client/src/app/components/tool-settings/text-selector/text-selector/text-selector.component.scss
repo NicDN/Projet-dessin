@@ -9,10 +9,6 @@ mat-divider {
     background-color: #e51282;
 }
 
-.selection-type {
-    width: 60%;
-}
-
 p {
     float: left;
     padding-top: 15px;
@@ -23,6 +19,7 @@ p {
 }
 
 .selection-type {
+    width: 60%;
     display: inline-block;
     padding-top: 15px;
     padding-bottom: 15px;
@@ -35,4 +32,8 @@ fa-icon {
 .font-style {
     padding-top: 15px;
     padding-bottom: 15px;
+}
+
+mat-form-field{
+    width: 130px;
 }

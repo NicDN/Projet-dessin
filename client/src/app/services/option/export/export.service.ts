@@ -25,7 +25,7 @@ export class ExportService {
 
     handleLocalExport(fileName: string, fileFormat: string): void {
         this.exportLink = document.createElement('a');
-        fileName === '' ? (this.fileName = 'Sans titre') : (this.fileName = fileName);
+        this.fileName = `${fileName || 'Sans titre'}`;
         this.downloadFormat = `image/${fileFormat}`;
         this.exportLink.setAttribute('download', `${this.fileName}.${fileFormat}`);
 
