@@ -7,6 +7,8 @@ import { GridService } from '@app/services/grid/grid.service';
 import { of } from 'rxjs';
 import { MagnetSelectionService, SelectedPoint } from './magnet-selection.service';
 
+// tslint:disable: no-any
+// tslint:disable: no-string-literal
 describe('MagnetSelectionService', () => {
     let service: MagnetSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;

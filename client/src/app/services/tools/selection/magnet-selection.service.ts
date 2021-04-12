@@ -123,61 +123,31 @@ export class MagnetSelectionService {
         moveOffsetBottom = this.getMagnetizedOffsetPosition();
         switch (this.pointToMagnetize) {
             case SelectedPoint.TOP_LEFT:
-                pos = this.finalMagnetized(pos, true, true);
-                this.handleMirror(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
+                this.handleMirrorTopLeft(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.TOP_MIDDLE:
-                pos = this.finalMagnetized({ x: pos.x + width / 2, y: pos.y }, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, -moveOffsetTop.x, -moveOffsetTop.y, -width / 2, 0);
-                selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
+                this.handleMirrorTopMiddle(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.TOP_RIGHT:
-                pos = this.finalMagnetized(pos, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, moveOffsetBottom.x, -moveOffsetTop.y, -width, 0);
-                selectionCoords.finalBottomRight = {
-                    x: pos.x + moveOffsetBottom.x,
-                    y: selectionCoords.finalTopLeft.y + height,
-                };
+                this.handleMirrorTopRight(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.MIDDLE_LEFT:
-                pos = this.finalMagnetized({ x: pos.x, y: pos.y + height / 2 }, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, -moveOffsetTop.x, -moveOffsetTop.y, 0, -height / 2);
-                selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
+                this.handleMirrorMiddleLeft(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.CENTER:
-                pos = this.finalMagnetized(pos, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, -moveOffsetTop.x, -moveOffsetTop.y, 0, 0);
-                selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
-                selectionCoords.finalBottomRight = this.finalMagnetized(selectionCoords.finalBottomRight, true, true);
+                this.magnetizeCenterMouse(pos, selectionCoords, moveOffsetTop, width, height);
                 break;
-
             case SelectedPoint.MIDDLE_RIGHT:
-                pos = this.finalMagnetized({ x: pos.x, y: pos.y + height / 2 }, true, true);
-                selectionCoords.finalBottomRight = this.translateCoords(pos, moveOffsetBottom.x, -moveOffsetBottom.y, 0, height / 2);
-                selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
+                this.handleMirrorMiddleRight(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.BOTTOM_LEFT:
-                pos = this.finalMagnetized(pos, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, -moveOffsetTop.x, moveOffsetBottom.y, 0, -height);
-                selectionCoords.finalBottomRight = this.translateCoords(pos, -moveOffsetTop.x, moveOffsetBottom.y, width, 0);
+                this.handleMirrorBottomLeft(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.BOTTOM_MIDDLE:
-                pos = this.finalMagnetized({ x: pos.x + width / 2, y: pos.y }, true, true);
-                selectionCoords.finalTopLeft = this.translateCoords(pos, -moveOffsetTop.x, moveOffsetBottom.y, -width / 2, -height);
-                selectionCoords.finalBottomRight = this.translateCoords(pos, -moveOffsetTop.x, moveOffsetBottom.y, width / 2, 0);
+                this.handleMirrorBottomMiddle(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
-
             case SelectedPoint.BOTTOM_RIGHT:
-                pos = this.finalMagnetized(pos, true, true);
-                selectionCoords.finalBottomRight = this.getMagnetizedOffsetPosition();
-                selectionCoords.finalBottomRight = this.translateCoords(pos, moveOffsetBottom.x, moveOffsetBottom.y, 0, 0);
-                selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
+                this.handleMirrorBottomRight(pos, selectionCoords, moveOffsetTop, moveOffsetBottom, width, height);
                 break;
         }
     }
@@ -216,11 +186,86 @@ export class MagnetSelectionService {
     }
 
     private magnetizeTopLeftMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetTop: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized(pos, true, true);
         selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, 0, 0);
         selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
     }
 
-    private handleMirror(
+    private magnetizeTopMiddleMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetTop: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized({ x: pos.x + width / 2, y: pos.y }, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, -width / 2, 0);
+        selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
+    }
+
+    private magnetizeTopRightMouse(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        pos = this.finalMagnetized(pos, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, mouseOffsetBottom.x, -mouseOffsetTop.y, -width, 0);
+        selectionCoords.finalBottomRight = {
+            x: pos.x + mouseOffsetBottom.x,
+            y: selectionCoords.finalTopLeft.y + height,
+        };
+    }
+
+    private magnetizeMiddleLeftMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetTop: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized({ x: pos.x, y: pos.y + height / 2 }, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, 0, -height / 2);
+        selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
+    }
+
+    private magnetizeCenterMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetTop: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized(pos, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, 0, 0);
+        selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, width, height);
+        selectionCoords.finalBottomRight = this.finalMagnetized(selectionCoords.finalBottomRight, true, true);
+    }
+
+    private magnetizeMiddleRightMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetBottom: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized({ x: pos.x, y: pos.y + height / 2 }, true, true);
+        selectionCoords.finalBottomRight = this.translateCoords(pos, mouseOffsetBottom.x, -mouseOffsetBottom.y, 0, height / 2);
+        selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
+    }
+
+    private magnetizeBottomLeftMouse(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        pos = this.finalMagnetized(pos, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, 0, -height);
+        selectionCoords.finalBottomRight = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, width, 0);
+    }
+
+    private magnetizeBottomMiddleMouse(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        pos = this.finalMagnetized({ x: pos.x + width / 2, y: pos.y }, true, true);
+        selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, -width / 2, -height);
+        selectionCoords.finalBottomRight = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, width / 2, 0);
+    }
+
+    private magnetizeBottomRightMouse(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetBottom: Vec2, width: number, height: number): void {
+        pos = this.finalMagnetized(pos, true, true);
+        selectionCoords.finalBottomRight = this.getMagnetizedOffsetPosition();
+        selectionCoords.finalBottomRight = this.translateCoords(pos, mouseOffsetBottom.x, mouseOffsetBottom.y, 0, 0);
+        selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
+    }
+
+    private handleMirrorTopLeft(
         pos: Vec2,
         selectionCoords: SelectionCoords,
         mouseOffsetTop: Vec2,
@@ -229,20 +274,130 @@ export class MagnetSelectionService {
         height: number,
     ): void {
         if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
-            selectionCoords.finalTopLeft = this.translateCoords(pos, mouseOffsetBottom.x, -mouseOffsetTop.y, -width, 0);
-            selectionCoords.finalBottomRight = {
-                x: pos.x + mouseOffsetBottom.x,
-                y: selectionCoords.finalTopLeft.y + height,
-            };
+            this.magnetizeTopRightMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
         } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
-            selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, 0, -height);
-            selectionCoords.finalBottomRight = this.translateCoords(pos, -mouseOffsetTop.x, mouseOffsetBottom.y, width, 0);
+            this.magnetizeBottomLeftMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
         } else if (this.xIsFlipped(selectionCoords) && this.yIsFlipped(selectionCoords)) {
-            selectionCoords.finalBottomRight = this.getMagnetizedOffsetPosition();
-            selectionCoords.finalBottomRight = this.translateCoords(pos, mouseOffsetBottom.x, mouseOffsetBottom.y, 0, 0);
-            selectionCoords.finalTopLeft = this.translateCoords(selectionCoords.finalBottomRight, 0, 0, -width, -height);
+            this.magnetizeBottomRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
         } else {
             this.magnetizeTopLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        }
+    }
+
+    private handleMirrorTopMiddle(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.xIsFlipped(selectionCoords)) {
+            this.magnetizeBottomMiddleMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        } else {
+            this.magnetizeTopMiddleMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        }
+    }
+
+    private handleMirrorTopRight(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
+            this.magnetizeTopLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
+            this.magnetizeBottomRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && this.yIsFlipped(selectionCoords)) {
+            this.magnetizeBottomLeftMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        } else {
+            this.magnetizeTopRightMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        }
+    }
+
+    private handleMirrorMiddleLeft(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.yIsFlipped(selectionCoords)) {
+            this.magnetizeMiddleRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
+        } else {
+            this.magnetizeMiddleLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        }
+    }
+
+    private handleMirrorMiddleRight(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.yIsFlipped(selectionCoords)) {
+            this.magnetizeMiddleLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        } else {
+            this.magnetizeMiddleRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
+        }
+    }
+
+    private handleMirrorBottomLeft(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
+            this.magnetizeBottomRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
+            this.magnetizeTopLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && this.yIsFlipped(selectionCoords)) {
+            this.magnetizeTopRightMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        } else {
+            this.magnetizeBottomLeftMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        }
+    }
+
+    private handleMirrorBottomMiddle(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.xIsFlipped(selectionCoords)) {
+            this.magnetizeTopMiddleMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        } else {
+            this.magnetizeBottomMiddleMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        }
+    }
+
+    private handleMirrorBottomRight(
+        pos: Vec2,
+        selectionCoords: SelectionCoords,
+        mouseOffsetTop: Vec2,
+        mouseOffsetBottom: Vec2,
+        width: number,
+        height: number,
+    ): void {
+        if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
+            this.magnetizeBottomLeftMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
+            this.magnetizeTopRightMouse(pos, selectionCoords, mouseOffsetTop, mouseOffsetBottom, width, height);
+        } else if (this.xIsFlipped(selectionCoords) && this.yIsFlipped(selectionCoords)) {
+            this.magnetizeTopLeftMouse(pos, selectionCoords, mouseOffsetTop, width, height);
+        } else {
+            this.magnetizeBottomRightMouse(pos, selectionCoords, mouseOffsetBottom, width, height);
         }
     }
 }
