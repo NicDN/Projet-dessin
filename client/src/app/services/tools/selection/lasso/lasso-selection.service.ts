@@ -64,17 +64,18 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.lineService.pathData.length !== 0) this.undoRedoService.disableUndoRedo();
-        if (!this.checkIfLineCrossing()) this.lineService.pathData.push(this.lineService.mousePosition);
 
-        if (this.lineService.pathData.length > 4) {
-            if (this.lineService.checkClosingLoop()) {
-                this.lineService.pathData.pop();
-                this.lineService.pathData.pop();
-                this.lineService.pathData.push(this.lineService.pathData[0]);
-                this.drawingService.clearCanvas(this.drawingService.previewCtx);
-                this.calculateInitialCoords();
-                this.createSelection();
-            }
+        if (this.checkIfLineCrossing()) return;
+        this.lineService.pathData.push(this.lineService.mousePosition);
+
+        if (this.lineService.pathData.length > 4 && this.lineService.checkClosingLoop()) {
+            this.lineService.pathData.pop();
+            this.lineService.pathData.pop();
+            this.lineService.pathData.push(this.lineService.pathData[0]);
+            if (this.checkIfLineCrossing()) return;
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.calculateInitialCoords();
+            this.createSelection();
         }
     }
 
