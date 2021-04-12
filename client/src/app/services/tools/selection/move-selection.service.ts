@@ -14,6 +14,7 @@ export enum SelectedPoint {
     BOTTOM_LEFT = 6,
     BOTTOM_MIDDLE = 7,
     BOTTOM_RIGHT = 8,
+    MOVING = 9,
     NO_POINT = -1,
 }
 
@@ -74,8 +75,8 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
-        const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
-        const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
+        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
+        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
 
         if (this.isUsingMagnet) {
             this.alignToProperMagnetMousePosition(pos, selectionCoords, width, height);

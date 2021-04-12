@@ -673,5 +673,6 @@ describe('SelectionTool', () => {
         expect(selectionProperties.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(selectionProperties.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });
+
     // tslint:disable-next-line: max-file-line-count
 });

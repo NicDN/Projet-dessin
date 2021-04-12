@@ -197,7 +197,7 @@ export class DrawingComponent implements AfterViewInit {
                 case SelectedPoint.MIDDLE_LEFT:
                     return 'w-resize';
                 case SelectedPoint.CENTER:
-                case this.OUTSIDE_SELECTION_ZONE:
+                case SelectedPoint.MOVING:
                     return 'move';
                 default:
                     return 'pointer';
