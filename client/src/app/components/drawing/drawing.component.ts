@@ -4,7 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';

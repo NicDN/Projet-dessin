@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
@@ -26,8 +27,9 @@ export class SelectionToolStub extends SelectionTool {
         undoRedoService: UndoRedoService,
         moveSelectionService: MoveSelectionService,
         resizeSelectionService: ResizeSelectionService,
+        magnetSelectionService: MagnetSelectionService,
     ) {
-        super(drawingService, rectangleDrawingService, 'Stub', undoRedoService, moveSelectionService, resizeSelectionService);
+        super(drawingService, rectangleDrawingService, 'Stub', undoRedoService, moveSelectionService, resizeSelectionService, magnetSelectionService);
     }
 }
 // tslint:disable: no-any
@@ -38,6 +40,7 @@ xdescribe('SelectionTool', () => {
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
+    let magnetSelectionServiceSpyObj: jasmine.SpyObj<MagnetSelectionService>;
     let resizeSelectionSpyObj: jasmine.SpyObj<ResizeSelectionService>;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
@@ -65,12 +68,14 @@ xdescribe('SelectionTool', () => {
             'moveSelectionWithMouse',
         ]);
         resizeSelectionSpyObj = jasmine.createSpyObj('ResizeSelectionService', ['']);
+        magnetSelectionServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoSpyObj },
                 { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
+                { provide: MagnetSelectionService, useValue: magnetSelectionServiceSpyObj },
             ],
         });
 
@@ -85,6 +90,7 @@ xdescribe('SelectionTool', () => {
             undoRedoSpyObj,
             moveSelectionServiceSpyObj,
             resizeSelectionSpyObj,
+            magnetSelectionServiceSpyObj,
         );
 
         selectionTool['drawingService'].baseCtx = baseCtxStub;

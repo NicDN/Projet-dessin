@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
-import { SelectedPoint } from './move-selection.service';
+import { SelectedPoint } from './magnet-selection.service';
 import { ResizeSelectionService } from './resize-selection.service';
 
 // tslint:disable: no-string-literal
@@ -207,7 +207,7 @@ describe('ResizeSelectionService', () => {
     });
 
     it('#checkIfAControlPointHasBeenSelected should return the right point, should be no point if no point is selected', () => {
-        const posBottomRightStub = { x: -1, y: -1 };
+        const posBottomRightStub = { x: -16, y: -16 };
         service.selectedPointIndex = SelectedPoint.NO_POINT;
         service.checkIfAControlPointHasBeenSelected(posBottomRightStub, coordsStub, false);
         expect(service.selectedPointIndex).toEqual(SelectedPoint.NO_POINT);

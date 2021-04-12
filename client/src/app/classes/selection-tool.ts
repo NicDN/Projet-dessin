@@ -2,7 +2,8 @@ import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/sel
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -22,6 +23,7 @@ export abstract class SelectionTool extends Tool {
         protected undoRedoService: UndoRedoService,
         protected moveSelectionService: MoveSelectionService,
         protected resizeSelectionService: ResizeSelectionService,
+        protected magnetSelectionService: MagnetSelectionService,
     ) {
         super(drawingService, toolName);
     }
@@ -29,7 +31,6 @@ export abstract class SelectionTool extends Tool {
     data: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
-
     private intervalHandler: number;
     private timeoutHandler: number;
     readonly INITIAL_ARROW_TIMER: number = 500;
@@ -70,7 +71,6 @@ export abstract class SelectionTool extends Tool {
         this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 9 : SelectedPoint.NO_POINT;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
-        // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
 
@@ -333,6 +333,11 @@ export abstract class SelectionTool extends Tool {
             x: pos.x - this.coords.finalTopLeft.x,
             y: pos.y - this.coords.finalTopLeft.y,
         };
+
+        this.magnetSelectionService.mouseMoveOffset = {
+            x: pos.x - this.coords.finalTopLeft.x,
+            y: pos.y - this.coords.finalTopLeft.y,
+        };
     }
 
     protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {
@@ -345,11 +350,7 @@ export abstract class SelectionTool extends Tool {
             finalBottomRight: this.coords.finalBottomRight,
         };
     }
-
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
-
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
-
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
-    // tslint:disable-next-line: max-file-line-count
 }

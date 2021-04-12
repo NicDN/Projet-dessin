@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
@@ -6,6 +7,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
 import { EllipseSelectionService } from './ellipse-selection.service';
 
 // tslint:disable: no-string-literal
@@ -30,8 +32,14 @@ describe('EllipseSelectionService', () => {
 
     const RGB_MAX = 255;
 
+    const boxSizeStub: BoxSize = { widthBox: 100, heightBox: 100 };
+
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['newIncomingResizeSignals', 'newGridSignals']);
+        // tslint:disable-next-line: prefer-const
+        let emptyMessage: any;
+        drawingServiceSpyObj.newGridSignals.and.returnValue(of(emptyMessage));
+        drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', [
             'getTrueEndCoords',
             'drawEllipticalPerimeter',

@@ -3,6 +3,7 @@ import { SelectionPropreties } from '@app/classes/commands/selection-command/sel
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
@@ -18,8 +19,17 @@ export class EllipseSelectionService extends SelectionTool {
         undoRedoService: UndoRedoService,
         moveSelectionService: MoveSelectionService,
         resizeSelectionService: ResizeSelectionService,
+        magnetSelectionService: MagnetSelectionService,
     ) {
-        super(drawingService, rectangleDrawingService, 'Sélection par ellipse', undoRedoService, moveSelectionService, resizeSelectionService);
+        super(
+            drawingService,
+            rectangleDrawingService,
+            'Sélection par ellipse',
+            undoRedoService,
+            moveSelectionService,
+            resizeSelectionService,
+            magnetSelectionService,
+        );
     }
 
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
