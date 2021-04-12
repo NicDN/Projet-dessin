@@ -211,6 +211,15 @@ export class LassoSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData || !selectionPropreties.firstPointOffset) return;
         selectionPropreties.selectionCtx.save();
 
+        selectionPropreties.selectionCtx.translate(
+            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
+            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+        );
+        selectionPropreties.selectionCtx.scale(0.99, 0.99);
+        selectionPropreties.selectionCtx.translate(
+            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
+            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+        );
         selectionPropreties.selectionCtx.fillStyle = 'white';
         this.makePath(selectionPropreties, true);
         selectionPropreties.selectionCtx.fill();
