@@ -30,7 +30,6 @@ export class DrawingComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) gridCanvas: ElementRef<HTMLCanvasElement>;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-    private readonly OUTSIDE_SELECTION_ZONE: number = 9;
     private canDraw: boolean = true;
     private aDialogIsNotOpened: boolean = true;
 
@@ -197,7 +196,7 @@ export class DrawingComponent implements AfterViewInit {
                 case SelectedPoint.MIDDLE_LEFT:
                     return 'w-resize';
                 case SelectedPoint.CENTER:
-                case this.OUTSIDE_SELECTION_ZONE:
+                case SelectedPoint.MOVING:
                     return 'move';
                 default:
                     return 'pointer';

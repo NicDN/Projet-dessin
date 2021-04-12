@@ -29,7 +29,6 @@ export abstract class SelectionTool extends Tool {
     data: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
-
     private intervalHandler: number;
     private timeoutHandler: number;
     readonly INITIAL_ARROW_TIMER: number = 500;
@@ -67,7 +66,9 @@ export abstract class SelectionTool extends Tool {
     }
 
     onMouseMove(event: MouseEvent): void {
-        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 9 : SelectedPoint.NO_POINT;
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event))
+            ? SelectedPoint.MOVING
+            : SelectedPoint.NO_POINT;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
         // 1 = leftclick
@@ -89,7 +90,6 @@ export abstract class SelectionTool extends Tool {
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
-
         this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -100,8 +100,8 @@ export abstract class SelectionTool extends Tool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
-            this.resizeSelectionService.selectedPointIndex = -1;
+        if (this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT) {
+            this.resizeSelectionService.selectedPointIndex = SelectedPoint.NO_POINT;
             return;
         }
         if (this.moveSelectionService.movingWithMouse) {
@@ -117,7 +117,6 @@ export abstract class SelectionTool extends Tool {
             this.shapeService.alternateShape,
         );
         this.shapeService.alternateShape = false;
-
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.createSelection();
     }
@@ -205,7 +204,6 @@ export abstract class SelectionTool extends Tool {
         if (this.moveSelectionService.initialKeyPress) {
             this.moveSelectionService.initialKeyPress = false;
             this.moveSelectionService.movingWithArrows = true;
-
             this.intervalHandler = (setInterval(
                 (() => {
                     this.moveSelectionService.moveSelectionWithArrows(ctx, this.moveSelectionService.calculateDelta(), this.coords);
@@ -223,7 +221,6 @@ export abstract class SelectionTool extends Tool {
             this.undoRedoService.enableUndoRedo();
             return;
         }
-
         this.saveSelection(this.drawingService.baseCtx);
         this.drawAll(this.drawingService.previewCtx);
         this.selectionExists = true;
@@ -347,9 +344,6 @@ export abstract class SelectionTool extends Tool {
     }
 
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
-
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
-
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
-    // tslint:disable-next-line: max-file-line-count
 }
