@@ -25,7 +25,7 @@ describe('ResizeSelectionService', () => {
 
     const offSetXStub = 10;
 
-    const coordsStub = {
+    let coordsStub = {
         initialTopLeft: TOP_LEFT_CORNER_COORDS,
         initialBottomRight: BOTTOM_RIGHT_CORNER_COORDS,
         finalTopLeft: TOP_LEFT_CORNER_COORDS,
@@ -207,7 +207,14 @@ describe('ResizeSelectionService', () => {
     });
 
     it('#checkIfAControlPointHasBeenSelected should return the right point, should be no point if no point is selected', () => {
-        const posBottomRightStub = { x: -16, y: -16 };
+        const NOT_A_POINT_STUB = -1000;
+        const posBottomRightStub = { x: NOT_A_POINT_STUB, y: NOT_A_POINT_STUB };
+        coordsStub = {
+            initialTopLeft: TOP_LEFT_CORNER_COORDS,
+            initialBottomRight: BOTTOM_RIGHT_CORNER_COORDS,
+            finalTopLeft: TOP_LEFT_CORNER_COORDS,
+            finalBottomRight: BOTTOM_RIGHT_CORNER_COORDS,
+        };
         service.selectedPointIndex = SelectedPoint.NO_POINT;
         service.checkIfAControlPointHasBeenSelected(posBottomRightStub, coordsStub, false);
         expect(service.selectedPointIndex).toEqual(SelectedPoint.NO_POINT);

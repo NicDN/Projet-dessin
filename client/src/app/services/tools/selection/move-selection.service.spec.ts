@@ -188,12 +188,12 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
 
         service.moveSelectionWithArrows(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
-        expect(magnetServiceSpyObj.alignToProperMagnetArrowPosition).toHaveBeenCalled();
+        expect(magnetServiceSpyObj.alignToProperMagnetMousePosition).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithMouse should call alignToProperMagnetMousePosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
-        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
         expect(magnetServiceSpyObj.alignToProperMagnetMousePosition).toHaveBeenCalled();
     });
 
@@ -205,7 +205,7 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         service.mouseMoveOffset = { x: MOUSE_OFFSET, y: MOUSE_OFFSET };
 
-        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
         expect(selectionCoordsStub.finalTopLeft).toEqual({
             x: MOUSE_POSITION.x - MOUSE_OFFSET,
             y: MOUSE_POSITION.y - MOUSE_OFFSET,

@@ -67,17 +67,18 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.lineService.pathData.length !== 0) this.undoRedoService.disableUndoRedo();
-        if (!this.checkIfLineCrossing()) this.lineService.pathData.push(this.lineService.mousePosition);
 
-        if (this.lineService.pathData.length > 4) {
-            if (this.lineService.checkClosingLoop()) {
-                this.lineService.pathData.pop();
-                this.lineService.pathData.pop();
-                this.lineService.pathData.push(this.lineService.pathData[0]);
-                this.drawingService.clearCanvas(this.drawingService.previewCtx);
-                this.calculateInitialCoords();
-                this.createSelection();
-            }
+        if (this.checkIfLineCrossing()) return;
+        this.lineService.pathData.push(this.lineService.mousePosition);
+
+        if (this.lineService.pathData.length > 4 && this.lineService.checkClosingLoop()) {
+            this.lineService.pathData.pop();
+            this.lineService.pathData.pop();
+            this.lineService.pathData.push(this.lineService.pathData[0]);
+            if (this.checkIfLineCrossing()) return;
+            this.drawingService.clearCanvas(this.drawingService.previewCtx);
+            this.calculateInitialCoords();
+            this.createSelection();
         }
     }
 
@@ -218,6 +219,15 @@ export class LassoSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData || !selectionPropreties.firstPointOffset) return;
         selectionPropreties.selectionCtx.save();
 
+        selectionPropreties.selectionCtx.translate(
+            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
+            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+        );
+        selectionPropreties.selectionCtx.scale(0.99, 0.99);
+        selectionPropreties.selectionCtx.translate(
+            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
+            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+        );
         selectionPropreties.selectionCtx.fillStyle = 'white';
         this.makePath(selectionPropreties, true);
         selectionPropreties.selectionCtx.fill();
@@ -262,8 +272,9 @@ export class LassoSelectionService extends SelectionTool {
         const A1: Vec2 = this.lineService.pathData[this.lineService.pathData.length - 1];
         const A2: Vec2 = this.lineService.pathData[this.lineService.pathData.length - 2];
         let lineCrossing = false;
+        // tslint:disable-next-line: cyclomatic-complexity
         this.lineService.pathData.forEach((point, index) => {
-            if (index >= this.lineService.pathData.length - 2) return;
+            if (index >= this.lineService.pathData.length - 3) return;
 
             const B1: Vec2 = point;
             const B2: Vec2 = this.lineService.pathData[index + 1];
@@ -273,11 +284,19 @@ export class LassoSelectionService extends SelectionTool {
             const deltaXB = B2.x - B1.x;
             const deltaYB = B2.y - B1.y;
 
-            const intersectX =
+            let intersectX =
                 (B1.y * deltaXA * deltaXB - B1.x * deltaYB * deltaXA - A1.y * deltaXA * deltaXB + A1.x * deltaYA * deltaXB) /
                 (deltaYA * deltaXB - deltaYB * deltaXA);
 
-            const intersectY = (intersectX * deltaYA + A1.y * deltaXA - A1.x * deltaYA) / deltaXA;
+            if (deltaXA === 0) intersectX = A1.x;
+            if (deltaXB === 0) intersectX = B1.x;
+
+            let intersectY = (intersectX * deltaYA + A1.y * deltaXA - A1.x * deltaYA) / deltaXA;
+            if (deltaXA === 0 || deltaXB === 0 || deltaYA === 0 || deltaYB === 0) console.log(intersectX, intersectY);
+
+            if (deltaYA === 0) intersectY = A1.y;
+            if (deltaYB === 0) intersectY = B1.y;
+            if (deltaXA === 0) intersectY = (intersectX * deltaYB + B1.y * deltaXB - B1.x * deltaYB) / deltaXB;
 
             const upperBoundXA = Math.max(A1.x, A2.x);
             const upperBoundYA = Math.max(A1.y, A2.y);
@@ -290,14 +309,10 @@ export class LassoSelectionService extends SelectionTool {
             const lowerBoundYB = Math.min(B1.y, B2.y);
 
             if (
-                intersectX > lowerBoundXA &&
-                intersectX < upperBoundXA &&
-                intersectX > lowerBoundXB &&
-                intersectX < upperBoundXB &&
-                intersectY > lowerBoundYA &&
-                intersectY < upperBoundYA &&
-                intersectY > lowerBoundYB &&
-                intersectY < upperBoundYB
+                ((intersectX > lowerBoundXA && intersectX < upperBoundXA) || (lowerBoundXA === upperBoundXA && intersectX === upperBoundXA)) &&
+                ((intersectX > lowerBoundXB && intersectX < upperBoundXB) || (lowerBoundXB === upperBoundXB && intersectX === upperBoundXB)) &&
+                ((intersectY > lowerBoundYA && intersectY < upperBoundYA) || (lowerBoundYA === upperBoundYA && intersectY === upperBoundYA)) &&
+                ((intersectY > lowerBoundYB && intersectY < upperBoundYB) || (lowerBoundYB === upperBoundYB && intersectY === upperBoundYB))
             )
                 lineCrossing = true;
         });

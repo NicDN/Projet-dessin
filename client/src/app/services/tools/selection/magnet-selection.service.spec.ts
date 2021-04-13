@@ -5,11 +5,12 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { of } from 'rxjs';
-import { MagnetSelectionService, SelectedPoint } from './magnet-selection.service';
+import { MagnetSelectionService } from './magnet-selection.service';
 
 // tslint:disable: no-any
 // tslint:disable: no-string-literal
-describe('MagnetSelectionService', () => {
+// tslint:disable: max-file-line-count
+fdescribe('MagnetSelectionService', () => {
     let service: MagnetSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let gridServiceSpyObj: jasmine.SpyObj<GridService>;
@@ -24,8 +25,10 @@ describe('MagnetSelectionService', () => {
     let selectionCoordsStub: SelectionCoords;
     let selectionWidth: number;
     let selectionHeight: number;
-    let deltaX = 60;
-    let deltaY = 60;
+    let dimensionStub: Vec2;
+    const deltaX = 60;
+    const deltaY = 60;
+    let deltaStub: Vec2;
     let mouseOffsetTopToMagnetize = { x: MOUSE_OFFSET, y: MOUSE_OFFSET };
     let mouseOffsetBottomToMagnetize = MOUSE_POSITION;
     let positionToMagnetize = { x: 60, y: 40 };
@@ -50,6 +53,8 @@ describe('MagnetSelectionService', () => {
 
         selectionWidth = BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x;
         selectionHeight = BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y;
+        deltaStub = { x: deltaX, y: deltaY };
+        dimensionStub = { x: selectionWidth, y: selectionHeight };
         gridServiceSpyObj.squareSize = SQUARE_SIZE;
         service = TestBed.inject(MagnetSelectionService);
     });
@@ -58,91 +63,41 @@ describe('MagnetSelectionService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('#alignToProperMagnetArrowPosition should keep values of  deltaX and deltaY if they are negative  ', () => {
+    it('#alignToProperMagnetMousePosition should keep values of  deltaX and deltaY if they are negative  ', () => {
         const negativeDelta = -20;
-        deltaX = negativeDelta;
-        deltaY = negativeDelta;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(deltaX).toEqual(negativeDelta);
-        expect(deltaY).toEqual(negativeDelta);
+        deltaStub = { x: negativeDelta, y: negativeDelta };
+        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(deltaStub.x).toEqual(negativeDelta);
+        expect(deltaStub.y).toEqual(negativeDelta);
     });
 
-    it('#alignToProperMagnetArrowPosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
-        deltaX = 0;
-        deltaY = 0;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(deltaX).toEqual(0);
-        expect(deltaY).toEqual(0);
+    it('#alignToProperMagnetMousePosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
+        deltaStub = { x: 0, y: 0 };
+        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(deltaStub.x).toEqual(0);
+        expect(deltaStub.y).toEqual(0);
     });
 
-    it('#alignToProperMagnetArrowPosition should align the selection to the TOP_LEFT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_LEFT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    it('#yIsFlipped should return true if finalBottomRight.x is lower than finalTopLeft.x', () => {
+        selectionCoordsStub.finalBottomRight.x = 0;
+        selectionCoordsStub.finalTopLeft.x = 1;
+        const expectedResult = service['yIsFlipped'](selectionCoordsStub);
+        expect(expectedResult).toBeTrue();
     });
 
-    it('#alignToProperMagnetArrowPosition should align the selection to the TOP_MIDDLE position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    it('#xIsFlipped should return true if finalBottomRight.y is lower than finalTopLeft.y', () => {
+        selectionCoordsStub.finalBottomRight.y = 0;
+        selectionCoordsStub.finalTopLeft.y = 1;
+        const expectedResult = service['xIsFlipped'](selectionCoordsStub);
+        expect(expectedResult).toBeTrue();
     });
 
-    it('#alignToProperMagnetArrowPosition should align the selection to the TOP_RIGHT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_RIGHT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the MIDDLE_LEFT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the CENTER position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.CENTER;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
-        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the MIDDLE_RIGHT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the BOTTOM_LEFT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
-        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the BOTTOM_MIDDLE position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
-        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
-    });
-
-    it('#alignToProperMagnetArrowPosition should align the selection to the BOTTOM_RIGHT position when using arrows', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
-        service['alignToProperMagnetArrowPosition'](selectionCoordsStub, deltaX, deltaY, selectionWidth, selectionHeight);
-        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
-        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
-    });
-
-    it('#alignToProperMagnetMousePosition should align the selection to the TOP_LEFT position', () => {
+    it('#magTopLeft should allign the selection to the top left position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
+        deltaStub = { x: 0, y: 0 };
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.TOP_LEFT;
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, selectionWidth, selectionHeight);
+        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
 
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
@@ -150,15 +105,25 @@ describe('MagnetSelectionService', () => {
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the TOP_MIDDLE position', () => {
+    it('#magTopLeft should allign the selection to the top left position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    });
+
+    it('#magTopMid should allign the selection to the top middle position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
+        deltaStub = { x: 0, y: 0 };
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
-        service['alignToProperMagnetMousePosition'](
+        service['magTopMid'](
             { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
             selectionCoordsStub,
-            selectionWidth,
-            selectionHeight,
+            mouseOffsetTopToMagnetize,
+            deltaStub,
+            dimensionStub,
         );
 
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth / 2);
@@ -167,105 +132,234 @@ describe('MagnetSelectionService', () => {
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the TOP_RIGHT position', () => {
+    it('#magTopMid should allign the selection to the top middle position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magTopMid'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    });
+
+    it('#magTopRight should allign the selection to the top right position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.TOP_RIGHT;
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, selectionWidth, selectionHeight);
-
+        deltaStub = { x: 0, y: 0 };
+        service['magTopRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetBottomToMagnetize.x);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the MIDDLE_LEFT position', () => {
+    it('#magTopRight should allign the selection to the top right position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magTopRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    });
+
+    it('#magMidLeft should allign the selection to the middle left position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
-        service['alignToProperMagnetMousePosition'](
+        service['magMidLeft'](
             { x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 },
             selectionCoordsStub,
-            selectionWidth,
-            selectionHeight,
+            mouseOffsetTopToMagnetize,
+            deltaStub,
+            dimensionStub,
         );
-
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y - selectionHeight / 2);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the CENTER position', () => {
+    it('#magMidLeft should allign the selection to the middle left position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magMidLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    });
+
+    it('#magCenter should allign the selection to the center position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.CENTER;
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, selectionWidth, selectionHeight);
-
+        service['magCenter'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the MIDDLE_RIGHT position', () => {
+    it('#magCenter should allign the selection to the center position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magCenter'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+    });
+
+    it('#magMidRight should allign the selection to the middle right position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
-        service['alignToProperMagnetMousePosition'](
+        service['magMidRight'](
             { x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 },
             selectionCoordsStub,
-            selectionWidth,
-            selectionHeight,
+            mouseOffsetTopToMagnetize,
+            deltaStub,
+            dimensionStub,
         );
-
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y + selectionHeight / 2);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the BOTTOM_LEFT position', () => {
+    it('#magMidRight should allign the selection to the middle right position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magMidRight'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
+    });
+
+    it('#magBotLeft should allign the selection to the center position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, selectionWidth, selectionHeight);
-
+        service['magBotLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the BOTTOM_MIDDLE position', () => {
+    it('#magBotLeft should allign the selection to the center position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magBotLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
+    });
+
+    it('#magBotLeft should allign the selection to the bottom left position when using the mouse', () => {
+        service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
-        service['alignToProperMagnetMousePosition'](
+        service['magBotLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y);
+    });
+
+    it('#magBotLeft should allign the selection to the bottom left position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magBotLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
+    });
+
+    it('#magBotMid should allign the selection to the bottom middle position when using the mouse', () => {
+        service.isUsingMouse = true;
+        service.mouseMoveOffset = mouseOffsetTopToMagnetize;
+        mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
+        mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
+        service['magBotMid'](
             { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
             selectionCoordsStub,
-            selectionWidth,
-            selectionHeight,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
         );
-
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth / 2);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth / 2);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y);
     });
 
-    it('#alignToProperMagnetMousePosition should align the selection to the BOTTOM_RIGHT position', () => {
-        service.mouseMoveOffset = mouseOffsetTopToMagnetize;
-        mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, selectionWidth, selectionHeight);
+    it('#magBotMid should allign the selection to the bottom middle position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magBotMid'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+    });
 
+    it('#magBotRight should allign the selection to the bottom right position when using the mouse', () => {
+        service.isUsingMouse = true;
+        service.mouseMoveOffset = mouseOffsetBottomToMagnetize;
+        mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
+        service['magBotRight'](
+            { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
+            selectionCoordsStub,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetBottomToMagnetize.x);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y);
+        expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
+        expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+    });
+
+    it('#magBotRight should allign the selection to the bottom right position when using the arrows', () => {
+        service.isUsingMouse = false;
+        service['magBotRight'](positionToMagnetize, selectionCoordsStub, mouseOffsetBottomToMagnetize, deltaStub, dimensionStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
