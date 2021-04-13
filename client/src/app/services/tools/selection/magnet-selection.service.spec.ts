@@ -115,7 +115,7 @@ fdescribe('MagnetSelectionService', () => {
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
 
-    it('Random #magTopMid should allign the selection to the top middle position when using the mouse', () => {
+    it('#magTopMid should allign the selection to the top middle position when using the mouse', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         deltaStub = { x: 0, y: 0 };
@@ -342,7 +342,7 @@ fdescribe('MagnetSelectionService', () => {
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
 
-    it('Random #magBotRight should allign the selection to the bottom right position when using the mouse', () => {
+    it('#magBotRight should allign the selection to the bottom right position when using the mouse', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetBottomToMagnetize;
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
