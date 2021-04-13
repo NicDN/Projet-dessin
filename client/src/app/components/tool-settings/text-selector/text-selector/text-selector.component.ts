@@ -31,7 +31,7 @@ export class TextSelectorComponent implements OnInit {
         { name: 'Times', value: FontStyle.Times },
         { name: 'Comic Sans MS', value: FontStyle.Comic },
         { name: 'Calibri', value: FontStyle.Calibri },
-        { name: 'Georgia', value: FontStyle.Georgia },
+        { name: 'Trebuchet MS', value: FontStyle.Trebuchet },
     ];
 
     textSizeSetting: SliderSetting;

@@ -18,7 +18,7 @@ export enum FontStyle {
     Times,
     Comic,
     Calibri,
-    Georgia,
+    Trebuchet,
 }
 
 @Injectable({
@@ -48,7 +48,7 @@ export class TextService extends TraceTool {
     writtenOnPreview: string = '';
     private initialClickPosition: Vec2 = { x: 0, y: 0 };
     writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
-    private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Calibri', 'Georgia'];
+    private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Calibri', 'Trebuchet MS'];
     enterPosition: number[] = [];
     private approximateHeight: number = 0;
 
@@ -157,12 +157,13 @@ export class TextService extends TraceTool {
         this.longestCharacterChain = { x: 0, y: 0 };
         textProperties.textContext.save();
         this.setContextForWriting(textProperties);
+        this.approximateHeight = textProperties.textContext.measureText('M').width * this.MULTIPLIER;
         this.findLongestLineAndHeight(textProperties);
 
         const previewPosition = textProperties.writtenOnPreview.length - this.writingPosition;
         let asDrawnedPreview = false;
         // You can get a very close approximation of the vertical height by checking the length of a capital M (multiplying by 1.5 for comfort).
-        this.approximateHeight = textProperties.textContext.measureText('M').width * this.MULTIPLIER;
+
         let i = 0;
         let previousPosition = 0;
 
