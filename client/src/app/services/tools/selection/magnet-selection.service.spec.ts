@@ -192,7 +192,7 @@ describe('MagnetSelectionService', () => {
         );
 
         expect(
-            Math.abs(selectionCoordsStub.finalTopLeft.x - (positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionHeight / 2)),
+            Math.abs(selectionCoordsStub.finalTopLeft.x - (positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth / 2)),
         ).toBeLessThan(2);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);

@@ -301,7 +301,7 @@ export abstract class SelectionTool extends Tool {
     }
 
     selectAll(): void {
-        this.onMouseDown({ pageX: 0 + HORIZONTAL_OFFSET, pageY: 0 + VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
+        this.onMouseDown({ pageX: HORIZONTAL_OFFSET, pageY: VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
         this.onMouseUp({
             pageX: this.drawingService.canvas.width + HORIZONTAL_OFFSET,
             pageY: this.drawingService.canvas.height + VERTICAL_OFFSET,
