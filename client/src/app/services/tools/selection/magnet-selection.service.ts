@@ -3,7 +3,6 @@ import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { GridService } from '@app/services/grid/grid.service';
 
-// tslint:disable: max-file-line-count
 export enum SelectedPoint {
     TOP_LEFT = 0,
     TOP_MIDDLE = 1,
@@ -122,7 +121,7 @@ export class MagnetSelectionService {
     private magTopMid(pos: Vec2, selectionCoords: SelectionCoords, mouseOffsetTop: Vec2, delta: Vec2, dimension: Vec2): void {
         if (this.isUsingMouse) {
             pos = this.finalMagnetized({ x: pos.x + dimension.x / 2, y: pos.y }, true, true);
-            selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, -dimension.y / 2, 0);
+            selectionCoords.finalTopLeft = this.translateCoords(pos, -mouseOffsetTop.x, -mouseOffsetTop.y, -dimension.x / 2, 0);
             selectionCoords.finalBottomRight = this.translateCoords(selectionCoords.finalTopLeft, 0, 0, dimension.x, dimension.y);
         } else {
             selectionCoords.finalTopLeft = this.finalMagnetized(

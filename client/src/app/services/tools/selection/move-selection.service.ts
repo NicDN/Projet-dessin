@@ -17,10 +17,10 @@ export class MoveSelectionService {
     readonly arrowMoveDelta: number = 3;
 
     movingWithArrows: boolean = false;
-    keyUpIsPressed: boolean = false;
-    keyDownIsPressed: boolean = false;
-    keyLeftIsPressed: boolean = false;
-    keyRightIsPressed: boolean = false;
+    private keyUpIsPressed: boolean = false;
+    private keyDownIsPressed: boolean = false;
+    private keyLeftIsPressed: boolean = false;
+    private keyRightIsPressed: boolean = false;
     initialKeyPress: boolean = false;
 
     calculateDelta(): Vec2 {

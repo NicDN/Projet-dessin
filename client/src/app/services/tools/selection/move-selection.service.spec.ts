@@ -56,8 +56,8 @@ describe('MoveSelectionService', () => {
     });
 
     it('#calculateDelta should calculate by how much the selection should move based on every arrow key condition', () => {
-        service.keyDownIsPressed = true;
-        service.keyLeftIsPressed = true;
+        service['keyDownIsPressed'] = true;
+        service['keyLeftIsPressed'] = true;
 
         const calculatedDelta = service.calculateDelta();
 
@@ -65,8 +65,8 @@ describe('MoveSelectionService', () => {
     });
 
     it('#calculateDelta should calculate by how much the selection should move based on every arrow key condition', () => {
-        service.keyUpIsPressed = true;
-        service.keyRightIsPressed = true;
+        service['keyUpIsPressed'] = true;
+        service['keyRightIsPressed'] = true;
 
         const calculatedDelta = service.calculateDelta();
 
@@ -74,10 +74,10 @@ describe('MoveSelectionService', () => {
     });
 
     it('#calculateDelta should return 0,0 if everykey is pressed', () => {
-        service.keyDownIsPressed = true;
-        service.keyLeftIsPressed = true;
-        service.keyRightIsPressed = true;
-        service.keyUpIsPressed = true;
+        service['keyDownIsPressed'] = true;
+        service['keyLeftIsPressed'] = true;
+        service['keyRightIsPressed'] = true;
+        service['keyUpIsPressed'] = true;
 
         const calculatedDelta = service.calculateDelta();
 
@@ -85,74 +85,74 @@ describe('MoveSelectionService', () => {
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
-        service.keyUpIsPressed = true;
+        service['keyUpIsPressed'] = true;
         const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
-        service.keyDownIsPressed = true;
+        service['keyDownIsPressed'] = true;
         const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
-        service.keyLeftIsPressed = true;
+        service['keyLeftIsPressed'] = true;
         const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#checkIfAnyArrowIsPressed should return true if any of the arrow press booleans are true', () => {
-        service.keyRightIsPressed = true;
+        service['keyRightIsPressed'] = true;
         const anyArrowPressed = service.checkIfAnyArrowIsPressed();
         expect(anyArrowPressed).toBeTrue();
     });
 
     it('#updateArrowKeysPressed should change the arrow press boolean related to the KeyboardEvent to true, and not affect the others, when applicable', () => {
-        service.keyDownIsPressed = false;
-        service.keyUpIsPressed = true;
-        service.keyLeftIsPressed = false;
-        service.keyRightIsPressed = true;
+        service['keyDownIsPressed'] = false;
+        service['keyUpIsPressed'] = true;
+        service['keyLeftIsPressed'] = false;
+        service['keyRightIsPressed'] = true;
         const arrowEvent = { code: 'ArrowLeft' } as KeyboardEvent;
 
         service.updateArrowKeysPressed(arrowEvent, true);
 
-        expect(service.keyDownIsPressed).toBeFalse();
-        expect(service.keyUpIsPressed).toBeTrue();
-        expect(service.keyLeftIsPressed).toBeTrue();
-        expect(service.keyRightIsPressed).toBeTrue();
+        expect(service['keyDownIsPressed']).toBeFalse();
+        expect(service['keyUpIsPressed']).toBeTrue();
+        expect(service['keyLeftIsPressed']).toBeTrue();
+        expect(service['keyRightIsPressed']).toBeTrue();
     });
 
     it('#updateArrowKeysPressed should change every arrowPress boolean to the given parameter if all keys are pressed in sucession', () => {
-        service.keyDownIsPressed = false;
-        service.keyUpIsPressed = false;
-        service.keyLeftIsPressed = false;
-        service.keyRightIsPressed = false;
+        service['keyDownIsPressed'] = false;
+        service['keyUpIsPressed'] = false;
+        service['keyLeftIsPressed'] = false;
+        service['keyRightIsPressed'] = false;
 
         service.updateArrowKeysPressed({ code: 'ArrowLeft' } as KeyboardEvent, true);
         service.updateArrowKeysPressed({ code: 'ArrowUp' } as KeyboardEvent, true);
         service.updateArrowKeysPressed({ code: 'ArrowDown' } as KeyboardEvent, true);
         service.updateArrowKeysPressed({ code: 'ArrowRight' } as KeyboardEvent, true);
 
-        expect(service.keyDownIsPressed).toBeTrue();
-        expect(service.keyUpIsPressed).toBeTrue();
-        expect(service.keyLeftIsPressed).toBeTrue();
-        expect(service.keyRightIsPressed).toBeTrue();
+        expect(service['keyDownIsPressed']).toBeTrue();
+        expect(service['keyUpIsPressed']).toBeTrue();
+        expect(service['keyLeftIsPressed']).toBeTrue();
+        expect(service['keyRightIsPressed']).toBeTrue();
     });
 
     it('#updateArrowKeysPressed should change the arrow press boolean related to the KeyboardEvent to false, and not affect the others, when applicable', () => {
-        service.keyDownIsPressed = false;
-        service.keyUpIsPressed = true;
-        service.keyLeftIsPressed = false;
-        service.keyRightIsPressed = true;
+        service['keyDownIsPressed'] = false;
+        service['keyUpIsPressed'] = true;
+        service['keyLeftIsPressed'] = false;
+        service['keyRightIsPressed'] = true;
         const arrowEvent = { code: 'ArrowUp' } as KeyboardEvent;
 
         service.updateArrowKeysPressed(arrowEvent, false);
 
-        expect(service.keyDownIsPressed).toBeFalse();
-        expect(service.keyUpIsPressed).toBeFalse();
-        expect(service.keyLeftIsPressed).toBeFalse();
-        expect(service.keyRightIsPressed).toBeTrue();
+        expect(service['keyDownIsPressed']).toBeFalse();
+        expect(service['keyUpIsPressed']).toBeFalse();
+        expect(service['keyLeftIsPressed']).toBeFalse();
+        expect(service['keyRightIsPressed']).toBeTrue();
     });
 
     it('#moveSelectionWithArrows should move the selection coordinates by the given delta and redraw selection at the new position', () => {

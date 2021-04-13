@@ -14,8 +14,6 @@ export interface SelectionCoords {
     finalTopLeft: Vec2;
     finalBottomRight: Vec2;
 }
-// tslint:disable: no-magic-numbers
-// tslint:disable: max-file-line-count
 export abstract class SelectionTool extends Tool {
     constructor(
         drawingService: DrawingService,
@@ -28,7 +26,6 @@ export abstract class SelectionTool extends Tool {
     ) {
         super(drawingService, toolName);
     }
-
     data: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
@@ -37,7 +34,6 @@ export abstract class SelectionTool extends Tool {
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
     emptyDelta: Vec2 = { x: 0, y: 0 };
-
     coords: SelectionCoords = {
         initialTopLeft: { x: 0, y: 0 },
         initialBottomRight: { x: 0, y: 0 },
@@ -77,7 +73,6 @@ export abstract class SelectionTool extends Tool {
 
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
-
         if (
             this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
             this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
@@ -107,7 +102,6 @@ export abstract class SelectionTool extends Tool {
     onMouseUp(event: MouseEvent): void {
         if (!this.mouseDown) return;
         this.mouseDown = false;
-
         if (this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT) {
             this.resizeSelectionService.selectedPointIndex = SelectedPoint.NO_POINT;
             return;
@@ -156,7 +150,6 @@ export abstract class SelectionTool extends Tool {
                 this.drawAll(this.drawingService.previewCtx);
             }
         }
-
         this.handleMovingArrowsKeyUp(event);
     }
 
@@ -236,7 +229,6 @@ export abstract class SelectionTool extends Tool {
 
     private saveSelection(ctx: CanvasRenderingContext2D): void {
         this.setSelectionCoords();
-
         this.data = ctx.getImageData(
             this.coords.initialTopLeft.x,
             this.coords.initialTopLeft.y,
@@ -262,7 +254,6 @@ export abstract class SelectionTool extends Tool {
     private adjustToDrawingBounds(): void {
         if (this.coords.initialBottomRight.x < 0) this.coords.initialBottomRight.x = 0;
         if (this.coords.initialBottomRight.x > this.drawingService.canvas.width) this.coords.initialBottomRight.x = this.drawingService.canvas.width;
-
         if (this.coords.initialBottomRight.y < 0) this.coords.initialBottomRight.y = 0;
         if (this.coords.initialBottomRight.y > this.drawingService.canvas.height)
             this.coords.initialBottomRight.y = this.drawingService.canvas.height;
@@ -285,7 +276,6 @@ export abstract class SelectionTool extends Tool {
             this.undoRedoService.enableUndoRedo();
             return;
         }
-
         this.coords.initialTopLeft = { x: this.coords.initialBottomRight.x, y: this.coords.initialBottomRight.y };
     }
 
@@ -324,7 +314,6 @@ export abstract class SelectionTool extends Tool {
         const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
         const maxY = Math.max(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
-
         return (
             point.x > minX - this.selectionOffSet &&
             point.x < maxX + this.selectionOffSet &&
@@ -338,7 +327,6 @@ export abstract class SelectionTool extends Tool {
             x: pos.x - this.coords.finalTopLeft.x,
             y: pos.y - this.coords.finalTopLeft.y,
         };
-
         this.magnetSelectionService.mouseMoveOffset = {
             x: pos.x - this.coords.finalTopLeft.x,
             y: pos.y - this.coords.finalTopLeft.y,
