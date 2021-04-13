@@ -35,6 +35,7 @@ export abstract class SelectionTool extends Tool {
     private timeoutHandler: number;
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
+    emptyDelta: Vec2 = { x: 0, y: 0 };
 
     coords: SelectionCoords = {
         initialTopLeft: { x: 0, y: 0 },
@@ -85,7 +86,12 @@ export abstract class SelectionTool extends Tool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
+            this.moveSelectionService.moveSelectionWithMouse(
+                this.drawingService.previewCtx,
+                this.getPositionFromMouse(event),
+                this.emptyDelta,
+                this.coords,
+            );
             this.drawAll(this.drawingService.previewCtx);
             return;
         }

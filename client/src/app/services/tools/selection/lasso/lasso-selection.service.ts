@@ -100,7 +100,12 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
+            this.moveSelectionService.moveSelectionWithMouse(
+                this.drawingService.previewCtx,
+                this.getPositionFromMouse(event),
+                this.emptyDelta,
+                this.coords,
+            );
             this.drawAll(this.drawingService.previewCtx);
             return;
         }

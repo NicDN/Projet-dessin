@@ -11,7 +11,7 @@ export class MoveSelectionService {
     constructor(private drawingService: DrawingService, private magnetSelectionService: MagnetSelectionService) {}
 
     movingWithMouse: boolean = false;
-    mouseMoveOffset: Vec2;
+    mouseMoveOffset: Vec2 = { x: 0, y: 0 };
     isUsingMagnet: boolean = false;
 
     readonly arrowMoveDelta: number = 3;
@@ -45,11 +45,13 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
-        const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
-        const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
+        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
+        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
+        const emptyPosition = { x: 0, y: 0 };
 
+        this.magnetSelectionService.isUsingMouse = false;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetArrowPosition(selectionCoords, delta.x, delta.y, width, height);
+            this.magnetSelectionService.alignToProperMagnetMousePosition(emptyPosition, selectionCoords, delta, width, height);
         } else {
             selectionCoords.finalTopLeft.x += delta.x;
             selectionCoords.finalTopLeft.y += delta.y;
@@ -59,12 +61,13 @@ export class MoveSelectionService {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
 
+        this.magnetSelectionService.isUsingMouse = true;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetMousePosition(pos, selectionCoords, width, height);
+            this.magnetSelectionService.alignToProperMagnetMousePosition(pos, selectionCoords, delta, width, height);
         } else {
             selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
             selectionCoords.finalBottomRight = {
