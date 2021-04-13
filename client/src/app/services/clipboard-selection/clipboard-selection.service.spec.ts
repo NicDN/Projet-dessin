@@ -10,6 +10,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
@@ -26,8 +27,9 @@ describe('ClipboardService', () => {
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
-    let moveSelectionService: jasmine.SpyObj<MoveSelectionService>;
+    let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
     let resizeSelectionServiceSpyObj: jasmine.SpyObj<ResizeSelectionService>;
+    let magnetSelectionServiceSpyObj: jasmine.SpyObj<MagnetSelectionService>;
     // tslint:disable-next-line: prefer-const
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let colorServiceSpyObj: jasmine.SpyObj<ColorService>;
@@ -63,7 +65,8 @@ describe('ClipboardService', () => {
         colorServiceSpyObj = jasmine.createSpyObj('ColorService', ['']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['disableUndoRedo']);
         lineServiceSpyObj = jasmine.createSpyObj('LineService', ['clearPath']);
-        moveSelectionService = jasmine.createSpyObj('MoveSelectionService', ['']);
+        moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
+        magnetSelectionServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['']);
         TestBed.configureTestingModule({
             providers: [
                 { provide: ToolsService, useValue: toolServiceSpyObj },
@@ -91,25 +94,28 @@ describe('ClipboardService', () => {
             drawingServiceSpyObj,
             rectangleDrawingServiceSpyObj,
             undoRedoServiceSpyObj,
-            moveSelectionService,
+            moveSelectionServiceSpyObj,
             resizeSelectionServiceSpyObj,
+            magnetSelectionServiceSpyObj,
         );
 
         ellipseSelectionServiceStub = new EllipseSelectionService(
             drawingServiceSpyObj,
             rectangleDrawingServiceSpyObj,
             undoRedoServiceSpyObj,
-            moveSelectionService,
+            moveSelectionServiceSpyObj,
             resizeSelectionServiceSpyObj,
+            magnetSelectionServiceSpyObj,
         );
 
         lassoSelectionServiceStub = new LassoSelectionService(
             drawingServiceSpyObj,
             rectangleDrawingServiceSpyObj,
             undoRedoServiceSpyObj,
-            moveSelectionService,
+            moveSelectionServiceSpyObj,
             resizeSelectionServiceSpyObj,
             toolServiceSpyObj.lineService,
+            magnetSelectionServiceSpyObj,
         );
         toolServiceSpyObj.rectangleSelectionService = rectangleSelectionServiceStub;
         toolServiceSpyObj.ellipseSelectionService = ellipseSelectionServiceStub;

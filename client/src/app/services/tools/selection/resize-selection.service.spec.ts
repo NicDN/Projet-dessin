@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Vec2 } from '@app/classes/vec2';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
-import { SelectedPoint } from './move-selection.service';
+import { SelectedPoint } from './magnet-selection.service';
 import { ResizeSelectionService } from './resize-selection.service';
 
 // tslint:disable: no-string-literal

@@ -5,7 +5,8 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { MouseButton } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -22,6 +23,7 @@ export class LassoSelectionService extends SelectionTool {
         moveSelectionService: MoveSelectionService,
         resizeSelectionService: ResizeSelectionService,
         private lineService: LineService,
+        magnetSelectionService: MagnetSelectionService,
     ) {
         super(
             drawingService,
@@ -30,6 +32,7 @@ export class LassoSelectionService extends SelectionTool {
             undoRedoService,
             moveSelectionService,
             resizeSelectionService,
+            magnetSelectionService,
         );
     }
 
@@ -98,7 +101,12 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
+            this.moveSelectionService.moveSelectionWithMouse(
+                this.drawingService.previewCtx,
+                this.getPositionFromMouse(event),
+                this.emptyDelta,
+                this.coords,
+            );
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
