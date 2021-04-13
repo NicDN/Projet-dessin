@@ -28,7 +28,7 @@ export class MagnetSelectionService {
     mouseMoveOffset: Vec2 = { x: 0, y: 0 };
     isUsingMouse: boolean = false;
 
-    alignToProperMagnetMousePosition(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2, width: number, height: number): void {
+    alignToProperMagnetPosition(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2, width: number, height: number): void {
         let moveOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
         let moveOffsetBottom = { x: selectionCoords.finalBottomRight.x - pos.x, y: selectionCoords.finalBottomRight.y - pos.y };
 

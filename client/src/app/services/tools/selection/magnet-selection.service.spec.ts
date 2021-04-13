@@ -5,12 +5,12 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { of } from 'rxjs';
-import { MagnetSelectionService } from './magnet-selection.service';
+import { MagnetSelectionService, SelectedPoint } from './magnet-selection.service';
 
 // tslint:disable: no-any
 // tslint:disable: no-string-literal
 // tslint:disable: max-file-line-count
-fdescribe('MagnetSelectionService', () => {
+describe('MagnetSelectionService', () => {
     let service: MagnetSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let gridServiceSpyObj: jasmine.SpyObj<GridService>;
@@ -68,16 +68,79 @@ fdescribe('MagnetSelectionService', () => {
     it('#alignToProperMagnetMousePosition should keep values of  deltaX and deltaY if they are negative  ', () => {
         const negativeDelta = -20;
         deltaStub = { x: negativeDelta, y: negativeDelta };
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
         expect(deltaStub.x).toEqual(negativeDelta);
         expect(deltaStub.y).toEqual(negativeDelta);
     });
 
     it('#alignToProperMagnetMousePosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
         deltaStub = { x: 0, y: 0 };
-        service['alignToProperMagnetMousePosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
         expect(deltaStub.x).toEqual(0);
         expect(deltaStub.y).toEqual(0);
+    });
+
+    it('#alignToProperMagnetMousePosition should call topLeft if the selected point is top left', () => {
+        service.pointToMagnetize = SelectedPoint.TOP_LEFT;
+        const topLeftSpy = spyOn<any>(service, 'topLeft');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(topLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call topMid if the selected point is top middle', () => {
+        service.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
+        const topMidSpy = spyOn<any>(service, 'topMid');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(topMidSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call topRight if the selected point is top right', () => {
+        service.pointToMagnetize = SelectedPoint.TOP_RIGHT;
+        const topRightSpy = spyOn<any>(service, 'topRight');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(topRightSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call midLeft if the selected point is middle left', () => {
+        service.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
+        const midLeftSpy = spyOn<any>(service, 'midLeft');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(midLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call magCenter if the selected point is center', () => {
+        service.pointToMagnetize = SelectedPoint.CENTER;
+        const magCenterSpy = spyOn<any>(service, 'magCenter');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(magCenterSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call midRight if the selected point is middle right', () => {
+        service.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
+        const midRightSpy = spyOn<any>(service, 'midRight');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(midRightSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botLeft if the selected point is bottom left', () => {
+        service.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
+        const botLeftSpy = spyOn<any>(service, 'botLeft');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(botLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botMid if the selected point is bottom middle', () => {
+        service.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
+        const botMidSpy = spyOn<any>(service, 'botMid');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(botMidSpy).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botRight if the selected point is bottom right', () => {
+        service.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
+        const botRightSpy = spyOn<any>(service, 'botRight');
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        expect(botRightSpy).toHaveBeenCalled();
     });
 
     it('#yIsFlipped should return true if finalBottomRight.x is lower than finalTopLeft.x', () => {
@@ -118,17 +181,19 @@ fdescribe('MagnetSelectionService', () => {
     it('#magTopMid should allign the selection to the top middle position when using the mouse', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
-        deltaStub = { x: 0, y: 0 };
+        selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         service['magTopMid'](
-            { x: positionToMagnetize.x, y: positionToMagnetize.y },
+            { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
             selectionCoordsStub,
             mouseOffsetTopToMagnetize,
             deltaStub,
             dimensionStub,
         );
 
-        expect(Math.abs(selectionCoordsStub.finalTopLeft.x - (positionToMagnetize.x - mouseOffsetTopToMagnetize.x))).toBeLessThan(2);
+        expect(
+            Math.abs(selectionCoordsStub.finalTopLeft.x - (positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionHeight / 2)),
+        ).toBeLessThan(2);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
@@ -364,6 +429,358 @@ fdescribe('MagnetSelectionService', () => {
         service['magBotRight'](positionToMagnetize, selectionCoordsStub, mouseOffsetBottomToMagnetize, deltaStub, dimensionStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
+    });
+
+    it('#topLeft should call magTopRight if the y axis is flipped but not the x axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magTopRightSpy = spyOn<any>(service, 'magTopRight');
+        service['topLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopRightSpy).toHaveBeenCalled();
+    });
+
+    it('#topLeft should call magBotLeft if the x axis is flipped but not the y axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
+        service['topLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#topLeft should call magBotRight if the x and y axis are flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magBotRightSpy = spyOn<any>(service, 'magBotRight');
+        service['topLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotRightSpy).toHaveBeenCalled();
+    });
+
+    it('#topLeft should call magTopLeft if the x and y axis are not flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
+        service['topLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#topMid should call magBotMid if the x axis is flipped', () => {
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magBotMidSpy = spyOn<any>(service, 'magBotMid');
+        service['topMid'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotMidSpy).toHaveBeenCalled();
+    });
+
+    it('#topMid should call magTopMid if the x axis is not flipped', () => {
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magTopMidSpy = spyOn<any>(service, 'magTopMid');
+        service['topMid'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopMidSpy).toHaveBeenCalled();
+    });
+
+    it('#topRight should call magTopLeft if the y axis is flipped but not the x axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
+        service['topRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#topRight should call magBotRight if the x axis is flipped but not the y axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magBotRightSpy = spyOn<any>(service, 'magBotRight');
+        service['topRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotRightSpy).toHaveBeenCalled();
+    });
+
+    it('#topRight should call magBotLeft if the x and y axis are flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
+        service['topRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#topRight should call magTopRight if the x and y axis are not flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magTopRightSpy = spyOn<any>(service, 'magTopRight');
+        service['topRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopRightSpy).toHaveBeenCalled();
+    });
+
+    it('#midLeft should call magMidRight if the y axis is flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        const magMidRightSpy = spyOn<any>(service, 'magMidRight');
+        service['midLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magMidRightSpy).toHaveBeenCalled();
+    });
+
+    it('#midLeft should call magMidLeft if the y axis is not  flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        const magMidLeftSpy = spyOn<any>(service, 'magMidLeft');
+        service['midLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magMidLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#midRight should call magMidLeft if the y axis is flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        const magMidLeftSpy = spyOn<any>(service, 'magMidLeft');
+        service['midRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magMidLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#midRight should call magMidRight if the y axis is not flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        const magMidRightSpy = spyOn<any>(service, 'magMidRight');
+        service['midRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magMidRightSpy).toHaveBeenCalled();
+    });
+
+    it('#botLeft should call magBotRight if the y axis is flipped but not the x axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magBotRightSpy = spyOn<any>(service, 'magBotRight');
+        service['botLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotRightSpy).toHaveBeenCalled();
+    });
+
+    it('#botLeft should call magTopLeft if the x axis is flipped but not the y axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
+        service['botLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#botLeft should call magTopRight if the x and y axis are flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magTopRightSpy = spyOn<any>(service, 'magTopRight');
+        service['botLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopRightSpy).toHaveBeenCalled();
+    });
+
+    it('#botLeft should call magBotLeft if the x and y axis are not flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
+        service['botLeft'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#botMid should call magTopMid if the x axis is flipped', () => {
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magTopMidSpy = spyOn<any>(service, 'magTopMid');
+        service['botMid'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopMidSpy).toHaveBeenCalled();
+    });
+
+    it('#botMid should call magBotMid if the x axis is not  flipped', () => {
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magBotMidSpy = spyOn<any>(service, 'magBotMid');
+        service['botMid'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotMidSpy).toHaveBeenCalled();
+    });
+
+    it('#botRight should call magBotLeft if the y axis is flipped but not the x axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
+        service['botRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#botRight should call magTopRight if the x axis is flipped but not the y axis', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magTopRightSpy = spyOn<any>(service, 'magTopRight');
+        service['botRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopRightSpy).toHaveBeenCalled();
+    });
+
+    it('#botRight should call magTopLeft if the x and y axis are  flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
+        const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
+        service['botRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magTopLeftSpy).toHaveBeenCalled();
+    });
+
+    it('#botRight should call magBotRight if the x and y axis are not flipped', () => {
+        spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
+        spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
+        const magBotRightSpy = spyOn<any>(service, 'magBotRight');
+        service['botRight'](
+            positionToMagnetize,
+            selectionCoordsStub,
+            mouseOffsetTopToMagnetize,
+            mouseOffsetBottomToMagnetize,
+            deltaStub,
+            dimensionStub,
+        );
+        expect(magBotRightSpy).toHaveBeenCalled();
     });
 
     it('#finalMagnetized should call magnetizeX if we need to magnetize the x coordinate', () => {

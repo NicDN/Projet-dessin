@@ -51,7 +51,7 @@ export class MoveSelectionService {
 
         this.magnetSelectionService.isUsingMouse = false;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetMousePosition(emptyPosition, selectionCoords, delta, width, height);
+            this.magnetSelectionService.alignToProperMagnetPosition(emptyPosition, selectionCoords, delta, width, height);
         } else {
             selectionCoords.finalTopLeft.x += delta.x;
             selectionCoords.finalTopLeft.y += delta.y;
@@ -67,7 +67,7 @@ export class MoveSelectionService {
 
         this.magnetSelectionService.isUsingMouse = true;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetMousePosition(pos, selectionCoords, delta, width, height);
+            this.magnetSelectionService.alignToProperMagnetPosition(pos, selectionCoords, delta, width, height);
         } else {
             selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
             selectionCoords.finalBottomRight = {

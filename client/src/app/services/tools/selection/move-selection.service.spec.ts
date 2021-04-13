@@ -26,10 +26,7 @@ describe('MoveSelectionService', () => {
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas', 'newIncomingResizeSignals', 'newGridSignals']);
-        magnetServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', [
-            'alignToProperMagnetArrowPosition',
-            'alignToProperMagnetMousePosition',
-        ]);
+        magnetServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['alignToProperMagnetPosition']);
         // tslint:disable-next-line: prefer-const
         let emptyMessage: any;
         drawingServiceSpyObj.newGridSignals.and.returnValue(of(emptyMessage));
@@ -182,19 +179,19 @@ describe('MoveSelectionService', () => {
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
-    it('#moveSelectionWithArrows should call alignToProperMagnetArrowPosition if usingMagnet is true', () => {
+    it('#moveSelectionWithArrows should call alignToProperMagnetPosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
 
         service.moveSelectionWithArrows(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
-        expect(magnetServiceSpyObj.alignToProperMagnetMousePosition).toHaveBeenCalled();
+        expect(magnetServiceSpyObj.alignToProperMagnetPosition).toHaveBeenCalled();
     });
 
-    it('#moveSelectionWithMouse should call alignToProperMagnetMousePosition if usingMagnet is true', () => {
+    it('#moveSelectionWithMouse should call alignToProperMagnetPosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
         service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
-        expect(magnetServiceSpyObj.alignToProperMagnetMousePosition).toHaveBeenCalled();
+        expect(magnetServiceSpyObj.alignToProperMagnetPosition).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset, and redraw the selection', () => {
