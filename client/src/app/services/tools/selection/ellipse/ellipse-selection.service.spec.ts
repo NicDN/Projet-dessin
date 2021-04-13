@@ -11,6 +11,7 @@ import { of } from 'rxjs';
 import { EllipseSelectionService } from './ellipse-selection.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('EllipseSelectionService', () => {
     let ellipseSelectionService: EllipseSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;

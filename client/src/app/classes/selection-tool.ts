@@ -15,6 +15,7 @@ export interface SelectionCoords {
     finalBottomRight: Vec2;
 }
 // tslint:disable: no-magic-numbers
+// tslint:disable: max-file-line-count
 export abstract class SelectionTool extends Tool {
     constructor(
         drawingService: DrawingService,

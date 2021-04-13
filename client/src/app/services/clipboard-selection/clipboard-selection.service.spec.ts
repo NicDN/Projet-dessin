@@ -10,6 +10,7 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { EllipseSelectionService } from '@app/services/tools/selection/ellipse/ellipse-selection.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
@@ -17,7 +18,6 @@ import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rec
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { MagnetSelectionService } from '../tools/selection/magnet-selection.service';
 import { ClipboardSelectionService } from './clipboard-selection.service';
 
 // tslint:disable: max-file-line-count

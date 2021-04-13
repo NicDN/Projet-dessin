@@ -11,6 +11,7 @@ import { of } from 'rxjs';
 import { RectangleSelectionService } from './rectangle-selection.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('RectangleSelectionService', () => {
     let rectangleSelectionService: RectangleSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
