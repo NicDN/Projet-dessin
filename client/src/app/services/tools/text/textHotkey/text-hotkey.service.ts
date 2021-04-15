@@ -27,6 +27,7 @@ export class TextHotkeyService {
         }
 
         if (closestEnterPos === this.textService.MINUS_ONE) return;
+
         if (index === 0) {
             this.textService.writingPosition += closestEnterPos;
             if (this.textService.writtenOnPreview.length - closestEnterPos >= this.textService.writingPosition) {

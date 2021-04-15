@@ -162,7 +162,6 @@ export class TextService extends TraceTool {
 
         const previewPosition = textProperties.writtenOnPreview.length - this.writingPosition;
         let asDrawnedPreview = false;
-        // You can get a very close approximation of the vertical height by checking the length of a capital M (multiplying by 1.5 for comfort).
 
         let i = 0;
         let previousPosition = 0;
