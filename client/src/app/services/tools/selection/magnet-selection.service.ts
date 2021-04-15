@@ -3,21 +3,6 @@ import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { GridService } from '@app/services/grid/grid.service';
 
-// tslint:disable: max-file-line-count
-export enum SelectedPoint {
-    TOP_LEFT = 0,
-    TOP_MIDDLE = 1,
-    TOP_RIGHT = 2,
-    MIDDLE_LEFT = 3,
-    CENTER = 4,
-    MIDDLE_RIGHT = 5,
-    BOTTOM_LEFT = 6,
-    BOTTOM_MIDDLE = 7,
-    BOTTOM_RIGHT = 8,
-    MOVING = 9,
-    NO_POINT = -1,
-}
-
 @Injectable({
     providedIn: 'root',
 })
@@ -27,58 +12,9 @@ export class MagnetSelectionService {
     pointToMagnetize: number = 0;
     mouseMoveOffset: Vec2 = { x: 0, y: 0 };
     isUsingMouse: boolean = false;
-    private mouseOffsetTop: Vec2;
-    private mouseOffsetBottom: Vec2;
-    private dimension: Vec2;
-
-    alignToProperMagnetPosition(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
-        this.mouseOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
-        this.mouseOffsetBottom = { x: selectionCoords.finalBottomRight.x - pos.x, y: selectionCoords.finalBottomRight.y - pos.y };
-
-        let trueDeltaX = delta.x > 0 ? this.gridService.squareSize : -this.gridService.squareSize;
-        if (delta.x === 0) trueDeltaX = 0;
-
-        let trueDeltaY = delta.y > 0 ? this.gridService.squareSize : -this.gridService.squareSize;
-        if (delta.y === 0) trueDeltaY = 0;
-
-        const trueDelta = { x: trueDeltaX, y: trueDeltaY };
-        this.dimension = {
-            x: selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x,
-            y: selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y,
-        };
-
-        this.mouseOffsetTop = this.getMagnetizedOffsetPosition();
-        this.mouseOffsetBottom = this.getMagnetizedOffsetPosition();
-        switch (this.pointToMagnetize) {
-            case SelectedPoint.TOP_LEFT:
-                this.topLeft(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.TOP_MIDDLE:
-                this.topMid(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.TOP_RIGHT:
-                this.topRight(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.MIDDLE_LEFT:
-                this.midLeft(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.CENTER:
-                this.magCenter(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.MIDDLE_RIGHT:
-                this.midRight(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.BOTTOM_LEFT:
-                this.botLeft(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.BOTTOM_MIDDLE:
-                this.botMid(pos, selectionCoords, trueDelta);
-                break;
-            case SelectedPoint.BOTTOM_RIGHT:
-                this.botRight(pos, selectionCoords, trueDelta);
-                break;
-        }
-    }
+    mouseOffsetTop: Vec2;
+    mouseOffsetBottom: Vec2;
+    dimension: Vec2;
 
     private finalMagnetized(pos: Vec2, magPosX: boolean, magPosY: boolean): Vec2 {
         if (magPosX) pos = this.magnetizeX(pos);
@@ -98,7 +34,7 @@ export class MagnetSelectionService {
         return { x: pos.x, y: Math.round(pos.y / this.gridService.squareSize) * this.gridService.squareSize };
     }
 
-    private getMagnetizedOffsetPosition(): Vec2 {
+    getMagnetizedOffsetPosition(): Vec2 {
         return {
             x: Math.round(this.mouseMoveOffset.x / this.gridService.squareSize) * this.gridService.squareSize,
             y: Math.round(this.mouseMoveOffset.y / this.gridService.squareSize) * this.gridService.squareSize,
@@ -187,7 +123,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private magCenter(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    magCenter(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.isUsingMouse) {
             pos = this.finalMagnetized(pos, true, true);
             selectionCoords.finalTopLeft = this.translateCoords(pos, { x: -this.mouseOffsetTop.x, y: -this.mouseOffsetTop.y }, { x: 0, y: 0 });
@@ -304,7 +240,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private topLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    topLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
             this.magTopRight(pos, selectionCoords, delta);
         } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
@@ -316,7 +252,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private topMid(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    topMid(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.xIsFlipped(selectionCoords)) {
             this.magBotMid(pos, selectionCoords, delta);
         } else {
@@ -324,7 +260,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private topRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    topRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
             this.magTopLeft(pos, selectionCoords, delta);
         } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
@@ -336,7 +272,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private midLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    midLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords)) {
             this.magMidRight(pos, selectionCoords, delta);
         } else {
@@ -344,7 +280,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private midRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    midRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords)) {
             this.magMidLeft(pos, selectionCoords, delta);
         } else {
@@ -352,7 +288,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private botLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    botLeft(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
             this.magBotRight(pos, selectionCoords, delta);
         } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {
@@ -364,7 +300,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private botMid(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    botMid(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.xIsFlipped(selectionCoords)) {
             this.magTopMid(pos, selectionCoords, delta);
         } else {
@@ -372,7 +308,7 @@ export class MagnetSelectionService {
         }
     }
 
-    private botRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
+    botRight(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         if (this.yIsFlipped(selectionCoords) && !this.xIsFlipped(selectionCoords)) {
             this.magBotLeft(pos, selectionCoords, delta);
         } else if (this.xIsFlipped(selectionCoords) && !this.yIsFlipped(selectionCoords)) {

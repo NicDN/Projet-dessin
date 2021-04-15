@@ -5,7 +5,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { of } from 'rxjs';
 import { MagnetSelectionService } from './magnet-selection.service';
-import { MoveSelectionService } from './move-selection.service';
+import { MoveSelectionService, SelectedPoint } from './move-selection.service';
 
 // tslint:disable: no-any
 // tslint:disable: no-string-literal
@@ -17,16 +17,31 @@ describe('MoveSelectionService', () => {
     let selectionCoordsStub: SelectionCoords;
     let selectionWidth: number;
     let selectionHeight: number;
+    let positionToMagnetize = { x: 60, y: 40 };
+    let deltaStub: Vec2;
 
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
     const MOUSE_OFFSET = 5;
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 40 };
     const boxSizeStub: BoxSize = { widthBox: 100, heightBox: 100 };
+    const deltaX = 60;
+    const deltaY = 60;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas', 'newIncomingResizeSignals', 'newGridSignals']);
-        magnetServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['alignToProperMagnetPosition']);
+        magnetServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', [
+            'getMagnetizedOffsetPosition',
+            'topLeft',
+            'topMid',
+            'topRight',
+            'midLeft',
+            'magCenter',
+            'midRight',
+            'botLeft',
+            'botMid',
+            'botRight',
+        ]);
         // tslint:disable-next-line: prefer-const
         let emptyMessage: any;
         drawingServiceSpyObj.newGridSignals.and.returnValue(of(emptyMessage));
@@ -47,6 +62,8 @@ describe('MoveSelectionService', () => {
 
         selectionWidth = BOTTOM_RIGHT_CORNER_COORDS.x - TOP_LEFT_CORNER_COORDS.x;
         selectionHeight = BOTTOM_RIGHT_CORNER_COORDS.y - TOP_LEFT_CORNER_COORDS.y;
+
+        deltaStub = { x: deltaX, y: deltaY };
 
         service = TestBed.inject(MoveSelectionService);
     });
@@ -183,15 +200,16 @@ describe('MoveSelectionService', () => {
         service.isUsingMagnet = true;
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
-
+        const alignSpy = spyOn<any>(service, 'alignToProperMagnetPosition');
         service.moveSelectionWithArrows(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
-        expect(magnetServiceSpyObj.alignToProperMagnetPosition).toHaveBeenCalled();
+        expect(alignSpy).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithMouse should call alignToProperMagnetPosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
+        const alignSpy = spyOn<any>(service, 'alignToProperMagnetPosition');
         service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
-        expect(magnetServiceSpyObj.alignToProperMagnetPosition).toHaveBeenCalled();
+        expect(alignSpy).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset, and redraw the selection', () => {
@@ -212,5 +230,74 @@ describe('MoveSelectionService', () => {
             y: MOUSE_POSITION.y - MOUSE_OFFSET + selectionHeight,
         });
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetPosition should keep values of  deltaX and deltaY if they are negative  ', () => {
+        const negativeDelta = -20;
+        deltaStub = { x: negativeDelta, y: negativeDelta };
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(deltaStub.x).toEqual(negativeDelta);
+        expect(deltaStub.y).toEqual(negativeDelta);
+    });
+
+    it('#alignToProperMagnetPosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
+        deltaStub = { x: 0, y: 0 };
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(deltaStub.x).toEqual(0);
+        expect(deltaStub.y).toEqual(0);
+    });
+
+    it('#alignToProperMagnetPosition should call topLeft if the selected point is top left', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.TOP_LEFT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.topLeft).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetPosition should call topMid if the selected point is top middle', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.topMid).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call topRight if the selected point is top right', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.TOP_RIGHT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.topRight).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call midLeft if the selected point is middle left', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.midLeft).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call magCenter if the selected point is center', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.CENTER;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.magCenter).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call midRight if the selected point is middle right', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.midRight).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botLeft if the selected point is bottom left', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.botLeft).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botMid if the selected point is bottom middle', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.botMid).toHaveBeenCalled();
+    });
+
+    it('#alignToProperMagnetMousePosition should call botRight if the selected point is bottom right', () => {
+        magnetServiceSpyObj.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
+        expect(magnetServiceSpyObj.botRight).toHaveBeenCalled();
     });
 });

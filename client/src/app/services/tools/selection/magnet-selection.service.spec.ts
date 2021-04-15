@@ -5,7 +5,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { of } from 'rxjs';
-import { MagnetSelectionService, SelectedPoint } from './magnet-selection.service';
+import { MagnetSelectionService } from './magnet-selection.service';
 
 // tslint:disable: no-any
 // tslint:disable: no-string-literal
@@ -64,84 +64,6 @@ describe('MagnetSelectionService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
-    });
-
-    it('#alignToProperMagnetMousePosition should keep values of  deltaX and deltaY if they are negative  ', () => {
-        const negativeDelta = -20;
-        deltaStub = { x: negativeDelta, y: negativeDelta };
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(deltaStub.x).toEqual(negativeDelta);
-        expect(deltaStub.y).toEqual(negativeDelta);
-    });
-
-    it('#alignToProperMagnetMousePosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
-        deltaStub = { x: 0, y: 0 };
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(deltaStub.x).toEqual(0);
-        expect(deltaStub.y).toEqual(0);
-    });
-
-    it('#alignToProperMagnetMousePosition should call topLeft if the selected point is top left', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_LEFT;
-        const topLeftSpy = spyOn<any>(service, 'topLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(topLeftSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call topMid if the selected point is top middle', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
-        const topMidSpy = spyOn<any>(service, 'topMid');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(topMidSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call topRight if the selected point is top right', () => {
-        service.pointToMagnetize = SelectedPoint.TOP_RIGHT;
-        const topRightSpy = spyOn<any>(service, 'topRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(topRightSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call midLeft if the selected point is middle left', () => {
-        service.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
-        const midLeftSpy = spyOn<any>(service, 'midLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(midLeftSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call magCenter if the selected point is center', () => {
-        service.pointToMagnetize = SelectedPoint.CENTER;
-        const magCenterSpy = spyOn<any>(service, 'magCenter');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(magCenterSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call midRight if the selected point is middle right', () => {
-        service.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
-        const midRightSpy = spyOn<any>(service, 'midRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(midRightSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call botLeft if the selected point is bottom left', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
-        const botLeftSpy = spyOn<any>(service, 'botLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(botLeftSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call botMid if the selected point is bottom middle', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
-        const botMidSpy = spyOn<any>(service, 'botMid');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(botMidSpy).toHaveBeenCalled();
-    });
-
-    it('#alignToProperMagnetMousePosition should call botRight if the selected point is bottom right', () => {
-        service.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
-        const botRightSpy = spyOn<any>(service, 'botRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
-        expect(botRightSpy).toHaveBeenCalled();
     });
 
     it('#yIsFlipped should return true if finalBottomRight.x is lower than finalTopLeft.x', () => {
