@@ -4,6 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
@@ -42,6 +43,7 @@ export class DrawingComponent implements AfterViewInit {
         private undoRedoService: UndoRedoService,
         private resizeSelectionService: ResizeSelectionService,
         private dialogService: DialogService,
+        private snackBarService: SnackBarService,
     ) {
         this.observeDialogService();
     }
@@ -101,6 +103,8 @@ export class DrawingComponent implements AfterViewInit {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
             this.toolsService.currentTool.onMouseDown(event);
         }
+
+        this.snackBarService.snackBar.dismiss();
     }
 
     @HostListener('window:mouseup', ['$event'])

@@ -17,6 +17,11 @@
     display: block;
 }
 
-.tool-bar{
+.tool-bar {
     overflow-y: scroll;
+}
+
+.list-item:hover {
+    color: #e51282;
+    font-size: large;
 }

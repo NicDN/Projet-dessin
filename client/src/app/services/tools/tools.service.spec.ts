@@ -17,6 +17,8 @@ describe('ToolsService', () => {
 
     const snackBarServiceStub = {} as SnackBarService;
 
+    const toolStub = {} as Tool;
+
     beforeEach(() => {
         TestBed.configureTestingModule({
             providers: [
@@ -152,24 +154,71 @@ describe('ToolsService', () => {
         expect(drawGridSpy).toHaveBeenCalled();
     });
 
+    it('#cancelSelectionOnToolChange should not cancel any selection if #preventCancelSelectionIfUsingGrid returns true ', () => {
+        spyOn<any>(service, 'preventCancelSelectionIfUsingGrid').and.returnValue(true);
+
+        const ellipseCancelSelectionSpy = spyOn(service.ellipseSelectionService, 'cancelSelection');
+        const rectangleCancelSelectionSpy = spyOn(service.rectangleSelectionService, 'cancelSelection');
+        const lassoCancelSelectionSpy = spyOn(service.lassoSelectionService, 'cancelSelection');
+
+        service['cancelSelectionOnToolChange'](toolStub);
+
+        expect(ellipseCancelSelectionSpy).not.toHaveBeenCalled();
+        expect(rectangleCancelSelectionSpy).not.toHaveBeenCalled();
+        expect(lassoCancelSelectionSpy).not.toHaveBeenCalled();
+    });
+
     it('#cancelSelectionOnToolChange should cancel the selection of ellipse if it is the current tool ', () => {
         const ellipseCancelSelectionSpy = spyOn(service.ellipseSelectionService, 'cancelSelection');
         service.currentTool = service.ellipseSelectionService;
-        service['cancelSelectionOnToolChange']();
+        service['cancelSelectionOnToolChange'](toolStub);
         expect(ellipseCancelSelectionSpy).toHaveBeenCalled();
     });
 
     it('#cancelSelectionOnToolChange should cancel the selection of rectangle if it is the current tool ', () => {
         const rectangleCancelSelectionSpy = spyOn(service.rectangleSelectionService, 'cancelSelection');
         service.currentTool = service.rectangleSelectionService;
-        service['cancelSelectionOnToolChange']();
+        service['cancelSelectionOnToolChange'](toolStub);
         expect(rectangleCancelSelectionSpy).toHaveBeenCalled();
     });
 
     it('#cancelSelectionOnToolChange should cancel the selection of lasso if it is the current tool ', () => {
         const lassoCancelSelectionSpy = spyOn(service.lassoSelectionService, 'cancelSelection');
         service.currentTool = service.lassoSelectionService;
-        service['cancelSelectionOnToolChange']();
+        service['cancelSelectionOnToolChange'](toolStub);
         expect(lassoCancelSelectionSpy).toHaveBeenCalled();
+    });
+
+    it('#handleSelectionCurrentTool should set selectedSelectionService if the current tool is a SelectionTool ', () => {
+        service['handleSelectionCurrentTool'](service.ellipseSelectionService);
+        expect(service.selectedSelectionService).toEqual(service.ellipseSelectionService);
+    });
+
+    it('#handleSelectionCurrentTool should not set selectedSelectionService if the current tool is not a SelectionTool ', () => {
+        service['handleSelectionCurrentTool'](service.pencilService);
+        expect(service.selectedSelectionService).not.toEqual(service.pencilService);
+    });
+
+    it('#preventCancelSelectionIfUsingGrid should return true if the incoming tool is the grid and the current tool is a selection tool', () => {
+        service.currentTool = service.ellipseSelectionService;
+        expect(service['preventCancelSelectionIfUsingGrid'](service.gridService)).toBeTrue();
+    });
+
+    it('#preventCancelSelectionIfUsingGrid should return false if the incoming tool is not the grid and the current tool is a selection tool', () => {
+        service.currentTool = service.ellipseSelectionService;
+        const incomingTool = service.pencilService;
+        expect(service['preventCancelSelectionIfUsingGrid'](incomingTool)).toBeFalse();
+    });
+
+    it('#preventCancelSelectionIfUsingGrid should return false if the incoming tool is the grid and the current tool is not a selection tool', () => {
+        service.currentTool = service.pencilService;
+        const incomingTool = service.gridService;
+        expect(service['preventCancelSelectionIfUsingGrid'](incomingTool)).toBeFalse();
+    });
+
+    it('#preventCancelSelectionIfUsingGrid should return false if incoming tool is not the grid and the current tool is not a selection tool', () => {
+        service.currentTool = service.pencilService;
+        const incomingTool = service.lineService;
+        expect(service['preventCancelSelectionIfUsingGrid'](incomingTool)).toBeFalse();
     });
 });

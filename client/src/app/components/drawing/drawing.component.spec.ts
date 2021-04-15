@@ -2,11 +2,13 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
@@ -89,6 +91,8 @@ describe('DrawingComponent', () => {
 
     const canvasMock = document.createElement('canvas');
 
+    let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
+
     beforeEach(async(() => {
         drawingStub = new DrawingService({} as MatBottomSheet);
 
@@ -107,6 +111,12 @@ describe('DrawingComponent', () => {
 
         imageSpyObj = jasmine.createSpyObj('Image', ['decode']);
 
+        snackBarSpy = jasmine.createSpyObj<MatSnackBar>('snackBarSpy', ['dismiss']);
+
+        const snackBarServiceStub = ({
+            snackBar: snackBarSpy,
+        } as unknown) as SnackBarService;
+
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
             providers: [
@@ -123,6 +133,7 @@ describe('DrawingComponent', () => {
                 { provide: TextService, useValue: textServiceSpyObj },
                 { provide: MatDialog, useValue: {} },
                 { provide: Router, useValue: {} },
+                { provide: SnackBarService, useValue: snackBarServiceStub },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -227,6 +238,11 @@ describe('DrawingComponent', () => {
         component.onMouseMove(mouseEventClick);
         expect(mouseEventSpy).not.toHaveBeenCalled();
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
+    });
+
+    it('#onMouseDown should dismiss the opened snack bar', () => {
+        component.onMouseDown({} as MouseEvent);
+        expect(snackBarSpy.dismiss).toHaveBeenCalled();
     });
 
     it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event inside the canvas if canDrawflag is true ", () => {

@@ -3,6 +3,7 @@
     height: 420px;
     display: inline-block;
     margin: 5px;
+    border-radius: 25px;
 }
 
 .tag-error {
@@ -16,10 +17,16 @@ img {
     object-fit: contain;
     height: 300px;
 }
+
 mat-card-subtitle {
     height: 40px;
 }
 
 fa-icon {
-    font-size: 20px;
+    font-size: 30px;
+}
+
+mat-icon {
+    font-size: 35px;
+    color: red;
 }

@@ -8,9 +8,13 @@
     margin: 20px;
 }
 
-.button {
-    margin-top: 10px;
+button {
+    margin: 20px;
     text-align: center;
+    width: 400px;
+    height: 70px;
+    border-radius: 40px;
+    font-size: large;
 }
 
 .team-name {
@@ -32,4 +36,10 @@
     justify-content: center;
     width: 20%;
     min-width: min-content;
+}
+
+button:hover {
+    background-color: #e51282;
+    width: 420px;
+    height: 80px;
 }
