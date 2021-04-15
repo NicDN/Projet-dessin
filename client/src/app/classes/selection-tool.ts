@@ -107,11 +107,11 @@ export abstract class SelectionTool extends Tool {
             this.moveSelectionService.movingWithMouse = false;
             return;
         }
-        this.coords.initialBottomRight = this.getPositionFromMouse(event);
-        this.handleMouseUp();
+        this.handleSelectionMouseUp(event);
     }
 
-    private handleMouseUp(): void {
+    private handleSelectionMouseUp(event: MouseEvent): void {
+        this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
         this.coords.initialBottomRight = this.shapeService.getTrueEndCoords(
             this.coords.initialTopLeft,

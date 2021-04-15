@@ -69,7 +69,7 @@ export class ToolsService {
     }
 
     private removeLinePreview(): void {
-        if (!(this.currentTool === this.lineService)) {
+        if (this.currentTool !== this.lineService && this.currentTool !== this.lassoSelectionService) {
             return;
         }
         this.lineService.clearPath();
