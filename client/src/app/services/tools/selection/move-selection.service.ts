@@ -45,13 +45,11 @@ export class MoveSelectionService {
     }
 
     moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
-        const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
-        const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
         const emptyPosition = { x: 0, y: 0 };
 
         this.magnetSelectionService.isUsingMouse = false;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetPosition(emptyPosition, selectionCoords, delta, width, height);
+            this.magnetSelectionService.alignToProperMagnetPosition(emptyPosition, selectionCoords, delta);
         } else {
             selectionCoords.finalTopLeft.x += delta.x;
             selectionCoords.finalTopLeft.y += delta.y;
@@ -67,7 +65,7 @@ export class MoveSelectionService {
 
         this.magnetSelectionService.isUsingMouse = true;
         if (this.isUsingMagnet) {
-            this.magnetSelectionService.alignToProperMagnetPosition(pos, selectionCoords, delta, width, height);
+            this.magnetSelectionService.alignToProperMagnetPosition(pos, selectionCoords, delta);
         } else {
             selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
             selectionCoords.finalBottomRight = {

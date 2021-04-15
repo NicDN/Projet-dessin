@@ -59,6 +59,7 @@ describe('MagnetSelectionService', () => {
         dimensionStub = { x: selectionWidth, y: selectionHeight };
         gridServiceSpyObj.squareSize = SQUARE_SIZE;
         service = TestBed.inject(MagnetSelectionService);
+        service['dimension'] = dimensionStub;
     });
 
     it('should be created', () => {
@@ -68,14 +69,14 @@ describe('MagnetSelectionService', () => {
     it('#alignToProperMagnetMousePosition should keep values of  deltaX and deltaY if they are negative  ', () => {
         const negativeDelta = -20;
         deltaStub = { x: negativeDelta, y: negativeDelta };
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(deltaStub.x).toEqual(negativeDelta);
         expect(deltaStub.y).toEqual(negativeDelta);
     });
 
     it('#alignToProperMagnetMousePosition should keep the values of deltaX and deltaY if they equal 0  ', () => {
         deltaStub = { x: 0, y: 0 };
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(deltaStub.x).toEqual(0);
         expect(deltaStub.y).toEqual(0);
     });
@@ -83,63 +84,63 @@ describe('MagnetSelectionService', () => {
     it('#alignToProperMagnetMousePosition should call topLeft if the selected point is top left', () => {
         service.pointToMagnetize = SelectedPoint.TOP_LEFT;
         const topLeftSpy = spyOn<any>(service, 'topLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(topLeftSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call topMid if the selected point is top middle', () => {
         service.pointToMagnetize = SelectedPoint.TOP_MIDDLE;
         const topMidSpy = spyOn<any>(service, 'topMid');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(topMidSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call topRight if the selected point is top right', () => {
         service.pointToMagnetize = SelectedPoint.TOP_RIGHT;
         const topRightSpy = spyOn<any>(service, 'topRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(topRightSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call midLeft if the selected point is middle left', () => {
         service.pointToMagnetize = SelectedPoint.MIDDLE_LEFT;
         const midLeftSpy = spyOn<any>(service, 'midLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(midLeftSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call magCenter if the selected point is center', () => {
         service.pointToMagnetize = SelectedPoint.CENTER;
         const magCenterSpy = spyOn<any>(service, 'magCenter');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magCenterSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call midRight if the selected point is middle right', () => {
         service.pointToMagnetize = SelectedPoint.MIDDLE_RIGHT;
         const midRightSpy = spyOn<any>(service, 'midRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(midRightSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call botLeft if the selected point is bottom left', () => {
         service.pointToMagnetize = SelectedPoint.BOTTOM_LEFT;
         const botLeftSpy = spyOn<any>(service, 'botLeft');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(botLeftSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call botMid if the selected point is bottom middle', () => {
         service.pointToMagnetize = SelectedPoint.BOTTOM_MIDDLE;
         const botMidSpy = spyOn<any>(service, 'botMid');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(botMidSpy).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetMousePosition should call botRight if the selected point is bottom right', () => {
         service.pointToMagnetize = SelectedPoint.BOTTOM_RIGHT;
         const botRightSpy = spyOn<any>(service, 'botRight');
-        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub, selectionWidth, selectionHeight);
+        service['alignToProperMagnetPosition'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(botRightSpy).toHaveBeenCalled();
     });
 
@@ -162,7 +163,8 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         deltaStub = { x: 0, y: 0 };
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
 
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
@@ -172,7 +174,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magTopLeft should allign the selection to the top left position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['magTopLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
 
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
@@ -183,13 +185,8 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magTopMid'](
-            { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['magTopMid']({ x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y }, selectionCoordsStub, deltaStub);
 
         expect(
             Math.abs(selectionCoordsStub.finalTopLeft.x - (positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth / 2)),
@@ -201,7 +198,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magTopMid should allign the selection to the top middle position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magTopMid'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['magTopMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
@@ -211,15 +208,10 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
         deltaStub = { x: 0, y: 0 };
-        service['magTopRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['magTopRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetBottomToMagnetize.x);
@@ -228,14 +220,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magTopRight should allign the selection to the top right position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magTopRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['magTopRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
@@ -244,13 +229,8 @@ describe('MagnetSelectionService', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magMidLeft'](
-            { x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 },
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['magMidLeft']({ x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 }, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y - selectionHeight / 2);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
@@ -259,7 +239,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magMidLeft should allign the selection to the middle left position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magMidLeft'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['magMidLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
 
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
@@ -269,7 +249,8 @@ describe('MagnetSelectionService', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magCenter'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['magCenter'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y);
         expect(Math.abs(selectionCoordsStub.finalBottomRight.x - (selectionCoordsStub.finalTopLeft.x + selectionWidth))).toBeLessThan(2);
@@ -278,7 +259,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magCenter should allign the selection to the center position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magCenter'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['magCenter'](positionToMagnetize, selectionCoordsStub, deltaStub);
 
         expect(Math.abs(selectionCoordsStub.finalTopLeft.x - (selectionCoordsStub.finalBottomRight.x - selectionWidth))).toBeLessThan(2);
         expect(Math.abs(selectionCoordsStub.finalTopLeft.y - (selectionCoordsStub.finalBottomRight.y - selectionHeight))).toBeLessThan(2);
@@ -287,23 +268,18 @@ describe('MagnetSelectionService', () => {
     it('#magMidRight should allign the selection to the middle right position when using the mouse', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
-        mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magMidRight'](
-            { x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 },
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
-        expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetTopToMagnetize.x);
-        expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y - mouseOffsetTopToMagnetize.y + selectionHeight / 2);
+        mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
+        service['magMidRight']({ x: positionToMagnetize.x, y: positionToMagnetize.y - selectionHeight / 2 }, selectionCoordsStub, deltaStub);
+        expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetBottomToMagnetize.x);
+        expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y - mouseOffsetBottomToMagnetize.y + selectionHeight / 2);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
 
     it('#magMidRight should allign the selection to the middle right position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magMidRight'](positionToMagnetize, selectionCoordsStub, mouseOffsetTopToMagnetize, deltaStub, dimensionStub);
+        service['magMidRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(selectionCoordsStub.finalTopLeft.y + selectionHeight);
     });
@@ -313,14 +289,9 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magBotLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
+        service['magBotLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth);
@@ -329,14 +300,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magBotLeft should allign the selection to the center position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magBotLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['magBotLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
     });
@@ -346,14 +310,9 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magBotLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
+        service['magBotLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth);
@@ -362,14 +321,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magBotLeft should allign the selection to the bottom left position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magBotLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['magBotLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(selectionCoordsStub.finalTopLeft.x + selectionWidth);
     });
@@ -379,14 +331,9 @@ describe('MagnetSelectionService', () => {
         service.mouseMoveOffset = mouseOffsetTopToMagnetize;
         mouseOffsetTopToMagnetize = service['getMagnetizedOffsetPosition']();
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magBotMid'](
-            { x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y },
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
+        service['magBotMid']({ x: positionToMagnetize.x - selectionWidth / 2, y: positionToMagnetize.y }, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x - selectionWidth / 2);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y - selectionHeight);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x - mouseOffsetTopToMagnetize.x + selectionWidth / 2);
@@ -395,14 +342,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magBotMid should allign the selection to the bottom middle position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magBotMid'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['magBotMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
@@ -411,13 +351,9 @@ describe('MagnetSelectionService', () => {
         service.isUsingMouse = true;
         service.mouseMoveOffset = mouseOffsetBottomToMagnetize;
         mouseOffsetBottomToMagnetize = service['getMagnetizedOffsetPosition']();
-        service['magBotRight'](
-            { x: positionToMagnetize.x, y: positionToMagnetize.y },
-            selectionCoordsStub,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['mouseOffsetTop'] = mouseOffsetTopToMagnetize;
+        service['mouseOffsetBottom'] = mouseOffsetBottomToMagnetize;
+        service['magBotRight']({ x: positionToMagnetize.x, y: positionToMagnetize.y }, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalBottomRight.x).toEqual(positionToMagnetize.x + mouseOffsetBottomToMagnetize.x);
         expect(selectionCoordsStub.finalBottomRight.y).toEqual(positionToMagnetize.y + mouseOffsetBottomToMagnetize.y);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
@@ -426,7 +362,7 @@ describe('MagnetSelectionService', () => {
 
     it('#magBotRight should allign the selection to the bottom right position when using the arrows', () => {
         service.isUsingMouse = false;
-        service['magBotRight'](positionToMagnetize, selectionCoordsStub, mouseOffsetBottomToMagnetize, deltaStub, dimensionStub);
+        service['magBotRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(selectionCoordsStub.finalTopLeft.x).toEqual(selectionCoordsStub.finalBottomRight.x - selectionWidth);
         expect(selectionCoordsStub.finalTopLeft.y).toEqual(selectionCoordsStub.finalBottomRight.y - selectionHeight);
     });
@@ -435,14 +371,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magTopRightSpy = spyOn<any>(service, 'magTopRight');
-        service['topLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopRightSpy).toHaveBeenCalled();
     });
 
@@ -450,14 +379,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
-        service['topLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotLeftSpy).toHaveBeenCalled();
     });
 
@@ -465,14 +387,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magBotRightSpy = spyOn<any>(service, 'magBotRight');
-        service['topLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotRightSpy).toHaveBeenCalled();
     });
 
@@ -480,42 +395,21 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
-        service['topLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopLeftSpy).toHaveBeenCalled();
     });
 
     it('#topMid should call magBotMid if the x axis is flipped', () => {
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magBotMidSpy = spyOn<any>(service, 'magBotMid');
-        service['topMid'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotMidSpy).toHaveBeenCalled();
     });
 
     it('#topMid should call magTopMid if the x axis is not flipped', () => {
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magTopMidSpy = spyOn<any>(service, 'magTopMid');
-        service['topMid'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopMidSpy).toHaveBeenCalled();
     });
 
@@ -523,14 +417,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
-        service['topRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopLeftSpy).toHaveBeenCalled();
     });
 
@@ -538,14 +425,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magBotRightSpy = spyOn<any>(service, 'magBotRight');
-        service['topRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotRightSpy).toHaveBeenCalled();
     });
 
@@ -553,14 +433,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
-        service['topRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotLeftSpy).toHaveBeenCalled();
     });
 
@@ -568,70 +441,35 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magTopRightSpy = spyOn<any>(service, 'magTopRight');
-        service['topRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['topRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopRightSpy).toHaveBeenCalled();
     });
 
     it('#midLeft should call magMidRight if the y axis is flipped', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         const magMidRightSpy = spyOn<any>(service, 'magMidRight');
-        service['midLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['midLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magMidRightSpy).toHaveBeenCalled();
     });
 
     it('#midLeft should call magMidLeft if the y axis is not  flipped', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         const magMidLeftSpy = spyOn<any>(service, 'magMidLeft');
-        service['midLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['midLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magMidLeftSpy).toHaveBeenCalled();
     });
 
     it('#midRight should call magMidLeft if the y axis is flipped', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         const magMidLeftSpy = spyOn<any>(service, 'magMidLeft');
-        service['midRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['midRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magMidLeftSpy).toHaveBeenCalled();
     });
 
     it('#midRight should call magMidRight if the y axis is not flipped', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         const magMidRightSpy = spyOn<any>(service, 'magMidRight');
-        service['midRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['midRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magMidRightSpy).toHaveBeenCalled();
     });
 
@@ -639,14 +477,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magBotRightSpy = spyOn<any>(service, 'magBotRight');
-        service['botLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotRightSpy).toHaveBeenCalled();
     });
 
@@ -654,14 +485,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
-        service['botLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopLeftSpy).toHaveBeenCalled();
     });
 
@@ -669,14 +493,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magTopRightSpy = spyOn<any>(service, 'magTopRight');
-        service['botLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopRightSpy).toHaveBeenCalled();
     });
 
@@ -684,42 +501,21 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
-        service['botLeft'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botLeft'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotLeftSpy).toHaveBeenCalled();
     });
 
     it('#botMid should call magTopMid if the x axis is flipped', () => {
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magTopMidSpy = spyOn<any>(service, 'magTopMid');
-        service['botMid'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopMidSpy).toHaveBeenCalled();
     });
 
     it('#botMid should call magBotMid if the x axis is not  flipped', () => {
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magBotMidSpy = spyOn<any>(service, 'magBotMid');
-        service['botMid'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botMid'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotMidSpy).toHaveBeenCalled();
     });
 
@@ -727,14 +523,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magBotLeftSpy = spyOn<any>(service, 'magBotLeft');
-        service['botRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotLeftSpy).toHaveBeenCalled();
     });
 
@@ -742,14 +531,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magTopRightSpy = spyOn<any>(service, 'magTopRight');
-        service['botRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopRightSpy).toHaveBeenCalled();
     });
 
@@ -757,14 +539,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(true);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(true);
         const magTopLeftSpy = spyOn<any>(service, 'magTopLeft');
-        service['botRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magTopLeftSpy).toHaveBeenCalled();
     });
 
@@ -772,14 +547,7 @@ describe('MagnetSelectionService', () => {
         spyOn<any>(service, 'yIsFlipped').and.returnValue(false);
         spyOn<any>(service, 'xIsFlipped').and.returnValue(false);
         const magBotRightSpy = spyOn<any>(service, 'magBotRight');
-        service['botRight'](
-            positionToMagnetize,
-            selectionCoordsStub,
-            mouseOffsetTopToMagnetize,
-            mouseOffsetBottomToMagnetize,
-            deltaStub,
-            dimensionStub,
-        );
+        service['botRight'](positionToMagnetize, selectionCoordsStub, deltaStub);
         expect(magBotRightSpy).toHaveBeenCalled();
     });
 
@@ -808,7 +576,7 @@ describe('MagnetSelectionService', () => {
 
     it('#translateCoords should translate the coordinates with the proper parameters', () => {
         let positionToTranslate = selectionCoordsStub.finalBottomRight;
-        positionToTranslate = service['translateCoords'](positionToTranslate, MOUSE_OFFSET, MOUSE_OFFSET, selectionWidth, selectionHeight);
+        positionToTranslate = service['translateCoords'](positionToTranslate, mouseOffsetTopToMagnetize, dimensionStub);
         expect(positionToTranslate.x).toEqual(selectionCoordsStub.finalBottomRight.x + MOUSE_OFFSET + selectionWidth);
         expect(positionToTranslate.y).toEqual(selectionCoordsStub.finalBottomRight.y + MOUSE_OFFSET + selectionHeight);
     });
