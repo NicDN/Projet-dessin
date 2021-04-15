@@ -46,7 +46,7 @@ export class ToolsService {
     }
 
     setCurrentTool(tool: Tool): void {
-        this.cancelSelectionOnToolChange();
+        this.cancelSelectionOnToolChange(tool);
         this.registerTextCommandOnToolChange();
         this.removeLinePreview();
 
@@ -90,7 +90,20 @@ export class ToolsService {
         }
     }
 
-    private cancelSelectionOnToolChange(): void {
+    private cancelSelectionOnToolChange(incomingTool: Tool): void {
+        // if (
+        //     incomingTool === this.gridService &&
+        //     (this.currentTool === this.ellipseSelectionService ||
+        //         this.currentTool === this.rectangleSelectionService ||
+        //         this.currentTool === this.ellipseSelectionService)
+        // ) {
+        //     return;
+        // }
+
+        if (this.preventCancelSelectionIfUsingGrid(incomingTool)) {
+            return;
+        }
+
         switch (this.currentTool) {
             case this.ellipseSelectionService:
                 this.ellipseSelectionService.cancelSelection();
@@ -102,6 +115,18 @@ export class ToolsService {
                 this.lassoSelectionService.cancelSelection();
                 break;
         }
+    }
+
+    private preventCancelSelectionIfUsingGrid(incomingTool: Tool): boolean {
+        if (
+            incomingTool === this.gridService &&
+            (this.currentTool === this.ellipseSelectionService ||
+                this.currentTool === this.rectangleSelectionService ||
+                this.currentTool === this.ellipseSelectionService)
+        ) {
+            return true;
+        }
+        return false;
     }
 
     getCurrentTool(): Observable<Tool> {

@@ -4,12 +4,12 @@
     </button>
 
     <button
-        [disabled]="!this.selectionIsActive()"
+        [disabled]="!this.clipboardSelectionService.canUseClipboardService()"
         mat-button
         matTooltip="Copier la sélection (Ctrl-C)"
         (click)="this.clipboardSelectionService.copy()"
     >
-        <mat-icon [class.active]="this.selectionIsActive()">content_copy</mat-icon>
+        <mat-icon [class.active]="this.clipboardSelectionService.canUseClipboardService()">content_copy</mat-icon>
     </button>
 
     <button [disabled]="!this.canPaste()" mat-button matTooltip="Coller la sélection (Ctrl-V)" (click)="this.clipboardSelectionService.paste()">
@@ -17,20 +17,20 @@
     </button>
 
     <button
-        [disabled]="!this.selectionIsActive()"
+        [disabled]="!this.clipboardSelectionService.canUseClipboardService()"
         mat-button
         matTooltip="Couper la sélection (Ctrl-X)"
         (click)="this.clipboardSelectionService.cut()"
     >
-        <mat-icon [class.active]="this.selectionIsActive()">content_cut</mat-icon>
+        <mat-icon [class.active]="this.clipboardSelectionService.canUseClipboardService()">content_cut</mat-icon>
     </button>
 
     <button
-        [disabled]="!this.selectionIsActive()"
+        [disabled]="!this.clipboardSelectionService.canUseClipboardService()"
         mat-button
         matTooltip="Supprimer la sélection (Delete)"
         (click)="this.clipboardSelectionService.delete()"
     >
-        <mat-icon [class.active]="this.selectionIsActive()">delete</mat-icon>
+        <mat-icon [class.active]="this.clipboardSelectionService.canUseClipboardService()">delete</mat-icon>
     </button>
 </div>

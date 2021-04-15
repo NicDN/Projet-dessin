@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
@@ -6,16 +7,19 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of } from 'rxjs';
 import { RectangleSelectionService } from './rectangle-selection.service';
 
 // tslint:disable: no-string-literal
-xdescribe('RectangleSelectionService', () => {
+// tslint:disable: no-any
+describe('RectangleSelectionService', () => {
     let rectangleSelectionService: RectangleSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let canvasTestHelper: CanvasTestHelper;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
+    const IMAGE_DATA_SIZE = 20;
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
@@ -27,8 +31,14 @@ xdescribe('RectangleSelectionService', () => {
     const BOTTOM_RIGHT_SELECTION: Vec2 = { x: 20, y: 20 };
     const RGB_MAX = 255;
 
+    const boxSizeStub: BoxSize = { widthBox: 100, heightBox: 100 };
+
     beforeEach(() => {
-        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['']);
+        drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['newIncomingResizeSignals', 'newGridSignals']);
+        // tslint:disable-next-line: prefer-const
+        let emptyMessage: any;
+        drawingServiceSpyObj.newGridSignals.and.returnValue(of(emptyMessage));
+        drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', ['getTrueEndCoords', 'drawPerimeter']);
         undoRedoSpyObj = jasmine.createSpyObj('UndoRedoService', ['']);
         moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
@@ -54,7 +64,7 @@ xdescribe('RectangleSelectionService', () => {
 
         selectionProperties = {
             selectionCtx: drawingServiceSpyObj.baseCtx,
-            imageData: {} as ImageData,
+            imageData: drawingServiceSpyObj.baseCtx.getImageData(0, 0, IMAGE_DATA_SIZE, IMAGE_DATA_SIZE),
             topLeft: TOP_LEFT_SELECTION,
             bottomRight: BOTTOM_RIGHT_SELECTION,
             finalTopLeft: TOP_LEFT_SELECTION,
@@ -108,7 +118,7 @@ xdescribe('RectangleSelectionService', () => {
     });
 
     it('#drawSelection should put the image data at the final coords', () => {
-        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'putImageData');
+        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'translate');
         rectangleSelectionService.drawSelection(selectionProperties);
         expect(putImageDataSpy).toHaveBeenCalled();
     });

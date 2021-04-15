@@ -1,8 +1,8 @@
-import { Color } from '@app/classes/color';
 import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
@@ -14,7 +14,6 @@ export interface SelectionCoords {
     finalTopLeft: Vec2;
     finalBottomRight: Vec2;
 }
-// tslint:disable: no-magic-numbers
 export abstract class SelectionTool extends Tool {
     constructor(
         drawingService: DrawingService,
@@ -23,20 +22,18 @@ export abstract class SelectionTool extends Tool {
         protected undoRedoService: UndoRedoService,
         protected moveSelectionService: MoveSelectionService,
         protected resizeSelectionService: ResizeSelectionService,
+        protected magnetSelectionService: MagnetSelectionService,
     ) {
         super(drawingService, toolName);
     }
-
-    readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
     data: ImageData;
     selectionExists: boolean = false;
     private readonly selectionOffSet: number = 13;
-
     private intervalHandler: number;
     private timeoutHandler: number;
     readonly INITIAL_ARROW_TIMER: number = 500;
     readonly ARROW_INTERVAL: number = 100;
-
+    emptyDelta: Vec2 = { x: 0, y: 0 };
     coords: SelectionCoords = {
         initialTopLeft: { x: 0, y: 0 },
         initialBottomRight: { x: 0, y: 0 },
@@ -59,21 +56,27 @@ export abstract class SelectionTool extends Tool {
 
     handleSelectionMouseDown(event: MouseEvent): void {
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
-        if (this.resizeSelectionService.selectedPointIndex === -1) {
+        if (
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.NO_POINT ||
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.CENTER
+        ) {
             this.setOffSet(this.getPositionFromMouse(event));
             this.moveSelectionService.movingWithMouse = true;
         }
     }
 
     onMouseMove(event: MouseEvent): void {
-        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event)) ? 8 : -1;
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event))
+            ? SelectedPoint.MOVING
+            : SelectedPoint.NO_POINT;
         this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
 
-        // 1 = leftclick
         if (event.buttons !== 1) this.mouseDown = false;
         if (!this.mouseDown) return;
-
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
+        if (
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
+            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
+        ) {
             this.resizeSelectionService.resizeSelection(this.getPositionFromMouse(event), this.coords);
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.drawAll(this.drawingService.previewCtx);
@@ -81,11 +84,15 @@ export abstract class SelectionTool extends Tool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
+            this.moveSelectionService.moveSelectionWithMouse(
+                this.drawingService.previewCtx,
+                this.getPositionFromMouse(event),
+                this.emptyDelta,
+                this.coords,
+            );
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
-
         this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -95,9 +102,8 @@ export abstract class SelectionTool extends Tool {
     onMouseUp(event: MouseEvent): void {
         if (!this.mouseDown) return;
         this.mouseDown = false;
-
-        if (this.resizeSelectionService.selectedPointIndex !== -1) {
-            this.resizeSelectionService.selectedPointIndex = -1;
+        if (this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT) {
+            this.resizeSelectionService.selectedPointIndex = SelectedPoint.NO_POINT;
             return;
         }
         if (this.moveSelectionService.movingWithMouse) {
@@ -113,7 +119,6 @@ export abstract class SelectionTool extends Tool {
             this.shapeService.alternateShape,
         );
         this.shapeService.alternateShape = false;
-
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
         this.createSelection();
     }
@@ -124,6 +129,10 @@ export abstract class SelectionTool extends Tool {
             if (!this.selectionExists) {
                 this.handleLeftShift(event, this.shapeService.onKeyDown);
             } else {
+                this.resizeSelectionService.lastDimensions = {
+                    x: Math.abs(this.coords.finalBottomRight.x - this.coords.finalTopLeft.x),
+                    y: Math.abs(this.coords.finalBottomRight.y - this.coords.finalTopLeft.y),
+                };
                 this.resizeSelectionService.shiftKeyIsDown = true;
             }
         }
@@ -141,7 +150,6 @@ export abstract class SelectionTool extends Tool {
                 this.drawAll(this.drawingService.previewCtx);
             }
         }
-
         this.handleMovingArrowsKeyUp(event);
     }
 
@@ -197,7 +205,6 @@ export abstract class SelectionTool extends Tool {
         if (this.moveSelectionService.initialKeyPress) {
             this.moveSelectionService.initialKeyPress = false;
             this.moveSelectionService.movingWithArrows = true;
-
             this.intervalHandler = (setInterval(
                 (() => {
                     this.moveSelectionService.moveSelectionWithArrows(ctx, this.moveSelectionService.calculateDelta(), this.coords);
@@ -215,7 +222,6 @@ export abstract class SelectionTool extends Tool {
             this.undoRedoService.enableUndoRedo();
             return;
         }
-
         this.saveSelection(this.drawingService.baseCtx);
         this.drawAll(this.drawingService.previewCtx);
         this.selectionExists = true;
@@ -223,7 +229,6 @@ export abstract class SelectionTool extends Tool {
 
     private saveSelection(ctx: CanvasRenderingContext2D): void {
         this.setSelectionCoords();
-
         this.data = ctx.getImageData(
             this.coords.initialTopLeft.x,
             this.coords.initialTopLeft.y,
@@ -249,7 +254,6 @@ export abstract class SelectionTool extends Tool {
     private adjustToDrawingBounds(): void {
         if (this.coords.initialBottomRight.x < 0) this.coords.initialBottomRight.x = 0;
         if (this.coords.initialBottomRight.x > this.drawingService.canvas.width) this.coords.initialBottomRight.x = this.drawingService.canvas.width;
-
         if (this.coords.initialBottomRight.y < 0) this.coords.initialBottomRight.y = 0;
         if (this.coords.initialBottomRight.y > this.drawingService.canvas.height)
             this.coords.initialBottomRight.y = this.drawingService.canvas.height;
@@ -272,14 +276,13 @@ export abstract class SelectionTool extends Tool {
             this.undoRedoService.enableUndoRedo();
             return;
         }
-
         this.coords.initialTopLeft = { x: this.coords.initialBottomRight.x, y: this.coords.initialBottomRight.y };
     }
 
     drawAll(ctx: CanvasRenderingContext2D): void {
         this.draw(ctx);
         this.drawPerimeter(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
-        this.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
+        this.resizeSelectionService.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
@@ -297,21 +300,8 @@ export abstract class SelectionTool extends Tool {
         );
     }
 
-    private drawBox(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
-        ctx.save();
-        ctx.lineWidth = 1;
-        ctx.lineJoin = 'miter';
-        ctx.strokeStyle = this.boxColor.rgbValue;
-        ctx.globalAlpha = this.boxColor.opacity;
-        ctx.beginPath();
-        ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
-        ctx.stroke();
-        ctx.restore();
-        this.resizeSelectionService.drawControlPoints(ctx, begin, end);
-    }
-
     selectAll(): void {
-        this.onMouseDown({ pageX: 0 + HORIZONTAL_OFFSET, pageY: 0 + VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
+        this.onMouseDown({ pageX: HORIZONTAL_OFFSET, pageY: VERTICAL_OFFSET, button: MouseButton.Left } as MouseEvent);
         this.onMouseUp({
             pageX: this.drawingService.canvas.width + HORIZONTAL_OFFSET,
             pageY: this.drawingService.canvas.height + VERTICAL_OFFSET,
@@ -324,7 +314,6 @@ export abstract class SelectionTool extends Tool {
         const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
         const maxY = Math.max(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
-
         return (
             point.x > minX - this.selectionOffSet &&
             point.x < maxX + this.selectionOffSet &&
@@ -335,6 +324,10 @@ export abstract class SelectionTool extends Tool {
 
     protected setOffSet(pos: Vec2): void {
         this.moveSelectionService.mouseMoveOffset = {
+            x: pos.x - this.coords.finalTopLeft.x,
+            y: pos.y - this.coords.finalTopLeft.y,
+        };
+        this.magnetSelectionService.mouseMoveOffset = {
             x: pos.x - this.coords.finalTopLeft.x,
             y: pos.y - this.coords.finalTopLeft.y,
         };
@@ -350,11 +343,7 @@ export abstract class SelectionTool extends Tool {
             finalBottomRight: this.coords.finalBottomRight,
         };
     }
-
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
-
     abstract drawSelection(selectionPropreties: SelectionPropreties): void;
-
     abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
-    // tslint:disable-next-line: max-file-line-count
 }
