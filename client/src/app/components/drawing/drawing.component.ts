@@ -183,7 +183,7 @@ export class DrawingComponent implements AfterViewInit {
         return 'crosshair';
     }
 
-    checkIfIsAControlPoint(): string {
+    private checkIfIsAControlPoint(): string {
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
                 case SelectedPoint.TOP_LEFT:
@@ -210,14 +210,14 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private returnTrueFirstDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'nw-resize';
             } else {
                 return 'ne-resize';
             }
         } else {
-            if (!this.ySelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'ne-resize';
             } else {
                 return 'nw-resize';
@@ -226,14 +226,14 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private returnTrueSecondDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'ne-resize';
             } else {
                 return 'nw-resize';
             }
         } else {
-            if (!this.ySelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'nw-resize';
             } else {
                 return 'ne-resize';
@@ -241,7 +241,7 @@ export class DrawingComponent implements AfterViewInit {
         }
     }
 
-    xSelectionIsFlipped(): boolean {
+    private horizontalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x -
                 (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x <
@@ -249,7 +249,7 @@ export class DrawingComponent implements AfterViewInit {
         );
     }
 
-    ySelectionIsFlipped(): boolean {
+    private verticalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
                 (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y <
