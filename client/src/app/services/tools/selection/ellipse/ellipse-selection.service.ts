@@ -28,15 +28,15 @@ export class EllipseSelectionService extends SelectionTool {
     }
 
     fillWithWhite(selectionPropreties: SelectionPropreties): void {
-        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight);
+        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight);
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x) / 2 - 1,
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y) / 2 - 1,
+            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x) / 2 - 1,
+            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y) / 2 - 1,
             0,
             0,
             2 * Math.PI,
@@ -48,18 +48,18 @@ export class EllipseSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
-        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
+        image.width = selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x;
+        image.height = selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
         const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.finalTopLeft, selectionPropreties.finalBottomRight);
 
         const ratioX: number =
             (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
+            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x);
 
         const ratioY: number =
             (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
+            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y);
 
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(

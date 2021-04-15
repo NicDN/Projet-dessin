@@ -31,10 +31,10 @@ export class RectangleSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.rect(
-            selectionPropreties.topLeft.x,
-            selectionPropreties.topLeft.y,
-            selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x,
-            selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y,
+            selectionPropreties.initialTopLeft.x,
+            selectionPropreties.initialTopLeft.y,
+            selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x,
+            selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y,
         );
         selectionPropreties.selectionCtx.fill();
     }
@@ -43,16 +43,16 @@ export class RectangleSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
-        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
+        image.width = selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x;
+        image.height = selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
         const ratioX: number =
             (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
+            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x);
 
         const ratioY: number =
             (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
+            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y);
 
         selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.scale(ratioX, ratioY);

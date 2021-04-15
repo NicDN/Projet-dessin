@@ -22,8 +22,8 @@ describe('selection-command', () => {
     const selectionPropretiesStub: SelectionPropreties = {
         selectionCtx: canvasCtxStub,
         imageData: canvasCtxStub.getImageData(0, 0, 1, 1),
-        topLeft: INITIAL_TOP_CORNER_COORDS,
-        bottomRight: INITIAL_BOTTOM_CORNER_COORDS,
+        initialTopLeft: INITIAL_TOP_CORNER_COORDS,
+        initialBottomRight: INITIAL_BOTTOM_CORNER_COORDS,
         finalTopLeft: FINAL_TOP_CORNER_COORDS,
         finalBottomRight: FINAL_BOTTOM_CORNER_COORDS,
     };

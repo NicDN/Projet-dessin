@@ -667,8 +667,8 @@ describe('SelectionTool', () => {
 
         expect(selectionProperties.selectionCtx).toEqual(drawingServiceSpyObj.previewCtx);
         expect(selectionProperties.imageData).toEqual(TEST_DATA);
-        expect(selectionProperties.topLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionProperties.bottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionProperties.initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionProperties.initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
         expect(selectionProperties.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
         expect(selectionProperties.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });

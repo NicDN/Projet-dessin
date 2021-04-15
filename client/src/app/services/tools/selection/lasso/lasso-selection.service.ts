@@ -14,6 +14,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
     providedIn: 'root',
 })
 export class LassoSelectionService extends SelectionTool {
+    readonly minPointsForClosingLoop: number = 4;
     firstPointOffset: Vec2;
     constructor(
         drawingService: DrawingService,
@@ -51,10 +52,7 @@ export class LassoSelectionService extends SelectionTool {
         if (!this.mouseDown) return;
         this.mouseDown = false;
 
-        if (
-            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
-            this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
-        ) {
+        if (this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT) {
             this.resizeSelectionService.selectedPointIndex = SelectedPoint.NO_POINT;
             return;
         }
@@ -64,19 +62,23 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.lineService.pathData.length !== 0) this.undoRedoService.disableUndoRedo();
-
         if (this.checkIfLineCrossing()) return;
         this.lineService.pathData.push(this.lineService.mousePosition);
 
-        if (this.lineService.pathData.length > 4 && this.lineService.checkClosingLoop()) {
-            this.lineService.pathData.pop();
-            this.lineService.pathData.pop();
-            this.lineService.pathData.push(this.lineService.pathData[0]);
-            if (this.checkIfLineCrossing()) return;
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.calculateInitialCoords();
-            this.createSelection();
+        if (this.lineService.pathData.length > this.minPointsForClosingLoop && this.lineService.checkClosingLoop()) {
+            this.closeLoop();
         }
+    }
+
+    private closeLoop(): void {
+        this.lineService.pathData.pop();
+        this.lineService.pathData.pop();
+        this.lineService.pathData.push(this.lineService.pathData[0]);
+        // need to check crossing condition again after looping back to beginning
+        if (this.checkIfLineCrossing()) return;
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.calculateInitialCoords();
+        this.createSelection();
     }
 
     onMouseMove(event: MouseEvent): void {
@@ -98,7 +100,7 @@ export class LassoSelectionService extends SelectionTool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(this.drawingService.previewCtx, this.getPositionFromMouse(event), this.coords);
+            this.moveSelectionService.moveSelectionWithMouse(this.getPositionFromMouse(event), this.coords);
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
@@ -124,8 +126,8 @@ export class LassoSelectionService extends SelectionTool {
             selectionPathData: this.lineService.pathData,
             firstPointOffset: this.firstPointOffset,
             imageData: this.data,
-            topLeft: this.coords.initialTopLeft,
-            bottomRight: this.coords.initialBottomRight,
+            initialTopLeft: this.coords.initialTopLeft,
+            initialBottomRight: this.coords.initialBottomRight,
             finalTopLeft: this.coords.finalTopLeft,
             finalBottomRight: this.coords.finalBottomRight,
         };
@@ -187,16 +189,16 @@ export class LassoSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx || !selectionPropreties.selectionPathData) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x;
-        image.height = selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y;
+        image.width = selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x;
+        image.height = selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
         const ratioX: number =
             (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
-            (selectionPropreties.bottomRight.x - selectionPropreties.topLeft.x);
+            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x);
 
         const ratioY: number =
             (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
-            (selectionPropreties.bottomRight.y - selectionPropreties.topLeft.y);
+            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y);
 
         selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
         selectionPropreties.selectionCtx.scale(ratioX, ratioY);
@@ -212,13 +214,13 @@ export class LassoSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.save();
 
         selectionPropreties.selectionCtx.translate(
-            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
-            this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+            this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight).x,
+            this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight).y,
         );
         selectionPropreties.selectionCtx.scale(0.99, 0.99);
         selectionPropreties.selectionCtx.translate(
-            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).x,
-            -this.shapeService.getCenterCoords(selectionPropreties.topLeft, selectionPropreties.bottomRight).y,
+            -this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight).x,
+            -this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight).y,
         );
         selectionPropreties.selectionCtx.fillStyle = 'white';
         this.makePath(selectionPropreties, true);
@@ -231,11 +233,11 @@ export class LassoSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.beginPath();
         for (const point of selectionPropreties.selectionPathData) {
             selectionPropreties.selectionCtx.lineTo(
-                (b ? selectionPropreties.topLeft.x : selectionPropreties.finalTopLeft.x) +
+                (b ? selectionPropreties.initialTopLeft.x : selectionPropreties.finalTopLeft.x) +
                     selectionPropreties.firstPointOffset.x -
                     selectionPropreties.selectionPathData[0].x +
                     point.x,
-                (b ? selectionPropreties.topLeft.y : selectionPropreties.finalTopLeft.y) +
+                (b ? selectionPropreties.initialTopLeft.y : selectionPropreties.finalTopLeft.y) +
                     selectionPropreties.firstPointOffset.y -
                     selectionPropreties.selectionPathData[0].y +
                     point.y,
@@ -284,7 +286,6 @@ export class LassoSelectionService extends SelectionTool {
             if (deltaXB === 0) intersectX = B1.x;
 
             let intersectY = (intersectX * deltaYA + A1.y * deltaXA - A1.x * deltaYA) / deltaXA;
-            if (deltaXA === 0 || deltaXB === 0 || deltaYA === 0 || deltaYB === 0) console.log(intersectX, intersectY);
 
             if (deltaYA === 0) intersectY = A1.y;
             if (deltaYB === 0) intersectY = B1.y;

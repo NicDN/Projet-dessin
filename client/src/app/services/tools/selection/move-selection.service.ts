@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 
 export enum SelectedPoint {
@@ -22,7 +21,7 @@ export enum SelectedPoint {
     providedIn: 'root',
 })
 export class MoveSelectionService {
-    constructor(private drawingService: DrawingService, private gridService: GridService) {}
+    constructor(private gridService: GridService) {}
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2;
@@ -59,7 +58,7 @@ export class MoveSelectionService {
         if (event.code === 'ArrowRight') this.keyRightIsPressed = state;
     }
 
-    moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithArrows(delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = Math.abs(selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x);
         const height = Math.abs(selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y);
 
@@ -71,10 +70,9 @@ export class MoveSelectionService {
             selectionCoords.finalBottomRight.x += delta.x;
             selectionCoords.finalBottomRight.y += delta.y;
         }
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithMouse(pos: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
 
@@ -87,8 +85,6 @@ export class MoveSelectionService {
                 y: selectionCoords.finalTopLeft.y + height,
             };
         }
-
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
     private alignToProperMagnetArrowPosition(selectionCoords: SelectionCoords, deltaX: number, deltaY: number, width: number, height: number): void {

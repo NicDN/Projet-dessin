@@ -14,8 +14,8 @@ export interface SelectionPropreties {
     selectionPathData?: Vec2[];
     firstPointOffset?: Vec2;
     imageData: ImageData;
-    topLeft: Vec2;
-    bottomRight: Vec2;
+    initialTopLeft: Vec2;
+    initialBottomRight: Vec2;
     finalTopLeft: Vec2;
     finalBottomRight: Vec2;
 }

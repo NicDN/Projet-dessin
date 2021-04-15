@@ -61,8 +61,8 @@ describe('EllipseSelectionService', () => {
         selectionProperties = {
             selectionCtx: drawingServiceSpyObj.baseCtx,
             imageData: drawingServiceSpyObj.baseCtx.getImageData(0, 0, IMAGE_DATA_SIZE, IMAGE_DATA_SIZE),
-            topLeft: TOP_LEFT_SELECTION,
-            bottomRight: BOTTOM_RIGHT_SELECTION,
+            initialTopLeft: TOP_LEFT_SELECTION,
+            initialBottomRight: BOTTOM_RIGHT_SELECTION,
             finalTopLeft: TOP_LEFT_SELECTION,
             finalBottomRight: BOTTOM_RIGHT_SELECTION,
         } as SelectionPropreties;
