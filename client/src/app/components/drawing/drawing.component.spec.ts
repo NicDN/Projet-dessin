@@ -9,7 +9,8 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
@@ -71,6 +72,7 @@ describe('DrawingComponent', () => {
     let drawingStub: DrawingService;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
+    let magnetSelectionServiceSpyObj: jasmine.SpyObj<MagnetSelectionService>;
     let resizeSelectionSpyObj: jasmine.SpyObj<ResizeSelectionService>;
     let imageSpyObj: jasmine.SpyObj<HTMLImageElement>;
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
@@ -94,6 +96,7 @@ describe('DrawingComponent', () => {
         hotKeyServiceSpy = jasmine.createSpyObj('HotkeyService', ['onKeyDown', 'onKeyUp']);
         undoRedoServiceSpyObj = jasmine.createSpyObj('undoRedoService', ['addCommand', 'enableUndoRedo', 'disableUndoRedo']);
         moveSelectionServiceSpyObj = jasmine.createSpyObj('MoveSelectionService', ['']);
+        magnetSelectionServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['']);
         resizeSelectionSpyObj = jasmine.createSpyObj('ResizeSelectionService', ['']);
         rectangleDrawingServiceSpyObj = jasmine.createSpyObj('RectangleDrawingService', ['']);
         lassoSelectionServiceSpyObj = jasmine.createSpyObj('LassoSelectionService', ['checkIfLineCrossing']);
@@ -113,6 +116,7 @@ describe('DrawingComponent', () => {
                 { provide: ColorService, useValue: colorServiceStub },
                 { provide: UndoRedoService, useValue: undoRedoServiceSpyObj },
                 { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
+                { provide: MagnetSelectionService, useValue: magnetSelectionServiceSpyObj },
                 { provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj },
                 { provide: RectangleSelectionService, useValue: rectangleSelectionServiceSpyObj },
                 { provide: EyeDropperService, useValue: eyeDropperServiceSpyObj },
@@ -145,6 +149,7 @@ describe('DrawingComponent', () => {
             undoRedoServiceSpyObj,
             moveSelectionServiceSpyObj,
             resizeSelectionSpyObj,
+            magnetSelectionServiceSpyObj,
         );
 
         fixture.detectChanges();
@@ -264,6 +269,7 @@ describe('DrawingComponent', () => {
             undoRedoServiceSpyObj,
             moveSelectionServiceSpyObj,
             resizeSelectionSpyObj,
+            magnetSelectionServiceSpyObj,
         );
         component.onMouseUp(mouseEventClick);
         expect(undoRedoServiceSpyObj.enableUndoRedo).not.toHaveBeenCalled();
@@ -328,6 +334,7 @@ describe('DrawingComponent', () => {
             undoRedoServiceSpyObj,
             moveSelectionServiceSpyObj,
             resizeSelectionSpyObj,
+            magnetSelectionServiceSpyObj,
         );
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseDown').and.stub();
         component.onMouseDown(mouseEventClick);

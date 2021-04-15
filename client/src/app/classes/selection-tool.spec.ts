@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -26,8 +27,9 @@ export class SelectionToolStub extends SelectionTool {
         undoRedoService: UndoRedoService,
         moveSelectionService: MoveSelectionService,
         resizeSelectionService: ResizeSelectionService,
+        magnetSelectionService: MagnetSelectionService,
     ) {
-        super(drawingService, rectangleDrawingService, 'Stub', undoRedoService, moveSelectionService, resizeSelectionService);
+        super(drawingService, rectangleDrawingService, 'Stub', undoRedoService, moveSelectionService, resizeSelectionService, magnetSelectionService);
     }
 }
 // tslint:disable: no-any
@@ -38,6 +40,7 @@ describe('SelectionTool', () => {
     let rectangleDrawingServiceSpyObj: jasmine.SpyObj<RectangleDrawingService>;
     let undoRedoSpyObj: jasmine.SpyObj<UndoRedoService>;
     let moveSelectionServiceSpyObj: jasmine.SpyObj<MoveSelectionService>;
+    let magnetSelectionServiceSpyObj: jasmine.SpyObj<MagnetSelectionService>;
     let resizeSelectionSpyObj: jasmine.SpyObj<ResizeSelectionService>;
     let mouseEvent: MouseEvent;
     let canvasTestHelper: CanvasTestHelper;
@@ -64,13 +67,17 @@ describe('SelectionTool', () => {
             'moveSelectionWithArrows',
             'moveSelectionWithMouse',
         ]);
+
+        magnetSelectionServiceSpyObj = jasmine.createSpyObj('MagnetSelectionService', ['']);
         resizeSelectionSpyObj = jasmine.createSpyObj('ResizeSelectionService', ['checkIfAControlPointHasBeenSelected', 'resizeSelection', 'drawBox']);
+
         TestBed.configureTestingModule({
             providers: [
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
                 { provide: RectangleDrawingService, useValue: rectangleDrawingServiceSpyObj },
                 { provide: UndoRedoService, useValue: undoRedoSpyObj },
                 { provide: MoveSelectionService, useValue: moveSelectionServiceSpyObj },
+                { provide: MagnetSelectionService, useValue: magnetSelectionServiceSpyObj },
             ],
         });
 
@@ -85,6 +92,7 @@ describe('SelectionTool', () => {
             undoRedoSpyObj,
             moveSelectionServiceSpyObj,
             resizeSelectionSpyObj,
+            magnetSelectionServiceSpyObj,
         );
 
         selectionTool['drawingService'].baseCtx = baseCtxStub;
@@ -220,6 +228,16 @@ describe('SelectionTool', () => {
         selectionTool.onMouseUp(mouseEvent);
         expect(selectionTool.mouseDown).toBeFalse();
         expect(moveSelectionServiceSpyObj['movingWithMouse']).toBeFalse();
+    });
+
+    it('#onMouseMove should put resizeSelectionServicePreview to moving if it is inside selection but not on a point', () => {
+        spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
+        resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValues();
+        selectionTool.mouseDown = true;
+        selectionTool.selectionExists = true;
+        moveSelectionServiceSpyObj['movingWithMouse'] = false;
+        selectionTool.onMouseMove(mouseEvent);
+        expect(resizeSelectionSpyObj.previewSelectedPointIndex).toEqual(SelectedPoint.MOVING);
     });
 
     it('#onMouseUp should set initialBottomRight to the correct coords and create a selection, when not moving a selection', () => {
