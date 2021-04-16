@@ -3,8 +3,9 @@
     <div class="color-container">
         <button mat-fab
             [ngStyle]="{ 'background-color': colorService.mainColor.rgbValue, opacity: colorService.mainColor.opacity }"
-            (click)="selectColor(colorService.mainColor)" matTooltip="Couleur principale" matTooltipPosition="left"
-            matTooltipShowDelay="1000" class="main-color-button"></button>
+            [class.border]="colorService.mainColor.opacity<0.2" (click)="selectColor(colorService.mainColor)"
+            matTooltip="Couleur principale" matTooltipPosition="left" matTooltipShowDelay="1000"
+            class="main-color-button"></button>
 
         <button mat-button (click)="switchColors()">
             <mat-icon>compare_arrows</mat-icon>
@@ -12,7 +13,8 @@
         <button mat-mini-fab
             [ngStyle]="{ 'background-color': colorService.secondaryColor.rgbValue, opacity: colorService.secondaryColor.opacity }"
             (click)="selectColor(colorService.secondaryColor)" matTooltip="Couleur secondaire"
-            matTooltipPosition="right" matTooltipShowDelay="1000" class="secondary-color-button"></button>
+            matTooltipPosition="right" matTooltipShowDelay="1000" class="secondary-color-button"
+            [class.border]="colorService.secondaryColor.opacity<0.2"></button>
     </div>
     <div *ngFor="let previousColor of previousColors; let index = index" class="list-previous-color">
         <button mat-mini-fab class="previous-color" (click)="setPrimaryColor(index)"
@@ -39,10 +41,9 @@
                         }}</mat-label>
                     <input type="text" class="rgb-input" maxlength="2" [value]="getRGB(index)"
                         (input)="applyRGBInput($event.target.value, index)"
-                        [ngStyle]="rgbInput.inputError && { color: 'red' }" matInput 
+                        [ngStyle]="rgbInput.inputError && { color: 'red' }" matInput
                         (focusout)="this.hotKeyService.listenToKeyEvents=true"
-                        (focusin)="this.hotKeyService.listenToKeyEvents=false"
-                        />
+                        (focusin)="this.hotKeyService.listenToKeyEvents=false" />
                 </mat-form-field>
             </form>
 
