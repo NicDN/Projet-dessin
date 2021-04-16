@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
+import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
@@ -23,6 +24,7 @@ import { EraserService } from '@app/services/tools/trace-tool/eraser/eraser.serv
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of, Subject } from 'rxjs';
 import { DrawingComponent } from './drawing.component';
 
 const MOUSE_POSITION_DEFAULT = 1000;
@@ -83,6 +85,7 @@ describe('DrawingComponent', () => {
     let rectangleSelectionServiceSpyObj: jasmine.SpyObj<RectangleSelectionService>;
     let eyeDropperServiceSpyObj: jasmine.SpyObj<EyeDropperService>;
     let textServiceSpyObj: jasmine.SpyObj<TextService>;
+    let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
 
     let loadCanvasSpy: jasmine.Spy;
 
@@ -108,6 +111,8 @@ describe('DrawingComponent', () => {
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['']);
         eyeDropperServiceSpyObj = jasmine.createSpyObj('EyeDropperService', ['']);
         textServiceSpyObj = jasmine.createSpyObj('TextService', ['']);
+        dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['listenToKeyEvents']);
+        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(of());
 
         imageSpyObj = jasmine.createSpyObj('Image', ['decode']);
 
@@ -134,6 +139,7 @@ describe('DrawingComponent', () => {
                 { provide: MatDialog, useValue: {} },
                 { provide: Router, useValue: {} },
                 { provide: SnackBarService, useValue: snackBarServiceStub },
+                { provide: DialogService, useValue: dialogServiceSpyObj },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -309,11 +315,6 @@ describe('DrawingComponent', () => {
     it('#onKeyDown should call #onKeyDown of hotKeyService', () => {
         component.onKeyDown(keyBoardEvent);
         expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
-    });
-
-    it("#onKeyUp should call tools service's #onKeyUp", () => {
-        component.onKeyUp(keyBoardEvent);
-        expect(hotKeyServiceSpy.onKeyUp).toHaveBeenCalled();
     });
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {
@@ -587,7 +588,11 @@ describe('DrawingComponent', () => {
         expect(component['verticalAxisSelectionIsFlipped']()).toBeTrue();
     });
 
-    it('#observeDialogService should set aDialogIsNotOpened ', () => {
-        expect(component).toBeTruthy();
+    it('#observeDialogService should set the dialogIsOpened value', () => {
+        const subject: Subject<boolean> = new Subject();
+        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(subject);
+        component['observeDialogService']();
+        subject.next(true);
+        expect(component['dialogIsOpened']).toBeFalse();
     });
 });

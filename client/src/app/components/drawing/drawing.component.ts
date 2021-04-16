@@ -32,13 +32,12 @@ export class DrawingComponent implements AfterViewInit {
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
     private canDraw: boolean = true;
-    private aDialogIsNotOpened: boolean = true;
-
+    private dialogIsOpened: boolean = false;
     private refreshedImage: HTMLImageElement = new Image();
 
     constructor(
         private drawingService: DrawingService,
-        public toolsService: ToolsService,
+        private toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
         private resizeSelectionService: ResizeSelectionService,
@@ -66,8 +65,8 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private observeDialogService(): void {
-        this.dialogService.listenToKeyEvents().subscribe((aDialogIsNotOpened) => {
-            this.aDialogIsNotOpened = aDialogIsNotOpened;
+        this.dialogService.listenToKeyEvents().subscribe((dialogIsOpened) => {
+            this.dialogIsOpened = !dialogIsOpened;
         });
     }
 
@@ -94,12 +93,12 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseMove(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseMove(event);
     }
 
     @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw && this.isInsideCanvas(event) && this.aDialogIsNotOpened) {
+        if (this.canDraw && this.isInsideCanvas(event) && !this.dialogIsOpened) {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
             this.toolsService.currentTool.onMouseDown(event);
         }
@@ -114,7 +113,7 @@ export class DrawingComponent implements AfterViewInit {
                 this.undoRedoService.enableUndoRedo();
             }
         }
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseUp(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseUp(event);
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -124,12 +123,12 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.hotKeyService.onKeyUp(event);
+        this.toolsService.onKeyUp(event);
     }
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseEnter(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseEnter(event);
     }
 
     @HostListener('mouseout', ['$event'])
