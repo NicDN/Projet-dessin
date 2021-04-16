@@ -44,7 +44,7 @@ export class MoveSelectionService {
         if (event.code === 'ArrowRight') this.keyRightIsPressed = state;
     }
 
-    moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithArrows(delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
         const emptyPosition = { x: 0, y: 0 };
@@ -61,7 +61,7 @@ export class MoveSelectionService {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithMouse(pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
 

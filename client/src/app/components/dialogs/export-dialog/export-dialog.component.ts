@@ -18,7 +18,7 @@ export class ExportDialogComponent implements AfterViewInit {
     private canvasCtx: CanvasRenderingContext2D;
     private readonly IMGUR_SNACK_BAR_TIME_MS: number = 20000;
 
-    loadingImpgurState = false;
+    loadingImpgurState: boolean = false;
 
     exportToImgur: boolean = false;
 
