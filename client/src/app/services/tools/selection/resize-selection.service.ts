@@ -3,7 +3,7 @@ import { Color } from '@app/classes/color';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { SelectedPoint } from './magnet-selection.service';
-// tslint:disable: no-magic-numbers
+
 @Injectable({
     providedIn: 'root',
 })
@@ -13,6 +13,9 @@ export class ResizeSelectionService {
     private readonly NO_POINT_SELECTED_INDEX: number = -1;
     private readonly CONTROL_POINT_WIDTH: number = 6;
     private readonly HALF_CONTROL_POINT_WIDTH: number = this.CONTROL_POINT_WIDTH / 2;
+    private width: number = 0;
+    private height: number = 0;
+    private endCoords: Vec2 = { x: 0, y: 0 };
 
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
@@ -41,7 +44,7 @@ export class ResizeSelectionService {
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'blue';
         this.getControlPointsCoords(begin, end).forEach((coord: Vec2, index) => {
-            if (index !== 4) ctx.rect(coord.x, coord.y, this.CONTROL_POINT_WIDTH, this.CONTROL_POINT_WIDTH);
+            if (index !== SelectedPoint.CENTER) ctx.rect(coord.x, coord.y, this.CONTROL_POINT_WIDTH, this.CONTROL_POINT_WIDTH);
         });
         ctx.stroke();
         ctx.fill();
@@ -75,49 +78,23 @@ export class ResizeSelectionService {
     }
 
     resizeSelection(pos: Vec2, coords: SelectionCoords): void {
-        const width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
-        const height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
-        let endCoords = { x: 0, y: 0 };
+        this.width = Math.abs(coords.finalBottomRight.x - coords.finalTopLeft.x);
+        this.height = Math.abs(coords.finalBottomRight.y - coords.finalTopLeft.y);
         this.lastMousePos = pos;
 
         switch (this.selectedPointIndex) {
             case SelectedPoint.TOP_LEFT:
-                coords.finalTopLeft.y = pos.y;
-                coords.finalTopLeft.x = pos.x;
-                if (this.shiftKeyIsDown) {
-                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalBottomRight.y, height, width);
-                    coords.finalTopLeft.y = endCoords.y;
-                    coords.finalTopLeft.x = endCoords.x;
-                }
+                this.handleTopLeft(pos, coords);
                 break;
             case SelectedPoint.BOTTOM_LEFT:
-                coords.finalTopLeft.x = pos.x;
-                coords.finalBottomRight.y = pos.y;
-                if (this.shiftKeyIsDown) {
-                    endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalTopLeft.y, height, width);
-                    coords.finalTopLeft.x = endCoords.x;
-                    coords.finalBottomRight.y = endCoords.y;
-                }
+                this.handleBottomLeft(pos, coords);
                 break;
             case SelectedPoint.TOP_RIGHT:
-                coords.finalTopLeft.y = pos.y;
-                coords.finalBottomRight.x = pos.x;
-                if (this.shiftKeyIsDown) {
-                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalBottomRight.y, height, width);
-                    coords.finalBottomRight.x = endCoords.x;
-                    coords.finalTopLeft.y = endCoords.y;
-                }
+                this.handleTopRight(pos, coords);
                 break;
             case SelectedPoint.BOTTOM_RIGHT:
-                coords.finalBottomRight.x = pos.x;
-                coords.finalBottomRight.y = pos.y;
-                if (this.shiftKeyIsDown) {
-                    endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalTopLeft.y, height, width);
-                    coords.finalBottomRight.y = endCoords.y;
-                    coords.finalBottomRight.x = endCoords.x;
-                }
+                this.handleBottomRight(pos, coords);
                 break;
-
             case SelectedPoint.TOP_MIDDLE:
                 coords.finalTopLeft.y = pos.y;
                 break;
@@ -133,20 +110,60 @@ export class ResizeSelectionService {
         }
     }
 
-    private findDistance(pos: Vec2, offSetX: number, height: number, width: number): Vec2 {
-        if (height === 0) {
-            height = this.lastDimensions.y;
+    private handleTopLeft(pos: Vec2, coords: SelectionCoords): void {
+        coords.finalTopLeft.y = pos.y;
+        coords.finalTopLeft.x = pos.x;
+        if (this.shiftKeyIsDown) {
+            this.endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalBottomRight.y);
+            coords.finalTopLeft.y = this.endCoords.y;
+            coords.finalTopLeft.x = this.endCoords.x;
         }
-        if (width === 0) {
-            width = this.lastDimensions.x;
+    }
+
+    private handleBottomLeft(pos: Vec2, coords: SelectionCoords): void {
+        coords.finalTopLeft.x = pos.x;
+        coords.finalBottomRight.y = pos.y;
+        if (this.shiftKeyIsDown) {
+            this.endCoords = this.findEndCoords(pos, coords.finalBottomRight.x, coords.finalTopLeft.y);
+            coords.finalTopLeft.x = this.endCoords.x;
+            coords.finalBottomRight.y = this.endCoords.y;
+        }
+    }
+
+    private handleTopRight(pos: Vec2, coords: SelectionCoords): void {
+        coords.finalTopLeft.y = pos.y;
+        coords.finalBottomRight.x = pos.x;
+        if (this.shiftKeyIsDown) {
+            this.endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalBottomRight.y);
+            coords.finalBottomRight.x = this.endCoords.x;
+            coords.finalTopLeft.y = this.endCoords.y;
+        }
+    }
+
+    private handleBottomRight(pos: Vec2, coords: SelectionCoords): void {
+        coords.finalBottomRight.x = pos.x;
+        coords.finalBottomRight.y = pos.y;
+        if (this.shiftKeyIsDown) {
+            this.endCoords = this.findEndCoords(pos, coords.finalTopLeft.x, coords.finalTopLeft.y);
+            coords.finalBottomRight.y = this.endCoords.y;
+            coords.finalBottomRight.x = this.endCoords.x;
+        }
+    }
+
+    private findDistance(pos: Vec2, offSetX: number): Vec2 {
+        if (this.height === 0) {
+            this.height = this.lastDimensions.y;
+        }
+        if (this.width === 0) {
+            this.width = this.lastDimensions.x;
         }
         const distX = Math.abs(pos.x - offSetX);
-        const distY = distX * (height / width);
+        const distY = distX * (this.height / this.width);
         return { x: distX, y: distY };
     }
 
-    private findEndCoords(pos: Vec2, coordsX: number, coordsY: number, height: number, width: number): Vec2 {
-        const dist = this.findDistance(pos, coordsX, height, width);
+    private findEndCoords(pos: Vec2, coordsX: number, coordsY: number): Vec2 {
+        const dist = this.findDistance(pos, coordsX);
         return { x: coordsX + Math.sign(pos.x - coordsX) * dist.x, y: coordsY + Math.sign(pos.y - coordsY) * dist.y };
     }
 }
