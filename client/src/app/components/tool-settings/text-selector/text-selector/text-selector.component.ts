@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatSelect } from '@angular/material/select';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
@@ -26,6 +27,8 @@ interface FontStyleOption {
     styleUrls: ['./text-selector.component.scss'],
 })
 export class TextSelectorComponent implements OnInit {
+    @ViewChild('matSelect', { static: false }) matSelect: MatSelect;
+
     fontStyles: FontStyleOption[] = [
         { name: 'Arial', value: FontStyle.Arial },
         { name: 'Times', value: FontStyle.Times },
@@ -106,10 +109,12 @@ export class TextSelectorComponent implements OnInit {
         return icon === 'italic' ? this.textService.writeItalic : this.textService.writeBold;
     }
 
-    applyFontStyle(fontStyle: FontStyleOption): void {
-        this.selectedFontStyle = fontStyle.name;
-        this.textService.fontStyle = fontStyle.value;
+    applyFontStyle(fontStyle?: FontStyleOption): void {
+        // TODO: enlever le ptn dinterrogation
+        // this.selectedFontStyle = fontStyle.name;
+        // this.textService.fontStyle = fontStyle.value;
         this.updateText();
+        this.matSelect.close();
     }
 
     private updateText(): void {
@@ -117,6 +122,13 @@ export class TextSelectorComponent implements OnInit {
             this.drawingService.clearCanvas(this.drawingService.previewCtx);
             this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
             this.textService.drawBox();
+        }
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        event?.stopPropagation();
+        if (event.key === 'Enter') {
+            (event.target as HTMLDivElement | undefined)?.blur?.();
         }
     }
 }

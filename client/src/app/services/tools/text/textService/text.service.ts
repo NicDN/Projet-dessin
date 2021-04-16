@@ -25,7 +25,8 @@ export enum FontStyle {
     providedIn: 'root',
 })
 export class TextService extends TraceTool {
-    readonly TEXT_MIN_SIZE: number = 25;
+    readonly DEFAULT_SIZE_VALUE: number = 25;
+    readonly TEXT_MIN_SIZE: number = 10;
     readonly TEXT_MAX_SIZE: number = 70;
     readonly MULTIPLIER: number = 1.5;
     readonly MINUS_ONE: number = -1;
@@ -35,7 +36,7 @@ export class TextService extends TraceTool {
 
     private subject: Subject<boolean> = new Subject<boolean>();
 
-    textSize: number = this.TEXT_MIN_SIZE;
+    textSize: number = this.DEFAULT_SIZE_VALUE;
     textPosition: TextPosition = TextPosition.Left;
 
     writeItalic: boolean = false;
@@ -133,7 +134,8 @@ export class TextService extends TraceTool {
     registerTextCommand(ctx: CanvasRenderingContext2D, text: string): void {
         const textCommand = new TextCommand(this, this.loadTextProperties(ctx, text));
         textCommand.execute();
-        if (ctx === this.drawingService.baseCtx) {
+
+        if (ctx === this.drawingService.baseCtx && this.writtenOnPreview.length > 0) {
             this.undoRedoService.addCommand(textCommand);
         }
     }
@@ -203,10 +205,6 @@ export class TextService extends TraceTool {
                 );
         }
         textProperties.textContext.restore();
-
-        if (textProperties.textContext === this.drawingService.baseCtx) {
-            this.disableWriting();
-        }
     }
 
     findLongestLineAndHeight(textProperties: TextProperties): void {
