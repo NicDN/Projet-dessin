@@ -93,10 +93,6 @@ export class MoveSelectionService {
 
     alignToProperMagnetPosition(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {
         this.magnetSelectionService.mouseOffsetTop = { x: pos.x - selectionCoords.finalTopLeft.x, y: pos.y - selectionCoords.finalTopLeft.y };
-        this.magnetSelectionService.mouseOffsetBottom = {
-            x: selectionCoords.finalBottomRight.x - pos.x,
-            y: selectionCoords.finalBottomRight.y - pos.y,
-        };
 
         let trueDeltaX = delta.x > 0 ? this.gridService.squareSize : -this.gridService.squareSize;
         if (delta.x === 0) trueDeltaX = 0;
@@ -111,7 +107,6 @@ export class MoveSelectionService {
         };
 
         this.magnetSelectionService.mouseOffsetTop = this.magnetSelectionService.getMagnetizedOffsetPosition();
-        this.magnetSelectionService.mouseOffsetBottom = this.magnetSelectionService.getMagnetizedOffsetPosition();
         switch (this.magnetSelectionService.pointToMagnetize) {
             case SelectedPoint.TOP_LEFT:
                 this.magnetSelectionService.topLeft(pos, selectionCoords, trueDelta);

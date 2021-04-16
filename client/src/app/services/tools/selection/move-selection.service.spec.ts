@@ -17,7 +17,7 @@ describe('MoveSelectionService', () => {
     let selectionCoordsStub: SelectionCoords;
     let selectionWidth: number;
     let selectionHeight: number;
-    let positionToMagnetize = { x: 60, y: 40 };
+    const positionToMagnetize = { x: 60, y: 40 };
     let deltaStub: Vec2;
 
     const MOUSE_POSITION: Vec2 = { x: 25, y: 25 };
