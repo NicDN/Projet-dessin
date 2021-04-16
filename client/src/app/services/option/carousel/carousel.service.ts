@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DrawingForm } from '@common/communication/drawing-form';
+import { environment } from '@env/environment';
 import * as Httpstatus from 'http-status-codes';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -10,7 +11,6 @@ import { catchError } from 'rxjs/operators';
 })
 export class CarouselService {
     private readonly NO_SERVER_RESPONSE: number = 0;
-    private readonly BASE_URL: string = 'http://localhost:3000/api/server';
 
     constructor(private http: HttpClient) {}
 
@@ -19,12 +19,12 @@ export class CarouselService {
         params = params.append('tags', JSON.stringify(searchedTags));
         params = params.append('index', '' + index);
         return this.http
-            .get<DrawingForm[]>(this.BASE_URL, { params })
+            .get<DrawingForm[]>(environment.serverBaseUrl, { params })
             .pipe(catchError(this.handleError<DrawingForm[]>('requestDrawingsFromServer')));
     }
 
     deleteDrawingFromServer(id: string): Observable<{}> {
-        const url = `${this.BASE_URL}/${id}`;
+        const url = `${environment.serverBaseUrl}/${id}`;
         return this.http.delete<DrawingForm>(url).pipe(catchError(this.handleError<DrawingForm>('deleteDrawingFromServer')));
     }
 
