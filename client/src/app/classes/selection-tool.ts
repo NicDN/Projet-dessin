@@ -84,12 +84,7 @@ export abstract class SelectionTool extends Tool {
         }
 
         if (this.moveSelectionService.movingWithMouse) {
-            this.moveSelectionService.moveSelectionWithMouse(
-                this.drawingService.previewCtx,
-                this.getPositionFromMouse(event),
-                this.emptyDelta,
-                this.coords,
-            );
+            this.moveSelectionService.moveSelectionWithMouse(this.getPositionFromMouse(event), this.emptyDelta, this.coords);
             this.drawAll(this.drawingService.previewCtx);
             return;
         }
@@ -174,11 +169,7 @@ export abstract class SelectionTool extends Tool {
             this.moveSelectionService.initialKeyPress = false;
             clearTimeout(this.timeoutHandler);
             this.timeoutHandler = 0;
-            this.moveSelectionService.moveSelectionWithArrows(
-                this.drawingService.previewCtx,
-                this.moveSelectionService.calculateDelta(),
-                this.coords,
-            );
+            this.moveSelectionService.moveSelectionWithArrows(this.moveSelectionService.calculateDelta(), this.coords);
             this.drawAll(this.drawingService.previewCtx);
         }
         this.moveSelectionService.updateArrowKeysPressed(event, false);
@@ -207,7 +198,7 @@ export abstract class SelectionTool extends Tool {
             this.moveSelectionService.movingWithArrows = true;
             this.intervalHandler = (setInterval(
                 (() => {
-                    this.moveSelectionService.moveSelectionWithArrows(ctx, this.moveSelectionService.calculateDelta(), this.coords);
+                    this.moveSelectionService.moveSelectionWithArrows(this.moveSelectionService.calculateDelta(), this.coords);
                     this.drawAll(ctx);
                 }).bind(this),
                 this.ARROW_INTERVAL,

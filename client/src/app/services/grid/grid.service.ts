@@ -13,17 +13,17 @@ export class GridService extends Tool {
     readonly MIN_OPACITY_PERCENTAGE: number = 20;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
 
-    private PERCENTAGE_CONVERTER: number = 100;
+    private readonly PERCENTAGE_CONVERTER: number = 100;
 
     squareSize: number = 20;
     opacity: number = 20;
 
     gridDrawn: boolean = false;
 
-    private MULTIPLIER_FACTOR: number = 5;
+    private readonly MULTIPLIER_FACTOR: number = 5;
 
     constructor(drawingService: DrawingService) {
-        super(drawingService, 'Grille');
+        super(drawingService, 'Options de grille');
         this.listenToResizeNotifications();
         this.listenToUpdateGridNotification();
     }

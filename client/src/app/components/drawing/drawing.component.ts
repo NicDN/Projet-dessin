@@ -4,6 +4,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
@@ -31,17 +32,17 @@ export class DrawingComponent implements AfterViewInit {
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
     private canDraw: boolean = true;
-    private aDialogIsNotOpened: boolean = true;
-
+    private dialogIsOpened: boolean = false;
     private refreshedImage: HTMLImageElement = new Image();
 
     constructor(
         private drawingService: DrawingService,
-        public toolsService: ToolsService,
+        private toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
         private resizeSelectionService: ResizeSelectionService,
         private dialogService: DialogService,
+        private snackBarService: SnackBarService,
     ) {
         this.observeDialogService();
     }
@@ -64,8 +65,8 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private observeDialogService(): void {
-        this.dialogService.listenToKeyEvents().subscribe((aDialogIsNotOpened) => {
-            this.aDialogIsNotOpened = aDialogIsNotOpened;
+        this.dialogService.listenToKeyEvents().subscribe((dialogIsOpened) => {
+            this.dialogIsOpened = !dialogIsOpened;
         });
     }
 
@@ -92,15 +93,17 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseMove(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseMove(event);
     }
 
     @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw && this.isInsideCanvas(event) && this.aDialogIsNotOpened) {
+        if (this.canDraw && this.isInsideCanvas(event) && !this.dialogIsOpened) {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
             this.toolsService.currentTool.onMouseDown(event);
         }
+
+        this.snackBarService.snackBar.dismiss();
     }
 
     @HostListener('window:mouseup', ['$event'])
@@ -110,7 +113,7 @@ export class DrawingComponent implements AfterViewInit {
                 this.undoRedoService.enableUndoRedo();
             }
         }
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseUp(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseUp(event);
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -120,12 +123,12 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.hotKeyService.onKeyUp(event);
+        this.toolsService.onKeyUp(event);
     }
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        if (this.canDraw && this.aDialogIsNotOpened) this.toolsService.currentTool.onMouseEnter(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseEnter(event);
     }
 
     @HostListener('mouseout', ['$event'])
@@ -179,7 +182,7 @@ export class DrawingComponent implements AfterViewInit {
         return 'crosshair';
     }
 
-    checkIfIsAControlPoint(): string {
+    private checkIfIsAControlPoint(): string {
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
                 case SelectedPoint.TOP_LEFT:
@@ -206,14 +209,14 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private returnTrueFirstDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'nw-resize';
             } else {
                 return 'ne-resize';
             }
         } else {
-            if (!this.ySelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'ne-resize';
             } else {
                 return 'nw-resize';
@@ -222,14 +225,14 @@ export class DrawingComponent implements AfterViewInit {
     }
 
     private returnTrueSecondDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'ne-resize';
             } else {
                 return 'nw-resize';
             }
         } else {
-            if (!this.ySelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'nw-resize';
             } else {
                 return 'ne-resize';
@@ -237,7 +240,7 @@ export class DrawingComponent implements AfterViewInit {
         }
     }
 
-    xSelectionIsFlipped(): boolean {
+    private horizontalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x -
                 (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x <
@@ -245,7 +248,7 @@ export class DrawingComponent implements AfterViewInit {
         );
     }
 
-    ySelectionIsFlipped(): boolean {
+    private verticalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
                 (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y <

@@ -7,12 +7,13 @@
 }
 
 .bottom-div {
+    justify-content: center;
     position: absolute;
     bottom: 0;
 }
 
 .save-canvas-btn {
-    margin-right: 10px;
+    left: 35px;
 }
 
 mat-form-field {
@@ -29,4 +30,19 @@ mat-form-field {
 
 .error {
     color: red;
+    font-weight: bolder;
+}
+
+.cancel-btn {
+    margin-left: 40px;
+}
+
+button {
+    border-radius: 25px;
+    width: 250px;
+    height: 40px;
+}
+
+button:hover {
+    background-color: #e51282;
 }

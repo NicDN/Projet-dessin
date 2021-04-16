@@ -78,7 +78,7 @@ describe('MoveSelectionService', () => {
 
         const calculatedDelta = service.calculateDelta();
 
-        expect(calculatedDelta).toEqual({ x: -service.arrowMoveDelta, y: service.arrowMoveDelta });
+        expect(calculatedDelta).toEqual({ x: -service['ARROW_MOVE_DELTA'], y: service['ARROW_MOVE_DELTA'] });
     });
 
     it('#calculateDelta should calculate by how much the selection should move based on every arrow key condition', () => {
@@ -87,7 +87,7 @@ describe('MoveSelectionService', () => {
 
         const calculatedDelta = service.calculateDelta();
 
-        expect(calculatedDelta).toEqual({ x: service.arrowMoveDelta, y: -service.arrowMoveDelta });
+        expect(calculatedDelta).toEqual({ x: service['ARROW_MOVE_DELTA'], y: -service['ARROW_MOVE_DELTA'] });
     });
 
     it('#calculateDelta should return 0,0 if everykey is pressed', () => {
@@ -178,20 +178,19 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalBottomRight = { x: BOTTOM_RIGHT_CORNER_COORDS.x, y: BOTTOM_RIGHT_CORNER_COORDS.y };
 
         service.moveSelectionWithArrows(
-            drawingServiceSpyObj.previewCtx,
             {
-                x: service.arrowMoveDelta,
-                y: service.arrowMoveDelta,
+                x: service['ARROW_MOVE_DELTA'],
+                y: service['ARROW_MOVE_DELTA'],
             },
             selectionCoordsStub,
         );
         expect(selectionCoordsStub.finalTopLeft).toEqual({
-            x: TOP_LEFT_CORNER_COORDS.x + service.arrowMoveDelta,
-            y: TOP_LEFT_CORNER_COORDS.y + service.arrowMoveDelta,
+            x: TOP_LEFT_CORNER_COORDS.x + service['ARROW_MOVE_DELTA'],
+            y: TOP_LEFT_CORNER_COORDS.y + service['ARROW_MOVE_DELTA'],
         });
         expect(selectionCoordsStub.finalBottomRight).toEqual({
-            x: BOTTOM_RIGHT_CORNER_COORDS.x + service.arrowMoveDelta,
-            y: BOTTOM_RIGHT_CORNER_COORDS.y + service.arrowMoveDelta,
+            x: BOTTOM_RIGHT_CORNER_COORDS.x + service['ARROW_MOVE_DELTA'],
+            y: BOTTOM_RIGHT_CORNER_COORDS.y + service['ARROW_MOVE_DELTA'],
         });
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
@@ -201,14 +200,14 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         selectionCoordsStub.finalTopLeft = TOP_LEFT_CORNER_COORDS;
         const alignSpy = spyOn<any>(service, 'alignToProperMagnetPosition');
-        service.moveSelectionWithArrows(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithArrows(MOUSE_POSITION, selectionCoordsStub);
         expect(alignSpy).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithMouse should call alignToProperMagnetPosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
         const alignSpy = spyOn<any>(service, 'alignToProperMagnetPosition');
-        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
         expect(alignSpy).toHaveBeenCalled();
     });
 
@@ -220,7 +219,7 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         service.mouseMoveOffset = { x: MOUSE_OFFSET, y: MOUSE_OFFSET };
 
-        service.moveSelectionWithMouse(drawingServiceSpyObj.previewCtx, MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
         expect(selectionCoordsStub.finalTopLeft).toEqual({
             x: MOUSE_POSITION.x - MOUSE_OFFSET,
             y: MOUSE_POSITION.y - MOUSE_OFFSET,

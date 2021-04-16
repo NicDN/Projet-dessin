@@ -2,11 +2,14 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Vec2 } from '@app/classes/vec2';
 import { ColorService } from '@app/services/color/color.service';
+import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { EyeDropperService } from '@app/services/tools/eye-dropper/eye-dropper.service';
 import { LassoSelectionService } from '@app/services/tools/selection/lasso/lasso-selection.service';
 import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
@@ -21,6 +24,7 @@ import { EraserService } from '@app/services/tools/trace-tool/eraser/eraser.serv
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
+import { of, Subject } from 'rxjs';
 import { DrawingComponent } from './drawing.component';
 
 const MOUSE_POSITION_DEFAULT = 1000;
@@ -81,6 +85,7 @@ describe('DrawingComponent', () => {
     let rectangleSelectionServiceSpyObj: jasmine.SpyObj<RectangleSelectionService>;
     let eyeDropperServiceSpyObj: jasmine.SpyObj<EyeDropperService>;
     let textServiceSpyObj: jasmine.SpyObj<TextService>;
+    let dialogServiceSpyObj: jasmine.SpyObj<DialogService>;
 
     let loadCanvasSpy: jasmine.Spy;
 
@@ -88,6 +93,8 @@ describe('DrawingComponent', () => {
     let toolsServiceSpy: jasmine.SpyObj<ToolsService>;
 
     const canvasMock = document.createElement('canvas');
+
+    let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
 
     beforeEach(async(() => {
         drawingStub = new DrawingService({} as MatBottomSheet);
@@ -104,8 +111,16 @@ describe('DrawingComponent', () => {
         rectangleSelectionServiceSpyObj = jasmine.createSpyObj('RectangleSelectionService', ['']);
         eyeDropperServiceSpyObj = jasmine.createSpyObj('EyeDropperService', ['']);
         textServiceSpyObj = jasmine.createSpyObj('TextService', ['']);
+        dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['listenToKeyEvents']);
+        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(of());
 
         imageSpyObj = jasmine.createSpyObj('Image', ['decode']);
+
+        snackBarSpy = jasmine.createSpyObj<MatSnackBar>('snackBarSpy', ['dismiss']);
+
+        const snackBarServiceStub = ({
+            snackBar: snackBarSpy,
+        } as unknown) as SnackBarService;
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -123,6 +138,8 @@ describe('DrawingComponent', () => {
                 { provide: TextService, useValue: textServiceSpyObj },
                 { provide: MatDialog, useValue: {} },
                 { provide: Router, useValue: {} },
+                { provide: SnackBarService, useValue: snackBarServiceStub },
+                { provide: DialogService, useValue: dialogServiceSpyObj },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -229,6 +246,11 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
+    it('#onMouseDown should dismiss the opened snack bar', () => {
+        component.onMouseDown({} as MouseEvent);
+        expect(snackBarSpy.dismiss).toHaveBeenCalled();
+    });
+
     it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event inside the canvas if canDrawflag is true ", () => {
         component['canDraw'] = true;
         spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
@@ -293,11 +315,6 @@ describe('DrawingComponent', () => {
     it('#onKeyDown should call #onKeyDown of hotKeyService', () => {
         component.onKeyDown(keyBoardEvent);
         expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
-    });
-
-    it("#onKeyUp should call tools service's #onKeyUp", () => {
-        component.onKeyUp(keyBoardEvent);
-        expect(hotKeyServiceSpy.onKeyUp).toHaveBeenCalled();
     });
 
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {
@@ -429,7 +446,7 @@ describe('DrawingComponent', () => {
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         spyOn<any>(component, 'returnTrueFirstDiagonalCursor').and.returnValue('ne-resize');
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.TOP_LEFT;
-        expect(component.checkIfIsAControlPoint()).toEqual('ne-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('ne-resize');
     });
 
     it('#checkIfIsAControlPoint should return ne-resize if is a bottom_right', () => {
@@ -437,7 +454,7 @@ describe('DrawingComponent', () => {
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.BOTTOM_RIGHT;
         spyOn<any>(component, 'returnTrueFirstDiagonalCursor').and.returnValue('ne-resize');
-        expect(component.checkIfIsAControlPoint()).toEqual('ne-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('ne-resize');
     });
 
     it('#checkIfIsAControlPoint should return ne-resize if is a BOTTOM_LEFT', () => {
@@ -445,7 +462,7 @@ describe('DrawingComponent', () => {
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.BOTTOM_LEFT;
         spyOn<any>(component, 'returnTrueSecondDiagonalCursor').and.returnValue('ne-resize');
-        expect(component.checkIfIsAControlPoint()).toEqual('ne-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('ne-resize');
     });
 
     it('#checkIfIsAControlPoint should return ne-resize if is a TOP_RIGHT', () => {
@@ -453,42 +470,42 @@ describe('DrawingComponent', () => {
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.TOP_RIGHT;
         spyOn<any>(component, 'returnTrueSecondDiagonalCursor').and.returnValue('ne-resize');
-        expect(component.checkIfIsAControlPoint()).toEqual('ne-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('ne-resize');
     });
 
     it('#checkIfIsAControlPoint should return n-resize if is a BOTTOM_MIDDLE', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.BOTTOM_MIDDLE;
-        expect(component.checkIfIsAControlPoint()).toEqual('n-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('n-resize');
     });
 
     it('#checkIfIsAControlPoint should return n-resize if is a TOP_MIDDLE', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.TOP_MIDDLE;
-        expect(component.checkIfIsAControlPoint()).toEqual('n-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('n-resize');
     });
 
     it('#checkIfIsAControlPoint should return n-resize if is a LEFT_MIDDLE', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.MIDDLE_LEFT;
-        expect(component.checkIfIsAControlPoint()).toEqual('w-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('w-resize');
     });
 
     it('#checkIfIsAControlPoint should return n-resize if is a RIGHT_MIDDLE', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.MIDDLE_RIGHT;
-        expect(component.checkIfIsAControlPoint()).toEqual('w-resize');
+        expect(component['checkIfIsAControlPoint']()).toEqual('w-resize');
     });
 
     it('#checkIfIsAControlPoint should return n-resize if is a center', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         component['resizeSelectionService'].previewSelectedPointIndex = SelectedPoint.CENTER;
-        expect(component.checkIfIsAControlPoint()).toEqual('move');
+        expect(component['checkIfIsAControlPoint']()).toEqual('move');
     });
 
     it('#checkIfIsAControlPoint should return pointer if is not of any other options above', () => {
@@ -496,78 +513,86 @@ describe('DrawingComponent', () => {
         toolsServiceSpy.rectangleSelectionService.selectionExists = true;
         const DEFAULT = -2;
         component['resizeSelectionService'].previewSelectedPointIndex = DEFAULT;
-        expect(component.checkIfIsAControlPoint()).toEqual('pointer');
+        expect(component['checkIfIsAControlPoint']()).toEqual('pointer');
     });
 
-    it('#returnTrueNwSeDiagonalCursor nw-resize if x is not flipped and y is not flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(false);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(false);
+    it('#returnTrueNwSeDiagonalCursor should return nw-resize if x is not flipped and y is not flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(false);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(false);
         expect(component['returnTrueFirstDiagonalCursor']()).toEqual('nw-resize');
     });
 
-    it('#returnTrueNwSeDiagonalCursor ne-resize if x is not flipped and y is flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(false);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(true);
+    it('#returnTrueNwSeDiagonalCursor should return ne-resize if x is not flipped and y is flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(false);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(true);
         expect(component['returnTrueFirstDiagonalCursor']()).toEqual('ne-resize');
     });
 
-    it('#returnTrueNwSeDiagonalCursor nw-resize if x is  flipped and y is  flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(true);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(true);
+    it('#returnTrueNwSeDiagonalCursor should return nw-resize if x is  flipped and y is  flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(true);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(true);
         expect(component['returnTrueFirstDiagonalCursor']()).toEqual('nw-resize');
     });
 
-    it('#returnTrueNwSeDiagonalCursor ne-resize if x is flipped and y is not flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(true);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(false);
+    it('#returnTrueNwSeDiagonalCursor should return ne-resize if x is flipped and y is not flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(true);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(false);
         expect(component['returnTrueFirstDiagonalCursor']()).toEqual('ne-resize');
     });
 
-    it('#returnTrueNeSwDiagonalCursor ne-resize if x is not flipped and y is not flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(false);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(false);
+    it('#returnTrueNeSwDiagonalCursor should return ne-resize if x is not flipped and y is not flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(false);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(false);
         expect(component['returnTrueSecondDiagonalCursor']()).toEqual('ne-resize');
     });
 
-    it('#returnTrueNeSwDiagonalCursor nw-resize if x is not flipped and y is flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(false);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(true);
+    it('#returnTrueNeSwDiagonalCursor should return nw-resize if x is not flipped and y is flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(false);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(true);
         expect(component['returnTrueSecondDiagonalCursor']()).toEqual('nw-resize');
     });
 
-    it('#returnTrueNeSwDiagonalCursor ne-resize if x is flipped and y is flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(true);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(true);
+    it('#returnTrueNeSwDiagonalCursor should return ne-resize if x is flipped and y is flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(true);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(true);
         expect(component['returnTrueSecondDiagonalCursor']()).toEqual('ne-resize');
     });
 
-    it('#returnTrueNeSwDiagonalCursor nw-resize if x is flipped and y is not flipped', () => {
-        spyOn<any>(component, 'xSelectionIsFlipped').and.returnValue(true);
-        spyOn<any>(component, 'ySelectionIsFlipped').and.returnValue(false);
+    it('#returnTrueNeSwDiagonalCursor should return nw-resize if x is flipped and y is not flipped', () => {
+        spyOn<any>(component, 'horizontalAxisSelectionIsFlipped').and.returnValue(true);
+        spyOn<any>(component, 'verticalAxisSelectionIsFlipped').and.returnValue(false);
         expect(component['returnTrueSecondDiagonalCursor']()).toEqual('nw-resize');
     });
 
-    it('#ySelectionIsFlipped should return false if y are not flipped', () => {
+    it('#verticalAxisSelectionIsFlipped should return false if y are not flipped', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.coords = coordsStub;
-        expect(component['ySelectionIsFlipped']()).toBeFalse();
+        expect(component['verticalAxisSelectionIsFlipped']()).toBeFalse();
     });
 
-    it('#xSelectionIsFlipped should return false if x are not flipped', () => {
+    it('#verticalAxisSelectionIsFlipped should return false if x are not flipped', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.coords = coordsStub;
-        expect(component['xSelectionIsFlipped']()).toBeFalse();
+        expect(component['verticalAxisSelectionIsFlipped']()).toBeFalse();
     });
 
-    it('#xSelectionIsFlipped should return true if x are flipped', () => {
+    it('#horizontalAxisSelectionIsFlipped should return true if x are flipped', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.coords = xFlippedCoordsStub;
-        expect(component['xSelectionIsFlipped']()).toBeTrue();
+        expect(component['horizontalAxisSelectionIsFlipped']()).toBeTrue();
     });
 
-    it('#ySelectionIsFlipped should return true if y are flipped', () => {
+    it('#verticalAxisSelectionIsFlipped should return true if y are flipped', () => {
         toolsServiceSpy.currentTool = toolsServiceSpy.rectangleSelectionService;
         toolsServiceSpy.rectangleSelectionService.coords = yFlippedCoordsStub;
-        expect(component['ySelectionIsFlipped']()).toBeTrue();
+        expect(component['verticalAxisSelectionIsFlipped']()).toBeTrue();
+    });
+
+    it('#observeDialogService should set the dialogIsOpened value', () => {
+        const subject: Subject<boolean> = new Subject();
+        dialogServiceSpyObj.listenToKeyEvents.and.returnValue(subject);
+        component['observeDialogService']();
+        subject.next(true);
+        expect(component['dialogIsOpened']).toBeFalse();
     });
 });
