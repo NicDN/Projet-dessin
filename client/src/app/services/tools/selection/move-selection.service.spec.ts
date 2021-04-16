@@ -75,18 +75,14 @@ describe('MoveSelectionService', () => {
     it('#calculateDelta should calculate by how much the selection should move based on every arrow key condition', () => {
         service['keyDownIsPressed'] = true;
         service['keyLeftIsPressed'] = true;
-
         const calculatedDelta = service.calculateDelta();
-
         expect(calculatedDelta).toEqual({ x: -service['ARROW_MOVE_DELTA'], y: service['ARROW_MOVE_DELTA'] });
     });
 
     it('#calculateDelta should calculate by how much the selection should move based on every arrow key condition', () => {
         service['keyUpIsPressed'] = true;
         service['keyRightIsPressed'] = true;
-
         const calculatedDelta = service.calculateDelta();
-
         expect(calculatedDelta).toEqual({ x: service['ARROW_MOVE_DELTA'], y: -service['ARROW_MOVE_DELTA'] });
     });
 
@@ -95,9 +91,7 @@ describe('MoveSelectionService', () => {
         service['keyLeftIsPressed'] = true;
         service['keyRightIsPressed'] = true;
         service['keyUpIsPressed'] = true;
-
         const calculatedDelta = service.calculateDelta();
-
         expect(calculatedDelta).toEqual({ x: 0, y: 0 });
     });
 
