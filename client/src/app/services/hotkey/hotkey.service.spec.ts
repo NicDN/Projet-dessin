@@ -11,10 +11,11 @@ import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
+import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { PencilService } from '@app/services/tools/trace-tool/pencil/pencil.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { HotkeyService } from './hotkey.service';
 
 // tslint:disable: no-string-literal
@@ -29,6 +30,7 @@ describe('HotkeyService', () => {
     let rectangleSelectionServiceSpyObj: jasmine.SpyObj<RectangleSelectionService>;
     let clipboardSelectionServiceSpyObj: jasmine.SpyObj<ClipboardSelectionService>;
     let gridServiceSpyObj: jasmine.SpyObj<GridService>;
+    let textServiceSpyObj: jasmine.SpyObj<TextService>;
 
     const boxSizeStub = { widthBox: 10, heightBox: 10 };
     const booleanStub = true;
@@ -49,6 +51,7 @@ describe('HotkeyService', () => {
 
     const keyRStub = new KeyboardEvent('keydown', { code: 'KeyR' });
     const keySStub = new KeyboardEvent('keydown', { code: 'KeyS' });
+    const keyMStub = new KeyboardEvent('keydown', { code: 'KeyM' });
 
     const keyLStub = new KeyboardEvent('keydown', { code: 'KeyL' });
 
@@ -88,10 +91,12 @@ describe('HotkeyService', () => {
         undoRedoServiceSpyObj = jasmine.createSpyObj('UndoRedoService', ['undo', 'redo']);
         clipboardSelectionServiceSpyObj = jasmine.createSpyObj('ClipboardSelectionService', ['copy', 'cut', 'delete', 'paste']);
         gridServiceSpyObj = jasmine.createSpyObj('GridService', ['handleDrawGrid', 'incrementSquareSize', 'decrementSquareSize']);
+        textServiceSpyObj = jasmine.createSpyObj('TextService', ['disableEnableKeyEvents']);
 
         toolsServiceSpyObj.currentTool = new PencilService(drawingServiceSpyObj, new ColorService(), undoRedoServiceSpyObj);
         drawingServiceSpyObj.newIncomingResizeSignals.and.returnValue(of(boxSizeStub));
         dialogServiceSpyObj['listenToKeyEvents'].and.returnValue(of(booleanStub));
+        textServiceSpyObj.disableEnableKeyEvents.and.returnValue(of());
 
         TestBed.configureTestingModule({
             declarations: [DrawingComponent],
@@ -110,6 +115,7 @@ describe('HotkeyService', () => {
                 { provide: ClipboardSelectionService, useValue: clipboardSelectionServiceSpyObj },
                 { provide: GridService, useValue: gridServiceSpyObj },
                 { provide: MatDialog, useValue: {} },
+                { provide: TextService, useValue: textServiceSpyObj },
             ],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -117,6 +123,7 @@ describe('HotkeyService', () => {
 
     beforeEach(() => {
         service = TestBed.inject(HotkeyService);
+        service['moveSelectionService'].isUsingMagnet = true;
     });
 
     it('should be created', () => {
@@ -225,6 +232,11 @@ describe('HotkeyService', () => {
         },
     );
 
+    it('KeyM event should enable the magnet effect ', () => {
+        service.onKeyDown(keyMStub);
+        expect(service['moveSelectionService'].isUsingMagnet).toBeFalse();
+    });
+
     it('#handleCtrlO should call #handleNewDrawing if ctrl key is pressed and its on the editor component', () => {
         spyOn<any>(service, 'currentRouteIsEditor').and.returnValue(true);
         service['handleCtrlO']();
@@ -314,4 +326,12 @@ describe('HotkeyService', () => {
             expect(drawingServiceSpyObj.updateGrid).toHaveBeenCalledWith();
         },
     );
+
+    it('#observeTextService should set the listenToKeyEvents value', () => {
+        const subject: Subject<boolean> = new Subject();
+        textServiceSpyObj.disableEnableKeyEvents.and.returnValue(subject);
+        service['observeTextService']();
+        subject.next(true);
+        expect(service.listenToKeyEvents).toBeTrue();
+    });
 });

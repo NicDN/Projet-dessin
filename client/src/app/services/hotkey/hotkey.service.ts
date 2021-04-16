@@ -85,7 +85,6 @@ export class HotkeyService {
             },
             KeyG: {
                 action: () => {
-                    // this.toolService.setCurrentTool(this.toolService.gridService);
                     this.gridService.handleDrawGrid();
                 },
                 actionCtrl: () => this.dialogService.openDialog(DialogType.Carousel),
@@ -155,7 +154,6 @@ export class HotkeyService {
                 : this.shortCutManager[event.code as shortCutManager]?.actionCtrl?.();
         } else if (event.shiftKey) {
             event.preventDefault();
-            // this.resizeSelectionService.shiftKeyIsDown = true;
             this.shortCutManager[event.code as shortCutManager]?.actionShift?.();
         } else {
             this.shortCutManager[event.code as shortCutManager]?.action?.();
@@ -164,10 +162,6 @@ export class HotkeyService {
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
 
         event.returnValue = true; // To accept default web shortCutManager
-    }
-
-    onKeyUp(event: KeyboardEvent): void {
-        this.toolService.onKeyUp(event);
     }
 
     private handleSelectAll(): void {

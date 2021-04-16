@@ -8,28 +8,28 @@ import { MagnetSelectionService } from './magnet-selection.service';
     providedIn: 'root',
 })
 export class MoveSelectionService {
+    private readonly ARROW_MOVE_DELTA: number = 3;
+
     constructor(private drawingService: DrawingService, private magnetSelectionService: MagnetSelectionService) {}
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2 = { x: 0, y: 0 };
     isUsingMagnet: boolean = false;
-
-    readonly arrowMoveDelta: number = 3;
-
+    initialKeyPress: boolean = false;
     movingWithArrows: boolean = false;
+
     private keyUpIsPressed: boolean = false;
     private keyDownIsPressed: boolean = false;
     private keyLeftIsPressed: boolean = false;
     private keyRightIsPressed: boolean = false;
-    initialKeyPress: boolean = false;
 
     calculateDelta(): Vec2 {
         let deltaY = 0;
         let deltaX = 0;
-        if (this.keyUpIsPressed) deltaY -= this.arrowMoveDelta;
-        if (this.keyDownIsPressed) deltaY += this.arrowMoveDelta;
-        if (this.keyLeftIsPressed) deltaX -= this.arrowMoveDelta;
-        if (this.keyRightIsPressed) deltaX += this.arrowMoveDelta;
+        if (this.keyUpIsPressed) deltaY -= this.ARROW_MOVE_DELTA;
+        if (this.keyDownIsPressed) deltaY += this.ARROW_MOVE_DELTA;
+        if (this.keyLeftIsPressed) deltaX -= this.ARROW_MOVE_DELTA;
+        if (this.keyRightIsPressed) deltaX += this.ARROW_MOVE_DELTA;
         return { x: deltaX, y: deltaY };
     }
 
@@ -44,7 +44,7 @@ export class MoveSelectionService {
         if (event.code === 'ArrowRight') this.keyRightIsPressed = state;
     }
 
-    moveSelectionWithArrows(ctx: CanvasRenderingContext2D, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithArrows(delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
         const emptyPosition = { x: 0, y: 0 };
@@ -61,7 +61,7 @@ export class MoveSelectionService {
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    moveSelectionWithMouse(ctx: CanvasRenderingContext2D, pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithMouse(pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
 

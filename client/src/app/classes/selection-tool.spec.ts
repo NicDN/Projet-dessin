@@ -6,19 +6,18 @@ import { ResizeSelectionService } from '@app/services/tools/selection/resize-sel
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { CanvasTestHelper } from './canvas-test-helper';
-import { SelectionPropreties } from './commands/selection-command/selection-command';
 import { SelectionTool } from './selection-tool';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 import { Vec2 } from './vec2';
 
 export class SelectionToolStub extends SelectionTool {
-    drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+    drawPerimeter(): void {
         return;
     }
-    drawSelection(selectionPropreties: SelectionPropreties): void {
+    drawSelection(): void {
         return;
     }
-    fillWithWhite(selectionPropreties: SelectionPropreties): void {
+    fillWithWhite(): void {
         return;
     }
     constructor(
@@ -54,7 +53,6 @@ describe('SelectionTool', () => {
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 20 };
     const LEFT_BUTTON_PRESSED = 1;
     const NO_BUTTON_PRESSED = 0;
-    // const RGB_MAX = 255;
 
     beforeEach(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['clearCanvas']);
@@ -383,23 +381,17 @@ describe('SelectionTool', () => {
         moveSelectionServiceSpyObj['initialKeyPress'] = true;
         const arrowDelta = { x: 3, y: 3 };
         moveSelectionServiceSpyObj.calculateDelta.and.returnValue(arrowDelta);
-        // const moveSelectionWithArrowsSpy = spyOn<any>(selectionTool, 'moveSelectionWithArrows');
         const clearTimeoutSpy = spyOn(window, 'clearTimeout');
 
         selectionTool['handleMovingArrowsKeyUp']({} as KeyboardEvent);
         expect(clearTimeoutSpy).toHaveBeenCalled();
         expect(selectionTool['timeoutHandler']).toEqual(0);
         expect(moveSelectionServiceSpyObj.calculateDelta).toHaveBeenCalled();
-        expect(moveSelectionServiceSpyObj.moveSelectionWithArrows).toHaveBeenCalledWith(
-            drawingServiceSpyObj.previewCtx,
-            arrowDelta,
-            selectionTool['coords'],
-        );
+        expect(moveSelectionServiceSpyObj.moveSelectionWithArrows).toHaveBeenCalledWith(arrowDelta, selectionTool['coords']);
     });
 
     it('#handleMovingArrowsKeyUp should cancel the continuous arrow interval and set movingWithArrows to false, when applicable', () => {
         moveSelectionServiceSpyObj['initialKeyPress'] = false;
-        // const checkIfAnyArrowIsPressedSpy = spyOn<any>(selectionTool, 'checkIfAnyArrowIsPressed').and.returnValue(false);
         const clearIntervalSpy = spyOn(window, 'clearInterval');
 
         selectionTool['handleMovingArrowsKeyUp']({} as KeyboardEvent);

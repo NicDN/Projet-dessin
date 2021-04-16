@@ -1,23 +1,25 @@
 <div class="export-container">
     <h2 mat-dialog-title>Exporter le dessin</h2>
-    <div class="checkbox-div"> 
-        <mat-checkbox  [checked]="!exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser sur le disque
+    <div class="checkbox-div">
+        <mat-checkbox [checked]="!exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser sur le disque
         </mat-checkbox>
-        <mat-checkbox class="imgur-checkbox" [checked]="exportToImgur" (change)="exportToImgur=!exportToImgur">Téléverser plutôt avec
-            <em>imgur</em> !</mat-checkbox>
+        <mat-checkbox class="imgur-checkbox" [checked]="exportToImgur" (change)="exportToImgur=!exportToImgur">
+            Téléverser plutôt avec
+            <em>imgur</em> !
+        </mat-checkbox>
     </div>
 
     <div>
-        <mat-form-field class="file-name">
-            <input matInput #fileName placeholder="Nom du fichier" [disabled]="exportToImgur">
-        </mat-form-field>
-
         <mat-form-field class="filter-selector">
             <mat-label>Sélectionez un filtre</mat-label>
-            <mat-select #filter>
+            <mat-select #filter [(value)]="selectedFilter.name">
                 <mat-option class="filter-mat-option" *ngFor="let filter of this.filterService.filters"
                     [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
             </mat-select>
+        </mat-form-field>
+
+        <mat-form-field class="file-name" [class.hidden]="exportToImgur">
+            <input matInput #fileName placeholder="Nom du dessin">
         </mat-form-field>
 
         <mat-button-toggle-group #fileFormat="matButtonToggleGroup">
@@ -33,8 +35,18 @@
 
     <div class="bottom-div">
         <button mat-flat-button color="primary" class="export-canvas-btn"
-            (click)="exportCanvas(fileName.value,fileFormat.value)">Exporter</button>
-        <button mat-flat-button color="primary" class="cancel-btn" (click)="this.dialogRef.close();">Annuler</button>
+            (click)="exportCanvas(fileName.value,fileFormat.value)">
+
+            <mat-icon *ngIf="this.loadingImpgurState">
+                <mat-spinner color="accent" diameter="20">
+                </mat-spinner>
+            </mat-icon>
+
+            Exporter
+        </button>
+        <button mat-flat-button color="primary" class="cancel-btn" (click)="this.dialogRef.close();">
+            Annuler
+        </button>
     </div>
 
 </div>

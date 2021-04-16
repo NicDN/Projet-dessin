@@ -55,3 +55,19 @@ mat-form-field {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.close-btn{
+    width: 100%;
+    border-radius: 25px;
+    align-items: center;
+    height: 50px;
+    font-size: large;
+}
+
+mat-label{
+    font-size:medium;
+}
+
+.close-btn:hover {
+    background-color: #e51282;
+}

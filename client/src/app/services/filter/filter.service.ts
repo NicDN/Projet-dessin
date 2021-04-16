@@ -11,7 +11,7 @@ export enum FilterType {
     Saturate,
 }
 
-interface Filter {
+export interface Filter {
     filterType: FilterType;
     name: string;
     property: string;
