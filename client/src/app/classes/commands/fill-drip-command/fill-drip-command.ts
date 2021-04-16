@@ -19,10 +19,8 @@ export class FillDripCommand extends AbstractCommand {
     }
 
     execute(): void {
-        if (this.fillDripProperties.isContiguous) {
-            this.fillDripService.contiguousFilling(this.fillDripProperties);
-        } else {
-            this.fillDripService.nonContiguousFilling(this.fillDripProperties);
-        }
+        this.fillDripProperties.isContiguous
+            ? this.fillDripService.contiguousFilling(this.fillDripProperties)
+            : this.fillDripService.nonContiguousFilling(this.fillDripProperties);
     }
 }

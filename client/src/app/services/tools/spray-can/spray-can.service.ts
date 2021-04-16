@@ -43,7 +43,12 @@ export class SprayCanService extends TraceTool {
     }
 
     onMouseDown(event: MouseEvent): void {
-        this.mouseDown = event.button === MouseButton.Left;
+        if (event.button === MouseButton.Right) {
+            clearInterval(this.timer);
+        }
+        if (event.button === MouseButton.Left) {
+            this.mouseDown = event.button === MouseButton.Left;
+        }
         if (this.mouseDown) {
             this.clearPath();
             this.mouseDownCoord = this.getPositionFromMouse(event);
