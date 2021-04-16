@@ -1,5 +1,5 @@
 import { AbstractCommand } from '@app/classes/commands/abstract-command';
-import { SelectionTool } from '@app/classes/selection-tool';
+import { SelectionCoords, SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 
 export enum SelectionType {
@@ -9,19 +9,16 @@ export enum SelectionType {
     None = 4,
 }
 
-export interface SelectionPropreties {
+export interface SelectionProperties {
     selectionCtx?: CanvasRenderingContext2D;
     selectionPathData?: Vec2[];
     firstPointOffset?: Vec2;
     imageData: ImageData;
-    initialTopLeft: Vec2;
-    initialBottomRight: Vec2;
-    finalTopLeft: Vec2;
-    finalBottomRight: Vec2;
+    coords: SelectionCoords;
 }
 
 export class SelectionCommand extends AbstractCommand {
-    constructor(private selectionPropreties: SelectionPropreties, private selectionTool: SelectionTool) {
+    constructor(private selectionPropreties: SelectionProperties, private selectionTool: SelectionTool) {
         super();
     }
 

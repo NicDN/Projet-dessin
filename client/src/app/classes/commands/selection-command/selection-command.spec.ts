@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionCommand, SelectionProperties } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 
@@ -19,7 +19,7 @@ describe('selection-command', () => {
     const FINAL_TOP_CORNER_COORDS: Vec2 = { x: 50, y: 30 };
     const FINAL_BOTTOM_CORNER_COORDS: Vec2 = { x: 90, y: 50 };
 
-    const selectionPropretiesStub: SelectionPropreties = {
+    const selectionPropretiesStub: SelectionProperties = {
         selectionCtx: canvasCtxStub,
         imageData: canvasCtxStub.getImageData(0, 0, 1, 1),
         initialTopLeft: INITIAL_TOP_CORNER_COORDS,

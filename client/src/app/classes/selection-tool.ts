@@ -1,4 +1,4 @@
-import { SelectionCommand, SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionCommand, SelectionProperties } from '@app/classes/commands/selection-command/selection-command';
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -54,26 +54,11 @@ export abstract class SelectionTool extends Tool {
         this.coords.initialBottomRight = this.coords.initialTopLeft;
     }
 
-    protected handleSelectionMouseDown(event: MouseEvent): void {
-        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
-        if (
-            this.resizeSelectionService.selectedPointIndex === SelectedPoint.NO_POINT ||
-            this.resizeSelectionService.selectedPointIndex === SelectedPoint.CENTER
-        ) {
-            this.setOffSet(this.getPositionFromMouse(event));
-            this.moveSelectionService.movingWithMouse = true;
-        }
-    }
-
     onMouseMove(event: MouseEvent): void {
-        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(this.getPositionFromMouse(event))
-            ? SelectedPoint.MOVING
-            : SelectedPoint.NO_POINT;
-        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, true);
-
+        this.updateResizeProperties(this.getPositionFromMouse(event));
         if (event.buttons !== 1) this.mouseDown = false;
-
         if (!this.mouseDown) return;
+
         if (
             this.resizeSelectionService.selectedPointIndex !== SelectedPoint.NO_POINT &&
             this.resizeSelectionService.selectedPointIndex !== SelectedPoint.CENTER
@@ -107,6 +92,17 @@ export abstract class SelectionTool extends Tool {
         this.handleSelectionMouseUp(event);
     }
 
+    protected handleSelectionMouseDown(event: MouseEvent): void {
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(this.getPositionFromMouse(event), this.coords, false);
+        if (
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.NO_POINT ||
+            this.resizeSelectionService.selectedPointIndex === SelectedPoint.CENTER
+        ) {
+            this.setOffSet(this.getPositionFromMouse(event));
+            this.moveSelectionService.movingWithMouse = true;
+        }
+    }
+
     private handleSelectionMouseUp(event: MouseEvent): void {
         this.coords.initialBottomRight = this.getPositionFromMouse(event);
         this.adjustToDrawingBounds();
@@ -120,6 +116,10 @@ export abstract class SelectionTool extends Tool {
         this.createSelection();
     }
 
+    protected updateResizeProperties(pos: Vec2): void {
+        this.resizeSelectionService.previewSelectedPointIndex = this.isInsideSelection(pos) ? SelectedPoint.MOVING : SelectedPoint.NO_POINT;
+        this.resizeSelectionService.checkIfAControlPointHasBeenSelected(pos, this.coords, true);
+    }
     onKeyDown(event: KeyboardEvent): void {
         if (event.code === 'Escape') this.cancelSelection();
         if (this.selectionExists) this.handleMovingArrowsKeyDown(event);
@@ -150,7 +150,7 @@ export abstract class SelectionTool extends Tool {
         this.resizeSelection(this.resizeSelectionService.lastMousePos);
     }
 
-    private resizeSelection(pos: Vec2): void {
+    protected resizeSelection(pos: Vec2): void {
         this.resizeSelectionService.resizeSelection(pos, this.coords);
         this.drawAll(this.drawingService.previewCtx);
     }
@@ -278,13 +278,13 @@ export abstract class SelectionTool extends Tool {
         this.resizeSelectionService.drawBox(ctx, this.coords.finalTopLeft, this.coords.finalBottomRight);
     }
 
-    draw(ctx: CanvasRenderingContext2D): void {
+    private draw(ctx: CanvasRenderingContext2D): void {
         const selectionCommand: SelectionCommand = new SelectionCommand(this.loadUpProperties(ctx), this);
         selectionCommand.execute();
         if (ctx === this.drawingService.baseCtx && this.selectionHasChanged()) this.undoRedoService.addCommand(selectionCommand);
     }
 
-    selectionHasChanged(): boolean {
+    private selectionHasChanged(): boolean {
         return (
             this.coords.initialTopLeft.x !== this.coords.finalTopLeft.x ||
             this.coords.initialTopLeft.y !== this.coords.finalTopLeft.y ||
@@ -302,7 +302,7 @@ export abstract class SelectionTool extends Tool {
         } as MouseEvent);
     }
 
-    isInsideSelection(point: Vec2): boolean {
+    protected isInsideSelection(point: Vec2): boolean {
         const minX = Math.min(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const maxX = Math.max(this.coords.finalTopLeft.x, this.coords.finalBottomRight.x);
         const minY = Math.min(this.coords.finalTopLeft.y, this.coords.finalBottomRight.y);
@@ -320,17 +320,24 @@ export abstract class SelectionTool extends Tool {
         this.magnetSelectionService.mouseMoveOffset = { x: pos.x - this.coords.finalTopLeft.x, y: pos.y - this.coords.finalTopLeft.y };
     }
 
-    protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionPropreties {
+    protected loadUpProperties(ctx?: CanvasRenderingContext2D): SelectionProperties {
         return {
             selectionCtx: ctx,
             imageData: this.data,
-            initialTopLeft: this.coords.initialTopLeft,
-            initialBottomRight: this.coords.initialBottomRight,
-            finalTopLeft: this.coords.finalTopLeft,
-            finalBottomRight: this.coords.finalBottomRight,
+            coords: this.coords,
         };
     }
+
+    protected scaleContext(coords: SelectionCoords, ctx: CanvasRenderingContext2D): void {
+        const ratioX: number = (coords.finalBottomRight.x - coords.finalTopLeft.x) / (coords.initialBottomRight.x - coords.initialTopLeft.x);
+        const ratioY: number = (coords.finalBottomRight.y - coords.finalTopLeft.y) / (coords.initialBottomRight.y - coords.initialTopLeft.y);
+
+        ctx.translate(coords.finalTopLeft.x, coords.finalTopLeft.y);
+        ctx.scale(ratioX, ratioY);
+        ctx.translate(-coords.finalTopLeft.x, -coords.finalTopLeft.y);
+    }
+
     abstract drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void;
-    abstract drawSelection(selectionPropreties: SelectionPropreties): void;
-    abstract fillWithWhite(selectionPropreties: SelectionPropreties): void;
+    abstract drawSelection(selectionPropreties: SelectionProperties): void;
+    abstract fillWithWhite(selectionPropreties: SelectionProperties): void;
 }

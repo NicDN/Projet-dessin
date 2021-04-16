@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionProperties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
@@ -23,7 +23,7 @@ describe('RectangleSelectionService', () => {
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
-    let selectionProperties: SelectionPropreties;
+    let selectionProperties: SelectionProperties;
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 40 };
@@ -69,7 +69,7 @@ describe('RectangleSelectionService', () => {
             initialBottomRight: BOTTOM_RIGHT_SELECTION,
             finalTopLeft: TOP_LEFT_SELECTION,
             finalBottomRight: BOTTOM_RIGHT_SELECTION,
-        } as SelectionPropreties;
+        } as SelectionProperties;
     });
 
     it('should be created', () => {

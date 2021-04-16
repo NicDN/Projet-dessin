@@ -6,7 +6,7 @@ import { ResizeSelectionService } from '@app/services/tools/selection/resize-sel
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { CanvasTestHelper } from './canvas-test-helper';
-import { SelectionPropreties } from './commands/selection-command/selection-command';
+import { SelectionProperties } from './commands/selection-command/selection-command';
 import { SelectionTool } from './selection-tool';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 import { Vec2 } from './vec2';
@@ -15,10 +15,10 @@ export class SelectionToolStub extends SelectionTool {
     drawPerimeter(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         return;
     }
-    drawSelection(selectionPropreties: SelectionPropreties): void {
+    drawSelection(selectionPropreties: SelectionProperties): void {
         return;
     }
-    fillWithWhite(selectionPropreties: SelectionPropreties): void {
+    fillWithWhite(selectionPropreties: SelectionProperties): void {
         return;
     }
     constructor(

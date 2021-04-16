@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionProperties } from '@app/classes/commands/selection-command/selection-command';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
@@ -37,16 +37,19 @@ export class EllipseSelectionService extends SelectionTool {
         this.shapeService.drawEllipticalPerimeter(ctx, begin, trueEndCoords);
     }
 
-    fillWithWhite(selectionPropreties: SelectionPropreties): void {
-        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.initialTopLeft, selectionPropreties.initialBottomRight);
+    fillWithWhite(selectionPropreties: SelectionProperties): void {
+        const centerCoords: Vec2 = this.shapeService.getCenterCoords(
+            selectionPropreties.coords.initialTopLeft,
+            selectionPropreties.coords.initialBottomRight,
+        );
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x) / 2 - 1,
-            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y) / 2 - 1,
+            (selectionPropreties.coords.initialBottomRight.x - selectionPropreties.coords.initialTopLeft.x) / 2 - 1,
+            (selectionPropreties.coords.initialBottomRight.y - selectionPropreties.coords.initialTopLeft.y) / 2 - 1,
             0,
             0,
             2 * Math.PI,
@@ -54,40 +57,33 @@ export class EllipseSelectionService extends SelectionTool {
         selectionPropreties.selectionCtx.fill();
     }
 
-    drawSelection(selectionPropreties: SelectionPropreties): void {
+    drawSelection(selectionPropreties: SelectionProperties): void {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.save();
         const image: HTMLCanvasElement = document.createElement('canvas');
-        image.width = selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x;
-        image.height = selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y;
+        image.width = selectionPropreties.coords.initialBottomRight.x - selectionPropreties.coords.initialTopLeft.x;
+        image.height = selectionPropreties.coords.initialBottomRight.y - selectionPropreties.coords.initialTopLeft.y;
         (image.getContext('2d') as CanvasRenderingContext2D).putImageData(selectionPropreties.imageData, 0, 0);
-        const centerCoords: Vec2 = this.shapeService.getCenterCoords(selectionPropreties.finalTopLeft, selectionPropreties.finalBottomRight);
-
-        const ratioX: number =
-            (selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) /
-            (selectionPropreties.initialBottomRight.x - selectionPropreties.initialTopLeft.x);
-
-        const ratioY: number =
-            (selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) /
-            (selectionPropreties.initialBottomRight.y - selectionPropreties.initialTopLeft.y);
+        const centerCoords: Vec2 = this.shapeService.getCenterCoords(
+            selectionPropreties.coords.finalTopLeft,
+            selectionPropreties.coords.finalBottomRight,
+        );
 
         selectionPropreties.selectionCtx.beginPath();
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,
-            Math.abs(selectionPropreties.finalBottomRight.x - selectionPropreties.finalTopLeft.x) / 2,
-            Math.abs(selectionPropreties.finalBottomRight.y - selectionPropreties.finalTopLeft.y) / 2,
+            Math.abs(selectionPropreties.coords.finalBottomRight.x - selectionPropreties.coords.finalTopLeft.x) / 2,
+            Math.abs(selectionPropreties.coords.finalBottomRight.y - selectionPropreties.coords.finalTopLeft.y) / 2,
             0,
             0,
             2 * Math.PI,
         );
         selectionPropreties.selectionCtx.clip();
 
-        selectionPropreties.selectionCtx.translate(selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
-        selectionPropreties.selectionCtx.scale(ratioX, ratioY);
-        selectionPropreties.selectionCtx.translate(-selectionPropreties.finalTopLeft.x, -selectionPropreties.finalTopLeft.y);
+        this.scaleContext(selectionPropreties.coords, selectionPropreties.selectionCtx);
 
-        selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.finalTopLeft.x, selectionPropreties.finalTopLeft.y);
+        selectionPropreties.selectionCtx.drawImage(image, selectionPropreties.coords.finalTopLeft.x, selectionPropreties.coords.finalTopLeft.y);
         selectionPropreties.selectionCtx.restore();
     }
 }
