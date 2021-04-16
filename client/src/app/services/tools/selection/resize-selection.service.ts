@@ -8,41 +8,40 @@ import { SelectedPoint } from './magnet-selection.service';
     providedIn: 'root',
 })
 export class ResizeSelectionService {
-    private readonly selectingPointOffSet: number = 13;
-    readonly boxColor: Color = { rgbValue: '#0000FF', opacity: 1 };
+    private readonly SELECTING_POINT_OFFSET: number = 13;
+    private readonly BOX_COLOR: Color = { rgbValue: '#0000FF', opacity: 1 };
+    private readonly NO_POINT_SELECTED_INDEX: number = -1;
+    private readonly CONTROL_POINT_WIDTH: number = 6;
+    private readonly HALF_CONTROL_POINT_WIDTH: number = this.CONTROL_POINT_WIDTH / 2;
 
-    readonly NO_POINT_SELECTED_INDEX: number = -1;
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     shiftKeyIsDown: boolean = false;
     lastMousePos: Vec2 = { x: 0, y: 0 };
     lastDimensions: Vec2 = { x: 0, y: 0 };
 
-    readonly controlPointWidth: number = 6;
-    readonly halfControlPointWidth: number = this.controlPointWidth / 2;
-
-    getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
+    private getControlPointsCoords(begin: Vec2, end: Vec2): Vec2[] {
         return [
-            { x: begin.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth }, // Top left
-            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth }, // middle top
-            { x: end.x - this.halfControlPointWidth, y: begin.y - this.halfControlPointWidth }, // top right
-            { x: begin.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth }, // middle left
+            { x: begin.x - this.HALF_CONTROL_POINT_WIDTH, y: begin.y - this.HALF_CONTROL_POINT_WIDTH }, // Top left
+            { x: (end.x + begin.x) / 2 - this.HALF_CONTROL_POINT_WIDTH, y: begin.y - this.HALF_CONTROL_POINT_WIDTH }, // middle top
+            { x: end.x - this.HALF_CONTROL_POINT_WIDTH, y: begin.y - this.HALF_CONTROL_POINT_WIDTH }, // top right
+            { x: begin.x - this.HALF_CONTROL_POINT_WIDTH, y: (begin.y + end.y) / 2 - this.HALF_CONTROL_POINT_WIDTH }, // middle left
             { x: (end.x + begin.x) / 2, y: (begin.y + end.y) / 2 },
-            { x: end.x - this.halfControlPointWidth, y: (begin.y + end.y) / 2 - this.halfControlPointWidth }, // middle right
-            { x: begin.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth }, // bottom left
-            { x: (end.x + begin.x) / 2 - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth }, // middle bottom
-            { x: end.x - this.halfControlPointWidth, y: end.y - this.halfControlPointWidth }, // bottom right
+            { x: end.x - this.HALF_CONTROL_POINT_WIDTH, y: (begin.y + end.y) / 2 - this.HALF_CONTROL_POINT_WIDTH }, // middle right
+            { x: begin.x - this.HALF_CONTROL_POINT_WIDTH, y: end.y - this.HALF_CONTROL_POINT_WIDTH }, // bottom left
+            { x: (end.x + begin.x) / 2 - this.HALF_CONTROL_POINT_WIDTH, y: end.y - this.HALF_CONTROL_POINT_WIDTH }, // middle bottom
+            { x: end.x - this.HALF_CONTROL_POINT_WIDTH, y: end.y - this.HALF_CONTROL_POINT_WIDTH }, // bottom right
         ];
     }
 
-    drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
+    private drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.save();
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'blue';
         this.getControlPointsCoords(begin, end).forEach((coord: Vec2, index) => {
-            if (index !== 4) ctx.rect(coord.x, coord.y, this.controlPointWidth, this.controlPointWidth);
+            if (index !== 4) ctx.rect(coord.x, coord.y, this.CONTROL_POINT_WIDTH, this.CONTROL_POINT_WIDTH);
         });
         ctx.stroke();
         ctx.fill();
@@ -53,8 +52,8 @@ export class ResizeSelectionService {
         ctx.save();
         ctx.lineWidth = 1;
         ctx.lineJoin = 'miter';
-        ctx.strokeStyle = this.boxColor.rgbValue;
-        ctx.globalAlpha = this.boxColor.opacity;
+        ctx.strokeStyle = this.BOX_COLOR.rgbValue;
+        ctx.globalAlpha = this.BOX_COLOR.opacity;
         ctx.beginPath();
         ctx.rect(begin.x, begin.y, end.x - begin.x, end.y - begin.y);
         ctx.stroke();
@@ -65,7 +64,10 @@ export class ResizeSelectionService {
     checkIfAControlPointHasBeenSelected(mousePosition: Vec2, selectionCoords: SelectionCoords, preview: boolean): void {
         if (!preview) this.selectedPointIndex = this.NO_POINT_SELECTED_INDEX;
         this.getControlPointsCoords(selectionCoords.finalTopLeft, selectionCoords.finalBottomRight).forEach((point, index) => {
-            if (Math.abs(mousePosition.x - point.x) < this.selectingPointOffSet && Math.abs(mousePosition.y - point.y) < this.selectingPointOffSet) {
+            if (
+                Math.abs(mousePosition.x - point.x) < this.SELECTING_POINT_OFFSET &&
+                Math.abs(mousePosition.y - point.y) < this.SELECTING_POINT_OFFSET
+            ) {
                 if (!preview) this.selectedPointIndex = index;
                 this.previewSelectedPointIndex = index;
             }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
@@ -45,8 +46,10 @@ export class ToolsService {
         this.currentTool = pencilService;
     }
 
+    selectedSelectionService: Tool = this.rectangleSelectionService;
+
     setCurrentTool(tool: Tool): void {
-        this.cancelSelectionOnToolChange();
+        this.cancelSelectionOnToolChange(tool);
         this.registerTextCommandOnToolChange();
         this.removeLinePreview();
 
@@ -54,9 +57,16 @@ export class ToolsService {
 
         this.handleStampCurrentTool();
         this.handleGridCurrentTool();
+        this.handleSelectionCurrentTool(tool);
 
-        // to notifiy attributes panel component that a the current tool has changed
+        // to notifiy attributes panel component that the current tool has changed
         this.subject.next(tool);
+    }
+
+    private handleSelectionCurrentTool(tool: Tool): void {
+        if (tool instanceof SelectionTool) {
+            this.selectedSelectionService = tool;
+        }
     }
 
     private registerTextCommandOnToolChange(): void {
@@ -90,7 +100,11 @@ export class ToolsService {
         }
     }
 
-    private cancelSelectionOnToolChange(): void {
+    private cancelSelectionOnToolChange(incomingTool: Tool): void {
+        if (this.preventCancelSelectionIfUsingGrid(incomingTool)) {
+            return;
+        }
+
         switch (this.currentTool) {
             case this.ellipseSelectionService:
                 this.ellipseSelectionService.cancelSelection();
@@ -102,6 +116,18 @@ export class ToolsService {
                 this.lassoSelectionService.cancelSelection();
                 break;
         }
+    }
+
+    private preventCancelSelectionIfUsingGrid(incomingTool: Tool): boolean {
+        if (
+            incomingTool === this.gridService &&
+            (this.currentTool === this.ellipseSelectionService ||
+                this.currentTool === this.rectangleSelectionService ||
+                this.currentTool === this.ellipseSelectionService)
+        ) {
+            return true;
+        }
+        return false;
     }
 
     getCurrentTool(): Observable<Tool> {

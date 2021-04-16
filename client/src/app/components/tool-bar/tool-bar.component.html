@@ -6,7 +6,9 @@
             matTooltip="{{ toolBarElement.toolTipContent }}"
             matTooltipPosition="right"
             [matTooltipShowDelay]="750"
-            class="list-item"
+            class="list-item" 
+            (mouseover)="toolBarElement.hovered=true" (mouseleave)="toolBarElement.hovered=false"
+            [class.hover]="!checkActiveTool(toolBarElement.tool) && toolBarElement.hovered"
         >
             <fa-icon *ngIf="toolBarElement.tool !== this.toolService.polygonService "icon="{{ toolBarElement.icon }}"></fa-icon>
             <mat-icon  *ngIf="toolBarElement.tool === this.toolService.polygonService ">change_history</mat-icon>
