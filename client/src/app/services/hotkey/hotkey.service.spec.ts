@@ -83,6 +83,8 @@ describe('HotkeyService', () => {
     const plusStub = new KeyboardEvent('keydown', { code: 'Equal', shiftKey: true });
     const minusStub = new KeyboardEvent('keydown', { code: 'Minus' });
 
+    const backspaceStub = new KeyboardEvent('keydown', { code: 'Backspace' });
+
     beforeEach(async(() => {
         drawingServiceSpyObj = jasmine.createSpyObj('DrawingService', ['handleNewDrawing', 'newIncomingResizeSignals', 'updateGrid']);
         dialogServiceSpyObj = jasmine.createSpyObj('DialogService', ['openDialog', 'listenToKeyEvents']);
@@ -229,6 +231,10 @@ describe('HotkeyService', () => {
 
             service.onKeyDown(minusStub);
             expect(service['handleDecrementingSquareSize']).toHaveBeenCalled();
+
+            clipboardSelectionServiceSpyObj.delete.calls.reset();
+            service.onKeyDown(backspaceStub);
+            expect(clipboardSelectionServiceSpyObj.delete).toHaveBeenCalled();
         },
     );
 
