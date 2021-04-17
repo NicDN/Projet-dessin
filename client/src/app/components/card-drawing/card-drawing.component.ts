@@ -18,6 +18,8 @@ export class CardDrawingComponent {
 
     deletingState: boolean = false;
 
+    hover=false;
+
     constructor(
         private carouselService: CarouselService,
         private snackBarService: SnackBarService,
