@@ -32,10 +32,13 @@
 }
 
 .tool-name-header {
+    background-color: #e51282;
     margin-top: 10px;
-    font-size: 30px;
+    font-size: 25px;
     color: white;
-    height: 50px;
+    padding-top: 15px;
+    height: 56px;
+    margin: 0;
 }
 
 mat-divider {
@@ -46,11 +49,11 @@ mat-divider {
 }
 
 .upper-container {
-    padding-top: 10px;
+    padding-top: 1px;
 }
 
 .bottom-elements {
-    padding-bottom: 10px;
+    padding-bottom: 5px;
 }
 
 a {
