@@ -1,11 +1,16 @@
-<div class="container">
+<div #mainContainer class="main-container">
     <h1 class="header-item">Bienvenue dans PolyDessin !</h1>
     <div class="container">
-        <button mat-raised-button color="primary" (click)=" this.createNewDrawing()">Creer un
-            nouveau dessin</button>
-        <button mat-raised-button color="primary" (click)="this.dialogService.openDialog(this.dialogType)">Ouvrir le
-            carousel de dessins</button>
-        <button mat-raised-button color="primary" [disabled]="this.localStorageService.storageIsEmpty()" routerLink="/editor"
-            (click)="this.continueDrawing()">Continuer un dessin</button>
+        <button mat-raised-button color="primary" (click)="this.createNewDrawing()">Creer un nouveau dessin</button>
+        <button mat-raised-button color="primary" (click)="this.dialogService.openDialog(this.dialogType)">Ouvrir le carousel de dessins</button>
+        <button
+            mat-raised-button
+            color="primary"
+            [disabled]="this.localStorageService.storageIsEmpty()"
+            routerLink="/editor"
+            (click)="this.continueDrawing()"
+        >
+            Continuer un dessin
+        </button>
     </div>
 </div>
