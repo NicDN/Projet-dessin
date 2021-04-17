@@ -18,7 +18,7 @@ export class CardDrawingComponent {
 
     deletingState: boolean = false;
 
-    hover=false;
+    hover: boolean = false;
 
     constructor(
         private carouselService: CarouselService,
