@@ -12,7 +12,7 @@
     <div>
         <mat-form-field class="filter-selector">
             <mat-label>Sélectionez un filtre</mat-label>
-            <mat-select #filter [(value)]="selectedFilter.name">
+            <mat-select #filter>
                 <mat-option class="filter-mat-option" *ngFor="let filter of this.filterService.filters"
                     [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
             </mat-select>
@@ -38,7 +38,7 @@
             (click)="exportCanvas(fileName.value,fileFormat.value)">
 
             <mat-icon *ngIf="this.loadingImpgurState">
-                <mat-spinner color="accent" diameter="20">
+                <mat-spinner diameter="20">
                 </mat-spinner>
             </mat-icon>
 

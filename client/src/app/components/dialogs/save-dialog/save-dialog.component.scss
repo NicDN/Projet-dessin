@@ -46,3 +46,9 @@ button {
 button:hover {
     background-color: #e51282;
 }
+
+.mat-spinner {
+    ::ng-deep circle {
+        stroke: white;
+    }
+}

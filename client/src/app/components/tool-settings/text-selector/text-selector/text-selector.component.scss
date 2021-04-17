@@ -12,7 +12,7 @@ mat-divider {
 p {
     float: left;
     padding-top: 15px;
-    padding-left: 15px;
+    padding-left: 30px;
     font-size: 16px;
     display: inline-block;
     color: white;
@@ -38,6 +38,35 @@ mat-form-field {
     width: 130px;
 }
 
-::ng-deep .mat-select-value {
-    color: white !important;
+::ng-deep .font-style {
+    .mat-select-value {
+        color: white !important;
+    }
+    .mat-select-arrow {
+        color: white;
+    }
+
+    .mat-select:focus .mat-select-trigger .mat-select-arrow {
+        color: #e51282;
+    }
+
+    .mat-form-field-underline {
+        background-color: white !important;
+    }
+
+    .mat-form-field-ripple {
+        background-color: #e51282 !important;
+    }
+
+    .mat-focused .mat-form-field-label {
+        color: #e51282 !important;
+    }
+
+    .mat-select-content {
+        color: #e51282 !important;
+    }
+
+    .mat-focused .mat-option {
+        color: #e51282;
+    }
 }

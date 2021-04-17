@@ -15,7 +15,7 @@ export class SprayCanSettingsSelectorComponent implements OnInit {
     ngOnInit(): void {
         this.sprayCanSettings = [
             {
-                title: "Nombre d'émissions par secondes",
+                title: 'Émissions par secondes',
                 unit: '',
                 min: this.tool.MIN_EMISSION_RATE,
                 max: this.tool.MAX_EMISSION_RATE,

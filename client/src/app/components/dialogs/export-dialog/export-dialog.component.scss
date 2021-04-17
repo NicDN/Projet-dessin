@@ -33,7 +33,7 @@ mat-button-toggle-group {
     width: 400px;
 }
 
-.hidden{
+.hidden {
     visibility: hidden;
 }
 
@@ -74,4 +74,10 @@ mat-icon {
 
 button:hover {
     background-color: #e51282;
+}
+
+.mat-spinner {
+    ::ng-deep circle {
+        stroke: white;
+    }
 }

@@ -30,7 +30,7 @@ export class StampSelectorComponent implements OnInit {
         };
 
         this.angleSetting = {
-            title: "Angle d'orientation",
+            title: 'Orientation',
             unit: 'Degrés',
             min: this.stampService.ANGLE_MIN_VALUE,
             max: this.FULL_CIRCLE_DEGREES - 1,

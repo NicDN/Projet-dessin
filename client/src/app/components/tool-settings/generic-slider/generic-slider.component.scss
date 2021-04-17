@@ -1,14 +1,27 @@
 mat-slider {
     width: 225px;
 }
-p {
+.title {
     float: left;
     color: white;
     display: inline-block;
     padding: 15px;
     font-size: 16px;
+    padding-left: 30px;
+    text-align: left;
 }
 .divider {
     display: flex;
     justify-content: space-between;
+}
+
+.unit {
+    float: right;
+    color: white;
+    display: inline-block;
+    padding: 15px;
+    font-size: 16px;
+    padding-right: 45px;
+    text-align: right;
+    width: 100px;
 }
