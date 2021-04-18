@@ -46,13 +46,15 @@
                         (focusin)="this.hotKeyService.listenToKeyEvents=false" autocomplete="off"/>
                 </mat-form-field>
             </form>
-
-            <span class="preview-color"
-                [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"></span>
-            <button mat-raised-button class="confirm-color-button" (click)="updateColor(selectedColor)"
-                [disabled]="rgbInputHasErrors()">
-                <fa-icon icon="check" class="check"></fa-icon>
-            </button>
+                <button mat-raised-button 
+                    class="preview-color"
+                    [ngStyle]="{ 'background-color': rgbValue == undefined ? hue : rgbValue, opacity: opacity }"
+                    [disabled]="rgbInputHasErrors()"
+                    [class.border]="opacity<0.2"
+                    (click)="updateColor(selectedColor)"
+                    matTooltip="Choisir la couleur" matTooltipPosition="right">
+                    <fa-icon icon="check" class="check"></fa-icon>
+                </button>
         </div>
     </div>
 </div>

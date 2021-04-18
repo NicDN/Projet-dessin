@@ -2,7 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -40,7 +40,7 @@ describe('SaveDialogComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [SaveDialogComponent],
-            imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule],
+            imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule, MatButtonModule],
             providers: [
                 { provide: MatDialogRef, useValue: matDialogRefSpy },
                 { provide: SnackBarService, useValue: snackbarServiceSpy },
@@ -173,5 +173,18 @@ describe('SaveDialogComponent', () => {
         component.inputFocus = true;
         component.onKeyDown(keyboardEvent);
         expect(component.postDrawing).not.toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should focus on the save button if the key pressed is enter', () => {
+        spyOn(component.saveButton, 'focus');
+        component.onKeyDown(keyboardEvent);
+        expect(component.saveButton.focus).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not focus on the save button if the key pressed is not enter', () => {
+        keyboardEvent = { key: 'ArrowDown' } as KeyboardEvent;
+        spyOn(component.saveButton, 'focus');
+        component.onKeyDown(keyboardEvent);
+        expect(component.saveButton.focus).not.toHaveBeenCalled();
     });
 });
