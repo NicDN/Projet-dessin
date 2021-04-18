@@ -317,6 +317,11 @@ describe('DrawingComponent', () => {
         expect(hotKeyServiceSpy.onKeyDown).toHaveBeenCalled();
     });
 
+    it('#onKeyUp should call #onKeyUp of toolService', () => {
+        component.onKeyUp(keyBoardEvent);
+        expect(toolsServiceSpy.onKeyUp).toHaveBeenCalled();
+    });
+
     it("#onMouseEnter should call the current tool's #onMouseEnter when receiving a mouse enter event if canDrawflag is true", () => {
         component['canDraw'] = true;
         const mouseEventSpy = spyOn(toolsServiceSpy.currentTool, 'onMouseEnter');

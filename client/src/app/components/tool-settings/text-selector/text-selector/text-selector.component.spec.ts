@@ -1,7 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
 import { TextSelectorComponent } from './text-selector.component';
@@ -15,6 +17,12 @@ describe('TextSelectorComponent', () => {
 
     let textServiceStub: TextService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
+
+    const matSelectMock = {
+        close(): void {
+            return;
+        },
+    } as MatSelect;
 
     beforeEach(async(() => {
         textServiceStub = {
@@ -34,7 +42,9 @@ describe('TextSelectorComponent', () => {
                 { provide: MatSnackBar, useValue: {} },
                 { provide: TextService, useValue: textServiceStub },
                 { provide: DrawingService, useValue: drawingServiceSpyObj },
+                { provide: MatSelect, useValue: matSelectMock },
             ],
+            imports: [MatSelectModule, BrowserAnimationsModule],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
     }));
@@ -107,13 +117,12 @@ describe('TextSelectorComponent', () => {
         expect(returnValue).toBeFalse();
     });
 
-    it('#applyFontStyle should apply the selected font style correctly', () => {
+    it('#applyFontStyle should update the texte and close the matSelect', () => {
         spyOn<any>(component, 'updateText');
-        const expectedFontStyle = { name: 'calibri', value: FontStyle.Calibri };
-        component.applyFontStyle(expectedFontStyle);
-        expect(component.selectedFontStyle).toEqual(expectedFontStyle.name);
-        expect(component.textService.fontStyle).toEqual(expectedFontStyle.value);
+        spyOn(component.matSelect, 'close');
+        component.applyFontStyle();
         expect(component['updateText']).toHaveBeenCalled();
+        expect(component.matSelect.close).toHaveBeenCalled();
     });
 
     it('#updateText should update the text correctly if the boolean isWriting is set to true', () => {
@@ -138,5 +147,60 @@ describe('TextSelectorComponent', () => {
         expect(drawingServiceSpyObj.clearCanvas).not.toHaveBeenCalled();
         expect(textServiceSpy.registerTextCommand).not.toHaveBeenCalled();
         expect(textServiceSpy.drawBox).not.toHaveBeenCalled();
+    });
+
+    it('#updateText should be falsy if the event target is undefined', () => {
+        const tmp: any = undefined;
+        const customUndefined = { key: 'Enter', target: tmp } as KeyboardEvent;
+        expect(component.onKeyDown(customUndefined)).toBeFalsy();
+    });
+
+    it('#updateText should be falsy if the event is undefined', () => {
+        const tmp: any = undefined;
+        expect(component.onKeyDown(tmp)).toBeFalsy();
+    });
+
+    it('#onKeyDown should blur the event target if the key pressed is enter', () => {
+        const keyboardEventMock: KeyboardEvent = {
+            key: 'Enter',
+            stopPropagation(): void {
+                return;
+            },
+            target: {
+                blur(): void {
+                    return;
+                },
+            } as HTMLDivElement | null,
+        } as KeyboardEvent;
+
+        const stopPropagationSpy = spyOn(keyboardEventMock, 'stopPropagation');
+        const blurSpy = spyOn<any>(keyboardEventMock.target as HTMLDivElement | undefined, 'blur');
+
+        component.onKeyDown(keyboardEventMock);
+
+        expect(stopPropagationSpy).toHaveBeenCalled();
+        expect(blurSpy).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not blur the event target if the key pressed is not enter', () => {
+        const keyboardEventMock: KeyboardEvent = {
+            key: 'Not enter',
+            stopPropagation(): void {
+                return;
+            },
+            target: {
+                blur(): void {
+                    return;
+                },
+            } as HTMLDivElement | null,
+        } as KeyboardEvent;
+
+        const stopPropagationSpy = spyOn(keyboardEventMock, 'stopPropagation');
+        const blurSpy = spyOn<any>(keyboardEventMock.target as HTMLDivElement | undefined, 'blur');
+
+        component.onKeyDown(keyboardEventMock);
+
+        expect(stopPropagationSpy).toHaveBeenCalled();
+        expect(blurSpy).not.toHaveBeenCalled();
     });
 });
