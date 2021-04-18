@@ -1,8 +1,8 @@
 <div class="save-container">
     <h2 mat-dialog-title>Sauvegarder les dessin</h2>
-    <form>
-        <mat-form-field class="file-name">
-            <input
+    <form #form>
+        <mat-form-field #fileNameFormField class="file-name">
+                 <input
                 matInput
                 #fileName
                 placeholder="Nom du fichier"
@@ -10,10 +10,8 @@
                 required
                 (focusout)="this.inputFocus = false"
                 (focusin)="this.inputFocus = true"
+                autocomplete="off"
             />
-            <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear" (click)="fileName.value = ''">
-                <mat-icon>close</mat-icon>
-            </button>
             <mat-error *ngIf="fileNameFormControl.invalid"> Veuillez entrer un nom </mat-error>
         </mat-form-field>
         <mat-form-field>
@@ -35,6 +33,7 @@
                     [formControl]="tagFormControl"
                     (focusout)="this.inputFocus = false"
                     (focusin)="this.inputFocus = true"
+                    autocomplete="off"
                 />
             </mat-chip-list>
 
@@ -45,11 +44,11 @@
     </form>
     <div class="tag-rules">
         <mat-list role="list">
-            <p>Règles pour avoir une étiquette valide:</p>
-            <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum </mat-list-item>
+            <p class="rule-header">Règles pour avoir une étiquette valide:</p>
+            <mat-list-item class="rule" [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum </mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum </mat-list-item>
             <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem"
-                >Doit contenir uniquement des lettres (Espaces acceptées)</mat-list-item
+                >Doit contenir uniquement des lettres (espaces acceptées)</mat-list-item
             >
             <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée </mat-list-item>
         </mat-list>

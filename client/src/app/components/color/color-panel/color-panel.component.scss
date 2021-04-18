@@ -87,11 +87,24 @@ mat-form-field {
     margin: 5px;
 }
 .rgb-label {
-    color: black;
+    color: white;
 }
 
- .border{
+.border {
     border-style: solid;
     border-color: black;
     border-width: 1px;
+}
+p {
+    color: white;
+}
+
+::ng-deep .input-wrapper {
+    .mat-form-field-underline {
+        background-color: white !important;
+    }
+}
+
+.rgb-input{
+    color: white;
 }

@@ -16,6 +16,7 @@ export class ResizeSelectionService {
     private width: number = 0;
     private height: number = 0;
     private endCoords: Vec2 = { x: 0, y: 0 };
+    private readonly POINT_THICKNESS: number = 5;
 
     selectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
     previewSelectedPointIndex: number = this.NO_POINT_SELECTED_INDEX;
@@ -40,7 +41,7 @@ export class ResizeSelectionService {
     private drawControlPoints(ctx: CanvasRenderingContext2D, begin: Vec2, end: Vec2): void {
         ctx.save();
         ctx.beginPath();
-        ctx.lineWidth = 1;
+        ctx.lineWidth = this.POINT_THICKNESS;
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'blue';
         this.getControlPointsCoords(begin, end).forEach((coord: Vec2, index) => {

@@ -19,7 +19,7 @@ export class GridSelectorComponent implements OnInit {
         this.gridSettings = [
             {
                 title: 'Taille des carrées',
-                unit: 'Pixels',
+                unit: 'pixels',
                 min: this.tool.MIN_SQUARE_SIZE,
                 max: this.tool.MAX_SQUARE_SIZE,
                 getAttribute: () => {

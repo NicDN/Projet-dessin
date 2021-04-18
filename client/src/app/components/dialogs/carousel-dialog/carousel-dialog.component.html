@@ -25,7 +25,7 @@
                 </mat-chip>
                 <input placeholder="Entrez une étiquette" [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
-                    (matChipInputTokenEnd)="this.addTag($event)" />
+                    (matChipInputTokenEnd)="this.addTag($event)" autocomplete="off"/>
             </mat-chip-list>
 
             <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchedTags()">

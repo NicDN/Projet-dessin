@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 
@@ -23,7 +24,12 @@ export class OptionBarComponent {
             toolTipContent: 'Voir le carrousel de dessins (Ctrl-G)',
             action: () => this.dialogService.openDialog(DialogType.Carousel),
         },
+        {
+            icon: 'home',
+            toolTipContent: "Retourner à la page d'accueil",
+            action: () => this.router.navigate(['home']),
+        },
     ];
 
-    constructor(private drawingService: DrawingService, private dialogService: DialogService) {}
+    constructor(private drawingService: DrawingService, private dialogService: DialogService, private router: Router) {}
 }

@@ -4,7 +4,6 @@ import { AbstractControl, FormControl, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
-import { MatInput } from '@angular/material/input';
 import { SaveService } from '@app/services/option/save/save.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 
@@ -15,7 +14,6 @@ import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 })
 export class SaveDialogComponent {
     @ViewChild('saveButton') saveButton: MatButton;
-    @ViewChild('fileName') fileName: MatInput;
 
     private readonly TAG_MAX_LENGTH: number = 10;
     private readonly TAG_MIN_LENGTH: number = 2;
@@ -92,6 +90,8 @@ export class SaveDialogComponent {
     onKeyDown(event: KeyboardEvent): void {
         if (event.key !== 'Enter') {
             return;
+        } else {
+            this.saveButton.focus();
         }
         if (this.saveButton.disabled) {
             return;
@@ -99,6 +99,6 @@ export class SaveDialogComponent {
         if (this.inputFocus) {
             return;
         }
-        this.postDrawing(this.fileName.value);
+        this.postDrawing(this.fileNameFormControl.value);
     }
 }
