@@ -108,7 +108,7 @@ describe('GridService', () => {
     });
 
     it('#incrementSquareSize should not increment the square size if it is more than the maximum square size', () => {
-        const CURRENT_SQUARE_SIZE = 82;
+        const CURRENT_SQUARE_SIZE = 102;
         service.squareSize = CURRENT_SQUARE_SIZE;
         service.incrementSquareSize();
         expect(service.squareSize).toEqual(CURRENT_SQUARE_SIZE);

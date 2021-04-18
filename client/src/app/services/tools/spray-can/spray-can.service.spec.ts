@@ -77,18 +77,18 @@ describe('SprayCanService', () => {
     });
 
     it('#onMouseDown should call #clearInterval if right click is pressed', () => {
-        const mouseEvent: MouseEvent = { button: MouseButton.Right } as MouseEvent;
+        const mouseEventRight: MouseEvent = { button: MouseButton.Right } as MouseEvent;
         const clearInterValSpy = spyOn(global, 'clearInterval');
         service.mouseDown = false;
-        service.onMouseDown(mouseEvent);
+        service.onMouseDown(mouseEventRight);
         expect(service.mouseDown).toBeFalse();
         expect(clearInterValSpy).toHaveBeenCalled();
     });
 
     it('#onMouseDown should not call #clearInterval if right click is not pressed', () => {
-        const mouseEvent: MouseEvent = { button: MouseButton.Left } as MouseEvent;
+        const mouseEventLeft: MouseEvent = { button: MouseButton.Left } as MouseEvent;
         const clearInterValSpy = spyOn(global, 'clearInterval');
-        service.onMouseDown(mouseEvent);
+        service.onMouseDown(mouseEventLeft);
         expect(service.mouseDown).toBeTrue();
         expect(clearInterValSpy).not.toHaveBeenCalled();
     });

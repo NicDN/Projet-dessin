@@ -40,15 +40,14 @@
 
 <mat-divider></mat-divider>
 
-<div class="font-style">
+<div class="font-style" (keydown)="onKeyDown($event)" #textSelector>
     <p>Police du texte</p>
     <mat-form-field>
-        <mat-select [(value)]="selectedFontStyle">
+        <mat-select [(value)]="this.textService.fontStyle" (selectionChange)="applyFontStyle()" #matSelect>
             <mat-option
                 style="color: black"
                 *ngFor="let fontStyle of this.fontStyles"
-                [value]="fontStyle.name"
-                (click)="applyFontStyle(fontStyle)"
+                [value]="fontStyle.value"
                 [ngStyle]="{ 'font-family': fontStyle.name }"
                 >{{ fontStyle.name }}</mat-option
             >

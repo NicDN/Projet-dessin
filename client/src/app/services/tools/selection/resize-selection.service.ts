@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Color } from '@app/classes/color';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { SelectedPoint } from './magnet-selection.service';
-
+import { SelectedPoint } from './move-selection.service';
+// tslint:disable: no-magic-numbers
 @Injectable({
     providedIn: 'root',
 })

@@ -227,6 +227,7 @@ describe('ToolsService', () => {
     });
 
     it('#clearPreview should not clear the preview  if the preview canvas is undefined', () => {
+        // tslint:disable-next-line: prefer-const
         let undefinedCustom: any;
         service['drawingService'].previewCanvas = undefinedCustom;
         service['clearPreview']({} as Tool);
