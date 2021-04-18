@@ -1,13 +1,17 @@
 <div class="save-container">
     <h2 mat-dialog-title>Sauvegarder les dessin</h2>
-    <form>
-        <mat-form-field class="file-name">
-            <input matInput #fileName placeholder="Nom du fichier" [formControl]="fileNameFormControl" required
-                (focusout)="this.inputFocus=false" (focusin)="this.inputFocus=true" />
-            <button mat-button *ngIf="fileName" matSuffix mat-icon-button aria-label="Clear"
-                (click)="fileName.value = ''">
-                <mat-icon>close</mat-icon>
-            </button>
+    <form #form>
+        <mat-form-field #fileNameFormField class="file-name">
+                 <input
+                matInput
+                #fileName
+                placeholder="Nom du fichier"
+                [formControl]="fileNameFormControl"
+                required
+                (focusout)="this.inputFocus = false"
+                (focusin)="this.inputFocus = true"
+                autocomplete="off"
+            />
             <mat-error *ngIf="fileNameFormControl.invalid"> Veuillez entrer un nom </mat-error>
         </mat-form-field>
         <mat-form-field>
@@ -17,41 +21,50 @@
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                 </mat-chip>
-                <input #tagInput pattern="[a-zA-Z ]*" placeholder="Ajoutez des étiquettes (Touche Enter)" type="text"
-                    [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="addTag($event)"
-                    [formControl]="tagFormControl" (focusout)="this.inputFocus=false"
-                    (focusin)="this.inputFocus=true" />
+                <input
+                    #tagInput
+                    pattern="[a-zA-Z ]*"
+                    placeholder="Ajoutez des étiquettes (Touche Enter)"
+                    type="text"
+                    [matChipInputFor]="tagList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="true"
+                    (matChipInputTokenEnd)="addTag($event)"
+                    [formControl]="tagFormControl"
+                    (focusout)="this.inputFocus = false"
+                    (focusin)="this.inputFocus = true"
+                    autocomplete="off"
+                />
             </mat-chip-list>
 
-            <button mat-button matSuffix mat-icon-button *ngIf="this.tags.length" aria-label="Clear"
-                (click)="clearTags()">
+            <button mat-button matSuffix mat-icon-button *ngIf="this.tags.length" aria-label="Clear" (click)="clearTags()">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>
     </form>
     <div class="tag-rules">
         <mat-list role="list">
-            <p>Règles pour avoir une étiquette valide:</p>
-            <mat-list-item [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum
-            </mat-list-item>
-            <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum
-            </mat-list-item>
-            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem">Doit contenir uniquement
-                des lettres (Espaces acceptées)</mat-list-item>
-            <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée
-            </mat-list-item>
+            <p class="rule-header">Règles pour avoir une étiquette valide:</p>
+            <mat-list-item class="rule" [class.error]="tagFormControl.hasError('maxlength')" role="listitem">10 caractères maximum </mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('minlength')" role="listitem">2 caractères minimum </mat-list-item>
+            <mat-list-item [class.error]="tagFormControl.hasError('pattern')" role="listitem"
+                >Doit contenir uniquement des lettres (espaces acceptées)</mat-list-item
+            >
+            <mat-list-item [class.error]="this.uniqueTagError" role="listitem">Ne doit pas être une étiquette dupliquée </mat-list-item>
         </mat-list>
     </div>
 
     <div class="bottom-div">
-        <button #saveButton mat-flat-button color="primary" class="save-canvas-btn"
+        <button
+            #saveButton
+            mat-flat-button
+            color="primary"
+            class="save-canvas-btn"
             [disabled]="tagFormControl.invalid || fileNameFormControl.invalid || this.savingState"
-            (click)="postDrawing(fileName.value)">
-
+            (click)="postDrawing(fileName.value)"
+        >
             <mat-icon *ngIf="this.savingState">
-                <mat-spinner color="accent" diameter="20">
-                </mat-spinner>
+                <mat-spinner diameter="20"> </mat-spinner>
             </mat-icon>
 
             Sauvegarder

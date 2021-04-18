@@ -2,13 +2,13 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl } from '@angular/forms';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SaveService } from '@app/services/option/save/save.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { Subject, throwError } from 'rxjs';
-
 import { SaveDialogComponent } from './save-dialog.component';
 
 // tslint:disable: no-string-literal
@@ -26,6 +26,12 @@ describe('SaveDialogComponent', () => {
     const FILE_NAME = 'test name';
     const TAGS_MOCK: string[] = ['one', 'two', 'three', 'four', 'five', 'six'];
 
+    const matButtonMock = {
+        focus(): void {
+            return;
+        },
+    } as MatButton;
+
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
         snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
@@ -34,11 +40,12 @@ describe('SaveDialogComponent', () => {
 
         TestBed.configureTestingModule({
             declarations: [SaveDialogComponent],
-            imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule],
+            imports: [HttpClientTestingModule, MatDialogModule, MatSnackBarModule, MatButtonModule],
             providers: [
                 { provide: MatDialogRef, useValue: matDialogRefSpy },
                 { provide: SnackBarService, useValue: snackbarServiceSpy },
                 { provide: SaveService, useValue: saveServiceSpy },
+                { provide: MatButton, useValue: matButtonMock },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -49,7 +56,6 @@ describe('SaveDialogComponent', () => {
         component = fixture.componentInstance;
         component.tags = TAGS_MOCK;
         keyboardEvent = { key: 'Enter' } as KeyboardEvent;
-
         fixture.detectChanges();
     });
 
@@ -167,5 +173,18 @@ describe('SaveDialogComponent', () => {
         component.inputFocus = true;
         component.onKeyDown(keyboardEvent);
         expect(component.postDrawing).not.toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should focus on the save button if the key pressed is enter', () => {
+        spyOn(component.saveButton, 'focus');
+        component.onKeyDown(keyboardEvent);
+        expect(component.saveButton.focus).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not focus on the save button if the key pressed is not enter', () => {
+        keyboardEvent = { key: 'ArrowDown' } as KeyboardEvent;
+        spyOn(component.saveButton, 'focus');
+        component.onKeyDown(keyboardEvent);
+        expect(component.saveButton.focus).not.toHaveBeenCalled();
     });
 });

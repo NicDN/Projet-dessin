@@ -246,11 +246,6 @@ describe('DrawingComponent', () => {
         expect(mouseEventSpy).not.toHaveBeenCalledWith(mouseEventClick);
     });
 
-    it('#onMouseDown should dismiss the opened snack bar', () => {
-        component.onMouseDown({} as MouseEvent);
-        expect(snackBarSpy.dismiss).toHaveBeenCalled();
-    });
-
     it("#onMouseDown should call the current tool's #onMouseDown when receiving a mouse down event inside the canvas if canDrawflag is true ", () => {
         component['canDraw'] = true;
         spyOn<any>(component, 'isInsideCanvas').and.returnValue(true);
@@ -599,5 +594,10 @@ describe('DrawingComponent', () => {
         component['observeDialogService']();
         subject.next(true);
         expect(component['dialogIsOpened']).toBeFalse();
+    });
+
+    it('#onKeyUp should call #onKeyUp of hotKeyService ', () => {
+        component.onKeyUp({} as KeyboardEvent);
+        expect(toolsServiceSpy.onKeyUp).toHaveBeenCalled();
     });
 });

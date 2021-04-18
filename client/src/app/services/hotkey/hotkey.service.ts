@@ -47,6 +47,7 @@ enum shortCutManager {
     CUT = 'KeyX',
     DELETE = 'Delete',
     MAGNETISME = 'KeyM',
+    BACKSPACE = 'Backspace',
 }
 
 enum shortCutTextManager {
@@ -173,6 +174,7 @@ export class HotkeyService {
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
             KeyM: { action: () => (this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet) },
+            Backspace: { action: () => this.clipboardSelectionService.delete() },
         };
     }
 

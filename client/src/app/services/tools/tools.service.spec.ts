@@ -14,6 +14,7 @@ describe('ToolsService', () => {
     let pencilService: PencilService;
     let ellipseDrawingService: EllipseDrawingService;
     const keyboardEvent = new KeyboardEvent('test');
+    let clearCanvasSpy: jasmine.Spy;
 
     const snackBarServiceStub = {} as SnackBarService;
 
@@ -31,6 +32,9 @@ describe('ToolsService', () => {
         service = TestBed.inject(ToolsService);
         pencilService = TestBed.inject(PencilService);
         ellipseDrawingService = TestBed.inject(EllipseDrawingService);
+
+        service['drawingService'].previewCanvas = document.createElement('canvas');
+        clearCanvasSpy = spyOn<any>(service['drawingService'], 'clearCanvas');
     });
 
     it('should be created', () => {
@@ -220,5 +224,31 @@ describe('ToolsService', () => {
         service.currentTool = service.pencilService;
         const incomingTool = service.lineService;
         expect(service['preventCancelSelectionIfUsingGrid'](incomingTool)).toBeFalse();
+    });
+
+    it('#clearPreview should not clear the preview  if the preview canvas is undefined', () => {
+        // tslint:disable-next-line: prefer-const
+        let undefinedCustom: any;
+        service['drawingService'].previewCanvas = undefinedCustom;
+        service['clearPreview']({} as Tool);
+        expect(clearCanvasSpy).not.toHaveBeenCalled();
+    });
+
+    it('#clearPreview should not clear the preview if current tool is a selection tool', () => {
+        service.currentTool = service.rectangleSelectionService;
+        service['clearPreview'](service.rectangleDrawingService);
+        expect(clearCanvasSpy).not.toHaveBeenCalled();
+    });
+
+    it('#clearPreview should not clear the preview if current tool is instance of gridService and tool is instance of SelectionTool', () => {
+        service.currentTool = service.gridService;
+        service['clearPreview'](service.rectangleSelectionService);
+        expect(clearCanvasSpy).not.toHaveBeenCalled();
+    });
+
+    it('#clearPreview should clear the preview correctly', () => {
+        service.currentTool = service.pencilService;
+        service['clearPreview'](service.rectangleDrawingService);
+        expect(clearCanvasSpy).toHaveBeenCalled();
     });
 });

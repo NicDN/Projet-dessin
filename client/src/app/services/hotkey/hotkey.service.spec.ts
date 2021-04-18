@@ -251,6 +251,10 @@ describe('HotkeyService', () => {
 
             service.onKeyDown(minusStub);
             expect(service['handleDecrementingSquareSize']).toHaveBeenCalled();
+
+            clipboardSelectionServiceSpyObj.delete.calls.reset();
+            service.onKeyDown(backspaceStub);
+            expect(clipboardSelectionServiceSpyObj.delete).toHaveBeenCalled();
         },
     );
 

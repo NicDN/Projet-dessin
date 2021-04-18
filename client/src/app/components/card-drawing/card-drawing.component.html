@@ -9,16 +9,19 @@
         </mat-card-subtitle>
     </mat-card-header>
     <mat-card-actions fxFlexAlign="end" align="end">
-        <button mat-icon-button [disabled]="this.isTheLoadedCanvas()" (click)="setToCurrentDrawing()"
-            matTooltip="Charger le dessin" matTooltipPosition="above">
+        <button
+            mat-icon-button
+            [disabled]="this.isTheLoadedCanvas()"
+            (click)="setToCurrentDrawing()"
+            matTooltip="Charger le dessin"
+            matTooltipPosition="above"
+        >
             <fa-icon icon="cloud-download-alt"></fa-icon>
         </button>
-        <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)" matTooltip="Supprimer"
-            matTooltipPosition="above">
+        <button mat-icon-button (click)="this.deleteDrawing(this.drawingForm.id)" matTooltip="Supprimer" matTooltipPosition="above">
             <mat-icon *ngIf="!this.deletingState">delete</mat-icon>
             <mat-icon *ngIf="this.deletingState">
-                <mat-spinner color="primary" diameter="20">
-                </mat-spinner>
+                <mat-spinner color="primary" diameter="20"> </mat-spinner>
             </mat-icon>
         </button>
     </mat-card-actions>

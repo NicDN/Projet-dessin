@@ -44,9 +44,13 @@
     <p>Police du texte</p>
     <mat-form-field>
         <mat-select [(value)]="this.textService.fontStyle" (selectionChange)="applyFontStyle()" #matSelect>
-            <mat-option *ngFor="let fontStyle of this.fontStyles" [value]="fontStyle.value" [ngStyle]="{ 'font-family': fontStyle.name }">{{
-                fontStyle.name
-            }}</mat-option>
+            <mat-option
+                style="color: black"
+                *ngFor="let fontStyle of this.fontStyles"
+                [value]="fontStyle.value"
+                [ngStyle]="{ 'font-family': fontStyle.name }"
+                >{{ fontStyle.name }}</mat-option
+            >
         </mat-select>
     </mat-form-field>
 </div>

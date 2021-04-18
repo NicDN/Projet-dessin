@@ -8,7 +8,6 @@
 
 .bottom-div {
     justify-content: center;
-    position: absolute;
     bottom: 0;
 }
 
@@ -31,6 +30,7 @@ mat-form-field {
 .error {
     color: red;
     font-weight: bolder;
+    font-size: 17px;
 }
 
 .cancel-btn {
@@ -45,4 +45,14 @@ button {
 
 button:hover {
     background-color: #e51282;
+}
+
+.mat-spinner {
+    ::ng-deep circle {
+        stroke: white;
+    }
+}
+
+.rule-header {
+    font-size: 16px;
 }

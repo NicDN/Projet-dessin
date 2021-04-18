@@ -16,10 +16,9 @@ export class ExportDialogComponent implements AfterViewInit {
     @ViewChild('fileFormat') fileFormat: MatInput;
 
     private canvasCtx: CanvasRenderingContext2D;
-    private readonly IMGUR_SNACK_BAR_TIME_MS: number = 20000;
+    private readonly IMGUR_SNACK_BAR_TIME_MS: number = 15000;
 
     loadingImpgurState: boolean = false;
-
     exportToImgur: boolean = false;
 
     constructor(

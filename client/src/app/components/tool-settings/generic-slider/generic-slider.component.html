@@ -1,7 +1,7 @@
 <div>
     <div class="divider">
-        <p>{{ sliderSetting.title }}</p>
-        <p>{{ sliderSetting.getAttribute() }} {{ sliderSetting.unit }}</p>
+        <p class="title">{{sliderSetting.title}}</p>
+        <p class="unit">{{sliderSetting.getAttribute() }} {{sliderSetting.unit}}</p>
     </div>
     <mat-slider
         [min]="sliderSetting.min"

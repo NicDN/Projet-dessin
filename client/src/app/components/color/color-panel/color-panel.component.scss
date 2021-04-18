@@ -61,21 +61,16 @@
     padding-right: 4px;
 }
 .check {
-    font-size: 15px;
+    color: white;
+    font-size: 18px;
 }
 .preview-color {
-    width: 50px;
-    height: 36px;
-    border-radius: 5px;
-    margin-top: 5px;
-    margin-left: 30px;
-}
-.confirm-color-button {
-    margin-left: 5px;
-    width: 40px;
-    height: 36px;
-    background-color: green;
-    margin-top: 5px;
+    width: 125px;
+    height: 40px;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+    margin-top: 6px;
 }
 
 .rgb-form {
@@ -87,11 +82,24 @@ mat-form-field {
     margin: 5px;
 }
 .rgb-label {
-    color: black;
+    color: white;
 }
 
- .border{
+.border {
     border-style: solid;
     border-color: black;
     border-width: 1px;
+}
+p {
+    color: white;
+}
+
+::ng-deep .input-wrapper {
+    .mat-form-field-underline {
+        background-color: white !important;
+    }
+}
+
+.rgb-input{
+    color: white;
 }
