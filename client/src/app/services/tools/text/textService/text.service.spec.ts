@@ -10,7 +10,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { TextService } from './text.service';
 
 // tslint:disable: no-string-literal no-any
-fdescribe('TextService', () => {
+describe('TextService', () => {
     let service: TextService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;

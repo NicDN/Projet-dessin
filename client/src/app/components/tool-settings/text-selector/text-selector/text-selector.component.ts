@@ -109,10 +109,7 @@ export class TextSelectorComponent implements OnInit {
         return icon === 'italic' ? this.textService.writeItalic : this.textService.writeBold;
     }
 
-    applyFontStyle(fontStyle?: FontStyleOption): void {
-        // TODO: enlever le ptn dinterrogation
-        // this.selectedFontStyle = fontStyle.name;
-        // this.textService.fontStyle = fontStyle.value;
+    applyFontStyle(): void {
         this.updateText();
         this.matSelect.close();
     }
