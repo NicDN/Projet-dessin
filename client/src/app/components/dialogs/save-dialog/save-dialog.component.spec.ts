@@ -9,7 +9,6 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SaveService } from '@app/services/option/save/save.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { Subject, throwError } from 'rxjs';
-
 import { SaveDialogComponent } from './save-dialog.component';
 
 // tslint:disable: no-string-literal
