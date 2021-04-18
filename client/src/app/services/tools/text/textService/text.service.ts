@@ -134,7 +134,6 @@ export class TextService extends TraceTool {
     registerTextCommand(ctx: CanvasRenderingContext2D, text: string): void {
         const textCommand = new TextCommand(this, this.loadTextProperties(ctx, text));
         textCommand.execute();
-
         if (ctx === this.drawingService.baseCtx && this.writtenOnPreview.length > 0) {
             this.undoRedoService.addCommand(textCommand);
         }
@@ -163,25 +162,11 @@ export class TextService extends TraceTool {
         this.findLongestLineAndHeight(textProperties);
 
         const previewPosition = textProperties.writtenOnPreview.length - this.writingPosition;
-        let asDrawnedPreview = false;
 
-        let i = 0;
-        let previousPosition = 0;
-
-        for (const position of textProperties.enterPosition) {
-            if (previewPosition >= previousPosition && previewPosition < position) {
-                this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
-                this.displayPreviewBar(
-                    textProperties.textContext,
-                    textProperties.writtenOnPreview.substring(previousPosition, previewPosition),
-                    this.approximateHeight * i,
-                    textProperties.writtenOnPreview.substring(previousPosition, position - 1),
-                );
-                asDrawnedPreview = true;
-            } else this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
-            i += 1;
-            previousPosition = position;
-        }
+        const enterHandled = this.handleEntersWhenWriting(textProperties, previewPosition);
+        const i = enterHandled.x;
+        const previousPosition = enterHandled.y;
+        const asDrawnedPreview = enterHandled.z;
 
         if (previousPosition !== textProperties.writtenOnPreview.length) {
             if (previewPosition >= previousPosition && previewPosition <= textProperties.writtenOnPreview.length) {
@@ -207,6 +192,29 @@ export class TextService extends TraceTool {
         textProperties.textContext.restore();
     }
 
+    private handleEntersWhenWriting(textProperties: TextProperties, previewPosition: number): { x: number; y: number; z: boolean } {
+        let i = 0;
+        let previousPosition = 0;
+        let asDrawnedPreview = false;
+
+        for (const position of textProperties.enterPosition) {
+            if (previewPosition >= previousPosition && previewPosition < position) {
+                this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
+                this.displayPreviewBar(
+                    textProperties.textContext,
+                    textProperties.writtenOnPreview.substring(previousPosition, previewPosition),
+                    this.approximateHeight * i,
+                    textProperties.writtenOnPreview.substring(previousPosition, position - 1),
+                );
+                asDrawnedPreview = true;
+            } else this.writeText(textProperties, previousPosition, position - 1, this.approximateHeight * i);
+            i += 1;
+            previousPosition = position;
+        }
+
+        return { x: i, y: previousPosition, z: asDrawnedPreview };
+    }
+
     findLongestLineAndHeight(textProperties: TextProperties): void {
         if (textProperties.enterPosition.length === 0) {
             this.boxSizeX(textProperties, 0, textProperties.writtenOnPreview.length - 1);
@@ -220,8 +228,7 @@ export class TextService extends TraceTool {
             previousPosition = position;
         }
         this.longestCharacterChain.y = this.approximateHeight * i;
-        if (previousPosition !== textProperties.writtenOnPreview.length)
-            this.boxSizeX(textProperties, previousPosition - 2, textProperties.writtenOnPreview.length - 1);
+        this.boxSizeX(textProperties, previousPosition - 2, textProperties.writtenOnPreview.length - 1);
     }
 
     drawBox(): void {
@@ -302,15 +309,12 @@ export class TextService extends TraceTool {
                 this.drawingService.previewCtx.measureText(completeCurrentString).width / 2 +
                 this.drawingService.previewCtx.measureText(text).width
             );
-        if (this.textPosition === TextPosition.Right)
-            return (
-                this.initialClickPosition.x +
-                this.longestCharacterChain.x -
-                this.drawingService.previewCtx.measureText(completeCurrentString).width +
-                this.drawingService.previewCtx.measureText(text).width
-            );
-
-        return 0;
+        return (
+            this.initialClickPosition.x +
+            this.longestCharacterChain.x -
+            this.drawingService.previewCtx.measureText(completeCurrentString).width +
+            this.drawingService.previewCtx.measureText(text).width
+        );
     }
 
     private setContextForWriting(textProperties: TextProperties): void {
