@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { FontStyle, TextPosition, TextService } from './text.service';
 
 // tslint:disable: no-string-literal no-any max-file-line-count
-fdescribe('TextService', () => {
+describe('TextService', () => {
     let service: TextService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
