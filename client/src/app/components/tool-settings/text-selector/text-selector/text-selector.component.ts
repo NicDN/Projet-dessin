@@ -115,16 +115,15 @@ export class TextSelectorComponent implements OnInit {
     }
 
     private updateText(): void {
-        if (this.textService.isWriting) {
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
-            this.textService.drawBox();
-        }
+        if (!this.textService.isWriting) return;
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+        this.textService.drawBox();
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        event?.stopPropagation();
-        if (event.key === 'Enter') {
+        event?.stopPropagation?.();
+        if (event?.key === 'Enter') {
             (event.target as HTMLDivElement | undefined)?.blur?.();
         }
     }

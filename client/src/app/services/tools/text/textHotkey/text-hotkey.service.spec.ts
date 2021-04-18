@@ -130,7 +130,7 @@ describe('TextHotkeyService', () => {
         expect(textServiceSpyObj.writingPosition).toEqual(2);
     });
 
-    it('#arrowDownPressed should prevent the writing pos from being under 0 when not on the first row', () => {
+    it('#arrowDownPressed should prevent the writing pos from being under 0 when it is not on the first row', () => {
         textServiceSpyObj.writtenOnPreview = 'abc de f';
         textServiceSpyObj.enterPosition = [FOUR, SEVEN];
         textServiceSpyObj.writingPosition = 2;
@@ -139,7 +139,7 @@ describe('TextHotkeyService', () => {
         expect(textServiceSpyObj.writingPosition).toEqual(0);
     });
 
-    it('#arrowDownPressed should prevent the writing pos from skipping a row when the not on the firs row', () => {
+    it('#arrowDownPressed should prevent the writing pos from skipping a row when it is not on the firs row', () => {
         textServiceSpyObj.writtenOnPreview = 'a bc d e';
 
         textServiceSpyObj.enterPosition = [2, SIX, SEVEN];
@@ -149,7 +149,7 @@ describe('TextHotkeyService', () => {
         expect(textServiceSpyObj.writingPosition).toEqual(2);
     });
 
-    it('#arrowDownPressed should ', () => {
+    it('#arrowDownPressed should not prevent the writing pos from skipping a row when it is not on the firs row and it does not need to', () => {
         textServiceSpyObj.writtenOnPreview = 'a b cde';
         textServiceSpyObj.enterPosition = [2, FOUR];
         textServiceSpyObj.writingPosition = FOUR;

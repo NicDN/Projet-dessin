@@ -236,7 +236,7 @@ describe('TextService', () => {
 
     it('#findLongestLineAndHeight should be setting setting only the longest line if it there is only one line', () => {
         spyOn<any>(service, 'boxSizeX');
-        service.findLongestLineAndHeight(textProperties);
+        service['findLongestLineAndHeight'](textProperties);
         expect(service['boxSizeX']).toHaveBeenCalled();
     });
 
@@ -245,7 +245,7 @@ describe('TextService', () => {
         service['approximateHeight'] = TEXT_STUB;
         textProperties.writtenOnPreview = ' a';
         textProperties.enterPosition = [1];
-        service.findLongestLineAndHeight(textProperties);
+        service['findLongestLineAndHeight'](textProperties);
         expect(service['boxSizeX']).toHaveBeenCalled();
         expect(service['longestCharacterChain'].y).toEqual(TEXT_STUB);
     });
@@ -345,6 +345,7 @@ describe('TextService', () => {
         spyOn<any>(service, 'handleEntersWhenWriting').and.returnValue({ x: 0, y: 0, z: false });
         spyOn<any>(service, 'displayPreviewBar');
         spyOn<any>(service, 'writeText');
+        spyOn<any>(service, 'findLongestLineAndHeight');
         textProperties.writtenOnPreview = 'abc';
         service.writingPosition = 2;
 
@@ -353,18 +354,21 @@ describe('TextService', () => {
         expect(service['handleEntersWhenWriting']).toHaveBeenCalled();
         expect(service['displayPreviewBar']).toHaveBeenCalled();
         expect(service['writeText']).toHaveBeenCalled();
+        expect(service['findLongestLineAndHeight']).toHaveBeenCalled();
     });
 
     it('drawText should call the handleEnterWhenWriting function and also handle the case where the preview the writing position is at the end of the string after a few enters', () => {
         spyOn<any>(service, 'handleEntersWhenWriting').and.returnValue({ x: 0, y: 4, z: false });
         spyOn<any>(service, 'displayPreviewBar');
         spyOn<any>(service, 'writeText');
+        spyOn<any>(service, 'findLongestLineAndHeight');
         textProperties.writtenOnPreview = 'abc ';
         textProperties.enterPosition = [FOUR];
         service.writingPosition = 2;
 
         service.drawText(textProperties);
 
+        expect(service['handleEntersWhenWriting']).toHaveBeenCalled();
         expect(service['handleEntersWhenWriting']).toHaveBeenCalled();
         expect(service['displayPreviewBar']).toHaveBeenCalled();
         expect(service['writeText']).not.toHaveBeenCalled();
@@ -374,12 +378,14 @@ describe('TextService', () => {
         spyOn<any>(service, 'handleEntersWhenWriting').and.returnValue({ x: 0, y: 4, z: true });
         spyOn<any>(service, 'displayPreviewBar');
         spyOn<any>(service, 'writeText');
+        spyOn<any>(service, 'findLongestLineAndHeight');
         textProperties.writtenOnPreview = 'abc ';
         textProperties.enterPosition = [FOUR];
         service.writingPosition = 2;
 
         service.drawText(textProperties);
 
+        expect(service['handleEntersWhenWriting']).toHaveBeenCalled();
         expect(service['handleEntersWhenWriting']).toHaveBeenCalled();
         expect(service['displayPreviewBar']).not.toHaveBeenCalled();
         expect(service['writeText']).not.toHaveBeenCalled();

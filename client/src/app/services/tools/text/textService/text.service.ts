@@ -25,33 +25,31 @@ export enum FontStyle {
     providedIn: 'root',
 })
 export class TextService extends TraceTool {
-    readonly DEFAULT_SIZE_VALUE: number = 25;
+    readonly MINUS_ONE: number = -1;
     readonly TEXT_MIN_SIZE: number = 10;
     readonly TEXT_MAX_SIZE: number = 70;
-    readonly MULTIPLIER: number = 1.5;
-    readonly MINUS_ONE: number = -1;
-    readonly FOURTY: number = 40;
-    readonly ONE_POINT_FIVE: number = 1.5;
-    readonly TWENTY: number = 20;
 
-    private subject: Subject<boolean> = new Subject<boolean>();
+    private readonly DEFAULT_SIZE_VALUE: number = 25;
+    private readonly MULTIPLIER: number = 1.5;
+    private readonly FOURTY: number = 40;
+    private readonly ONE_POINT_FIVE: number = 1.5;
+    private readonly TWENTY: number = 20;
 
     textSize: number = this.DEFAULT_SIZE_VALUE;
     textPosition: TextPosition = TextPosition.Left;
-
     writeItalic: boolean = false;
     writeBold: boolean = false;
     isWriting: boolean = false;
-
-    private longestCharacterChain: Vec2 = { x: 0, y: 0 };
-
     fontStyle: FontStyle = FontStyle.Arial;
     writtenOnPreview: string = '';
-    private initialClickPosition: Vec2 = { x: 0, y: 0 };
     writingPosition: number = 0; // This value is the offset starting from the end of the current string (writtenOnPreview).
-    private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Calibri', 'Trebuchet MS'];
     enterPosition: number[] = [];
+
+    private subject: Subject<boolean> = new Subject<boolean>();
+    private longestCharacterChain: Vec2 = { x: 0, y: 0 };
+    private initialClickPosition: Vec2 = { x: 0, y: 0 };
     private approximateHeight: number = 0;
+    private fontStyleTable: string[] = ['Arial', 'Times', 'Comic Sans MS', 'Calibri', 'Trebuchet MS'];
 
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Texte');
@@ -59,11 +57,10 @@ export class TextService extends TraceTool {
 
     onMouseDown(event: MouseEvent): void {
         if (this.isWriting === true) {
-            if (!this.isInsideTextBox(this.getPositionFromMouse(event))) {
-                this.registerTextCommand(this.drawingService.baseCtx, this.writtenOnPreview);
-                this.disableWriting();
-                this.undoRedoService.enableUndoRedo();
-            }
+            if (this.isInsideTextBox(this.getPositionFromMouse(event))) return;
+            this.registerTextCommand(this.drawingService.baseCtx, this.writtenOnPreview);
+            this.disableWriting();
+            this.undoRedoService.enableUndoRedo();
             return;
         }
         this.isWriting = true;
@@ -93,9 +90,8 @@ export class TextService extends TraceTool {
     }
 
     onKeyDown(event: KeyboardEvent): void {
-        if (this.isWriting) {
-            this.addChar(event);
-        }
+        if (!this.isWriting) return;
+        this.addChar(event);
     }
 
     private addChar(event: KeyboardEvent): void {
@@ -104,9 +100,11 @@ export class TextService extends TraceTool {
         if (event.key.length !== 1 && notExceptions) return;
         if (event.key !== 'Enter' && notExceptions) {
             const writingPosFromStart = this.writtenOnPreview.length - this.writingPosition + 1;
+
             for (let i = 0; i < this.enterPosition.length; i++) {
                 if (writingPosFromStart <= this.enterPosition[i]) this.enterPosition[i] += 1;
             }
+
             this.changeWrittenOnPreview(event.key, 0, 0);
         }
         this.drawingService.clearCanvas(this.drawingService.previewCtx);
@@ -215,7 +213,7 @@ export class TextService extends TraceTool {
         return { x: i, y: previousPosition, z: asDrawnedPreview };
     }
 
-    findLongestLineAndHeight(textProperties: TextProperties): void {
+    private findLongestLineAndHeight(textProperties: TextProperties): void {
         if (textProperties.enterPosition.length === 0) {
             this.boxSizeX(textProperties, 0, textProperties.writtenOnPreview.length - 1);
             return;

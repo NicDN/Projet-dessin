@@ -19,8 +19,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of, Subject } from 'rxjs';
 import { HotkeyService } from './hotkey.service';
 
-// tslint:disable: no-string-literal
-// tslint:disable: no-any
+// tslint:disable: no-any max-file-line-count no-string-literal
 describe('HotkeyService', () => {
     let service: HotkeyService;
 

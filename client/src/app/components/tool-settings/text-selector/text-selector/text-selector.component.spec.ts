@@ -149,6 +149,17 @@ describe('TextSelectorComponent', () => {
         expect(textServiceSpy.drawBox).not.toHaveBeenCalled();
     });
 
+    it('#updateText should be falsy if the event target is undefined', () => {
+        const tmp: any = undefined;
+        const customUndefined = { key: 'Enter', target: tmp } as KeyboardEvent;
+        expect(component.onKeyDown(customUndefined)).toBeFalsy();
+    });
+
+    it('#updateText should be falsy if the event is undefined', () => {
+        const tmp: any = undefined;
+        expect(component.onKeyDown(tmp)).toBeFalsy();
+    });
+
     it('#onKeyDown should blur the event target if the key pressed is enter', () => {
         const keyboardEventMock: KeyboardEvent = {
             key: 'Enter',
