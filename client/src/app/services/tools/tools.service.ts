@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { SelectionTool } from '@app/classes/selection-tool';
 import { Tool } from '@app/classes/tool';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
@@ -45,34 +46,89 @@ export class ToolsService {
         this.currentTool = pencilService;
     }
 
+    selectedSelectionService: Tool = this.rectangleSelectionService;
+
     setCurrentTool(tool: Tool): void {
-        this.ellipseSelectionService.cancelSelection();
-        this.rectangleSelectionService.cancelSelection();
-
-        if (this.currentTool instanceof TextService) {
-            if ((this.textService as TextService).isWriting) {
-                (this.textService as TextService).registerTextCommand(
-                    this.drawingService.baseCtx,
-                    (this.textService as TextService).writtenOnPreview,
-                );
-            }
-        }
-
-        if (this.currentTool === this.lineService) {
-            if (this.currentTool === this.lineService || this.currentTool === this.lassoSelectionService) {
-                this.lineService.clearPath();
-                this.lineService.updatePreview();
-            }
-        }
+        this.clearPreview(tool);
+        this.cancelSelectionOnToolChange(tool);
+        this.registerTextCommandOnToolChange();
+        this.removeLinePreview();
 
         this.currentTool = tool;
 
+        this.handleStampCurrentTool();
+        this.handleGridCurrentTool();
+        this.handleSelectionCurrentTool(tool);
+
+        // to notifiy attributes panel component that the current tool has changed
+        this.subject.next(tool);
+    }
+
+    private clearPreview(tool: Tool): void {
+        if (this.drawingService.previewCanvas === undefined) return;
+        if (this.currentTool instanceof SelectionTool) return;
+        if (this.currentTool instanceof GridService && tool instanceof SelectionTool) return;
+
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+    }
+
+    private handleSelectionCurrentTool(tool: Tool): void {
+        if (tool instanceof SelectionTool) {
+            this.selectedSelectionService = tool;
+        }
+    }
+
+    private registerTextCommandOnToolChange(): void {
+        if (!(this.currentTool instanceof TextService)) {
+            return;
+        }
+        if ((this.textService as TextService).isWriting) {
+            (this.textService as TextService).registerTextCommand(this.drawingService.baseCtx, (this.textService as TextService).writtenOnPreview);
+        }
+    }
+
+    private removeLinePreview(): void {
+        if (!(this.currentTool === this.lineService)) {
+            return;
+        }
+        this.lineService.clearPath();
+        this.lineService.updatePreview();
+    }
+
+    private handleStampCurrentTool(): void {
         this.drawingService.isStamp = false;
         if (this.currentTool === this.stampService) {
             this.drawingService.isStamp = true;
         }
+    }
 
-        this.subject.next(tool);
+    private handleGridCurrentTool(): void {
+        if (this.currentTool instanceof GridService) {
+            this.currentTool.gridDrawn = true;
+            this.currentTool.drawGrid();
+        }
+    }
+
+    private cancelSelectionOnToolChange(incomingTool: Tool): void {
+        if (this.preventCancelSelectionIfUsingGrid(incomingTool)) {
+            return;
+        }
+
+        if (this.currentTool instanceof SelectionTool) {
+            (this.currentTool as SelectionTool).cancelSelection();
+        }
+    }
+
+    private preventCancelSelectionIfUsingGrid(incomingTool: Tool): boolean {
+        if (
+            incomingTool === this.gridService &&
+            (this.currentTool === this.ellipseSelectionService ||
+                this.currentTool === this.rectangleSelectionService ||
+                this.currentTool === this.ellipseSelectionService)
+        ) {
+            return true;
+        }
+        return false;
     }
 
     getCurrentTool(): Observable<Tool> {

@@ -21,8 +21,9 @@ export class ResizeContainerComponent {
     @Output() usingButton: EventEmitter<boolean> = new EventEmitter();
     @ViewChild('box') box: ElementRef;
 
-    readonly REMOVE_PX: number = -2;
-    readonly MOUSE_OFFSET: number = 5;
+    private readonly REMOVE_PX: number = -2;
+    private readonly MOUSE_OFFSET: number = 15;
+    private readonly OFFSET_FACTOR: number = 2;
 
     status: Status = Status.NOT_RESIZING;
 
@@ -131,13 +132,11 @@ export class ResizeContainerComponent {
     }
 
     private xCoordinateIsUnderMaximum(event: MouseEvent): boolean {
-        const offSetFactor = 2.5;
-        return event.pageX + offSetFactor * this.MOUSE_OFFSET < window.innerWidth;
+        return event.pageX + this.OFFSET_FACTOR * this.MOUSE_OFFSET < window.innerWidth;
     }
 
     private yCoordinateIsUnderMaximum(event: MouseEvent): boolean {
-        const offSetFactor = 2.5;
-        return event.pageY + offSetFactor * this.MOUSE_OFFSET < window.innerHeight;
+        return event.pageY + this.OFFSET_FACTOR * this.MOUSE_OFFSET < window.innerHeight;
     }
 
     private workspaceWidthIsOverMinimum(): boolean {

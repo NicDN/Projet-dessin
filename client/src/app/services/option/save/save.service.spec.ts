@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { DrawingForm } from '@common/communication/drawing-form';
+import { environment } from '@env/environment';
 import * as Httpstatus from 'http-status-codes';
 
 import { SaveService } from './save.service';
@@ -34,7 +35,7 @@ describe('SaveService', () => {
         });
         service = TestBed.inject(SaveService);
         httpMock = TestBed.inject(HttpTestingController);
-        baseUrl = service['BASE_URL'];
+        baseUrl = environment.serverBaseUrl;
     });
 
     afterEach(() => {

@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
+import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
+import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';
@@ -28,16 +30,20 @@ export class DrawingComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) gridCanvas: ElementRef<HTMLCanvasElement>;
 
     private canvasSize: Vec2 = { x: (window.innerWidth - SIDE_BAR_SIZE) * HALF_RATIO, y: window.innerHeight * HALF_RATIO };
-
     private canDraw: boolean = true;
+    private dialogIsOpened: boolean = false;
+    private refreshedImage: HTMLImageElement = new Image();
 
     constructor(
         private drawingService: DrawingService,
-        public toolsService: ToolsService,
+        private toolsService: ToolsService,
         private hotKeyService: HotkeyService,
         private undoRedoService: UndoRedoService,
         private resizeSelectionService: ResizeSelectionService,
-    ) {}
+        private dialogService: DialogService,
+    ) {
+        this.observeDialogService();
+    }
 
     ngAfterViewInit(): void {
         this.drawingService.baseCtx = this.baseCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
@@ -56,16 +62,13 @@ export class DrawingComponent implements AfterViewInit {
         this.loadCanvasWithIncomingImage(baseImage);
     }
 
-    private async loadCanvasWithIncomingImage(baseImage: HTMLImageElement): Promise<void> {
-        // if (this.drawingService.isNewDrawing || this.drawingService.newImage) {
-        //     if (localStorage.getItem('canvas') !== null) {
-        //         if (!(await this.drawingService.confirmReload())) {
-        //             this.drawingService.isNewDrawing = false;
-        //             this.drawingService.newImage = undefined;
-        //         }
-        //     }
-        // }
+    private observeDialogService(): void {
+        this.dialogService.listenToKeyEvents().subscribe((dialogIsOpened) => {
+            this.dialogIsOpened = !dialogIsOpened;
+        });
+    }
 
+    private async loadCanvasWithIncomingImage(baseImage: HTMLImageElement): Promise<void> {
         // create new drawing
         if (this.drawingService.isNewDrawing) {
             this.drawingService.handleNewDrawing(baseImage);
@@ -81,20 +84,19 @@ export class DrawingComponent implements AfterViewInit {
         }
 
         // reload editor (F5)
-        const img = new Image();
-        img.src = localStorage.getItem('canvas') as string;
-        await img.decode();
-        this.drawingService.changeDrawing(img);
+        this.refreshedImage.src = localStorage.getItem('canvas') as string;
+        await this.refreshedImage.decode();
+        this.drawingService.changeDrawing(this.refreshedImage);
     }
 
     @HostListener('window:mousemove', ['$event'])
     onMouseMove(event: MouseEvent): void {
-        if (this.canDraw) this.toolsService.currentTool.onMouseMove(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseMove(event);
     }
 
     @HostListener('window:mousedown', ['$event'])
     onMouseDown(event: MouseEvent): void {
-        if (this.canDraw && this.isInsideCanvas(event)) {
+        if (this.canDraw && this.isInsideCanvas(event) && !this.dialogIsOpened) {
             if (!(this.toolsService.currentTool instanceof SelectionTool)) this.undoRedoService.disableUndoRedo();
             this.toolsService.currentTool.onMouseDown(event);
         }
@@ -107,7 +109,7 @@ export class DrawingComponent implements AfterViewInit {
                 this.undoRedoService.enableUndoRedo();
             }
         }
-        if (this.canDraw) this.toolsService.currentTool.onMouseUp(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseUp(event);
     }
 
     @HostListener('window:keydown', ['$event'])
@@ -117,12 +119,12 @@ export class DrawingComponent implements AfterViewInit {
 
     @HostListener('window:keyup', ['$event'])
     onKeyUp(event: KeyboardEvent): void {
-        this.hotKeyService.onKeyUp(event);
+        this.toolsService.onKeyUp(event);
     }
 
     @HostListener('mouseenter', ['$event'])
     onMouseEnter(event: MouseEvent): void {
-        if (this.canDraw) this.toolsService.currentTool.onMouseEnter(event);
+        if (this.canDraw && !this.dialogIsOpened) this.toolsService.currentTool.onMouseEnter(event);
     }
 
     @HostListener('mouseout', ['$event'])
@@ -164,7 +166,7 @@ export class DrawingComponent implements AfterViewInit {
             return 'not-allowed';
         }
 
-        if (this.toolsService.currentTool instanceof TextService) {
+        if (this.toolsService.currentTool === this.toolsService.textService) {
             if (!(this.toolsService.currentTool as TextService).isWriting) return 'text';
             else return 'pointer';
         }
@@ -176,22 +178,24 @@ export class DrawingComponent implements AfterViewInit {
         return 'crosshair';
     }
 
-    checkIfIsAControlPoint(): string {
+    private checkIfIsAControlPoint(): string {
         if ((this.toolsService.currentTool as SelectionTool).selectionExists) {
             switch (this.resizeSelectionService.previewSelectedPointIndex) {
-                case 0:
-                case 3:
-                    return this.returnTrueNwSeDiagonalCursor();
-                case 1:
-                case 2:
-                    return this.returnTrueNeSwDiagonalCursor();
-                case 4:
-                case 5:
+                case SelectedPoint.TOP_LEFT:
+                case SelectedPoint.BOTTOM_RIGHT:
+                    return this.returnTrueFirstDiagonalCursor();
+                case SelectedPoint.TOP_RIGHT:
+                case SelectedPoint.BOTTOM_LEFT:
+                    return this.returnTrueSecondDiagonalCursor();
+
+                case SelectedPoint.TOP_MIDDLE:
+                case SelectedPoint.BOTTOM_MIDDLE:
                     return 'n-resize';
-                case 6:
-                case 7:
+                case SelectedPoint.MIDDLE_RIGHT:
+                case SelectedPoint.MIDDLE_LEFT:
                     return 'w-resize';
-                case 8:
+                case SelectedPoint.CENTER:
+                case SelectedPoint.MOVING:
                     return 'move';
                 default:
                     return 'pointer';
@@ -200,31 +204,15 @@ export class DrawingComponent implements AfterViewInit {
         return 'pointer';
     }
 
-    private returnTrueNwSeDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
-                return 'ne-resize';
-            } else {
-                return 'nw-resize';
-            }
-        } else {
-            if (!this.ySelectionIsFlipped()) {
-                return 'nw-resize';
-            } else {
-                return 'ne-resize';
-            }
-        }
-    }
-
-    private returnTrueNeSwDiagonalCursor(): string {
-        if (!this.xSelectionIsFlipped()) {
-            if (!this.ySelectionIsFlipped()) {
+    private returnTrueFirstDiagonalCursor(): string {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'nw-resize';
             } else {
                 return 'ne-resize';
             }
         } else {
-            if (!this.ySelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
                 return 'ne-resize';
             } else {
                 return 'nw-resize';
@@ -232,7 +220,23 @@ export class DrawingComponent implements AfterViewInit {
         }
     }
 
-    xSelectionIsFlipped(): boolean {
+    private returnTrueSecondDiagonalCursor(): string {
+        if (!this.horizontalAxisSelectionIsFlipped()) {
+            if (!this.verticalAxisSelectionIsFlipped()) {
+                return 'ne-resize';
+            } else {
+                return 'nw-resize';
+            }
+        } else {
+            if (!this.verticalAxisSelectionIsFlipped()) {
+                return 'nw-resize';
+            } else {
+                return 'ne-resize';
+            }
+        }
+    }
+
+    private horizontalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.x -
                 (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.x <
@@ -240,10 +244,10 @@ export class DrawingComponent implements AfterViewInit {
         );
     }
 
-    ySelectionIsFlipped(): boolean {
+    private verticalAxisSelectionIsFlipped(): boolean {
         return (
             (this.toolsService.currentTool as SelectionTool).coords.finalBottomRight.y -
-                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y >
+                (this.toolsService.currentTool as SelectionTool).coords.finalTopLeft.y <
             0
         );
     }

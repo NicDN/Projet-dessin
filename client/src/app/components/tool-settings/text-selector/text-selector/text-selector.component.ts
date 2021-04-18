@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatSelect } from '@angular/material/select';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { FontStyle, TextPosition, TextService } from '@app/services/tools/text/textService/text.service';
@@ -26,9 +27,20 @@ interface FontStyleOption {
     styleUrls: ['./text-selector.component.scss'],
 })
 export class TextSelectorComponent implements OnInit {
-    textSizeSetting: SliderSetting;
+    @ViewChild('matSelect', { static: false }) matSelect: MatSelect;
 
-    constructor(public textService: TextService, public drawingService: DrawingService) {}
+    fontStyles: FontStyleOption[] = [
+        { name: 'Arial', value: FontStyle.Arial },
+        { name: 'Times', value: FontStyle.Times },
+        { name: 'Comic Sans MS', value: FontStyle.Comic },
+        { name: 'Calibri', value: FontStyle.Calibri },
+        { name: 'Trebuchet MS', value: FontStyle.Trebuchet },
+    ];
+
+    textSizeSetting: SliderSetting;
+    selectedFontStyle: string = this.fontStyles[0].name;
+
+    constructor(public textService: TextService, private drawingService: DrawingService) {}
 
     textPositionOptions: TextPositionOption[] = [
         {
@@ -54,22 +66,14 @@ export class TextSelectorComponent implements OnInit {
         {
             icon: 'italic',
             toolTipContent: 'Italique',
-            setEffect: () => this.changeWriteItalic(),
+            setEffect: () => this.changeTextEffect('italic'),
         },
 
         {
             icon: 'bold',
             toolTipContent: 'Gras',
-            setEffect: () => this.changeWriteBold(),
+            setEffect: () => this.changeTextEffect('bold'),
         },
-    ];
-
-    fontStyles: FontStyleOption[] = [
-        { name: 'Arial', value: FontStyle.Arial },
-        { name: 'Times', value: FontStyle.Times },
-        { name: 'Comic Sans MS', value: FontStyle.Comic },
-        { name: 'Calibri', value: FontStyle.Calibri },
-        { name: 'Georgia', value: FontStyle.Georgia },
     ];
 
     ngOnInit(): void {
@@ -88,12 +92,11 @@ export class TextSelectorComponent implements OnInit {
         };
     }
 
-    changeWriteBold(): void {
-        this.textService.writeBold = !this.textService.writeBold;
-        this.updateText();
-    }
-    changeWriteItalic(): void {
-        this.textService.writeItalic = !this.textService.writeItalic;
+    private changeTextEffect(textOption: string): void {
+        textOption === 'italic'
+            ? (this.textService.writeItalic = !this.textService.writeItalic)
+            : (this.textService.writeBold = !this.textService.writeBold);
+
         this.updateText();
     }
 
@@ -102,24 +105,26 @@ export class TextSelectorComponent implements OnInit {
         this.updateText();
     }
 
-    checkActiveEffect(icon: string): boolean {
-        if (icon === 'italic') {
-            return this.textService.writeItalic;
-        } else {
-            return this.textService.writeBold;
-        }
+    checkActiveTextEffect(icon: string): boolean {
+        return icon === 'italic' ? this.textService.writeItalic : this.textService.writeBold;
     }
 
-    applyFontStyle(fontStyle: FontStyle): void {
-        this.textService.fontStyle = fontStyle;
+    applyFontStyle(): void {
         this.updateText();
+        this.matSelect.close();
     }
 
-    updateText(): void {
-        if (this.textService.isWriting) {
-            this.drawingService.clearCanvas(this.drawingService.previewCtx);
-            this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
-            this.textService.drawBox();
+    private updateText(): void {
+        if (!this.textService.isWriting) return;
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
+        this.textService.registerTextCommand(this.drawingService.previewCtx, this.textService.writtenOnPreview);
+        this.textService.drawBox();
+    }
+
+    onKeyDown(event: KeyboardEvent): void {
+        event?.stopPropagation?.();
+        if (event?.key === 'Enter') {
+            (event.target as HTMLDivElement | undefined)?.blur?.();
         }
     }
 }

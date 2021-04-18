@@ -13,7 +13,6 @@ import { ToolBarComponent } from './tool-bar.component';
 describe('ToolBarComponent', () => {
     let component: ToolBarComponent;
     let fixture: ComponentFixture<ToolBarComponent>;
-    let toolsService: ToolsService;
     let undoRedoServiceStub: UndoRedoService;
     let tool: Tool;
 
@@ -30,7 +29,6 @@ describe('ToolBarComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(ToolBarComponent);
         component = fixture.componentInstance;
-        toolsService = TestBed.inject(ToolsService);
         fixture.detectChanges();
     });
 
@@ -39,8 +37,12 @@ describe('ToolBarComponent', () => {
     });
 
     it('should call #toggleActive when a tool bar element is clicked', () => {
+        // tslint:disable-next-line: no-any
+        spyOn<any>(component, 'initializeToolBarElements');
         const toolBarElement = fixture.debugElement.query(By.css('.list-item'));
         toolBarElement.triggerEventHandler('click', tool);
-        expect(toolsService.currentTool).toBeInstanceOf(PencilService);
+        expect(component.toolService.currentTool).toBeInstanceOf(PencilService);
+        // tslint:disable-next-line: no-string-literal
+        expect(component['initializeToolBarElements']).toHaveBeenCalled();
     });
 });

@@ -1,20 +1,34 @@
 <div class="container">
-    <p>Type de tracé</p>
-    <div class="trace-container" *ngFor="let trace of traceTypeOptions;let index=index">
-
-        <button mat-button matTooltip="{{trace.toolTipContent}}" *ngIf="trace.toolTipContent==='Plein avec contour'" (click)="setActiveTraceType(trace.traceType)" [class.active]="tool.traceType == trace.traceType">
+    <p>Tracé</p>
+    <div class="trace-container" *ngFor="let trace of traceTypeOptions; let index = index">
+        <button
+            mat-button
+            matTooltip="{{ trace.toolTipContent }}"
+            *ngIf="trace.toolTipContent === 'Plein avec contour'"
+            (click)="setActiveTraceType(trace.traceType)"
+            [class.active]="tool.traceType == trace.traceType"
+        >
             <fa-layers [fixedWidth]="true">
-                <fa-icon [icon]="[traceTypeOptions[1].iconFamily,traceTypeOptions[1].icon]"
-                    [ngStyle]="{ color: this.colorService.mainColor.rgbValue }" ></fa-icon>
-                <fa-icon [icon]="[traceTypeOptions[0].iconFamily,traceTypeOptions[0].icon]"
-                    [ngStyle]="{ color: this.colorService.secondaryColor.rgbValue }" ></fa-icon>
+                <fa-icon
+                    [icon]="[traceTypeOptions[1].iconFamily, traceTypeOptions[1].icon]"
+                    [ngStyle]="{ color: this.colorService.mainColor.rgbValue }"
+                ></fa-icon>
+                <fa-icon
+                    [icon]="[traceTypeOptions[0].iconFamily, traceTypeOptions[0].icon]"
+                    [ngStyle]="{ color: this.colorService.secondaryColor.rgbValue }"
+                ></fa-icon>
             </fa-layers>
         </button>
 
-        <button *ngIf="!(index===2)" mat-button class="trace-type-button" matTooltip="{{trace.toolTipContent}}"
-            (click)="setActiveTraceType(trace.traceType)" [class.active]="tool.traceType == trace.traceType">
-            <fa-icon  [icon]="[trace.iconFamily,trace.icon]"
-                [ngStyle]="{ color: this.getColor(trace.toolTipContent) }"></fa-icon>
+        <button
+            *ngIf="!(index === 2)"
+            mat-button
+            class="trace-type-button"
+            matTooltip="{{ trace.toolTipContent }}"
+            (click)="setActiveTraceType(trace.traceType)"
+            [class.active]="tool.traceType == trace.traceType"
+        >
+            <fa-icon [icon]="[trace.iconFamily, trace.icon]" [ngStyle]="{ color: this.getColor(trace.toolTipContent) }"></fa-icon>
         </button>
     </div>
 </div>

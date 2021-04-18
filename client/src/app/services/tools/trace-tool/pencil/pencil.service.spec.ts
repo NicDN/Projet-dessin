@@ -34,7 +34,7 @@ describe('PencilService', () => {
     const drawingToolPropretiesStub: TraceToolPropreties = {
         drawingContext: canvasCtxStub,
         drawingPath: pathArrayStub,
-        drawingThickness: 1,
+        drawingThickness: 10,
         drawingColor: colorStub,
         drawWithJunction: true,
         junctionDiameter: 1,

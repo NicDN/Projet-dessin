@@ -4,7 +4,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBarRef, TextOnlySnackBar } from '@angular/material/snack-bar';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { FilterService, FilterType } from '@app/services/filter/filter.service';
+import { Filter, FilterService, FilterType } from '@app/services/filter/filter.service';
 import { ExportService } from '@app/services/option/export/export.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { ClipboardService } from 'ngx-clipboard';
@@ -44,7 +44,10 @@ describe('ExportDialogComponent', () => {
     beforeEach(async(() => {
         matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
         exportServiceSpy = jasmine.createSpyObj('ExportService', ['handleImgurExport', 'handleLocalExport']);
-        filterServiceSpy = jasmine.createSpyObj('FilterService', ['applyFilter']);
+        const filtersMock: Filter[] = [{ filterType: FilterType.Blur, name: 'test', property: 'test' }];
+        filterServiceSpy = jasmine.createSpyObj('FilterService', ['applyFilter'], {
+            filters: filtersMock,
+        });
         snackbarServiceSpy = jasmine.createSpyObj('SnackBarService', ['openSnackBar']);
         clipboardServiceSpy = jasmine.createSpyObj('ClipboardService', ['copy']);
 
@@ -130,5 +133,19 @@ describe('ExportDialogComponent', () => {
 
         subject.next();
         expect(clipboardServiceSpy.copy).toHaveBeenCalledWith(EXPECTED_URL);
+    });
+
+    it('#onKeyDown should export canvas if the key pressed is enter', () => {
+        const keyboardEvent = { key: 'Enter' } as KeyboardEvent;
+        spyOn(component, 'exportCanvas');
+        component.onKeyDown(keyboardEvent);
+        expect(component.exportCanvas).toHaveBeenCalled();
+    });
+
+    it('#onKeyDown should not export canvas if the key pressed is not enter', () => {
+        const keyboardEvent = { key: 'Not enter' } as KeyboardEvent;
+        spyOn(component, 'exportCanvas');
+        component.onKeyDown(keyboardEvent);
+        expect(component.exportCanvas).not.toHaveBeenCalled();
     });
 });

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
 
 interface Point {
     iconFamily: string;
@@ -13,7 +13,7 @@ interface Point {
     styleUrls: ['./point-selector.component.scss'],
 })
 export class PointSelectorComponent {
-    constructor(public moveSelectionService: MoveSelectionService) {}
+    constructor(public magnetSelectionService: MagnetSelectionService) {}
 
     points: Point[] = [
         {
@@ -64,6 +64,6 @@ export class PointSelectorComponent {
     ];
 
     toggleActivePoint(point: number): void {
-        this.moveSelectionService.pointToMagnetize = point;
+        this.magnetSelectionService.pointToMagnetize = point;
     }
 }

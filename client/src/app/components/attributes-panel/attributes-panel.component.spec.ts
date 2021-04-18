@@ -5,6 +5,7 @@ import { DrawingTool } from '@app/classes/drawing-tool';
 import { ColorService } from '@app/services/color/color.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
+import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { LineService } from '@app/services/tools/trace-tool/line/line.service';
@@ -12,6 +13,7 @@ import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
 import { AttributesPanelComponent } from './attributes-panel.component';
 
+// tslint:disable: no-string-literal
 describe('AttributesPanelComponent', () => {
     let component: AttributesPanelComponent;
     let fixture: ComponentFixture<AttributesPanelComponent>;
@@ -21,7 +23,6 @@ describe('AttributesPanelComponent', () => {
 
     const drawingTool: DrawingTool = new DrawingTool(new DrawingService({} as MatBottomSheet), new ColorService(), 'tool');
     const polygonService: PolygonService = new PolygonService(new DrawingService({} as MatBottomSheet), new ColorService(), undoRedoServiceStub);
-
     const snackBarServiceStub = {} as SnackBarService;
 
     beforeEach(async(() => {
@@ -39,6 +40,7 @@ describe('AttributesPanelComponent', () => {
         component.currentTool = drawingTool;
         fixture.detectChanges();
     });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -91,5 +93,19 @@ describe('AttributesPanelComponent', () => {
         const EXPECTED_VALUE = 10;
         component.polygonSetting.action(EXPECTED_VALUE);
         expect((component.currentTool as PolygonService).numberOfSides).toBe(EXPECTED_VALUE);
+    });
+
+    it('#getAttribute of fillDripSetting should return the acceptance percentage', () => {
+        const EXPECTED_ACCEPTANCE_PERCENTAGE = 10;
+        component.currentTool = { acceptancePercentage: EXPECTED_ACCEPTANCE_PERCENTAGE } as FillDripService;
+        const returnValue = component.fillDripSetting.getAttribute();
+        expect(returnValue).toEqual(EXPECTED_ACCEPTANCE_PERCENTAGE * component['PERCENTAGE']);
+    });
+
+    it('#action of fillDripSetting should set the acceptancePercentage', () => {
+        const EXPECTED_ACCEPTANCE_PERCENTAGE = 10;
+        component.currentTool = { acceptancePercentage: 0 } as FillDripService;
+        component.fillDripSetting.action(EXPECTED_ACCEPTANCE_PERCENTAGE);
+        expect((component.currentTool as FillDripService).acceptancePercentage).toEqual(EXPECTED_ACCEPTANCE_PERCENTAGE / component['PERCENTAGE']);
     });
 });

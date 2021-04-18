@@ -1,5 +1,5 @@
 <div class="carousel-container">
-        <h2 mat-dialog-title>Carrousel de dessins</h2>
+        <h2 mat-dialog-title>Carousel de dessins</h2>
         <div class="cards-container">
             <mat-spinner *ngIf="this.loading"></mat-spinner>
             <div *ngIf="!this.loading" class="cards-list-container">
@@ -25,7 +25,7 @@
                 </mat-chip>
                 <input placeholder="Entrez une étiquette" [matChipInputFor]="tagList"
                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
-                    (matChipInputTokenEnd)="this.addTag($event)" />
+                    (matChipInputTokenEnd)="this.addTag($event)" autocomplete="off"/>
             </mat-chip-list>
 
             <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="clearSearchedTags()">

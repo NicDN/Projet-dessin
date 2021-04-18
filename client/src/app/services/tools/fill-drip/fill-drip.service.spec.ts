@@ -16,12 +16,27 @@ fdescribe('FillDripService', () => {
     let canvasTestHelper: CanvasTestHelper;
     let baseCtxStub: CanvasRenderingContext2D;
     let searchedPixels: boolean[];
+    let properties: FillDripProperties;
+
+    const MAX_RGB_VALUE = 255;
+    const VALUES_PER_PIXEL = 4;
+
+    const RED_PIXEL = new Uint8ClampedArray([MAX_RGB_VALUE, 0, 0, MAX_RGB_VALUE]);
+    const WHITE_PIXEL = new Uint8ClampedArray([MAX_RGB_VALUE, MAX_RGB_VALUE, MAX_RGB_VALUE, MAX_RGB_VALUE]);
+    const BLACK_PIXEL = new Uint8ClampedArray([0, 0, 0, 0]);
+    const GRAY_PIXEL = new Uint8ClampedArray([MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2]);
+
+    const CANVAS_WIDTH = 3;
+    const CANVAS_HEIGHT = 3;
+
+    const HALF_OPACITY = 0.5;
+
+    const CENTER_POS = 4;
 
     const DEFAULT_MOUSE_POS = { x: 0, y: 0 } as Vec2;
     const PIXELS: number[] = [];
-    for (let i = 0; i < 4 * 9; i++) {
-        if (i < 4) PIXELS.push(0);
-        else PIXELS.push(255);
+    for (let i = 0; i < VALUES_PER_PIXEL * CANVAS_WIDTH * CANVAS_HEIGHT; i++) {
+        PIXELS.push(MAX_RGB_VALUE);
     }
     const PIXELS_DATA: Uint8ClampedArray = new Uint8ClampedArray(PIXELS);
 
@@ -38,16 +53,29 @@ fdescribe('FillDripService', () => {
         service = TestBed.inject(FillDripService);
         canvasTestHelper = TestBed.inject(CanvasTestHelper);
         baseCtxStub = canvasTestHelper.canvas.getContext('2d') as CanvasRenderingContext2D;
-        canvasTestHelper.canvas.width = 3;
-        canvasTestHelper.canvas.height = 3;
+        canvasTestHelper.canvas.width = CANVAS_WIDTH;
+        canvasTestHelper.canvas.height = CANVAS_HEIGHT;
 
         service['drawingService'].baseCtx = baseCtxStub;
         service['drawingService'].canvas = canvasTestHelper.canvas;
         service['colorService'].mainColor.rgbValue = 'rgb(100,100,100)';
-        service['colorService'].mainColor.opacity = 0.5;
-        service['lowerLimit'] = new Uint8ClampedArray([0, 0, 0]);
-        service['higherLimit'] = new Uint8ClampedArray([255, 255, 255]);
-        service.percentage = 0.5;
+        service['colorService'].mainColor.opacity = HALF_OPACITY;
+        service['lowerLimit'] = BLACK_PIXEL;
+        service['higherLimit'] = WHITE_PIXEL;
+        service.acceptancePercentage = HALF_OPACITY;
+
+        const img: ImageData = new ImageData(CANVAS_WIDTH, CANVAS_HEIGHT);
+        img.data.set(PIXELS_DATA);
+        properties = {
+            ctx: baseCtxStub,
+            data: img,
+            mousePosition: DEFAULT_MOUSE_POS,
+            isContiguous: true,
+            mainColor: RED_PIXEL,
+            acceptancePercentage: service.acceptancePercentage,
+            higherLimit: service['higherLimit'],
+            lowerLimit: service['lowerLimit'],
+        };
     });
 
     it('should be created', () => {
@@ -73,7 +101,7 @@ fdescribe('FillDripService', () => {
         expect(service.getPositionFromMouse).toHaveBeenCalled();
         expect(service['updateMainColor']).toHaveBeenCalled();
         expect(service['getColorRange']).toHaveBeenCalled();
-        expect(service.registerFillDripCommand).toHaveBeenCalledWith(DEFAULT_MOUSE_POS, true);
+        expect(service['registerFillDripCommand']).toHaveBeenCalledWith(DEFAULT_MOUSE_POS, true);
     });
 
     it('should call registerFillDripCommand with false when #mouseDown is called with a right click', () => {
@@ -87,7 +115,7 @@ fdescribe('FillDripService', () => {
         expect(service.getPositionFromMouse).toHaveBeenCalled();
         expect(service['updateMainColor']).toHaveBeenCalled();
         expect(service['getColorRange']).toHaveBeenCalled();
-        expect(service.registerFillDripCommand).toHaveBeenCalledWith(DEFAULT_MOUSE_POS, false);
+        expect(service['registerFillDripCommand']).toHaveBeenCalledWith(DEFAULT_MOUSE_POS, false);
     });
 
     // it('#registerFillDripCommand should create and add a new command', () => {
@@ -109,21 +137,24 @@ fdescribe('FillDripService', () => {
             mousePosition: DEFAULT_MOUSE_POS,
             isContiguous: true,
             mainColor: service['mainColor'],
-            percentage: service.percentage,
+            acceptancePercentage: service.acceptancePercentage,
             higherLimit: service['higherLimit'],
             lowerLimit: service['lowerLimit'],
         };
 
-        expect(service.loadFillDripPropreties(true, DEFAULT_MOUSE_POS, img)).toEqual(EXPECTED_PROPERTIES as FillDripProperties);
+        expect(service['loadFillDripPropreties'](true, DEFAULT_MOUSE_POS, img)).toEqual(EXPECTED_PROPERTIES as FillDripProperties);
     });
 
     it('should update the higherLimit and the lowerLimit when #getColorRange is called', () => {
-        const imgData = new ImageData(1, 1);
-        imgData.data.set([100, 100, 100]);
-        spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
+        // tslint:disable-next-line: no-magic-numbers
+        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([50, 75, 100]);
+        // tslint:disable-next-line: no-magic-numbers
+        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([178, 203, 228]);
 
-        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([50, 50, 50]);
-        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([178, 178, 178]);
+        const imgData = new ImageData(1, 1);
+        // tslint:disable-next-line: no-magic-numbers
+        imgData.data.set([100, 150, 200]);
+        spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
 
         service['getColorRange'](DEFAULT_MOUSE_POS);
         expect(service['lowerLimit']).toEqual(EXPECTED_LOWER_LIMIT);
@@ -132,11 +163,11 @@ fdescribe('FillDripService', () => {
 
     it('#getColorRange should update the limits correctly with white current color', () => {
         const imgData = new ImageData(1, 1);
-        imgData.data.set([255, 255, 255]);
+        imgData.data.set([MAX_RGB_VALUE, MAX_RGB_VALUE, MAX_RGB_VALUE]);
         spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
 
-        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([128, 128, 128]);
-        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([255, 255, 255]);
+        const EXPECTED_LOWER_LIMIT = GRAY_PIXEL;
+        const EXPECTED_HIGHER_LIMIT = WHITE_PIXEL;
 
         service['getColorRange'](DEFAULT_MOUSE_POS);
         expect(service['lowerLimit']).toEqual(EXPECTED_LOWER_LIMIT);
@@ -148,8 +179,8 @@ fdescribe('FillDripService', () => {
         imgData.data.set([0, 0, 0]);
         spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
 
-        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([0, 0, 0]);
-        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([128, 128, 128]);
+        const EXPECTED_LOWER_LIMIT = BLACK_PIXEL;
+        const EXPECTED_HIGHER_LIMIT = GRAY_PIXEL;
 
         service['getColorRange'](DEFAULT_MOUSE_POS);
         expect(service['lowerLimit']).toEqual(EXPECTED_LOWER_LIMIT);
@@ -157,6 +188,7 @@ fdescribe('FillDripService', () => {
     });
 
     it('#updateMainColor should update this.mainColor with the mainColor of colorService', () => {
+        // tslint:disable-next-line: no-magic-numbers
         const EXPECTED_COLOR = new Uint8ClampedArray([100, 100, 100, 128]);
         service['mainColor'] = new Uint8ClampedArray([0, 0, 0]);
 
@@ -165,76 +197,66 @@ fdescribe('FillDripService', () => {
     });
 
     it('#inRange should return true when the colorData is between the limits', () => {
-        const COLOR = new Uint8ClampedArray([100, 100, 100]);
-        const LOWER_LIMIT = new Uint8ClampedArray([90, 90, 90]);
-        const HIGHER_LIMIT = new Uint8ClampedArray([110, 110, 110]);
+        const COLOR = GRAY_PIXEL;
+        const LOWER_LIMIT = BLACK_PIXEL;
+        const HIGHER_LIMIT = WHITE_PIXEL;
 
         expect(service['inRange'](COLOR, HIGHER_LIMIT, LOWER_LIMIT)).toBeTrue();
     });
 
     it('#inRange should return false when the colorData isnt between the limits', () => {
-        const COLOR = new Uint8ClampedArray([100, 100, 100]);
-        const LOWER_LIMIT = new Uint8ClampedArray([105, 105, 105]);
-        const HIGHER_LIMIT = new Uint8ClampedArray([110, 110, 110]);
+        const COLOR = RED_PIXEL;
+        const LOWER_LIMIT = GRAY_PIXEL;
+        const HIGHER_LIMIT = WHITE_PIXEL;
 
         expect(service['inRange'](COLOR, HIGHER_LIMIT, LOWER_LIMIT)).toBeFalse();
     });
 
     it('#inRange should return true when the colorData is at the limit', () => {
-        const COLOR = new Uint8ClampedArray([100, 100, 100]);
-        const LOWER_LIMIT = new Uint8ClampedArray([100, 100, 100]);
-        const HIGHER_LIMIT = new Uint8ClampedArray([110, 110, 110]);
+        const COLOR = GRAY_PIXEL;
+        const LOWER_LIMIT = GRAY_PIXEL;
+        const HIGHER_LIMIT = WHITE_PIXEL;
 
         expect(service['inRange'](COLOR, HIGHER_LIMIT, LOWER_LIMIT)).toBeTrue();
     });
 
-    it('#nonContigousFilling should fill all white space with red', () => {});
+    it('#nonContigousFilling should fill all white space with red', () => {
+        spyOn<any>(service, 'inRange').and.returnValue(true);
+
+        const EXPECTED_PIXELS: number[] = [];
+        for (let i = 0; i < VALUES_PER_PIXEL * CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_PIXELS.push(MAX_RGB_VALUE);
+        const EXPECTED_IMAGE_DATA = new Uint8ClampedArray(EXPECTED_PIXELS);
+        for (let i = 0; i < CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_IMAGE_DATA.set(RED_PIXEL, i * VALUES_PER_PIXEL);
+
+        service.nonContiguousFilling(properties);
+        expect(baseCtxStub.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data).toEqual(EXPECTED_IMAGE_DATA);
+    });
 
     it('should return true when areEqualColors receive two equivalent colors', () => {
-        const COLOR = new Uint8ClampedArray([67, 40, 110]);
-        const EXPECTED_COLOR = new Uint8ClampedArray([67, 40, 110]);
-
-        expect(service['areEqualColors'](COLOR, EXPECTED_COLOR)).toBeTrue();
+        expect(service['areEqualColors'](GRAY_PIXEL, GRAY_PIXEL)).toBeTrue();
     });
 
     it('should return false when areEqualColors receive two differents colors', () => {
-        const COLOR = new Uint8ClampedArray([200, 40, 110]);
-        const EXPECTED_COLOR = new Uint8ClampedArray([67, 40, 110]);
-
-        expect(service['areEqualColors'](COLOR, EXPECTED_COLOR)).toBeFalse();
+        expect(service['areEqualColors'](GRAY_PIXEL, RED_PIXEL)).toBeFalse();
     });
 
     it('#contigousFilling should fill the top left pixel with red', () => {
         spyOn<any>(service, 'getValidNeighbors').and.stub();
-        const EXPECTED_PIXELS: number[] = [];
-        for (let i = 0; i < 4 * 9; i++) {
-            EXPECTED_PIXELS.push(255);
-        }
-        EXPECTED_PIXELS[1] = 0;
-        EXPECTED_PIXELS[2] = 0;
-        const EXPECTED_IMAGE_DATA = new Uint8ClampedArray(EXPECTED_PIXELS);
 
-        const img: ImageData = new ImageData(3, 3);
-        img.data.set(PIXELS_DATA);
-        const properties: FillDripProperties = {
-            ctx: baseCtxStub,
-            data: img,
-            mousePosition: DEFAULT_MOUSE_POS,
-            isContiguous: true,
-            mainColor: new Uint8ClampedArray([255, 0, 0, 255]),
-            percentage: service['percentage'],
-            higherLimit: service['higherLimit'],
-            lowerLimit: service['lowerLimit'],
-        };
+        properties.data.data.set(new Uint8ClampedArray([0, 0, 0, 0]), 0);
+        const EXPECTED_PIXELS: number[] = [];
+        for (let i = 0; i < VALUES_PER_PIXEL * CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_PIXELS.push(MAX_RGB_VALUE);
+        const EXPECTED_IMAGE_DATA = new Uint8ClampedArray(EXPECTED_PIXELS);
+        EXPECTED_IMAGE_DATA.set(RED_PIXEL, 0);
 
         service.contiguousFilling(properties);
-        console.log(baseCtxStub.getImageData(0, 0, 3, 3));
-        expect(baseCtxStub.getImageData(0, 0, 3, 3).data).toEqual(EXPECTED_IMAGE_DATA);
+        expect(baseCtxStub.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data).toEqual(EXPECTED_IMAGE_DATA);
     });
 
     it('should return all validNeighbors of a point in the canvas', () => {
-        const EXPECTED_NEIGHBORS: number[] = [4, 3, 5, 1, 7];
-        const neighbors: number[] = [4]; // on cherche les voisins du centre
+        // tslint:disable-next-line: no-magic-numbers
+        const EXPECTED_NEIGHBORS: number[] = [CENTER_POS, 3, 5, 1, 7];
+        const neighbors: number[] = [CENTER_POS]; // on cherche les voisins du centre
 
         spyOn<any>(service, 'inRange').and.returnValue(true);
         spyOn<any>(service, 'areEqualColors').and.returnValue(false);
@@ -244,6 +266,7 @@ fdescribe('FillDripService', () => {
     });
 
     it('should return 3 neighbors if the point is on the edge of the canvas', () => {
+        // tslint:disable-next-line: no-magic-numbers
         const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([1, 0, 2, 4]);
         const neighbors: number[] = [1]; // on cherche les voisins du centre
 
@@ -255,6 +278,7 @@ fdescribe('FillDripService', () => {
     });
 
     it('should return 2 neighbors if the point is in the corner of a canvas', () => {
+        // tslint:disable-next-line: no-magic-numbers
         const EXPECTED_NEIGHBORS: number[] = [0, 1, 3];
         const neighbors: number[] = [0]; // on cherche les voisins du centre
 
@@ -266,8 +290,8 @@ fdescribe('FillDripService', () => {
     });
 
     it('should return less than 4 neighbors if one of them isnt in the color range', () => {
-        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([4]);
-        const neighbors: number[] = [4]; // on cherche les voisins du centre
+        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([CENTER_POS]);
+        const neighbors: number[] = [CENTER_POS]; // on cherche les voisins du centre
 
         spyOn<any>(service, 'inRange').and.returnValue(false);
         spyOn<any>(service, 'areEqualColors').and.returnValue(false);
@@ -277,8 +301,8 @@ fdescribe('FillDripService', () => {
     });
 
     it('should return less than 4 neigbors if one of them is already the good color', () => {
-        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([4]);
-        const neighbors: number[] = [4]; // on cherche les voisins du centre
+        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([CENTER_POS]);
+        const neighbors: number[] = [CENTER_POS]; // on cherche les voisins du centre
 
         spyOn<any>(service, 'inRange').and.returnValue(true);
         spyOn<any>(service, 'areEqualColors').and.returnValue(true);
@@ -288,8 +312,9 @@ fdescribe('FillDripService', () => {
     });
 
     it('should return less than 4 neighbors if one of them has already been searched', () => {
-        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([4, 5, 7]);
-        const neighbors: number[] = [4]; // on cherche les voisins du centre
+        // tslint:disable-next-line: no-magic-numbers
+        const EXPECTED_NEIGHBORS: Uint8ClampedArray = new Uint8ClampedArray([CENTER_POS, 5, 7]);
+        const neighbors: number[] = [CENTER_POS]; // on cherche les voisins du centre
         searchedPixels = [false, true, false, true, false, false, false, false, false];
 
         spyOn<any>(service, 'inRange').and.returnValue(true);

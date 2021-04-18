@@ -8,22 +8,22 @@ import { DrawingService } from '@app/services/drawing/drawing.service';
 })
 export class GridService extends Tool {
     readonly MIN_SQUARE_SIZE: number = 20;
-    readonly MAX_SQUARE_SIZE: number = 40;
+    readonly MAX_SQUARE_SIZE: number = 100;
 
     readonly MIN_OPACITY_PERCENTAGE: number = 20;
     readonly MAX_OPACITY_PERCENTAGE: number = 100;
 
-    private PERCENTAGE_CONVERTER: number = 100;
+    private readonly PERCENTAGE_CONVERTER: number = 100;
 
     squareSize: number = 20;
     opacity: number = 20;
 
     gridDrawn: boolean = false;
 
-    private MULTIPLIER_FACTOR: number = 5;
+    private readonly MULTIPLIER_FACTOR: number = 5;
 
     constructor(drawingService: DrawingService) {
-        super(drawingService, 'Grille');
+        super(drawingService, 'Options de grille');
         this.listenToResizeNotifications();
         this.listenToUpdateGridNotification();
     }
@@ -54,7 +54,7 @@ export class GridService extends Tool {
         this.drawGrid();
     }
 
-    private drawGrid(): void {
+    drawGrid(): void {
         this.drawingService.clearCanvas(this.drawingService.gridCtx);
         this.drawingService.gridCtx.beginPath();
         this.drawingService.gridCtx.save();

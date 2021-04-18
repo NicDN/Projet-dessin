@@ -1,68 +1,76 @@
 <mat-drawer-content class="attributes-panel-container">
-    <h2 class="tool-name-header">{{ currentTool.toolName }}</h2>
-    <app-color-panel></app-color-panel>
-    <mat-divider></mat-divider>
-    <div *ngIf="needsTraceThickness()">
-        <app-generic-slider [sliderSetting]="thicknessSetting"></app-generic-slider>
-        <mat-divider></mat-divider>
-    </div>
-    <div *ngIf="shapeIsActive()">
-        <div *ngIf="polygonIsActive()">
-            <app-generic-slider [sliderSetting]="polygonSetting"></app-generic-slider>
+    <div class="upper-container">
+        <div>
+            <h2 class="tool-name-header">{{ currentTool.toolName }}</h2>
+        </div>
+
+        <div>
+            <app-color-panel></app-color-panel>
             <mat-divider></mat-divider>
         </div>
-        <app-trace-type-selector [tool]="currentTool"></app-trace-type-selector>
-        <mat-divider></mat-divider>
-    </div>
+        <div *ngIf="needsTraceThickness()">
+            <app-generic-slider [sliderSetting]="thicknessSetting"></app-generic-slider>
+            <mat-divider></mat-divider>
+        </div>
+        <div *ngIf="shapeIsActive()">
+            <div *ngIf="polygonIsActive()">
+                <app-generic-slider [sliderSetting]="polygonSetting"></app-generic-slider>
+                <mat-divider></mat-divider>
+            </div>
+            <app-trace-type-selector [tool]="currentTool"></app-trace-type-selector>
+            <mat-divider></mat-divider>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.lineService">
-        <mat-divider></mat-divider>
-        <app-line-settings-selector [tool]="currentTool"></app-line-settings-selector>
-        <mat-divider></mat-divider>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.lineService">
+            <mat-divider></mat-divider>
+            <app-line-settings-selector [tool]="currentTool"></app-line-settings-selector>
+            <mat-divider></mat-divider>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.textService">
-        <app-text-selector></app-text-selector>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.textService">
+            <app-text-selector></app-text-selector>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.stampService">
-        <app-stamp-selector></app-stamp-selector>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.stampService">
+            <app-stamp-selector></app-stamp-selector>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.gridService">
-        <app-grid-selector [tool]="currentTool"></app-grid-selector>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.gridService">
+            <app-grid-selector [tool]="currentTool"></app-grid-selector>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.sprayCanService">
-        <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
-        <mat-divider></mat-divider>
-    </div>
-    <div *ngIf="this.currentTool === this.toolsService.eyeDropperService">
-        <app-eye-dropper></app-eye-dropper>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.sprayCanService">
+            <app-spray-can-settings-selector [tool]="currentTool"></app-spray-can-settings-selector>
+            <mat-divider></mat-divider>
+        </div>
+        <div *ngIf="this.currentTool === this.toolsService.eyeDropperService">
+            <app-eye-dropper></app-eye-dropper>
+        </div>
 
-    <div *ngIf="this.currentTool === this.toolsService.fillDripService">
-        <app-generic-slider [sliderSetting]="fillDripSetting"></app-generic-slider>
-        <mat-divider></mat-divider>
-    </div>
+        <div *ngIf="this.currentTool === this.toolsService.fillDripService">
+            <app-generic-slider [sliderSetting]="fillDripSetting"></app-generic-slider>
+            <mat-divider></mat-divider>
+        </div>
 
-    <div *ngIf="selectionToolIsActive()">
-        <app-selection-selector></app-selection-selector>
-        <mat-divider></mat-divider>
-    </div>
+        <div *ngIf="selectionToolIsActive()">
+            <app-selection-selector></app-selection-selector>
+            <mat-divider></mat-divider>
+        </div>
 
-    <div *ngIf="selectionToolIsActive() && this.moveSelectionService.isUsingMagnet">
-        <app-point-selector></app-point-selector>
-        <mat-divider></mat-divider>
+        <div *ngIf="selectionToolIsActive() && this.moveSelectionService.isUsingMagnet">
+            <app-point-selector></app-point-selector>
+            <mat-divider></mat-divider>
+        </div>
     </div>
+    <div class="bottom-elements">
+        <div class="selection-options">
+            <mat-divider></mat-divider>
+            <app-selection-options></app-selection-options>
+        </div>
 
-    <div class="selection-options">
-        <mat-divider></mat-divider>
-        <app-selection-options></app-selection-options>
-    </div>
-
-    <div class="drawing-options">
-        <mat-divider></mat-divider>
-        <app-drawing-options></app-drawing-options>
+        <div class="drawing-options">
+            <mat-divider></mat-divider>
+            <app-drawing-options></app-drawing-options>
+        </div>
     </div>
 </mat-drawer-content>

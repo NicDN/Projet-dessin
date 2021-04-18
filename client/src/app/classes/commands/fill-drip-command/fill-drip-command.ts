@@ -8,7 +8,7 @@ export interface FillDripProperties {
     mousePosition: Vec2;
     isContiguous: boolean;
     mainColor: Uint8ClampedArray;
-    percentage: number;
+    acceptancePercentage: number;
     higherLimit: Uint8ClampedArray;
     lowerLimit: Uint8ClampedArray;
 }
@@ -19,10 +19,8 @@ export class FillDripCommand extends AbstractCommand {
     }
 
     execute(): void {
-        if (this.fillDripProperties.isContiguous) {
-            this.fillDripService.contiguousFilling(this.fillDripProperties);
-        } else {
-            this.fillDripService.nonContiguousFilling(this.fillDripProperties);
-        }
+        this.fillDripProperties.isContiguous
+            ? this.fillDripService.contiguousFilling(this.fillDripProperties)
+            : this.fillDripService.nonContiguousFilling(this.fillDripProperties);
     }
 }

@@ -76,6 +76,23 @@ describe('SprayCanService', () => {
         expect(service).toBeTruthy();
     });
 
+    it('#onMouseDown should call #clearInterval if right click is pressed', () => {
+        const mouseEventRight: MouseEvent = { button: MouseButton.Right } as MouseEvent;
+        const clearInterValSpy = spyOn(global, 'clearInterval');
+        service.mouseDown = false;
+        service.onMouseDown(mouseEventRight);
+        expect(service.mouseDown).toBeFalse();
+        expect(clearInterValSpy).toHaveBeenCalled();
+    });
+
+    it('#onMouseDown should not call #clearInterval if right click is not pressed', () => {
+        const mouseEventLeft: MouseEvent = { button: MouseButton.Left } as MouseEvent;
+        const clearInterValSpy = spyOn(global, 'clearInterval');
+        service.onMouseDown(mouseEventLeft);
+        expect(service.mouseDown).toBeTrue();
+        expect(clearInterValSpy).not.toHaveBeenCalled();
+    });
+
     it('#onMouseDown should set mouseDownCoord to correct position and call drawline', () => {
         const drawLineSpy = spyOn(service, 'drawLine').and.stub();
         const expectedResult: Vec2 = { x: 25, y: 25 };

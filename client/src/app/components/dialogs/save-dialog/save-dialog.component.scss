@@ -7,12 +7,12 @@
 }
 
 .bottom-div {
-    position: absolute;
+    justify-content: center;
     bottom: 0;
 }
 
 .save-canvas-btn {
-    margin-right: 10px;
+    left: 35px;
 }
 
 mat-form-field {
@@ -21,7 +21,7 @@ mat-form-field {
 }
 
 .tag-rules {
-    overflow-y: scroll;
+    overflow-y: auto;
     border-color: black;
     width: 100%;
     border-radius: 5px;
@@ -29,4 +29,30 @@ mat-form-field {
 
 .error {
     color: red;
+    font-weight: bolder;
+    font-size: 17px;
+}
+
+.cancel-btn {
+    margin-left: 40px;
+}
+
+button {
+    border-radius: 25px;
+    width: 250px;
+    height: 40px;
+}
+
+button:hover {
+    background-color: #e51282;
+}
+
+.mat-spinner {
+    ::ng-deep circle {
+        stroke: white;
+    }
+}
+
+.rule-header {
+    font-size: 16px;
 }

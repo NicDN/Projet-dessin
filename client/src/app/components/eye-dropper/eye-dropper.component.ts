@@ -23,6 +23,7 @@ export class EyeDropperComponent implements OnInit {
     private readonly SIZE_PREVIEW: number = 11;
     private readonly CENTER_POSITION: number = 5;
     private readonly LINE_GRID_WIDTH: number = 4;
+    private readonly CENTER_SQUARE_LINE_WIDTH: number = 4;
 
     private eyeDropperCanvas: HTMLCanvasElement;
     private eyeDropperCtx: CanvasRenderingContext2D;
@@ -99,6 +100,7 @@ export class EyeDropperComponent implements OnInit {
             }
         }
         this.gridCtx.globalAlpha = 1;
+        this.gridCtx.lineWidth = this.CENTER_SQUARE_LINE_WIDTH;
         this.gridCtx.strokeRect(this.SCALING * this.CENTER_POSITION, this.SCALING * this.CENTER_POSITION, this.SCALING, this.SCALING);
         this.gridCtx.restore();
     }

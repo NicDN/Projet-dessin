@@ -6,6 +6,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { LocalStorageService } from '@app/services/local-storage/local-storage.service';
 import { CarouselService } from '@app/services/option/carousel/carousel.service';
 import { SnackBarService } from '@app/services/snack-bar/snack-bar.service';
 import { DrawingForm } from '@common/communication/drawing-form';
@@ -21,6 +22,7 @@ describe('CardDrawingComponent', () => {
     let snackbarServiceSpy: jasmine.SpyObj<SnackBarService>;
     let routerSpy: jasmine.SpyObj<Router>;
     let carouselServiceSpy: jasmine.SpyObj<CarouselService>;
+    let localStorageSpyObj: jasmine.SpyObj<LocalStorageService>;
 
     const canvasMock = document.createElement('canvas') as HTMLCanvasElement;
 
@@ -39,6 +41,8 @@ describe('CardDrawingComponent', () => {
         routerSpy = jasmine.createSpyObj('Router', ['navigate', 'navigateByUrl']);
         carouselServiceSpy = jasmine.createSpyObj('CarouselService', ['deleteDrawingFromServer']);
 
+        localStorageSpyObj = jasmine.createSpyObj('LocalStorageService', ['confirmNewDrawing']);
+
         TestBed.configureTestingModule({
             imports: [HttpClientModule, MatSnackBarModule, RouterTestingModule],
             declarations: [CardDrawingComponent],
@@ -48,6 +52,7 @@ describe('CardDrawingComponent', () => {
                 { provide: Router, useValue: routerSpy },
                 { provide: CarouselService, useValue: carouselServiceSpy },
                 { provide: MatBottomSheet, useValue: {} },
+                { provide: LocalStorageService, useValue: localStorageSpyObj },
             ],
             schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -66,18 +71,30 @@ describe('CardDrawingComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('#setToCurrentDrawing should change route to /editor if the current route is /home ', () => {
+    it('#setToCurrentDrawing should change navigate to /editor if the current route is /home ', async () => {
+        localStorageSpyObj.confirmNewDrawing.and.resolveTo(true);
+
         const expectedImage = new Image();
         expectedImage.src = drawingFormMock.drawingData;
         // @ts-ignore
         routerSpy.url = '/home';
         spyOn(component.closeCarousel, 'emit');
 
-        component.setToCurrentDrawing();
+        await component.setToCurrentDrawing();
 
         expect(routerSpy.navigate).toHaveBeenCalledWith(['editor']);
         expect(drawingServiceSpyObj.newImage).toEqual(expectedImage);
         expect(component.closeCarousel.emit).toHaveBeenCalled();
+    });
+
+    it('#setToCurrentDrawing should not navigate to /editor if the user does not confirm to put the drawing on the canvas', async () => {
+        // @ts-ignore
+        routerSpy.url = '/home';
+        localStorageSpyObj.confirmNewDrawing.and.resolveTo(false);
+
+        await component.setToCurrentDrawing();
+
+        expect(routerSpy.navigate).not.toHaveBeenCalledWith(['editor']);
     });
 
     it('#setToCurrentDrawing should close the carousel if #handleNewDrawing returns true', async () => {
