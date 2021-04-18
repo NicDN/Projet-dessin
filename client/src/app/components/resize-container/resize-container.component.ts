@@ -22,8 +22,8 @@ export class ResizeContainerComponent {
     @ViewChild('box') box: ElementRef;
 
     private readonly REMOVE_PX: number = -2;
-    private readonly MOUSE_OFFSET: number = 5;
-    private readonly OFFSET_FACTOR: number = 6;
+    private readonly MOUSE_OFFSET: number = 15;
+    private readonly OFFSET_FACTOR: number = 2;
 
     status: Status = Status.NOT_RESIZING;
 
