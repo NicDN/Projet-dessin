@@ -301,6 +301,12 @@ describe('HotkeyService', () => {
         expect(service['onKeyDownTextService'](keyAStub)).toBeFalsy();
     });
 
+    it('#onKeyDownTextService should not call text action if a dialog is open', () => {
+        service['listenToTextEvent'] = false;
+        service['onKeyDownTextService'](deleteStub);
+        expect(textHotKeyServiceSpyObj.deletePressed).not.toHaveBeenCalled();
+    });
+
     it('KeyM event should enable the magnet effect ', () => {
         service.onKeyDown(keyMStub);
         expect(service['moveSelectionService'].isUsingMagnet).toBeFalse();

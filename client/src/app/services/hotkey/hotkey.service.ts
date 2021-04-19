@@ -74,6 +74,7 @@ export class HotkeyService {
     private shortCutManager: ShortcutManager;
     private shortCutTextManager: ShortcutTextManager;
     listenToKeyEvents: boolean = true;
+    private listenToTextEvent: boolean = true;
 
     constructor(
         private router: Router,
@@ -181,6 +182,7 @@ export class HotkeyService {
     private observeDialogService(): void {
         this.dialogService.listenToKeyEvents().subscribe((listenToKeyEvents) => {
             this.listenToKeyEvents = listenToKeyEvents;
+            this.listenToTextEvent = listenToKeyEvents;
         });
     }
 
@@ -192,7 +194,7 @@ export class HotkeyService {
 
     onKeyDown(event: KeyboardEvent): void {
         if (this.toolService.currentTool instanceof TextService) this.onKeyDownTextService(event);
-        if (!this.listenToKeyEvents) {
+        if (!this.listenToKeyEvents || this.textService.isWriting) {
             return;
         }
         if (event.altKey) {
@@ -239,6 +241,7 @@ export class HotkeyService {
     }
 
     private onKeyDownTextService(event: KeyboardEvent): void {
+        if (!this.listenToTextEvent) return;
         event.preventDefault();
         this.shortCutTextManager[event.code as shortCutTextManager]?.textAction?.();
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
