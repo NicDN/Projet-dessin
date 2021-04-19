@@ -118,16 +118,15 @@ fdescribe('FillDripService', () => {
         expect(service['registerFillDripCommand']).toHaveBeenCalledWith(DEFAULT_MOUSE_POS, false);
     });
 
-    // it('#registerFillDripCommand should create and add a new command', () => {
-    //     spyOn<any>(baseCtxStub, 'getImageData').and.stub();
-    //     spyOn<any>(service, 'loadFillDripPropreties').and.stub();
-    //     spyOnProperty(FillDripCommand, 'execute', 'void');
+    it('#registerFillDripCommand should create and add a new command', () => {
+        spyOn<any>(baseCtxStub, 'getImageData').and.stub();
+        spyOn<any>(service, 'loadFillDripPropreties').and.returnValue(properties);
 
-    //     service.registerFillDripCommand(DEFAULT_MOUSE_POS, true);
-    //     expect(baseCtxStub.getImageData).toHaveBeenCalled();
-    //     expect(service.loadFillDripPropreties).toHaveBeenCalled();
-    //     expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
-    // });
+        service['registerFillDripCommand'](DEFAULT_MOUSE_POS, true);
+        expect(baseCtxStub.getImageData).toHaveBeenCalled();
+        expect(service['loadFillDripPropreties']).toHaveBeenCalled();
+        expect(undoRedoServiceSpyObj.addCommand).toHaveBeenCalled();
+    });
 
     it('#loadFillDripProperties should return a filled struct', () => {
         const img: ImageData = {} as ImageData;
@@ -149,7 +148,7 @@ fdescribe('FillDripService', () => {
         // tslint:disable-next-line: no-magic-numbers
         const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([50, 75, 100]);
         // tslint:disable-next-line: no-magic-numbers
-        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([178, 203, 228]);
+        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([178, 202, 228]);
 
         const imgData = new ImageData(1, 1);
         // tslint:disable-next-line: no-magic-numbers
@@ -166,8 +165,8 @@ fdescribe('FillDripService', () => {
         imgData.data.set([MAX_RGB_VALUE, MAX_RGB_VALUE, MAX_RGB_VALUE]);
         spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
 
-        const EXPECTED_LOWER_LIMIT = GRAY_PIXEL;
-        const EXPECTED_HIGHER_LIMIT = WHITE_PIXEL;
+        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2]);
+        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([MAX_RGB_VALUE, MAX_RGB_VALUE, MAX_RGB_VALUE]);
 
         service['getColorRange'](DEFAULT_MOUSE_POS);
         expect(service['lowerLimit']).toEqual(EXPECTED_LOWER_LIMIT);
@@ -179,8 +178,8 @@ fdescribe('FillDripService', () => {
         imgData.data.set([0, 0, 0]);
         spyOn<any>(baseCtxStub, 'getImageData').and.returnValue(imgData);
 
-        const EXPECTED_LOWER_LIMIT = BLACK_PIXEL;
-        const EXPECTED_HIGHER_LIMIT = GRAY_PIXEL;
+        const EXPECTED_LOWER_LIMIT = new Uint8ClampedArray([0, 0, 0]);
+        const EXPECTED_HIGHER_LIMIT = new Uint8ClampedArray([MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2, MAX_RGB_VALUE / 2]);
 
         service['getColorRange'](DEFAULT_MOUSE_POS);
         expect(service['lowerLimit']).toEqual(EXPECTED_LOWER_LIMIT);
@@ -227,6 +226,17 @@ fdescribe('FillDripService', () => {
         for (let i = 0; i < VALUES_PER_PIXEL * CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_PIXELS.push(MAX_RGB_VALUE);
         const EXPECTED_IMAGE_DATA = new Uint8ClampedArray(EXPECTED_PIXELS);
         for (let i = 0; i < CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_IMAGE_DATA.set(RED_PIXEL, i * VALUES_PER_PIXEL);
+
+        service.nonContiguousFilling(properties);
+        expect(baseCtxStub.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data).toEqual(EXPECTED_IMAGE_DATA);
+    });
+
+    it('#nonContigousFilling should fill no pixel if inRange return only falses', () => {
+        spyOn<any>(service, 'inRange').and.returnValue(false);
+
+        const EXPECTED_PIXELS: number[] = [];
+        for (let i = 0; i < VALUES_PER_PIXEL * CANVAS_WIDTH * CANVAS_HEIGHT; i++) EXPECTED_PIXELS.push(MAX_RGB_VALUE);
+        const EXPECTED_IMAGE_DATA = new Uint8ClampedArray(EXPECTED_PIXELS);
 
         service.nonContiguousFilling(properties);
         expect(baseCtxStub.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT).data).toEqual(EXPECTED_IMAGE_DATA);
