@@ -9,7 +9,7 @@ import { Vec2 } from '@app/classes/vec2';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { FillDripService } from './fill-drip.service';
 
-fdescribe('FillDripService', () => {
+describe('FillDripService', () => {
     let service: FillDripService;
     let mouseEvent: MouseEvent;
     let undoRedoServiceSpyObj: jasmine.SpyObj<UndoRedoService>;
