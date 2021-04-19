@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
@@ -129,9 +129,9 @@ describe('SelectionTool', () => {
 
     it('#onMouseDown should call handleSelection handleSelectionMouseDown', () => {
         selectionTool.selectionExists = false;
-        spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
+        spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(true);
         selectionTool['selectionExists'] = true;
-        const handleSelectionOnMouseDown = spyOn(selectionTool, 'handleSelectionMouseDown').and.returnValue();
+        const handleSelectionOnMouseDown = spyOn<any>(selectionTool, 'handleSelectionMouseDown');
         selectionTool.onMouseDown(mouseEvent);
         expect(handleSelectionOnMouseDown).toHaveBeenCalled();
     });
@@ -152,7 +152,7 @@ describe('SelectionTool', () => {
         resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.CENTER;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValue();
-        selectionTool.handleSelectionMouseDown(mouseEvent);
+        selectionTool['handleSelectionMouseDown'](mouseEvent);
         expect(moveSelectionServiceSpyObj['movingWithMouse']).toBeTrue();
 
         expect(setOffsetSpy).toHaveBeenCalled();
@@ -164,7 +164,7 @@ describe('SelectionTool', () => {
         resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.BOTTOM_MIDDLE;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValue();
-        selectionTool.handleSelectionMouseDown(mouseEvent);
+        selectionTool['handleSelectionMouseDown'](mouseEvent);
         expect(moveSelectionServiceSpyObj['movingWithMouse']).toBeFalse();
         expect(setOffsetSpy).not.toHaveBeenCalled();
     });
@@ -229,7 +229,7 @@ describe('SelectionTool', () => {
     });
 
     it('#onMouseMove should put resizeSelectionServicePreview to moving if it is inside selection but not on a point', () => {
-        spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
+        spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(true);
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValues();
         selectionTool.mouseDown = true;
         selectionTool.selectionExists = true;
@@ -677,10 +677,10 @@ describe('SelectionTool', () => {
 
         expect(selectionProperties.selectionCtx).toEqual(drawingServiceSpyObj.previewCtx);
         expect(selectionProperties.imageData).toEqual(TEST_DATA);
-        expect(selectionProperties.initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionProperties.initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
-        expect(selectionProperties.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionProperties.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionProperties.coords.initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionProperties.coords.initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionProperties.coords.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionProperties.coords.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
     });
 
     // tslint:disable-next-line: max-file-line-count

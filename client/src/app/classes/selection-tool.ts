@@ -2,8 +2,8 @@ import { SelectionCommand, SelectionProperties } from '@app/classes/commands/sel
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService, SelectedPoint } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
 import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';

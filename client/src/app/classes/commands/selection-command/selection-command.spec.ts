@@ -22,10 +22,12 @@ describe('selection-command', () => {
     const selectionPropretiesStub: SelectionProperties = {
         selectionCtx: canvasCtxStub,
         imageData: canvasCtxStub.getImageData(0, 0, 1, 1),
-        initialTopLeft: INITIAL_TOP_CORNER_COORDS,
-        initialBottomRight: INITIAL_BOTTOM_CORNER_COORDS,
-        finalTopLeft: FINAL_TOP_CORNER_COORDS,
-        finalBottomRight: FINAL_BOTTOM_CORNER_COORDS,
+        coords: {
+            initialTopLeft: INITIAL_TOP_CORNER_COORDS,
+            initialBottomRight: INITIAL_BOTTOM_CORNER_COORDS,
+            finalTopLeft: FINAL_TOP_CORNER_COORDS,
+            finalBottomRight: FINAL_BOTTOM_CORNER_COORDS,
+        },
     };
 
     beforeEach(() => {
