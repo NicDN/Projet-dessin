@@ -12,7 +12,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineService } from './line.service';
 
-xdescribe('LineService', () => {
+describe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
@@ -160,10 +160,9 @@ xdescribe('LineService', () => {
         expect(service['mousePosition']).toEqual(DEFAULT_MOUSE_POSITION);
         expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(lockLineSpy).toHaveBeenCalled();
-        expect(updatePreviewSpy).not.toHaveBeenCalled();
     });
 
-    it('#onMouseMove should lock the line when shift is pressed', () => {
+    it('#onMouseMove should not lock the line when shift is not pressed', () => {
         service['isShiftDown'] = false;
         mouseEvent = {} as MouseEvent;
         spyOn(service, 'getPositionFromMouse').and.returnValue(DEFAULT_MOUSE_POSITION);

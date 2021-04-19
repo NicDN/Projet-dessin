@@ -186,7 +186,6 @@ describe('MoveSelectionService', () => {
             x: BOTTOM_RIGHT_CORNER_COORDS.x + service['ARROW_MOVE_DELTA'],
             y: BOTTOM_RIGHT_CORNER_COORDS.y + service['ARROW_MOVE_DELTA'],
         });
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithArrows should call alignToProperMagnetPosition if usingMagnet is true', () => {
@@ -205,7 +204,7 @@ describe('MoveSelectionService', () => {
         expect(alignSpy).toHaveBeenCalled();
     });
 
-    it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset, and redraw the selection', () => {
+    it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset', () => {
         service.isUsingMagnet = false;
         selectionCoordsStub.initialTopLeft = TOP_LEFT_CORNER_COORDS;
         selectionCoordsStub.initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
@@ -222,7 +221,6 @@ describe('MoveSelectionService', () => {
             x: MOUSE_POSITION.x - MOUSE_OFFSET + selectionWidth,
             y: MOUSE_POSITION.y - MOUSE_OFFSET + selectionHeight,
         });
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetPosition should keep values of  deltaX and deltaY if they are negative  ', () => {

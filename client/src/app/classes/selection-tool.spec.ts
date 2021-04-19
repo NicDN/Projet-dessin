@@ -206,7 +206,6 @@ describe('SelectionTool', () => {
         const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
         selectionTool.onMouseMove(mouseEvent);
         expect(resizeSelectionSpyObj.resizeSelection).toHaveBeenCalled();
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawAllSpy).toHaveBeenCalled();
     });
 
@@ -302,15 +301,6 @@ describe('SelectionTool', () => {
         expect(handleLeftShiftSpy).toHaveBeenCalledWith(leftShiftKeyEvent, rectangleDrawingServiceSpyObj.onKeyDown);
     });
 
-    it('#onKeyDown should not handle leftShift when its pressed if there already is an active selection', () => {
-        selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
-        const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
-
-        selectionTool.onKeyDown(leftShiftKeyEvent);
-        expect(handleLeftShiftSpy).not.toHaveBeenCalled();
-    });
-
     it('#onKeyDown should handle the arrow keys if a selection exists', () => {
         selectionTool.selectionExists = true;
         const handleMovingArrowsKeyDownSpy = spyOn<any>(selectionTool, 'handleMovingArrowsKeyDown');
@@ -324,15 +314,6 @@ describe('SelectionTool', () => {
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
         selectionTool.onKeyUp(leftShiftKeyEvent);
         expect(handleLeftShiftSpy).toHaveBeenCalledWith(leftShiftKeyEvent, rectangleDrawingServiceSpyObj.onKeyUp);
-    });
-
-    it('#onKeyUp should not handle leftShift when its unpressed if there already is an active selection', () => {
-        selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
-        const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
-
-        selectionTool.onKeyUp(leftShiftKeyEvent);
-        expect(handleLeftShiftSpy).not.toHaveBeenCalled();
     });
 
     it('#onKeyUp should handle the arrow keys if a selection exists', () => {
