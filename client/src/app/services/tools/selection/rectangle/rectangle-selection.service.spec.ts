@@ -119,10 +119,13 @@ describe('RectangleSelectionService', () => {
         expect(beginPathSpy).not.toHaveBeenCalled();
     });
 
-    it('#drawSelection should put the image data at the final coords', () => {
-        const putImageDataSpy = spyOn(drawingServiceSpyObj.baseCtx, 'translate');
+    it('#drawSelection should scale the context  and draw the image', () => {
+        const drawImageSpy = spyOn(drawingServiceSpyObj.baseCtx, 'drawImage');
+        const scaleContextSpy = spyOn<any>(rectangleSelectionService, 'scaleContext');
+
         rectangleSelectionService.drawSelection(selectionProperties);
-        expect(putImageDataSpy).toHaveBeenCalled();
+        expect(drawImageSpy).toHaveBeenCalled();
+        expect(scaleContextSpy).toHaveBeenCalled();
     });
 
     it('#drawSelection should return if the selectionCtx is undefined', () => {

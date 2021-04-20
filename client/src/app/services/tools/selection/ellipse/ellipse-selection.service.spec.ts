@@ -124,14 +124,16 @@ describe('EllipseSelectionService', () => {
         expect(beginPathSpy).not.toHaveBeenCalled();
     });
 
-    it('#drawSelection should put the image data at the final coords', () => {
+    it('#drawSelection should scale the context and put the image data at the final coords', () => {
         const clipSpy = spyOn(drawingServiceSpyObj.baseCtx, 'clip');
         const drawImageSpy = spyOn(drawingServiceSpyObj.baseCtx, 'drawImage');
         rectangleDrawingServiceSpyObj.getCenterCoords.and.returnValue(CENTER_COORDS);
+        const scaleContextSpy = spyOn<any>(ellipseSelectionService, 'scaleContext');
 
         ellipseSelectionService.drawSelection(selectionProperties);
         expect(clipSpy).toHaveBeenCalled();
         expect(drawImageSpy).toHaveBeenCalled();
+        expect(scaleContextSpy).toHaveBeenCalled();
     });
 
     it('#drawSelection should return if the selectionCtx is undefined', () => {

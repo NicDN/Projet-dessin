@@ -231,7 +231,7 @@ export class LassoSelectionService extends SelectionTool {
         if (a1 === a2) return false;
         let lineCrossing = false;
         this.lineService.pathData.forEach((point, index) => {
-            if (index >= this.lineService.pathData.length - 3 || lineCrossing) return;
+            if (index + 1 >= this.lineService.pathData.length - 2 || lineCrossing) return;
 
             const b1: Vec2 = point;
             const b2: Vec2 = this.lineService.pathData[index + 1];
