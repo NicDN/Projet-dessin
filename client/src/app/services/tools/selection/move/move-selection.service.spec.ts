@@ -3,8 +3,8 @@ import { BoxSize } from '@app/classes/box-size';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
 import { of } from 'rxjs';
-import { MagnetSelectionService } from './magnet-selection.service';
 import { MoveSelectionService, SelectedPoint } from './move-selection.service';
 
 // tslint:disable: no-any
@@ -186,7 +186,6 @@ describe('MoveSelectionService', () => {
             x: BOTTOM_RIGHT_CORNER_COORDS.x + service['ARROW_MOVE_DELTA'],
             y: BOTTOM_RIGHT_CORNER_COORDS.y + service['ARROW_MOVE_DELTA'],
         });
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#moveSelectionWithArrows should call alignToProperMagnetPosition if usingMagnet is true', () => {
@@ -201,11 +200,11 @@ describe('MoveSelectionService', () => {
     it('#moveSelectionWithMouse should call alignToProperMagnetPosition if usingMagnet is true', () => {
         service.isUsingMagnet = true;
         const alignSpy = spyOn<any>(service, 'alignToProperMagnetPosition');
-        service.moveSelectionWithMouse(MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(MOUSE_POSITION, selectionCoordsStub);
         expect(alignSpy).toHaveBeenCalled();
     });
 
-    it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset, and redraw the selection', () => {
+    it('#moveSelectionWithMouse should move the selection coordinates to the given position minus the mouseOffset', () => {
         service.isUsingMagnet = false;
         selectionCoordsStub.initialTopLeft = TOP_LEFT_CORNER_COORDS;
         selectionCoordsStub.initialBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
@@ -213,7 +212,7 @@ describe('MoveSelectionService', () => {
         selectionCoordsStub.finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
         service.mouseMoveOffset = { x: MOUSE_OFFSET, y: MOUSE_OFFSET };
 
-        service.moveSelectionWithMouse(MOUSE_POSITION, MOUSE_POSITION, selectionCoordsStub);
+        service.moveSelectionWithMouse(MOUSE_POSITION, selectionCoordsStub);
         expect(selectionCoordsStub.finalTopLeft).toEqual({
             x: MOUSE_POSITION.x - MOUSE_OFFSET,
             y: MOUSE_POSITION.y - MOUSE_OFFSET,
@@ -222,7 +221,6 @@ describe('MoveSelectionService', () => {
             x: MOUSE_POSITION.x - MOUSE_OFFSET + selectionWidth,
             y: MOUSE_POSITION.y - MOUSE_OFFSET + selectionHeight,
         });
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
     });
 
     it('#alignToProperMagnetPosition should keep values of  deltaX and deltaY if they are negative  ', () => {

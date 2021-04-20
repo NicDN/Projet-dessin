@@ -4,7 +4,7 @@ import { ClipboardSelectionService } from '@app/services/clipboard-selection/cli
 import { DialogService, DialogType } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move/move-selection.service';
 import { RectangleSelectionService } from '@app/services/tools/selection/rectangle/rectangle-selection.service';
 import { TextHotkeyService } from '@app/services/tools/text/textHotkey/text-hotkey.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';

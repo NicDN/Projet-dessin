@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
-import { DrawingService } from '@app/services/drawing/drawing.service';
 import { GridService } from '@app/services/grid/grid.service';
-import { MagnetSelectionService } from './magnet-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
 
 export enum SelectedPoint {
     TOP_LEFT = 0,
@@ -24,7 +23,7 @@ export enum SelectedPoint {
 })
 export class MoveSelectionService {
     private readonly ARROW_MOVE_DELTA: number = 3;
-    constructor(private drawingService: DrawingService, private magnetSelectionService: MagnetSelectionService, private gridService: GridService) {}
+    constructor(private magnetSelectionService: MagnetSelectionService, private gridService: GridService) {}
 
     movingWithMouse: boolean = false;
     mouseMoveOffset: Vec2 = { x: 0, y: 0 };
@@ -70,16 +69,16 @@ export class MoveSelectionService {
             selectionCoords.finalBottomRight.x += delta.x;
             selectionCoords.finalBottomRight.y += delta.y;
         }
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
-    moveSelectionWithMouse(pos: Vec2, delta: Vec2, selectionCoords: SelectionCoords): void {
+    moveSelectionWithMouse(pos: Vec2, selectionCoords: SelectionCoords): void {
         const width = selectionCoords.finalBottomRight.x - selectionCoords.finalTopLeft.x;
         const height = selectionCoords.finalBottomRight.y - selectionCoords.finalTopLeft.y;
+        const emptyPosition = { x: 0, y: 0 };
 
         this.magnetSelectionService.isUsingMouse = true;
         if (this.isUsingMagnet) {
-            this.alignToProperMagnetPosition(pos, selectionCoords, delta);
+            this.alignToProperMagnetPosition(pos, selectionCoords, emptyPosition);
         } else {
             selectionCoords.finalTopLeft = { x: pos.x - this.mouseMoveOffset.x, y: pos.y - this.mouseMoveOffset.y };
             selectionCoords.finalBottomRight = {
@@ -87,7 +86,6 @@ export class MoveSelectionService {
                 y: selectionCoords.finalTopLeft.y + height,
             };
         }
-        this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
     alignToProperMagnetPosition(pos: Vec2, selectionCoords: SelectionCoords, delta: Vec2): void {

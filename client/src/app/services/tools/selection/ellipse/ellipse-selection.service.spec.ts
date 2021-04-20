@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { BoxSize } from '@app/classes/box-size';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { SelectionPropreties } from '@app/classes/commands/selection-command/selection-command';
+import { SelectionProperties } from '@app/classes/commands/selection-command/selection-command';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move/move-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { of } from 'rxjs';
@@ -22,7 +22,7 @@ describe('EllipseSelectionService', () => {
 
     let baseCtxStub: CanvasRenderingContext2D;
     let previewCtxStub: CanvasRenderingContext2D;
-    let selectionProperties: SelectionPropreties;
+    let selectionProperties: SelectionProperties;
 
     const TOP_LEFT_CORNER_COORDS: Vec2 = { x: 0, y: 0 };
     const BOTTOM_RIGHT_CORNER_COORDS: Vec2 = { x: 40, y: 40 };
@@ -70,11 +70,13 @@ describe('EllipseSelectionService', () => {
         selectionProperties = {
             selectionCtx: drawingServiceSpyObj.baseCtx,
             imageData: drawingServiceSpyObj.baseCtx.getImageData(0, 0, IMAGE_DATA_SIZE, IMAGE_DATA_SIZE),
-            topLeft: TOP_LEFT_SELECTION,
-            bottomRight: BOTTOM_RIGHT_SELECTION,
-            finalTopLeft: TOP_LEFT_SELECTION,
-            finalBottomRight: BOTTOM_RIGHT_SELECTION,
-        } as SelectionPropreties;
+            coords: {
+                initialTopLeft: TOP_LEFT_SELECTION,
+                initialBottomRight: BOTTOM_RIGHT_SELECTION,
+                finalTopLeft: TOP_LEFT_SELECTION,
+                finalBottomRight: BOTTOM_RIGHT_SELECTION,
+            },
+        } as SelectionProperties;
     });
 
     it('should be created', () => {
@@ -122,14 +124,16 @@ describe('EllipseSelectionService', () => {
         expect(beginPathSpy).not.toHaveBeenCalled();
     });
 
-    it('#drawSelection should put the image data at the final coords', () => {
+    it('#drawSelection should scale the context and put the image data at the final coords', () => {
         const clipSpy = spyOn(drawingServiceSpyObj.baseCtx, 'clip');
         const drawImageSpy = spyOn(drawingServiceSpyObj.baseCtx, 'drawImage');
         rectangleDrawingServiceSpyObj.getCenterCoords.and.returnValue(CENTER_COORDS);
+        const scaleContextSpy = spyOn<any>(ellipseSelectionService, 'scaleContext');
 
         ellipseSelectionService.drawSelection(selectionProperties);
         expect(clipSpy).toHaveBeenCalled();
         expect(drawImageSpy).toHaveBeenCalled();
+        expect(scaleContextSpy).toHaveBeenCalled();
     });
 
     it('#drawSelection should return if the selectionCtx is undefined', () => {

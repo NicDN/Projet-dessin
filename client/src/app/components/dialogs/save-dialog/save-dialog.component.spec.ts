@@ -174,17 +174,4 @@ describe('SaveDialogComponent', () => {
         component.onKeyDown(keyboardEvent);
         expect(component.postDrawing).not.toHaveBeenCalled();
     });
-
-    it('#onKeyDown should focus on the save button if the key pressed is enter', () => {
-        spyOn(component.saveButton, 'focus');
-        component.onKeyDown(keyboardEvent);
-        expect(component.saveButton.focus).toHaveBeenCalled();
-    });
-
-    it('#onKeyDown should not focus on the save button if the key pressed is not enter', () => {
-        keyboardEvent = { key: 'ArrowDown' } as KeyboardEvent;
-        spyOn(component.saveButton, 'focus');
-        component.onKeyDown(keyboardEvent);
-        expect(component.saveButton.focus).not.toHaveBeenCalled();
-    });
 });

@@ -88,12 +88,8 @@ export class SaveDialogComponent {
 
     @HostListener('window:keydown', ['$event'])
     onKeyDown(event: KeyboardEvent): void {
-        if (event.key !== 'Enter') {
-            return;
-        } else {
-            // debugger;
-            this.saveButton.focus();
-        }
+        if (event.key !== 'Enter') return;
+
         if (this.saveButton.disabled) {
             return;
         }

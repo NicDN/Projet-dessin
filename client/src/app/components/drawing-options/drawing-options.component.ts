@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move/move-selection.service';
 import { ToolsService } from '@app/services/tools/tools.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 

@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
-import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { CanvasTestHelper } from './canvas-test-helper';
-import { SelectionTool } from './selection-tool';
+import { SelectionCoords, SelectionTool } from './selection-tool';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from './tool';
 import { Vec2 } from './vec2';
 
@@ -102,6 +102,8 @@ describe('SelectionTool', () => {
             button: MouseButton.Left,
             buttons: LEFT_BUTTON_PRESSED,
         } as MouseEvent;
+
+        resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.NO_POINT;
     });
 
     it('#onMouseDown should set mouseDown property to true if leftClick', () => {
@@ -129,9 +131,9 @@ describe('SelectionTool', () => {
 
     it('#onMouseDown should call handleSelection handleSelectionMouseDown', () => {
         selectionTool.selectionExists = false;
-        spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
+        spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(true);
         selectionTool['selectionExists'] = true;
-        const handleSelectionOnMouseDown = spyOn(selectionTool, 'handleSelectionMouseDown').and.returnValue();
+        const handleSelectionOnMouseDown = spyOn<any>(selectionTool, 'handleSelectionMouseDown');
         selectionTool.onMouseDown(mouseEvent);
         expect(handleSelectionOnMouseDown).toHaveBeenCalled();
     });
@@ -152,7 +154,7 @@ describe('SelectionTool', () => {
         resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.CENTER;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValue();
-        selectionTool.handleSelectionMouseDown(mouseEvent);
+        selectionTool['handleSelectionMouseDown'](mouseEvent);
         expect(moveSelectionServiceSpyObj['movingWithMouse']).toBeTrue();
 
         expect(setOffsetSpy).toHaveBeenCalled();
@@ -164,7 +166,7 @@ describe('SelectionTool', () => {
         resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.BOTTOM_MIDDLE;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValue();
-        selectionTool.handleSelectionMouseDown(mouseEvent);
+        selectionTool['handleSelectionMouseDown'](mouseEvent);
         expect(moveSelectionServiceSpyObj['movingWithMouse']).toBeFalse();
         expect(setOffsetSpy).not.toHaveBeenCalled();
     });
@@ -185,7 +187,6 @@ describe('SelectionTool', () => {
     it('#onMouseMove should set initialBottomRight coordinate and draw a perimeter box bounded by canvas when not moving a selection', () => {
         selectionTool.mouseDown = true;
         selectionTool.selectionExists = true;
-        resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.NO_POINT;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         const adjustToDrawingBoundsSpy = spyOn<any>(selectionTool, 'adjustToDrawingBounds');
         const drawPerimeterSpy = spyOn(selectionTool, 'drawPerimeter');
@@ -206,13 +207,11 @@ describe('SelectionTool', () => {
         const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
         selectionTool.onMouseMove(mouseEvent);
         expect(resizeSelectionSpyObj.resizeSelection).toHaveBeenCalled();
-        expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawAllSpy).toHaveBeenCalled();
     });
 
     it('#onMouseMove should call #moveSelectionWithMouse if moving a selection', () => {
         selectionTool.mouseDown = true;
-        resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.NO_POINT;
         selectionTool.selectionExists = true;
         moveSelectionServiceSpyObj['movingWithMouse'] = true;
         selectionTool.onMouseMove(mouseEvent);
@@ -221,7 +220,6 @@ describe('SelectionTool', () => {
 
     it('#onMouseUp should set mouseDown and/or movingWithMouse to false', () => {
         selectionTool.mouseDown = true;
-        resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.NO_POINT;
         moveSelectionServiceSpyObj['movingWithMouse'] = true;
         selectionTool.onMouseUp(mouseEvent);
         expect(selectionTool.mouseDown).toBeFalse();
@@ -229,7 +227,7 @@ describe('SelectionTool', () => {
     });
 
     it('#onMouseMove should put resizeSelectionServicePreview to moving if it is inside selection but not on a point', () => {
-        spyOn(selectionTool, 'isInsideSelection').and.returnValue(true);
+        spyOn<any>(selectionTool, 'isInsideSelection').and.returnValue(true);
         resizeSelectionSpyObj.checkIfAControlPointHasBeenSelected.and.returnValues();
         selectionTool.mouseDown = true;
         selectionTool.selectionExists = true;
@@ -238,8 +236,20 @@ describe('SelectionTool', () => {
         expect(resizeSelectionSpyObj.previewSelectedPointIndex).toEqual(SelectedPoint.MOVING);
     });
 
-    it('#onMouseUp should set initialBottomRight to the correct coords and create a selection, when not moving a selection', () => {
-        resizeSelectionSpyObj['selectedPointIndex'] = SelectedPoint.NO_POINT;
+    it('#onMouseUp should handleOnMouseUp if not moving nor resizing a selection', () => {
+        selectionTool.mouseDown = true;
+        moveSelectionServiceSpyObj['movingWithMouse'] = false;
+        const handleSelectionMouseUpSpy = spyOn<any>(selectionTool, 'handleSelectionMouseUp');
+        const mouseEventUp = {
+            pageX: BOTTOM_RIGHT_CORNER_COORDS.x + HORIZONTAL_OFFSET,
+            pageY: BOTTOM_RIGHT_CORNER_COORDS.y + VERTICAL_OFFSET,
+        } as MouseEvent;
+
+        selectionTool.onMouseUp(mouseEventUp);
+        expect(handleSelectionMouseUpSpy).toHaveBeenCalled();
+    });
+
+    it('#handleSelectionMouseUp should set initialBottomRight to the correct coords and create a selection', () => {
         selectionTool.mouseDown = true;
         moveSelectionServiceSpyObj['movingWithMouse'] = false;
         const mouseEventUp = {
@@ -252,7 +262,7 @@ describe('SelectionTool', () => {
         const adjustToDrawingBoundsSpy = spyOn<any>(selectionTool, 'adjustToDrawingBounds');
         const createSelectionSpy = spyOn<any>(selectionTool, 'createSelection');
 
-        selectionTool.onMouseUp(mouseEventUp);
+        selectionTool['handleSelectionMouseUp'](mouseEventUp);
 
         expect(selectionTool['coords'].initialBottomRight).toEqual(trueEndCoords);
         expect(adjustToDrawingBoundsSpy).toHaveBeenCalled();
@@ -286,29 +296,18 @@ describe('SelectionTool', () => {
 
     it('#onKeyDown should cancel the selection if escape is pressed', () => {
         const cancelSelectionSpy = spyOn(selectionTool, 'cancelSelection');
-        const escapeKeyEvent = {
-            code: 'Escape',
-        } as KeyboardEvent;
+        const escapeKeyEvent = { code: 'Escape' } as KeyboardEvent;
         selectionTool.onKeyDown(escapeKeyEvent);
         expect(cancelSelectionSpy).toHaveBeenCalled();
     });
 
-    it('#onKeyDown should handle leftShift when its pressed if there isnt an active selection yet', () => {
+    it('#onKeyDown should handle leftShift when its pressed', () => {
         selectionTool.selectionExists = false;
         const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
 
         selectionTool.onKeyDown(leftShiftKeyEvent);
         expect(handleLeftShiftSpy).toHaveBeenCalledWith(leftShiftKeyEvent, rectangleDrawingServiceSpyObj.onKeyDown);
-    });
-
-    it('#onKeyDown should not handle leftShift when its pressed if there already is an active selection', () => {
-        selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
-        const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
-
-        selectionTool.onKeyDown(leftShiftKeyEvent);
-        expect(handleLeftShiftSpy).not.toHaveBeenCalled();
     });
 
     it('#onKeyDown should handle the arrow keys if a selection exists', () => {
@@ -318,21 +317,11 @@ describe('SelectionTool', () => {
         expect(handleMovingArrowsKeyDownSpy).toHaveBeenCalled();
     });
 
-    it('#onKeyUp should handle leftShift when its unpressed if there isnt an active selection yet', () => {
-        selectionTool.selectionExists = false;
+    it('#onKeyUp should handle leftShift when its unpressed', () => {
         const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
         const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
         selectionTool.onKeyUp(leftShiftKeyEvent);
         expect(handleLeftShiftSpy).toHaveBeenCalledWith(leftShiftKeyEvent, rectangleDrawingServiceSpyObj.onKeyUp);
-    });
-
-    it('#onKeyUp should not handle leftShift when its unpressed if there already is an active selection', () => {
-        selectionTool.selectionExists = true;
-        const handleLeftShiftSpy = spyOn<any>(selectionTool, 'handleLeftShift');
-        const leftShiftKeyEvent = { code: 'ShiftLeft' } as KeyboardEvent;
-
-        selectionTool.onKeyUp(leftShiftKeyEvent);
-        expect(handleLeftShiftSpy).not.toHaveBeenCalled();
     });
 
     it('#onKeyUp should handle the arrow keys if a selection exists', () => {
@@ -342,13 +331,45 @@ describe('SelectionTool', () => {
         expect(handleMovingArrowsKeyUpSpy).toHaveBeenCalled();
     });
 
-    it('#handleLeftShift should call the function given by parameter and redraw the perimeter', () => {
+    it('#handleLeftShift should call the function given by parameter and redraw the perimeter, if selection doesnt exist', () => {
+        selectionTool.selectionExists = false;
         const drawPerimeterSpy = spyOn(selectionTool, 'drawPerimeter');
         selectionTool['handleLeftShift']({} as KeyboardEvent, rectangleDrawingServiceSpyObj.onKeyDown);
 
         expect(rectangleDrawingServiceSpyObj.onKeyDown).toHaveBeenCalled();
         expect(drawingServiceSpyObj.clearCanvas).toHaveBeenCalled();
         expect(drawPerimeterSpy).toHaveBeenCalled();
+    });
+
+    it('#handleLeftShift should save the last dimensions in resizeSelectionService when pressed down, if selection exists', () => {
+        selectionTool.selectionExists = true;
+        selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        resizeSelectionSpyObj.shiftKeyIsDown = false;
+
+        selectionTool['handleLeftShift']({} as KeyboardEvent, rectangleDrawingServiceSpyObj.onKeyDown);
+        expect(resizeSelectionSpyObj.shiftKeyIsDown).toBeTrue();
+        expect(resizeSelectionSpyObj.lastDimensions).toEqual({ x: 40, y: 20 });
+    });
+
+    it('#handleLeftShift should set shiftKeyIsDown to false and resizeSelection, when shift key unpressed, if selection exists', () => {
+        selectionTool.selectionExists = true;
+        selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
+        selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;
+        resizeSelectionSpyObj.shiftKeyIsDown = true;
+        const resizeSelectionSpy = spyOn<any>(selectionTool, 'resizeSelection');
+
+        selectionTool['handleLeftShift']({} as KeyboardEvent, rectangleDrawingServiceSpyObj.onKeyUp);
+        expect(resizeSelectionSpyObj.shiftKeyIsDown).toBeFalse();
+        expect(resizeSelectionSpy).toHaveBeenCalled();
+    });
+
+    it('#resizeSelection should call resizeSelection from resizeSelectionService and drawAll', () => {
+        const drawAllSpy = spyOn<any>(selectionTool, 'drawAll');
+
+        selectionTool['resizeSelection'](BOTTOM_RIGHT_CORNER_COORDS);
+        expect(drawAllSpy).toHaveBeenCalled();
+        expect(resizeSelectionSpyObj.resizeSelection).toHaveBeenCalled();
     });
 
     it('#handleMovingArrowsKeyDown should update the arrow keys pressed to true', () => {
@@ -677,10 +698,25 @@ describe('SelectionTool', () => {
 
         expect(selectionProperties.selectionCtx).toEqual(drawingServiceSpyObj.previewCtx);
         expect(selectionProperties.imageData).toEqual(TEST_DATA);
-        expect(selectionProperties.topLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionProperties.bottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
-        expect(selectionProperties.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
-        expect(selectionProperties.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionProperties.coords.initialTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionProperties.coords.initialBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+        expect(selectionProperties.coords.finalTopLeft).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(selectionProperties.coords.finalBottomRight).toEqual(BOTTOM_RIGHT_CORNER_COORDS);
+    });
+
+    it('#scaleContext should perform a scale matrix on context with the ratio : final size / begin size', () => {
+        const coords: SelectionCoords = {
+            initialTopLeft: TOP_LEFT_CORNER_COORDS,
+            initialBottomRight: BOTTOM_RIGHT_CORNER_COORDS,
+            finalTopLeft: TOP_LEFT_CORNER_COORDS,
+            finalBottomRight: { x: BOTTOM_RIGHT_CORNER_COORDS.x * 2, y: BOTTOM_RIGHT_CORNER_COORDS.y * 2 },
+        };
+        const scaleSpy = spyOn<any>(drawingServiceSpyObj.baseCtx, 'scale');
+        const translateSpy = spyOn<any>(drawingServiceSpyObj.baseCtx, 'translate');
+
+        selectionTool['scaleContext'](coords, drawingServiceSpyObj.baseCtx);
+        expect(scaleSpy).toHaveBeenCalledWith(2, 2);
+        expect(translateSpy).toHaveBeenCalledTimes(2);
     });
 
     // tslint:disable-next-line: max-file-line-count

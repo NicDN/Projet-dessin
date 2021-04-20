@@ -10,7 +10,7 @@
     float: right;
     text-align: center;
     overflow-y: auto;
-    overflow-x: none;
+    overflow-x: hidden;
 }
 // source : https://stackoverflow.com/questions/48960404/how-to-change-overflow-y-scrollbar-styles/48960551
 .attributes-panel-container::-webkit-scrollbar-track {

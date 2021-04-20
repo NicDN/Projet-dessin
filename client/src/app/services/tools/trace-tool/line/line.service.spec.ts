@@ -12,7 +12,7 @@ import { ColorService } from '@app/services/color/color.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { LineService } from './line.service';
 
-xdescribe('LineService', () => {
+describe('LineService', () => {
     let service: LineService;
     let keyboardEvent: KeyboardEvent;
     let mouseEvent: MouseEvent;
@@ -151,28 +151,35 @@ xdescribe('LineService', () => {
         expect(service['addPoint']).not.toHaveBeenCalled();
     });
 
-    it('#onMouseMove should lock the line when shift is pressed', () => {
+    it('#onMouseMove should handleMouseMove and updatePreview', () => {
+        mouseEvent = {} as MouseEvent;
+        const handleMouseMoveSpy = spyOn<any>(service, 'handleMouseMove');
+
+        service.onMouseMove(mouseEvent);
+        expect(updatePreviewSpy).toHaveBeenCalled();
+        expect(handleMouseMoveSpy).toHaveBeenCalled();
+    });
+
+    it('#handleMouseMove should lock the line when shift is pressed', () => {
         service['isShiftDown'] = true;
         mouseEvent = {} as MouseEvent;
         spyOn(service, 'getPositionFromMouse').and.returnValue(DEFAULT_MOUSE_POSITION);
 
-        service.onMouseMove(mouseEvent);
+        service.handleMouseMove(mouseEvent);
         expect(service['mousePosition']).toEqual(DEFAULT_MOUSE_POSITION);
         expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(lockLineSpy).toHaveBeenCalled();
-        expect(updatePreviewSpy).not.toHaveBeenCalled();
     });
 
-    it('#onMouseMove should lock the line when shift is pressed', () => {
+    it('#handleMouseMove should not lock the line when shift is not pressed', () => {
         service['isShiftDown'] = false;
         mouseEvent = {} as MouseEvent;
         spyOn(service, 'getPositionFromMouse').and.returnValue(DEFAULT_MOUSE_POSITION);
 
-        service.onMouseMove(mouseEvent);
+        service.handleMouseMove(mouseEvent);
         expect(service['mousePosition']).toEqual(DEFAULT_MOUSE_POSITION);
         expect(service['pathData'][service['pathData'].length - 1]).toEqual(DEFAULT_MOUSE_POSITION);
         expect(lockLineSpy).not.toHaveBeenCalled();
-        expect(updatePreviewSpy).toHaveBeenCalled();
     });
 
     it('#onKeyDown should clear the path when Escape is pressed', () => {
