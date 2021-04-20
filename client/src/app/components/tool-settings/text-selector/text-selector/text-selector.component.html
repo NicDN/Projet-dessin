@@ -6,11 +6,14 @@
     <p>Orientation</p>
     <div class="selection-type">
         <mat-button-toggle-group>
-            <mat-button-toggle *ngFor="let textPositionOption of textPositionOptions "
-                matTooltip="{{ textPositionOption.toolTipContent }}" matTooltipPosition="below"
+            <mat-button-toggle
+                *ngFor="let textPositionOption of textPositionOptions"
+                matTooltip="{{ textPositionOption.toolTipContent }}"
+                matTooltipPosition="below"
                 (click)="setActiveTextPosition(textPositionOption.textPositon)"
-                [class.active]="textPositionOption.textPositon === textService.textPosition">
-                <fa-icon icon={{textPositionOption.icon}}></fa-icon>
+                [class.active]="textPositionOption.textPositon === textService.textPosition"
+            >
+                <fa-icon icon="{{ textPositionOption.icon }}"></fa-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -22,10 +25,14 @@
     <p>Option de texte</p>
     <div class="selection-type">
         <mat-button-toggle-group>
-            <mat-button-toggle *ngFor="let textEffect of textEffects" matTooltip="{{ textEffect.toolTipContent }}"
-                matTooltipPosition="below" (click)="textEffect.setEffect()"
-                [class.active]="checkActiveTextEffect(textEffect.icon)">
-                <fa-icon icon={{textEffect.icon}}></fa-icon>
+            <mat-button-toggle
+                *ngFor="let textEffect of textEffects"
+                matTooltip="{{ textEffect.toolTipContent }}"
+                matTooltipPosition="below"
+                (click)="textEffect.setEffect()"
+                [class.active]="checkActiveTextEffect(textEffect.icon)"
+            >
+                <fa-icon icon="{{ textEffect.icon }}"></fa-icon>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
@@ -33,16 +40,19 @@
 
 <mat-divider></mat-divider>
 
-<div class="font-style">
+<div class="font-style" (keydown)="onKeyDown($event)" #textSelector>
     <p>Police du texte</p>
     <mat-form-field>
-        <mat-select [(value)]="selectedFontStyle">
-            <mat-option *ngFor="let fontStyle of this.fontStyles" [value]="fontStyle.name"
-                (click)="applyFontStyle(fontStyle)"
-                [ngStyle]="{'font-family':fontStyle.name}">{{fontStyle.name}}</mat-option>
+        <mat-select [(value)]="this.textService.fontStyle" (selectionChange)="applyFontStyle()" #matSelect>
+            <mat-option
+                style="color: black"
+                *ngFor="let fontStyle of this.fontStyles"
+                [value]="fontStyle.value"
+                [ngStyle]="{ 'font-family': fontStyle.name }"
+                >{{ fontStyle.name }}</mat-option
+            >
         </mat-select>
     </mat-form-field>
 </div>
-
 
 <mat-divider></mat-divider>

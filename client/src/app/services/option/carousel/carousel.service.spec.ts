@@ -2,8 +2,8 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { DrawingForm } from '@common/communication/drawing-form';
+import { environment } from '@env/environment';
 import * as Httpstatus from 'http-status-codes';
-
 import { CarouselService } from './carousel.service';
 
 // tslint:disable: no-string-literal
@@ -32,7 +32,7 @@ describe('CarouselService', () => {
         service = TestBed.inject(CarouselService);
         httpMock = TestBed.inject(HttpTestingController);
         // tslint:disable-next-line: no-string-literal
-        baseUrl = service['BASE_URL'];
+        baseUrl = environment.serverBaseUrl;
     });
 
     it('should be created', () => {

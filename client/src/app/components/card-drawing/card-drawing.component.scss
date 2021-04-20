@@ -30,3 +30,9 @@ mat-icon {
     font-size: 35px;
     color: red;
 }
+
+.example-card:hover{
+    border-style: solid;
+    border-color: gray;
+    border-width: 1px;
+}

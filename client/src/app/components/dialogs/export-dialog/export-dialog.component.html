@@ -11,15 +11,14 @@
 
     <div>
         <mat-form-field class="filter-selector">
-            <mat-label>Sélectionez un filtre</mat-label>
-            <mat-select #filter [(value)]="selectedFilter.name">
+            <mat-select #filter placeholder="Sélectionez un filtre" [(value)]="selectedFilter">
                 <mat-option class="filter-mat-option" *ngFor="let filter of this.filterService.filters"
-                    [value]="filter.name" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
+                    [value]="filter" (click)="applyFilter(filter.filterType)"> {{filter.name}}</mat-option>
             </mat-select>
         </mat-form-field>
 
         <mat-form-field class="file-name" [class.hidden]="exportToImgur">
-            <input matInput #fileName placeholder="Nom du dessin">
+            <input matInput #fileName placeholder="Nom du dessin" autocomplete="off">
         </mat-form-field>
 
         <mat-button-toggle-group #fileFormat="matButtonToggleGroup">
@@ -38,7 +37,7 @@
             (click)="exportCanvas(fileName.value,fileFormat.value)">
 
             <mat-icon *ngIf="this.loadingImpgurState">
-                <mat-spinner color="accent" diameter="20">
+                <mat-spinner diameter="20">
                 </mat-spinner>
             </mat-icon>
 

@@ -114,11 +114,11 @@ describe('ResizeContainerComponent', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: MIDDLE });
         Object.defineProperty(window, 'innerHeight', { writable: true, configurable: true, value: MIDDLE });
         component.setStatus(Status.RESIZE_DIAGONAL);
-        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
-        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
+        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component['MOUSE_OFFSET'];
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - component['MOUSE_OFFSET'];
         component['resizeContainer'](mouseEventClick);
-        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_WIDTH}`);
-        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_HEIGHT}`);
+        expect(component.box.nativeElement.style.width.slice(0, component['REMOVE_PX'])).toEqual(`${EXPECTED_WIDTH}`);
+        expect(component.box.nativeElement.style.height.slice(0, component['REMOVE_PX'])).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
     it('#resize-container should not resize if position is under 250px', () => {
@@ -128,13 +128,13 @@ describe('ResizeContainerComponent', () => {
 
         component.setStatus(Status.RESIZE_DIAGONAL);
         const mouseEventUnder250px = { pageX: DEFAULT_WIDTH - SIDE_BAR_SIZE, pageY: DEFAULT_HEIGHT, button: 0 } as MouseEvent;
-        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component.MOUSE_OFFSET;
-        const EXPECTED_HEIGHT = mouseEventClick.pageY - component.MOUSE_OFFSET;
+        const EXPECTED_WIDTH = mouseEventClick.pageX - SIDE_BAR_SIZE - component['MOUSE_OFFSET'];
+        const EXPECTED_HEIGHT = mouseEventClick.pageY - component['MOUSE_OFFSET'];
 
         component['resizeContainer'](mouseEventClick);
         component['resizeContainer'](mouseEventUnder250px);
-        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_WIDTH}`);
-        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${EXPECTED_HEIGHT}`);
+        expect(component.box.nativeElement.style.width.slice(0, component['REMOVE_PX'])).toEqual(`${EXPECTED_WIDTH}`);
+        expect(component.box.nativeElement.style.height.slice(0, component['REMOVE_PX'])).toEqual(`${EXPECTED_HEIGHT}`);
     });
 
     it('#resize-container should resize when status is something else than NOT_RESIZING', () => {
@@ -166,8 +166,8 @@ describe('ResizeContainerComponent', () => {
         component.box.nativeElement.style.height = tmpSize;
         const boxSize = { widthBox: 1, heightBox: 1 };
         component['resizeCanvas'](boxSize.widthBox, boxSize.heightBox);
-        expect(component.box.nativeElement.style.width.slice(0, component.REMOVE_PX)).toEqual(`${boxSize.widthBox}`);
-        expect(component.box.nativeElement.style.height.slice(0, component.REMOVE_PX)).toEqual(`${boxSize.heightBox}`);
+        expect(component.box.nativeElement.style.width.slice(0, component['REMOVE_PX'])).toEqual(`${boxSize.widthBox}`);
+        expect(component.box.nativeElement.style.height.slice(0, component['REMOVE_PX'])).toEqual(`${boxSize.heightBox}`);
         expect(drawingServiceSpyObj.onSizeChange).toHaveBeenCalledWith(boxSize);
     });
 

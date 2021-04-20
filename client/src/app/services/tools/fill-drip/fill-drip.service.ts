@@ -18,9 +18,11 @@ export class FillDripService extends TraceTool {
     private lowerLimit: Uint8ClampedArray;
     acceptancePercentage: number = 0.5;
     private mainColor: Uint8ClampedArray;
+
     constructor(drawingService: DrawingService, colorService: ColorService, private undoRedoService: UndoRedoService) {
         super(drawingService, colorService, 'Sceau de peinture');
     }
+
     onMouseDown(event: MouseEvent): void {
         if (!(event.button === MouseButton.Left) && !(event.button === MouseButton.Right)) return;
 
@@ -29,20 +31,18 @@ export class FillDripService extends TraceTool {
         this.updateMainColor();
         this.getColorRange(mousePos);
 
-        // if (event.button === MouseButton.Left) this.contiguousFilling(mousePos);
-        // if (event.button === MouseButton.Right) this.nonContiguousFilling();
         if (event.button === MouseButton.Left) this.registerFillDripCommand(mousePos, true);
         if (event.button === MouseButton.Right) this.registerFillDripCommand(mousePos, false);
     }
 
-    registerFillDripCommand(mousePosition: Vec2, isContiguous: boolean): void {
+    private registerFillDripCommand(mousePosition: Vec2, isContiguous: boolean): void {
         const pixels: ImageData = this.drawingService.baseCtx.getImageData(0, 0, this.drawingService.canvas.width, this.drawingService.canvas.height);
         const fillDripCommand = new FillDripCommand(this, this.loadFillDripPropreties(isContiguous, mousePosition, pixels));
         fillDripCommand.execute();
         this.undoRedoService.addCommand(fillDripCommand);
     }
 
-    loadFillDripPropreties(isContiguous: boolean, mousePos: Vec2, img: ImageData): FillDripProperties {
+    private loadFillDripPropreties(isContiguous: boolean, mousePos: Vec2, img: ImageData): FillDripProperties {
         return {
             ctx: this.drawingService.baseCtx,
             data: img,
@@ -54,7 +54,8 @@ export class FillDripService extends TraceTool {
             lowerLimit: this.lowerLimit,
         };
     }
-    getColorRange(mousePos: Vec2): void {
+
+    private getColorRange(mousePos: Vec2): void {
         const currentPixel: ImageData = this.drawingService.baseCtx.getImageData(mousePos.x, mousePos.y, 1, 1);
 
         const highR: number = currentPixel.data[0] + (MAX_RGB_VALUE - currentPixel.data[0]) * this.acceptancePercentage;
@@ -68,13 +69,13 @@ export class FillDripService extends TraceTool {
         this.lowerLimit = new Uint8ClampedArray([lowR, lowG, lowB]);
     }
 
-    updateMainColor(): void {
+    private updateMainColor(): void {
         const colorValues: string[] = this.colorService.mainColor.rgbValue.replace('rgb(', '').replace(')', '').split(',');
         const opacity: number = this.colorService.mainColor.opacity;
         this.mainColor = new Uint8ClampedArray([+colorValues[0], +colorValues[1], +colorValues[2], opacity * MAX_RGB_VALUE]);
     }
 
-    inRange(colorData: Uint8ClampedArray, higherLimit: Uint8ClampedArray, lowerLimit: Uint8ClampedArray): boolean {
+    private inRange(colorData: Uint8ClampedArray, higherLimit: Uint8ClampedArray, lowerLimit: Uint8ClampedArray): boolean {
         return (
             colorData[0] >= lowerLimit[0] &&
             colorData[0] <= higherLimit[0] &&
@@ -85,7 +86,6 @@ export class FillDripService extends TraceTool {
         );
     }
 
-    // a la place d'update un pixel apres l'autre, former progressivement une image et l'update a la fin
     nonContiguousFilling(fillDripProperties: FillDripProperties): void {
         for (let i = 0; i < fillDripProperties.data.height * fillDripProperties.data.width * VALUES_PER_PIXEL; i += VALUES_PER_PIXEL) {
             if (
@@ -101,7 +101,7 @@ export class FillDripService extends TraceTool {
         this.drawingService.baseCtx.putImageData(fillDripProperties.data, 0, 0);
     }
 
-    areEqualColors(colorA: Uint8ClampedArray, colorB: Uint8ClampedArray): boolean {
+    private areEqualColors(colorA: Uint8ClampedArray, colorB: Uint8ClampedArray): boolean {
         return colorA[0] === colorB[0] && colorA[1] === colorB[1] && colorA[2] === colorB[2];
     }
 
@@ -133,7 +133,7 @@ export class FillDripService extends TraceTool {
         this.drawingService.baseCtx.putImageData(fillDripProperties.data, 0, 0);
     }
 
-    getValidNeighbors(
+    private getValidNeighbors(
         pixelsData: Uint8ClampedArray,
         neighbors: number[],
         searchedPixels: boolean[],

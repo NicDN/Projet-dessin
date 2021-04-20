@@ -18,6 +18,10 @@ interface ShortcutFunctions {
     actionCtrlShift?: () => void;
 }
 
+interface ShortcutTextFunctions {
+    textAction?: () => void;
+}
+
 enum shortCutManager {
     RECTANGLE_SELECTION = 'KeyR',
     LASSO_SELECTION = 'KeyV',
@@ -43,18 +47,34 @@ enum shortCutManager {
     CUT = 'KeyX',
     DELETE = 'Delete',
     MAGNETISME = 'KeyM',
+    BACKSPACE = 'Backspace',
+}
+
+enum shortCutTextManager {
+    ESCAPE = 'Escape',
+    ARROW_LEFT = 'ArrowLeft',
+    ARROW_RIGHT = 'ArrowRight',
+    ARROW_UP = 'ArrowUp',
+    ARROW_DOWN = 'ArrowDown',
+    ENTER = 'Enter',
+    DELETE = 'Delete',
+    BACKSPACE = 'Backspace',
 }
 
 type ShortcutManager = {
     [key in shortCutManager]: ShortcutFunctions;
 };
 
+type ShortcutTextManager = { [key in shortCutTextManager]: ShortcutTextFunctions };
+
 @Injectable({
     providedIn: 'root',
 })
 export class HotkeyService {
     private shortCutManager: ShortcutManager;
+    private shortCutTextManager: ShortcutTextManager;
     listenToKeyEvents: boolean = true;
+    private listenToTextEvent: boolean = true;
 
     constructor(
         private router: Router,
@@ -70,10 +90,41 @@ export class HotkeyService {
         private textHotKeyService: TextHotkeyService,
     ) {
         this.initializeShorcutManager();
+        this.initializeShortcutTextManager();
         this.observeDialogService();
         this.observeTextService();
     }
 
+    private initializeShortcutTextManager(): void {
+        this.shortCutTextManager = {
+            Escape: {
+                textAction: () => this.textService.disableWriting(),
+            },
+            ArrowLeft: {
+                textAction: () => this.textHotKeyService.arrowLeftPressed(),
+            },
+            ArrowRight: {
+                textAction: () => this.textHotKeyService.arrowRightPressed(),
+            },
+            ArrowUp: {
+                textAction: () => this.textHotKeyService.arrowUpPressed(),
+            },
+            ArrowDown: {
+                textAction: () => this.textHotKeyService.arrowDownPressed(),
+            },
+            Enter: {
+                textAction: () => {
+                    if (this.textService.isWriting) this.textHotKeyService.enterPressed();
+                },
+            },
+            Delete: {
+                textAction: () => this.textHotKeyService.deletePressed(),
+            },
+            Backspace: {
+                textAction: () => this.textHotKeyService.backSpacePressed(),
+            },
+        };
+    }
     private initializeShorcutManager(): void {
         this.shortCutManager = {
             KeyR: {
@@ -124,12 +175,14 @@ export class HotkeyService {
             KeyX: { actionCtrl: () => this.clipboardSelectionService.cut() },
             Delete: { action: () => this.clipboardSelectionService.delete() },
             KeyM: { action: () => (this.moveSelectionService.isUsingMagnet = !this.moveSelectionService.isUsingMagnet) },
+            Backspace: { action: () => this.clipboardSelectionService.delete() },
         };
     }
 
     private observeDialogService(): void {
         this.dialogService.listenToKeyEvents().subscribe((listenToKeyEvents) => {
             this.listenToKeyEvents = listenToKeyEvents;
+            this.listenToTextEvent = listenToKeyEvents;
         });
     }
 
@@ -141,7 +194,7 @@ export class HotkeyService {
 
     onKeyDown(event: KeyboardEvent): void {
         if (this.toolService.currentTool instanceof TextService) this.onKeyDownTextService(event);
-        if (!this.listenToKeyEvents) {
+        if (!this.listenToKeyEvents || this.textService.isWriting) {
             return;
         }
         if (event.altKey) {
@@ -187,36 +240,11 @@ export class HotkeyService {
         this.drawingService.updateGrid();
     }
 
-    // TODO: AQ
-    onKeyDownTextService(event: KeyboardEvent): void {
-        switch (event.code) {
-            case 'Escape':
-                this.textService.disableWriting();
-                return;
-            case 'ArrowLeft':
-                this.textHotKeyService.arrowLeftPressed();
-                break;
-            case 'ArrowRight':
-                this.textHotKeyService.arrowRightPressed();
-                break;
-            case 'ArrowUp':
-                this.textHotKeyService.arrowUpPressed();
-                break;
-            case 'ArrowDown':
-                this.textHotKeyService.arrowDownPressed();
-                break;
-            case 'Delete':
-                this.textHotKeyService.deletePressed();
-                return;
-            case 'Backspace':
-                this.textHotKeyService.backSpacePressed();
-                return;
-            case 'Enter':
-                this.textHotKeyService.enterPressed();
-                break;
-            default:
-                break;
-        }
+    private onKeyDownTextService(event: KeyboardEvent): void {
+        if (!this.listenToTextEvent) return;
+        event.preventDefault();
+        this.shortCutTextManager[event.code as shortCutTextManager]?.textAction?.();
         this.toolService.currentTool.onKeyDown(event); // current tool custom onkeydown implementation
+        event.returnValue = true; // To accept default web shortCutManager
     }
 }

@@ -49,6 +49,7 @@ export class ToolsService {
     selectedSelectionService: Tool = this.rectangleSelectionService;
 
     setCurrentTool(tool: Tool): void {
+        this.clearPreview(tool);
         this.cancelSelectionOnToolChange(tool);
         this.registerTextCommandOnToolChange();
         this.removeLinePreview();
@@ -61,6 +62,14 @@ export class ToolsService {
 
         // to notifiy attributes panel component that the current tool has changed
         this.subject.next(tool);
+    }
+
+    private clearPreview(tool: Tool): void {
+        if (this.drawingService.previewCanvas === undefined) return;
+        if (this.currentTool instanceof SelectionTool) return;
+        if (this.currentTool instanceof GridService && tool instanceof SelectionTool) return;
+
+        this.drawingService.clearCanvas(this.drawingService.previewCtx);
     }
 
     private handleSelectionCurrentTool(tool: Tool): void {
@@ -105,16 +114,8 @@ export class ToolsService {
             return;
         }
 
-        switch (this.currentTool) {
-            case this.ellipseSelectionService:
-                this.ellipseSelectionService.cancelSelection();
-                break;
-            case this.rectangleSelectionService:
-                this.rectangleSelectionService.cancelSelection();
-                break;
-            case this.lassoSelectionService:
-                this.lassoSelectionService.cancelSelection();
-                break;
+        if (this.currentTool instanceof SelectionTool) {
+            (this.currentTool as SelectionTool).cancelSelection();
         }
     }
 

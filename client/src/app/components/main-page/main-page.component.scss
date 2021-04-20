@@ -1,3 +1,13 @@
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    background-image: linear-gradient(to bottom right, #e51282, grey);
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -26,6 +36,8 @@ button {
     justify-content: center;
     text-align: center;
     font-size: 50px;
+    color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 .footer-item {
