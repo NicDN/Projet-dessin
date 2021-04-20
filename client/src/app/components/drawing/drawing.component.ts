@@ -4,8 +4,8 @@ import { Vec2 } from '@app/classes/vec2';
 import { DialogService } from '@app/services/dialog/dialog.service';
 import { DrawingService } from '@app/services/drawing/drawing.service';
 import { HotkeyService } from '@app/services/hotkey/hotkey.service';
-import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
-import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { StampService } from '@app/services/tools/stamp/stamp.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';
 import { ToolsService } from '@app/services/tools/tools.service';
@@ -18,7 +18,6 @@ export const MINIMUM_WORKSPACE_SIZE = 500;
 export const SIDE_BAR_SIZE = 400;
 export const HALF_RATIO = 0.5;
 
-// tslint:disable: no-magic-numbers
 @Component({
     selector: 'app-drawing',
     templateUrl: './drawing.component.html',

@@ -3,8 +3,8 @@ import { BoxSize } from '@app/classes/box-size';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
 import { of } from 'rxjs';
-import { MagnetSelectionService } from './magnet-selection.service';
 import { MoveSelectionService, SelectedPoint } from './move-selection.service';
 
 // tslint:disable: no-any

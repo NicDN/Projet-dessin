@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
-import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 import { CanvasTestHelper } from './canvas-test-helper';
@@ -352,7 +352,7 @@ describe('SelectionTool', () => {
         expect(resizeSelectionSpyObj.lastDimensions).toEqual({ x: 40, y: 20 });
     });
 
-    it('#handleLeftShift should set resizeSelectionService.shiftKeyIsDown to false and resizeSelection, when shift key unpressed, if selection exists', () => {
+    it('#handleLeftShift should set shiftKeyIsDown to false and resizeSelection, when shift key unpressed, if selection exists', () => {
         selectionTool.selectionExists = true;
         selectionTool['coords'].finalTopLeft = TOP_LEFT_CORNER_COORDS;
         selectionTool['coords'].finalBottomRight = BOTTOM_RIGHT_CORNER_COORDS;

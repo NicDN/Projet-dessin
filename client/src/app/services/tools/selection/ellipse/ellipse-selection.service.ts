@@ -3,9 +3,9 @@ import { SelectionProperties } from '@app/classes/commands/selection-command/sel
 import { SelectionTool } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
-import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -45,6 +45,7 @@ export class EllipseSelectionService extends SelectionTool {
         if (!selectionPropreties.selectionCtx) return;
         selectionPropreties.selectionCtx.fillStyle = 'white';
         selectionPropreties.selectionCtx.beginPath();
+
         selectionPropreties.selectionCtx.ellipse(
             centerCoords.x,
             centerCoords.y,

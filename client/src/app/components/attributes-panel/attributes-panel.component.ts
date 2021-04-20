@@ -5,7 +5,7 @@ import { Shape } from '@app/classes/shape';
 import { SliderSetting } from '@app/classes/slider-setting';
 import { Tool } from '@app/classes/tool';
 import { FillDripService } from '@app/services/tools/fill-drip/fill-drip.service';
-import { MoveSelectionService } from '@app/services/tools/selection/move-selection.service';
+import { MoveSelectionService } from '@app/services/tools/selection/move/move-selection.service';
 import { PolygonService } from '@app/services/tools/shape/polygon/polygon.service';
 import { SprayCanService } from '@app/services/tools/spray-can/spray-can.service';
 import { TextService } from '@app/services/tools/text/textService/text.service';

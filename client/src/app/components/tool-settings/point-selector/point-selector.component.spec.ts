@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
-import { SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
 import { PointSelectorComponent } from './point-selector.component';
 
 describe('PointSelectorComponent', () => {

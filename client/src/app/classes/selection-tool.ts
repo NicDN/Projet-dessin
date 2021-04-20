@@ -2,9 +2,9 @@ import { SelectionCommand, SelectionProperties } from '@app/classes/commands/sel
 import { HORIZONTAL_OFFSET, MouseButton, Tool, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
-import { ResizeSelectionService } from '@app/services/tools/selection/resize-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { RectangleDrawingService as ShapeService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
 
@@ -324,7 +324,12 @@ export abstract class SelectionTool extends Tool {
         return {
             selectionCtx: ctx,
             imageData: this.data,
-            coords: this.coords,
+            coords: {
+                initialTopLeft: this.coords.initialTopLeft,
+                initialBottomRight: this.coords.initialBottomRight,
+                finalTopLeft: this.coords.finalTopLeft,
+                finalBottomRight: this.coords.finalBottomRight,
+            },
         };
     }
 

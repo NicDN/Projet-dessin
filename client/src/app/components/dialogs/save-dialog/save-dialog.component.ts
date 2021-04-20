@@ -91,7 +91,6 @@ export class SaveDialogComponent {
         if (event.key !== 'Enter') {
             return;
         } else {
-            // debugger;
             this.saveButton.focus();
         }
         if (this.saveButton.disabled) {

@@ -6,15 +6,16 @@ import { SelectionTool } from '@app/classes/selection-tool';
 import { HORIZONTAL_OFFSET, MouseButton, VERTICAL_OFFSET } from '@app/classes/tool';
 import { Vec2 } from '@app/classes/vec2';
 import { DrawingService } from '@app/services/drawing/drawing.service';
-import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
+import { MoveSelectionService, SelectedPoint } from '@app/services/tools/selection/move/move-selection.service';
+import { ResizeSelectionService } from '@app/services/tools/selection/resize/resize-selection.service';
 import { RectangleDrawingService } from '@app/services/tools/shape/rectangle/rectangle-drawing.service';
+import { LineService } from '@app/services/tools/trace-tool/line/line.service';
 import { UndoRedoService } from '@app/services/undo-redo/undo-redo.service';
-import { LineService } from '../../trace-tool/line/line.service';
-import { MagnetSelectionService } from '../magnet-selection.service';
-import { ResizeSelectionService } from '../resize-selection.service';
 import { LassoSelectionService } from './lasso-selection.service';
 
 // tslint:disable: no-string-literal
+// tslint:disable: no-any
 describe('LassoSelectionService', () => {
     let lassoSelectionService: LassoSelectionService;
     let drawingServiceSpyObj: jasmine.SpyObj<DrawingService>;
@@ -300,10 +301,11 @@ describe('LassoSelectionService', () => {
             BOTTOM_RIGHT_CORNER_COORDS,
             TOP_RIGHT_CORNER_COORDS,
         ];
+        const initialPathDataLength = lineServiceSpyObj.pathData.length;
         lassoSelectionService['closeLoop']();
 
-        expect(lineServiceSpyObj.pathData.length).toEqual(4);
-        expect(lineServiceSpyObj.pathData[3]).toEqual(TOP_LEFT_CORNER_COORDS);
+        expect(lineServiceSpyObj.pathData.length).toEqual(initialPathDataLength - 1);
+        expect(lineServiceSpyObj.pathData[lineServiceSpyObj.pathData.length - 1]).toEqual(TOP_LEFT_CORNER_COORDS);
     });
 
     it('#closeLoop should clearCanvas, calcuteInitialCoords and createSelection if there are no lines crossing', () => {
@@ -520,6 +522,7 @@ describe('LassoSelectionService', () => {
     it('#checkIfLineCrossing should verify the condition for each line in the path, except the last one, as long as not crossings are found', () => {
         const calculateIntersectPointSpy = spyOn<any>(lassoSelectionService, 'calculateIntersectPoint');
         const intersectInBoundsSpy = spyOn<any>(lassoSelectionService, 'intersectInBounds').and.returnValue(false);
+        const ignoredCrossings = 3;
 
         lineServiceSpyObj.pathData = [
             TOP_LEFT_CORNER_COORDS,
@@ -531,8 +534,8 @@ describe('LassoSelectionService', () => {
         ];
 
         const lineCrossing = lassoSelectionService['checkIfLineCrossing']();
-        expect(calculateIntersectPointSpy).toHaveBeenCalledTimes(lineServiceSpyObj.pathData.length - 3);
-        expect(intersectInBoundsSpy).toHaveBeenCalledTimes(lineServiceSpyObj.pathData.length - 3);
+        expect(calculateIntersectPointSpy).toHaveBeenCalledTimes(lineServiceSpyObj.pathData.length - ignoredCrossings);
+        expect(intersectInBoundsSpy).toHaveBeenCalledTimes(lineServiceSpyObj.pathData.length - ignoredCrossings);
         expect(lineCrossing).toBeFalse();
     });
 
@@ -609,4 +612,5 @@ describe('LassoSelectionService', () => {
         expect(lassoSelectionService['intersectInBounds'](b1, b2, d1, d2, intersectBD)).toBeTrue();
         expect(lassoSelectionService['intersectInBounds'](d1, d2, b1, b2, intersectBD)).toBeTrue();
     });
+    // tslint:disable-next-line: max-file-line-count
 });

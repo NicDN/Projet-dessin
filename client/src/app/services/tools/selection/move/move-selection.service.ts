@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SelectionCoords } from '@app/classes/selection-tool';
 import { Vec2 } from '@app/classes/vec2';
 import { GridService } from '@app/services/grid/grid.service';
-import { MagnetSelectionService } from './magnet-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
 
 export enum SelectedPoint {
     TOP_LEFT = 0,

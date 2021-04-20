@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MagnetSelectionService } from '@app/services/tools/selection/magnet-selection.service';
+import { MagnetSelectionService } from '@app/services/tools/selection/magnet/magnet-selection.service';
 
 interface Point {
     iconFamily: string;
